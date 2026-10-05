@@ -79,7 +79,9 @@ jobs:
       - name: Hochladen
         run: .github/scripts/upload-dir.sh dist "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app"
       - name: Live-Prüfung
-        run: curl -fsS --retry 5 --retry-delay 5 "https://$UKULELE_HOST/" | grep -q '<title>Ukulele-Club' && echo "Live: https://$UKULELE_HOST/"
+        run: |
+          curl -fsS --retry 5 --retry-delay 5 "https://$UKULELE_HOST/" | grep -q '<title>Ukulele-Club'
+          echo "Live: https://$UKULELE_HOST/"
 
   preview:
     name: Vorschau
@@ -109,7 +111,9 @@ jobs:
       - name: Hochladen
         run: .github/scripts/upload-dir.sh dist "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/$UKULELE_PREVIEW_PATH/pr-$PULL_REQUEST_NUMBER"
       - name: Live-Prüfung
-        run: curl -fsS --retry 3 --retry-delay 5 "$URL" | grep -q '<title>Ukulele-Club' && echo "Live: $URL"
+        run: |
+          curl -fsS --retry 3 --retry-delay 5 "$URL" | grep -q '<title>Ukulele-Club'
+          echo "Live: $URL"
       - name: Kommentar im Pull Request
         env:
           GH_TOKEN: ${{ github.token }}
