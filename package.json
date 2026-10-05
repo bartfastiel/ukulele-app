@@ -1,0 +1,26 @@
+{
+  "name": "ukulele-app",
+  "version": "0.1.0",
+  "description": "Ukulele-Club – kostenlose Lern-App für Ukulele im Browser: Lieder als Karaoke, Akkorde, Akkorderkennung, Stimmgerät, Metronom",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node tools/build.mjs --serve",
+    "build": "node tools/build.mjs",
+    "serve": "node tools/serve.mjs dist 4173",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"tests/unit/*.test.ts\"",
+    "e2e": "npm run build && playwright test",
+    "check": "npm run typecheck && npm test && npm run build",
+    "prepare": "git config core.hooksPath .githooks"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  }
+}
