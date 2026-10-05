@@ -1,0 +1,148 @@
+# Deployment per SSH auf den Server von wer-ist-daniel-schwarz.de. Dort liefert Caddy /mnt/frag-daniel/ukulele/app
+# nur lesend als Seite aus (Repo frag-daniel, infra/Caddyfile.prod), die Vorschauen daneben unter eigenem Pfad.
+#
+#   Produktion  https://ukulele.wer-ist-daniel-schwarz.de/                          ← dist/ aus jedem Push auf main
+#   Vorschau    https://ukulele.wer-ist-daniel-schwarz.de/<UKULELE_PREVIEW_PATH>/pr-<nr>/  ← dist/ je Pull Request
+#
+# Secrets: DEPLOY_HOST, DEPLOY_USER (Standard root), DEPLOY_SSH_KEY. Variablen: UKULELE_PREVIEW_PATH, UKULELE_HOST (optional).
+# Forks bekommen keine Secrets – die Deployments werden dann sauber übersprungen.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
+
+env:
+  SERVER_DIR: /mnt/frag-daniel/ukulele
+
+permissions:
+  contents: read
+  pull-requests: write
+  deployments: write
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prerequisites:
+    name: Voraussetzungen
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      UKULELE_PREVIEW_PATH: ${{ vars.UKULELE_PREVIEW_PATH }}
+      UKULELE_HOST: ${{ vars.UKULELE_HOST || 'ukulele.wer-ist-daniel-schwarz.de' }}
+    outputs:
+      production: ${{ steps.check.outputs.production }}
+      preview: ${{ steps.check.outputs.preview }}
+      preview_base: ${{ steps.check.outputs.preview_base }}
+    steps:
+      - id: check
+        run: |
+          production=false
+          preview=false
+          if [ -n "$DEPLOY_HOST" ]; then production=true; else echo "::notice::DEPLOY_HOST fehlt – kein Deployment."; fi
+          if [ -n "$DEPLOY_HOST" ] && [ -n "$UKULELE_PREVIEW_PATH" ]; then preview=true; else echo "::notice::keine Vorschau (DEPLOY_HOST/UKULELE_PREVIEW_PATH fehlt)."; fi
+          {
+            echo "production=$production"
+            echo "preview=$preview"
+            echo "preview_base=https://$UKULELE_HOST/$UKULELE_PREVIEW_PATH"
+          } >> "$GITHUB_OUTPUT"
+
+  production:
+    name: Produktion
+    needs: prerequisites
+    if: needs.prerequisites.outputs.production == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: https://${{ vars.UKULELE_HOST || 'ukulele.wer-ist-daniel-schwarz.de' }}/
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'root' }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      UKULELE_HOST: ${{ vars.UKULELE_HOST || 'ukulele.wer-ist-daniel-schwarz.de' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - name: SSH-Schlüssel
+        run: .github/scripts/ssh-setup.sh
+      - name: Hochladen
+        run: .github/scripts/upload-dir.sh dist "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app"
+      - name: Live-Prüfung
+        run: curl -fsS --retry 5 --retry-delay 5 "https://$UKULELE_HOST/" | grep -q '<title>Ukulele-Club' && echo "Live: https://$UKULELE_HOST/"
+
+  preview:
+    name: Vorschau
+    needs: prerequisites
+    if: needs.prerequisites.outputs.preview == 'true' && github.event_name == 'pull_request' && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: preview-pr-${{ github.event.pull_request.number }}
+      url: ${{ needs.prerequisites.outputs.preview_base }}/pr-${{ github.event.pull_request.number }}/
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'root' }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      UKULELE_PREVIEW_PATH: ${{ vars.UKULELE_PREVIEW_PATH }}
+      PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+      URL: ${{ needs.prerequisites.outputs.preview_base }}/pr-${{ github.event.pull_request.number }}/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund && npm run build
+      - name: SSH-Schlüssel
+        run: .github/scripts/ssh-setup.sh
+      - name: Hochladen
+        run: .github/scripts/upload-dir.sh dist "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/$UKULELE_PREVIEW_PATH/pr-$PULL_REQUEST_NUMBER"
+      - name: Live-Prüfung
+        run: curl -fsS --retry 3 --retry-delay 5 "$URL" | grep -q '<title>Ukulele-Club' && echo "Live: $URL"
+      - name: Kommentar im Pull Request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_STATUS: deployed
+          PREVIEW_URL: ${{ env.URL }}
+          DEPLOYED_COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: .github/scripts/preview-comment.sh
+
+  remove-preview:
+    name: Vorschau entfernen
+    needs: prerequisites
+    if: needs.prerequisites.outputs.preview == 'true' && github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'root' }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      UKULELE_PREVIEW_PATH: ${{ vars.UKULELE_PREVIEW_PATH }}
+      PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: SSH-Schlüssel
+        run: .github/scripts/ssh-setup.sh
+      - name: Verzeichnis löschen
+        run: ssh "$DEPLOY_USER@$DEPLOY_HOST" "rm -rf '$SERVER_DIR/$UKULELE_PREVIEW_PATH/pr-$PULL_REQUEST_NUMBER'"
+      - name: Environment deaktivieren
+        run: |
+          for id in $(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=preview-pr-$PULL_REQUEST_NUMBER&per_page=100" --jq '.[].id'); do
+            gh api --method POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" -f state=inactive -f description='Vorschau entfernt' --silent
+          done
+      - name: Kommentar im Pull Request
+        env:
+          PREVIEW_STATUS: removed
+        run: .github/scripts/preview-comment.sh

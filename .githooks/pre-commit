@@ -1,0 +1,5 @@
+#!/bin/sh
+# Vor jedem Commit: Typen und Unit-Tests (schnell genug für jeden Commit).
+set -e
+npm run --silent typecheck
+npm test --silent

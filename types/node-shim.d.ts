@@ -1,0 +1,22 @@
+// Minimale Typen für node:test und node:assert – erspart @types/node mitsamt seinen Abhängigkeiten.
+declare module 'node:test' {
+  export function test(name: string, fn: () => void | Promise<void>): void;
+}
+declare module 'node:assert/strict' {
+  const assert: {
+    (value: unknown, message?: string): void;
+    equal(actual: unknown, expected: unknown, message?: string): void;
+    deepEqual(actual: unknown, expected: unknown, message?: string): void;
+    ok(value: unknown, message?: string): void;
+    throws(fn: () => unknown): void;
+  };
+  export default assert;
+}
+declare module 'node:fs' {
+  export function writeFileSync(path: string, data: Uint8Array | string): void;
+  export function mkdirSync(path: string, opts?: { recursive?: boolean }): void;
+}
+declare module 'node:path' {
+  export function dirname(path: string): string;
+}
+declare const process: { env: Record<string, string | undefined>; argv: string[] };
