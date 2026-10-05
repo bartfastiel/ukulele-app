@@ -1,0 +1,113 @@
+import { test, expect, type Page } from '@playwright/test';
+
+const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne'];
+
+function collectErrors(page: Page): string[] {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+  return errors;
+}
+
+test('alle Ansichten laden ohne Fehler und ohne waagrechtes Scrollen', async ({ page }) => {
+  const errors = collectErrors(page);
+  for (const v of VIEWS) {
+    await page.goto(`#/${v}`);
+    await expect(page.locator('main')).toBeVisible();
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow, `waagrechtes Scrollen in #/${v}`).toBeLessThanOrEqual(1);
+  }
+  expect(errors).toEqual([]);
+});
+
+test('Tippziele sind groß genug (mindestens 52 px)', async ({ page }) => {
+  for (const v of ['', 'lieder', 'lied/bruder-jakob', 'stimmen']) {
+    await page.goto(`#/${v}`);
+    const small = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('.btn'))
+        .map((b) => b.getBoundingClientRect())
+        .filter((r) => r.width > 0 && (r.width < 52 || r.height < 52)).length,
+    );
+    expect(small, `zu kleine Knöpfe in #/${v}`).toBe(0);
+  }
+});
+
+test('Startseite führt zu den Liedern und zurück', async ({ page }) => {
+  await page.goto('./');
+  await expect(page.getByRole('heading', { name: 'Ukulele-Club' })).toBeVisible();
+  await page.getByRole('link', { name: /Lieder spielen/ }).click();
+  await expect(page.getByRole('heading', { name: 'Lieder' })).toBeVisible();
+  await expect(page.locator('.song-card')).toHaveCount(9);
+  await page.getByRole('link', { name: 'Zur Startseite' }).click();
+  await expect(page.getByRole('heading', { name: 'Ukulele-Club' })).toBeVisible();
+});
+
+test('Karaoke „Läuft durch“: Einzähler, dann wandert die Silbe', async ({ page }) => {
+  await page.goto('#/lied/alle-meine-entchen');
+  await page.getByRole('button', { name: 'Läuft durch' }).click();
+  await page.getByRole('button', { name: 'Original' }).click();
+  await page.locator('.btn-play').click();
+  await expect(page.locator('.count')).toBeVisible();
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('Al', { timeout: 5000 });
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('Ent', { timeout: 6000 });
+  // Pause per Tipp auf die Bühne
+  await page.locator('.now-card').click();
+  await expect(page.locator('.paused')).toBeVisible();
+});
+
+test('Karaoke „Wartet auf mich“ ohne Mikrofon: wartet bei jedem Akkordwechsel', async ({ page }) => {
+  await page.goto('#/lied/alle-meine-entchen');
+  await page.getByRole('button', { name: 'Wartet auf mich' }).click();
+  await page.getByRole('button', { name: 'Original' }).click();
+  await page.locator('.btn-play').click();
+  // ohne Web Audio (WebKit unter Windows) gibt es kein Mikrofon und daher keine Frage
+  const noMic = page.getByRole('button', { name: 'Ohne Mikrofon' });
+  if (await noMic.isVisible({ timeout: 1500 }).catch(() => false)) await noMic.click();
+  await expect(page.locator('.wait-title')).toContainText('Spiel jetzt C');
+  await page.locator('.wait').getByRole('button', { name: /Geschafft/ }).click();
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('Al', { timeout: 5000 });
+  // erster Wechsel auf F bei „schwim-“
+  await expect(page.locator('.wait-title')).toContainText('Spiel jetzt F', { timeout: 10000 });
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('schwim');
+  await expect(page.locator('.now-card .chord-name')).toHaveText('F');
+});
+
+test('kurzes Lied bis zum Ende ergibt einen Stern', async ({ page }) => {
+  await page.goto('#/lied/bruder-jakob');
+  await page.getByRole('button', { name: 'Wartet auf mich' }).click();
+  await page.getByRole('button', { name: 'Original' }).click();
+  await page.locator('.btn-play').click();
+  const noMic = page.getByRole('button', { name: 'Ohne Mikrofon' });
+  if (await noMic.isVisible({ timeout: 1500 }).catch(() => false)) await noMic.click();
+  await page.locator('.wait').getByRole('button', { name: /Geschafft/ }).click();
+  // Bruder Jakob hat nur einen Akkord: läuft ohne weiteres Warten durch (32 Schläge bei 100 bpm ≈ 19 s)
+  await expect(page.locator('.result')).toBeVisible({ timeout: 30000 });
+  await page.goto('#/sterne');
+  await expect(page.locator('.total .score')).toHaveText('1');
+});
+
+test('Akkord-Seite: Anhören und Griffbeschreibung', async ({ page }) => {
+  await page.goto('#/akkorde');
+  await page.getByRole('link', { name: /^G7:/ }).click();
+  await expect(page.getByRole('heading', { name: 'Akkord G7' })).toBeVisible();
+  await expect(page.locator('.desc')).toContainText('Mittelfinger auf der C-Saite im 2. Bund');
+  await page.getByRole('button', { name: /Anhören/ }).click();
+});
+
+test('Linkshänder spiegelt die Griffbilder', async ({ page }) => {
+  await page.goto('#/sterne');
+  await page.getByRole('button', { name: 'Linkshänder' }).click();
+  await page.goto('#/akkord/C');
+  const labels = await page.locator('.diagram-big .string-label').evaluateAll((els) =>
+    els.sort((a, b) => Number(a.getAttribute('x')) - Number(b.getAttribute('x'))).map((e) => e.textContent),
+  );
+  expect(labels).toEqual(['A', 'E', 'C', 'G']);
+});
+
+test('Rhythmus startet und stoppt', async ({ page }) => {
+  await page.goto('#/rhythmus');
+  await page.getByRole('button', { name: 'Insel-Schlag' }).click();
+  await page.getByRole('button', { name: /Start/ }).click();
+  await expect(page.locator('.arrow.on')).toHaveCount(1, { timeout: 3000 });
+  await page.getByRole('button', { name: /Stopp/ }).click();
+});
