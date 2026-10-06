@@ -1,4 +1,4 @@
-import { findPeaks, judgeChord } from './chord-detect.ts';
+import { findPeaks, holdSpectrum, judgeChord } from './chord-detect.ts';
 import { CHORDS, type Chord } from '../music/chords.ts';
 
 /**
@@ -75,14 +75,16 @@ export function evaluateRecording(signal: Float32Array, sampleRate: number, chor
   const accepted: Record<string, number> = {};
   let frames = 0;
   let loud = 0;
+  const held = new Float32Array(FFT_SIZE / 2);
   for (let end = FFT_SIZE; end <= signal.length; end += hop) {
     frames++;
+    const spec = holdSpectrum(held, spectrum(signal, end));
     if (rms(signal, end) < RMS_GATE) {
       chords.forEach((c) => (streak[c.name] = 0));
       continue;
     }
     loud++;
-    const peaks = findPeaks(spectrum(signal, end), binHz);
+    const peaks = findPeaks(spec, binHz);
     for (const c of chords) {
       if (accepted[c.name] !== undefined) continue;
       const v = judgeChord(peaks, c.name, CHORDS);

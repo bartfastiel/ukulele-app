@@ -8,14 +8,18 @@ export function renderPluck(freq: number, sampleRate: number, seconds = 1.6, bri
   // Die Mittelwertbildung zweier Nachbarn verzögert um ein halbes Sample.
   const delay = sampleRate / freq - 0.5;
   const excite = Math.min(n, Math.ceil(delay) + 1);
+  // Anregung wie beim echten Zupfen: dreieckige Auslenkung (Zupfstelle bei 30 % der Länge) plus etwas Rauschen.
+  // Reines Rauschen hätte je nach Zufallsfolge kaum Grundton – die Saite klänge mal laut, mal fast stumm.
   let s = seed * 7919;
   let prev = 0;
   let mean = 0;
   for (let i = 0; i < excite; i++) {
     s = (s * 9301 + 49297) % 233280;
+    const x = i / excite;
+    const tri = x < 0.3 ? x / 0.3 : (1 - x) / 0.7;
     prev += brightness * (s / 233280 - 0.5 - prev);
-    out[i] = prev;
-    mean += prev;
+    out[i] = 0.8 * (tri - 0.5) + 0.6 * prev;
+    mean += out[i];
   }
   mean /= excite;
   for (let i = 0; i < excite; i++) out[i] -= mean;
