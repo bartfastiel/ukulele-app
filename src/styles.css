@@ -1328,6 +1328,23 @@ summary:focus-visible {
   .rec-take {
     grid-template-columns: 1fr;
   }
+  .rec-intro {
+    font-size: 0.85em;
+  }
+  .rec-card {
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .rec-card .diagram-big {
+    max-width: 120px;
+  }
+  .rec-card .chord-name {
+    font-size: 2em;
+  }
+  .rec-instruction {
+    font-size: 0.95em;
+    margin: 6px 0 0;
+  }
 }
 
 /* ---------- Layout-Varianten ---------- */

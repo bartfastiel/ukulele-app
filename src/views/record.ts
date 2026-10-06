@@ -47,6 +47,7 @@ export const record: View = (root) => {
   const done = new Map<string, Stored>();
   const area = h('div', { class: 'rec-area' });
   const summary = h('div', { class: 'card rec-summary' });
+  const shareMsg = h('p', { class: 'small', 'aria-live': 'polite' });
 
   const stopAll = () => {
     window.clearTimeout(timer);
@@ -86,7 +87,8 @@ export const record: View = (root) => {
       h(
         'div',
         { class: 'row' },
-        button(h('span', null, icon('check'), ' ZIP herunterladen'), () => download(), 'btn-primary', done.size ? {} : { disabled: 'true' }),
+        canShareFiles ? button(h('span', null, icon('next'), ' Teilen'), () => share(), 'btn-primary', done.size ? {} : { disabled: 'true' }) : null,
+        button(h('span', null, icon('check'), ' ZIP herunterladen'), () => download(), canShareFiles ? '' : 'btn-primary', done.size ? {} : { disabled: 'true' }),
         button('Alles löschen', () => {
           if (!window.confirm('Alle Aufnahmen auf diesem Gerät löschen?')) return;
           void idbClear().then(() => {
@@ -97,6 +99,7 @@ export const record: View = (root) => {
         }),
       ),
     );
+    summary.appendChild(shareMsg);
   };
 
   const zipBytes = (): Uint8Array => {
@@ -123,27 +126,38 @@ export const record: View = (root) => {
     return makeZip(files);
   };
 
-  const download = () => {
-    const bytes = zipBytes();
+  const zipFile = (): { blob: Blob; name: string } => {
     const d = new Date();
     const pad = (n: number) => (n < 10 ? '0' : '') + n;
     const name = `ukulele-aufnahmen-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.zip`;
-    const blob = new Blob([bytes as BlobPart], { type: 'application/zip' });
-    const nav = navigator as unknown as { canShare?: (d: { files: File[] }) => boolean; share?: (d: { files: File[] }) => Promise<void> };
-    // iPad: Teilen-Menü (AirDrop, Dateien, Mail) ist bequemer als ein Download
-    if (typeof File !== 'undefined' && nav.canShare && nav.share && /iPad|iPhone|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document) {
-      const file = new File([blob], name, { type: 'application/zip' });
-      if (nav.canShare({ files: [file] })) {
-        nav.share({ files: [file] }).catch(() => undefined);
-        return;
-      }
-    }
-    const url = URL.createObjectURL(blob);
-    const a = h('a', { href: url, download: name });
+    return { blob: new Blob([zipBytes() as BlobPart], { type: 'application/zip' }), name };
+  };
+
+  const download = () => {
+    const z = zipFile();
+    const url = URL.createObjectURL(z.blob);
+    const a = h('a', { href: url, download: z.name });
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     window.setTimeout(() => URL.revokeObjectURL(url), 10000);
+    shareMsg.textContent = `Gespeichert als „${z.name}“ im Download-Ordner des Geräts.`;
+  };
+
+  type ShareNav = { canShare?: (d: { files: File[] }) => boolean; share?: (d: { files: File[]; title?: string }) => Promise<void> };
+  const nav = navigator as unknown as ShareNav;
+  const canShareFiles = typeof File !== 'undefined' && !!nav.share && !!nav.canShare;
+
+  /** Teilen-Menü des Handys (Mail, Drive, Messenger …); manche Browser teilen keine ZIPs – dann Download. */
+  const share = () => {
+    const z = zipFile();
+    const file = new File([z.blob], z.name, { type: 'application/zip' });
+    if (!nav.canShare!({ files: [file] })) {
+      shareMsg.textContent = 'Dieser Browser kann ZIP-Dateien nicht teilen – ich lade sie stattdessen herunter.';
+      download();
+      return;
+    }
+    nav.share!({ files: [file], title: z.name }).catch(() => undefined);
   };
 
   const save = (take: Take, note: string, samples: Float32Array, sampleRate: number) => {
@@ -312,13 +326,12 @@ export const record: View = (root) => {
 
   screen(
     root,
-    { title: 'Aufnahmen für die Erkennung', back: '#/sterne', theme: 'pearl' },
+    { title: 'Beispielaufnahmen', back: '#/sterne', theme: 'pearl' },
     h(
       'p',
       { class: 'card rec-intro' },
-      'Für Erwachsene: Hier nimmst du Beispiel-Akkorde auf – richtige, absichtlich falsche und Geräusche. ',
-      'Jede Aufnahme dauert 5 Sekunden. Am Ende lädst du alles als ZIP herunter. Nichts wird hochgeladen; ',
-      'die Aufnahmen bleiben bis zum Löschen auf diesem Gerät gespeichert.',
+      'Für Erwachsene: je 5 Sekunden spielen, was angezeigt wird – auch absichtlich falsch. ',
+      'Bleibt auf dem Gerät, bis du es unten teilst oder herunterlädst.',
     ),
     area,
     summary,
