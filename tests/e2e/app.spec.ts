@@ -37,7 +37,7 @@ test('Startseite führt zu den Liedern und zurück', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Ukulele-Club' })).toBeVisible();
   await page.getByRole('link', { name: /Lieder spielen/ }).click();
   await expect(page.getByRole('heading', { name: 'Lieder' })).toBeVisible();
-  await expect(page.locator('.song-card')).toHaveCount(15);
+  await expect(page.locator('.song-card')).toHaveCount(16);
   await page.getByRole('link', { name: 'Zur Startseite' }).click();
   await expect(page.getByRole('heading', { name: 'Ukulele-Club' })).toBeVisible();
 });
