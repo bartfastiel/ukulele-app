@@ -111,6 +111,79 @@ zum:F5:0.75 Ge-:F5:0.25 | [C]burts-:E5 tag:C5 [G7]viel:D5 | [C]Glück!:C5:3 |`,
 [C]Ich:E4 spiel’:E4 sie:G4 laut,:G4 | [Am]ich:A4 spiel’:A4 sie:C5 leis’,:A4 | [F]ich:A4 spiel’:A4 für:F4 dich:A4 | [G7]und:B4 mich!:G4:3 |
 [C]G,:G4 C,:C4 E,:E4 A!:A4 | [Am]Das:C5 sind:A4 die:A4 Sai-:C5 | [F]ten,:A4:2 die:F4 ich:A4 | [C]mag!:C4:3 _:R |`,
   },
+  {
+    id: 'mary-lamb',
+    title: 'Mary Had a Little Lamb',
+    origin: `Text Sarah Josepha Hale (1830), Melodie traditionell, ${PD}`,
+    meter: 4,
+    bpm: 100,
+    text: `
+[C]Ma-:E4 ry:D4 had:C4 a:D4 | lit-:E4 tle:E4 lamb,:E4:2 | [G7]lit-:D4 tle:D4 lamb,:D4:2 | [C]lit-:E4 tle:G4 lamb,:G4:2 |
+Ma-:E4 ry:D4 had:C4 a:D4 | lit-:E4 tle:E4 lamb,:E4 its:E4 | [G7]fleece:D4 was:D4 white:E4 as:D4 | [C]snow.:C4:4 |
+Ev-:E4 ery-:D4 where:C4 that:D4 | Ma-:E4 ry:E4 went,:E4:2 | [G7]Ma-:D4 ry:D4 went,:D4:2 | [C]Ma-:E4 ry:G4 went,:G4:2 |
+Ev-:E4 ery-:D4 where:C4 that:D4 | Ma-:E4 ry:E4 went,:E4 the:E4 | [G7]lamb:D4 was:D4 sure:E4 to:D4 | [C]go.:C4:4 |`,
+  },
+  {
+    id: 'london-bridge',
+    title: 'London Bridge Is Falling Down',
+    origin: `Traditionell (England), ${PD}`,
+    meter: 4,
+    bpm: 100,
+    text: `
+[C]Lon-:G4:1.5 don:A4:0.5 Bridge:G4 is:F4 | fal-:E4 ling:F4 down,:G4:2 | [G7]fal-:D4 ling:E4 down,:F4:2 | [C]fal-:E4 ling:F4 down.:G4:2 |
+Lon-:G4:1.5 don:A4:0.5 Bridge:G4 is:F4 | fal-:E4 ling:F4 down,:G4:2 | [G7]my:D4:2 fair:G4:2 | [C]la-:E4 dy.:C4:3 |`,
+  },
+  {
+    id: 'old-macdonald',
+    title: 'Old MacDonald Had a Farm',
+    origin: `Traditionell (England/USA), ${PD}`,
+    meter: 4,
+    bpm: 110,
+    text: `
+[F]Old:F4 Mac-:F4 Don-:F4 ald:C4 | had:D4 a:D4 farm,:C4:2 | [C7]E-:A4 I-:A4 E-:G4 I-:G4 | [F]O!:F4:3 And:C4 |
+on:F4 his:F4 farm:F4 he:C4 | had:D4 a:D4 cow,:C4:2 | [C7]E-:A4 I-:A4 E-:G4 I-:G4 | [F]O!:F4:3 With:C4:0.5 a:C4:0.5 |
+moo:F4 moo:F4 here,:F4 and:C4:0.5 a:C4:0.5 | moo:F4 moo:F4 there,:F4:2 |
+here:F4:0.5 a:F4:0.5 moo,:F4 there:F4:0.5 a:F4:0.5 moo,:F4 | ev-:F4:0.5 ery-:F4:0.5 where:F4:0.5 a:F4:0.5 moo:F4 moo.:F4 |
+Old:F4 Mac-:F4 Don-:F4 ald:C4 | had:D4 a:D4 farm,:C4:2 | [C7]E-:A4 I-:A4 E-:G4 I-:G4 | [F]O!:F4:4 |`,
+  },
+  {
+    id: 'yankee-doodle',
+    title: 'Yankee Doodle',
+    origin: `Traditionell (USA, 18. Jh.), ${PD}`,
+    meter: 4,
+    bpm: 100,
+    text: `
+[F]Yan-:F4:0.5 kee:F4:0.5 Doo-:G4:0.5 dle:A4:0.5 went:F4:0.5 to:A4:0.5 town,:G4:0.5 a-:C4:0.5 | rid-:F4:0.5 ing:F4:0.5 on:G4:0.5 a:A4:0.5 po-:F4 [C7]ny,:E4 |
+[F]stuck:F4:0.5 a:F4:0.5 fea-:G4:0.5 ther:A4:0.5 [C7]in:Bb4:0.5 his:A4:0.5 cap:G4:0.5 and:F4:0.5 | called:E4:0.5 it:C4:0.5 ma-:D4:0.5 ca-:E4:0.5 [F]ro-:F4 ni.:F4 |
+[F]Yan-:F4:0.5 kee:F4:0.5 Doo-:G4:0.5 dle:A4:0.5 went:F4:0.5 to:A4:0.5 town,:G4:0.5 a-:C4:0.5 | rid-:F4:0.5 ing:F4:0.5 on:G4:0.5 a:A4:0.5 po-:F4 [C7]ny,:E4 |
+[F]stuck:F4:0.5 a:F4:0.5 fea-:G4:0.5 ther:A4:0.5 [C7]in:Bb4:0.5 his:A4:0.5 cap:G4:0.5 and:F4:0.5 | called:E4:0.5 it:C4:0.5 ma-:D4:0.5 ca-:E4:0.5 [F]ro-:F4 ni.:F4 |`,
+  },
+  {
+    id: 'stille-nacht',
+    title: 'Stille Nacht, heilige Nacht',
+    origin: `Text Joseph Mohr (1816), Melodie Franz Xaver Gruber (1818), ${PD}`,
+    meter: 6,
+    bpm: 150,
+    text: `
+[C]Stil-:G4:1.5 le:A4:0.5 Nacht,:G4 ~:E4:3 | hei-:G4:1.5 li-:A4:0.5 ge:G4 Nacht!:E4:3 |
+[G7]Al-:D5:2 les:D5 schläft,:B4:3 | [C]ein-:C5:2 sam:C5 wacht:G4:3 |
+[F]nur:A4:2 das:A4 trau-:C5:1.5 te:B4:0.5 hoch-:A4 | [C]hei-:G4:1.5 li-:A4:0.5 ge:G4 Paar.:E4:3 |
+[F]Hol-:A4:2 der:A4 Kna-:C5:1.5 be:B4:0.5 im:A4 | [C]lo-:G4:1.5 cki-:A4:0.5 gen:G4 Haar,:E4:3 |
+[G7]schlaf:D5:2 in:D5 himm-:F5:1.5 li-:D5:0.5 scher:B4 | [C]Ruh,:C5:3 ~:E5:3 |
+schlaf:C5 in:G4 himm-:E4 [G7]li-:G4:1.5 scher:F4:0.5 ~:D4 | [C]Ruh.:C4:6 |`,
+  },
+  {
+    id: 'lagerfeuer',
+    title: 'Am Lagerfeuer',
+    origin: 'Eigenes Lied für diese App, frei verwendbar (CC0)',
+    meter: 4,
+    bpm: 90,
+    text: `
+[C]Am:E4 La-:E4 ger-:G4 feu-:G4 | [Am]er:A4:2 sit-:G4 zen:E4 | [F]wir:F4:2 und:A4 sin-:A4 | [G7]gen,:G4:4 |
+[C]die:E4 Fun-:E4 ken:G4 flie-:C5 | [Am]gen:C5:2 hoch:A4 bis:A4 | [F]zu:C5:2 den:A4 Ster-:F4 | [G7]nen,:G4:4 |
+[C]vier:G4 Sai-:G4 ten:E4 klin-:G4 | [Am]gen:A4:2 hell:C5 in:A4 | [F]dunk-:A4:2 ler:F4:2 | [G7]Nacht,:B4:4 |
+[C]wir:E4 spie-:E4 len,:G4 bis:G4 | [Am]die:A4:2 Son-:A4 ne:C5 | [G7]wie-:G4:2 der:F4:2 | [C]lacht.:C4:4 |`,
+  },
 ];
 
 export const SONGS: Song[] = SONG_SOURCES.map(parseSong);

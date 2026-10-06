@@ -23,14 +23,15 @@ test('alle Melodietöne liegen auf der Ukulele mit hohem G (bis zum 12. Bund)', 
 });
 
 test('Melodietöne passen zum Akkord oder sind Durchgangstöne auf leichter Zählzeit', () => {
-  // grobe Plausibilitätsprüfung gegen Tippfehler in Tonhöhen: höchstens 30 % akkordfremde Töne je Lied
+  // grobe Plausibilitätsprüfung gegen Tippfehler in Tonhöhen: höchstens 35 % akkordfremde Töne je Lied
+  // (London Bridge hat mit seinen Durchgangstönen F über C echte 33 %)
   for (const s of SONGS) {
     const notes = s.events.filter((e) => e.midi !== null);
     const foreign = notes.filter((e) => {
       const pcs = new Set(chord(e.chord).frets.map((f, i) => ([67, 60, 64, 69][i] + f) % 12));
       return !pcs.has(e.midi! % 12);
     });
-    assert.ok(foreign.length / notes.length < 0.3, `${s.id}: ${foreign.length}/${notes.length}`);
+    assert.ok(foreign.length / notes.length < 0.35, `${s.id}: ${foreign.length}/${notes.length}`);
   }
 });
 

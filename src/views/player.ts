@@ -348,6 +348,9 @@ class Player {
     for (let b = Math.ceil(this.scheduledTo - 1e-6); b < until; b++) {
       if (b < this.scheduledTo - 1e-6) continue;
       const barPos = (((b - (s.pickup ? s.pickup - s.meter : 0)) % s.meter) + s.meter) % s.meter;
+      // Zusammengesetzte Takte (6/8): Schlag = Achtel, Klick und Begleitung nur auf den beiden Hauptschlägen
+      const strong = s.meter === 6 ? barPos % 3 === 0 : true;
+      if (!strong) continue;
       if (b < 0 || this.settings.clickOn) click(t(b), barPos === 0, b < 0 ? 0.6 : 0.35);
       if (b >= 0 && this.settings.backing) {
         const ev = s.events[eventAt(s, b)];
