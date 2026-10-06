@@ -6,6 +6,7 @@ import { detectPitch, cents } from '../audio/pitch.ts';
 import { openMic } from '../audio/mic.ts';
 import { pluck, successSound } from '../audio/engine.ts';
 import { save } from '../store.ts';
+import { TuningCoach, tipText } from '../audio/tuning-coach.ts';
 
 export const tuner: View = (root) => {
   let raf = 0;
@@ -36,6 +37,14 @@ export const tuner: View = (root) => {
   );
   const note = h('div', { class: 'tuner-note' }, '–');
   const advice = h('div', { class: 'feedback', 'aria-live': 'polite' }, 'Tippe auf „Zuhören“ und zupf eine Saite.');
+  const tipBox = h('div', { class: 'feedback tip', 'aria-live': 'polite', hidden: true });
+  const coach = new TuningCoach();
+  let tipString = -1;
+  const showTip = (text: string | null, stringIdx = -1) => {
+    tipBox.hidden = !text;
+    tipBox.textContent = text ? `Tipp: ${text}` : '';
+    tipString = stringIdx;
+  };
   const stringBtns = STRINGS.map((st) =>
     button(
       h('span', null, h('span', { class: 'sname' }, st.name), icon('check', 'icon tick')),
@@ -50,7 +59,12 @@ export const tuner: View = (root) => {
     const buf = new Float32Array(4096);
     const tick = () => {
       mic.timeData(buf);
+      const t = performance.now();
       const p = detectPitch(buf, mic.sampleRate, 200, 900);
+      if (!p || p.clarity <= 0.85) {
+        const tip = coach.silence(t);
+        if (tip) showTip(tipText(tip, STRINGS[tip.string].name), tip.string);
+      }
       if (p && p.clarity > 0.85) {
         let best = 0;
         let bestC = Infinity;
@@ -62,6 +76,10 @@ export const tuner: View = (root) => {
           }
         });
         if (Math.abs(bestC) < 400) {
+          let level = 0;
+          for (let i = 0; i < buf.length; i++) level += buf[i] * buf[i];
+          const tip = coach.reading(best, bestC, Math.sqrt(level / buf.length), t);
+          if (tip) showTip(tipText(tip, STRINGS[tip.string].name), tip.string);
           if (best !== lastString) smooth = bestC;
           smooth = smooth * 0.6 + bestC * 0.4;
           lastString = best;
@@ -73,6 +91,7 @@ export const tuner: View = (root) => {
           gauge.classList.toggle('in-tune', ok);
           if (ok) {
             advice.textContent = `${STRINGS[best].name}-Saite: genau richtig!`;
+            if (tipString === best) showTip(null);
             if (!inTuneSince) inTuneSince = performance.now();
             if (performance.now() - inTuneSince > 700 && !done[best]) {
               done[best] = true;
@@ -120,7 +139,7 @@ export const tuner: View = (root) => {
     h(
       'div',
       { class: 'tuner' },
-      h('div', { class: 'card tuner-card' }, gauge, note, advice),
+      h('div', { class: 'card tuner-card' }, gauge, note, advice, tipBox),
       h(
         'div',
         { class: 'tuner-side' },
