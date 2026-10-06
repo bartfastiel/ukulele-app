@@ -93,5 +93,10 @@ export const stars: View = (root) => {
       ),
       codeMsg,
     ),
+    h(
+      'a',
+      { class: 'btn', href: '#/aufnahme' },
+      'Für Erwachsene: Beispiel-Akkorde aufnehmen',
+    ),
   );
 };

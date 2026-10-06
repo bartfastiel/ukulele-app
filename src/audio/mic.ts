@@ -6,6 +6,8 @@ import { audio, hasAudio } from './engine.ts';
  */
 export interface Mic {
   analyser: AnalyserNode;
+  /** Rohes Mikrofonsignal, z. B. für Aufnahmen. */
+  source: MediaStreamAudioSourceNode;
   sampleRate: number;
   /** Zeitbereich (für das Stimmgerät). */
   timeData(out: Float32Array): Float32Array;
@@ -55,6 +57,7 @@ export async function openMic(): Promise<Mic> {
   const full = new Float32Array(analyser.fftSize);
   const mic: Mic = {
     analyser,
+    source,
     sampleRate: c.sampleRate,
     timeData(out) {
       // Die jüngsten Samples stehen am Ende des Puffers; ältere Safari-Versionen kennen nur die Byte-Variante.

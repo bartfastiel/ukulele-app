@@ -10,6 +10,7 @@ import { game } from './views/game.ts';
 import { tuner } from './views/tuner.ts';
 import { rhythm } from './views/rhythm.ts';
 import { stars } from './views/stars.ts';
+import { record } from './views/record.ts';
 
 const ROUTES: Record<string, View> = {
   '': home,
@@ -21,6 +22,7 @@ const ROUTES: Record<string, View> = {
   stimmen: tuner,
   rhythmus: rhythm,
   sterne: stars,
+  aufnahme: record,
 };
 
 const TITLES: Record<string, string> = {
@@ -32,6 +34,7 @@ const TITLES: Record<string, string> = {
   stimmen: 'Stimmen',
   rhythmus: 'Rhythmus',
   sterne: 'Meine Sterne',
+  aufnahme: 'Aufnahmen',
 };
 
 let cleanup: Cleanup = undefined;
