@@ -9,6 +9,7 @@ import { STRINGS, tabPosition } from '../music/notes.ts';
 import { audio, click, pluck, strum, successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, giveStars, markPracticed } from '../store.ts';
+import { keyLabel, originalShift, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
 
 const SPEEDS = [
   { value: 0.6, label: 'Langsam' },
@@ -58,11 +59,18 @@ class Player {
   private stage!: HTMLElement;
 
   private song: Song;
+  /** Lied in der hinterlegten (einfachen) Tonart; `song` ist die gerade gewählte Transposition davon. */
+  private base: Song;
+  private shift = 0;
+  private keyBox!: HTMLElement;
 
   constructor(root: HTMLElement, song: Song) {
-    this.song = song;
-    this.changes = chordChanges(song);
+    this.base = song;
+    this.shift = load().keys[song.id] || 0;
+    this.song = transposeSong(song, this.shift);
+    this.changes = chordChanges(this.song);
     this.render(root);
+    this.drawKeyBox();
     this.showChords(0);
     this.highlight(-1);
   }
@@ -143,6 +151,7 @@ class Player {
           toggle('Klick', 'clickOn'),
           this.song.hasMelody ? toggle('Tabulatur', 'tab') : null,
         ),
+        (this.keyBox = h('div', { class: 'key-box' })),
         h('p', { class: 'small' }, this.song.origin),
       ),
     );
@@ -170,7 +179,7 @@ class Player {
         'span',
         { class: `syl${e.joinNext ? ' join' : ''}` },
         h('span', { class: 'syl-chord' }, e.chordChange ? e.chord : ''),
-        h('span', { class: 'syl-text' }, e.syllable || ' '),
+        h('span', { class: 'syl-text' }, e.syllable ? e.syllable.replace(/‿/g, ' ') : ' '),
         h(
           'span',
           { class: `syl-tab${tab ? ` s${tab.string}` : ''}` },
@@ -512,6 +521,59 @@ class Player {
       this.start = audio().currentTime - beat * this.spb;
       this.scheduledTo = beat;
     }
+  }
+
+  /** Tonart wählen: Akkorde, Griffbilder, Melodie und Tabulatur wandern mit. */
+  private setShift(shift: number): void {
+    const n = ((((shift + 6) % 12) + 12) % 12) - 6;
+    this.shift = n;
+    save((p) => {
+      if (n) p.keys[this.base.id] = n;
+      else delete p.keys[this.base.id];
+    });
+    this.song = transposeSong(this.base, n);
+    this.changes = chordChanges(this.song);
+    this.buildLyrics();
+    this.lastLine = -1;
+    this.reset();
+    this.drawKeyBox();
+  }
+
+  private drawKeyBox(): void {
+    const k = songKey(this.base);
+    const suggest = suggestShift(this.base);
+    const orig = originalShift(this.base);
+    const label = (s: number) => keyLabel(k.root + s, k.minor);
+    const marks = (s: number) => `${s === suggest ? ' ★' : ''}${orig !== null && s === orig ? ' ◆' : ''}`;
+    clear(this.keyBox);
+    const quick = (text: string, s: number) =>
+      button(text, () => this.setShift(s), 'btn-seg', { 'aria-pressed': String(this.shift === s) });
+    this.keyBox.appendChild(
+      h(
+        'div',
+        { class: 'seg seg-wrap', role: 'group', 'aria-label': 'Tonart' },
+        button('−', () => this.setShift(this.shift - 1), 'btn-seg', { 'aria-label': 'Einen Halbton tiefer' }),
+        h('span', { class: 'key-now', 'aria-live': 'polite' }, `Tonart ${label(this.shift)}${marks(this.shift)}`),
+        button('+', () => this.setShift(this.shift + 1), 'btn-seg', { 'aria-label': 'Einen Halbton höher' }),
+      ),
+    );
+    this.keyBox.appendChild(
+      h(
+        'div',
+        { class: 'seg seg-wrap' },
+        quick(`Einfach: ${label(0)}${marks(0)}`, 0),
+        suggest !== 0 ? quick(`★ Vorschlag: ${label(suggest)}`, suggest) : null,
+        orig !== null && orig !== 0 && orig !== suggest ? quick(`◆ Original: ${label(orig)}`, orig) : null,
+      ),
+    );
+    this.keyBox.appendChild(
+      h(
+        'p',
+        { class: 'small' },
+        '★ Vorschlag: bester Kompromiss aus einfachen Griffen, Stimmlage und Wiedererkennung.',
+        orig !== null ? ' ◆ Original- bzw. Quellentonart.' : '',
+      ),
+    );
   }
 
   private reset(): void {

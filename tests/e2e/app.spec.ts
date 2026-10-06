@@ -38,6 +38,7 @@ test('Startseite führt zu den Liedern und zurück', async ({ page }) => {
   await page.getByRole('link', { name: /Lieder spielen/ }).click();
   await expect(page.getByRole('heading', { name: 'Lieder', exact: true })).toBeVisible();
   await expect(page.locator('.song-card')).toHaveCount(81);
+  await expect(page.locator('.song-card .feature[title^="Melodie"]')).toHaveCount(50);
   await page.getByRole('button', { name: /^Weihnachten/ }).click();
   await expect(page.locator('.song-card')).toHaveCount(12);
   await page.getByRole('button', { name: /^Alle/ }).click();
@@ -155,7 +156,7 @@ test('Stille Nacht im 6/8-Takt: Einzähler, dann wandert die Silbe über das Mel
 });
 
 test('Lied ohne Melodie: Hinweis, keine Melodie-/Tab-Knöpfe, „Wartet auf mich“ geht von Akkord zu Akkord', async ({ page }) => {
-  await page.goto('#/lied/gedanken-sind-frei');
+  await page.goto('#/lied/muss-i-denn');
   await expect(page.locator('.no-melody')).toContainText('nur Akkorde und Text');
   await page.locator('.more summary').click();
   await expect(page.getByRole('button', { name: 'Melodie' })).toHaveCount(0);
@@ -168,5 +169,34 @@ test('Lied ohne Melodie: Hinweis, keine Melodie-/Tab-Knöpfe, „Wartet auf mich
   await expect(page.locator('.wait-title')).toContainText('Spiel jetzt C');
   await page.locator('.wait').getByRole('button', { name: /Geschafft/ }).click();
   await expect(page.locator('.wait-title')).toContainText('Spiel jetzt G7', { timeout: 10000 });
-  await expect(page.locator('.syl.now .syl-text')).toHaveText('frei,');
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('Städele');
+});
+
+test('Transponieren: Tonart wechseln, Vorschlag ★ und Original ◆ markiert, Wahl bleibt gespeichert', async ({ page }) => {
+  await page.goto('#/lied/ode-an-die-freude');
+  await page.locator('.more summary').click();
+  await expect(page.locator('.key-now')).toHaveText('Tonart F ★');
+  await expect(page.getByRole('button', { name: '◆ Original: D' })).toBeVisible();
+  await page.getByRole('button', { name: '◆ Original: D' }).click();
+  await expect(page.locator('.key-now')).toHaveText('Tonart D ◆');
+  await expect(page.locator('.now-card .chord-name')).toHaveText('D');
+  await page.getByRole('button', { name: 'Einen Halbton höher' }).click();
+  await expect(page.locator('.key-now')).toHaveText('Tonart Eb');
+  await expect(page.locator('.now-card .chord-name')).toHaveText('Eb');
+  await page.reload();
+  await page.locator('.more summary').click();
+  await expect(page.locator('.key-now')).toHaveText('Tonart Eb');
+  await page.getByRole('button', { name: /^Einfach: F/ }).click();
+  await expect(page.locator('.now-card .chord-name')).toHaveText('F');
+});
+
+test('Transponieren: Vorschlag für ein C-Lied ist D, Melodie-Tab wandert mit', async ({ page }) => {
+  await page.goto('#/lied/haenschen-klein');
+  await page.locator('.more summary').click();
+  await page.getByRole('button', { name: 'Tabulatur' }).click();
+  const before = await page.locator('.syl-tab').first().textContent();
+  await page.getByRole('button', { name: '★ Vorschlag: D' }).click();
+  await expect(page.locator('.now-card .chord-name')).toHaveText('D');
+  const after = await page.locator('.syl-tab').first().textContent();
+  expect(after).not.toBe(before);
 });

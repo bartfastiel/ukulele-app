@@ -19,6 +19,8 @@ export interface SongSource {
   origin: string;
   meter: number;
   bpm: number;
+  /** Original- bzw. Quellentonart (Akkordname der Tonika, z. B. „D“), nur wenn belegt. */
+  originalKey?: string;
   /** Auftakt in Schlägen: so viele Schläge stehen vor dem ersten vollen Takt. */
   pickup?: number;
   /**
@@ -188,7 +190,8 @@ export function parseChordPro(src: SongSource): Song {
 /** Prüft die Taktstriche: jeder Takt (außer Auftakt und letztem) muss genau `meter` Schläge haben. */
 export function barErrors(src: SongSource): string[] {
   const errors: string[] = [];
-  if (!src.text) return errors;
+  // importierte Melodien haben keine Taktstriche – ihre Dauern stammen direkt aus dem Notenbeispiel
+  if (!src.text || src.text.indexOf('|') < 0) return errors;
   // Zeilenumbrüche gliedern nur den Text; ein Takt darf über das Zeilenende weiterlaufen.
   const bars = src.text
     .split('|')

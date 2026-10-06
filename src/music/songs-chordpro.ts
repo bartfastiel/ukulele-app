@@ -56,6 +56,7 @@ der [F]hat die [G7]Gnad. [C]`,
   },
   {
     id: 'wandern-muellers-lust',
+    originalKey: 'Bb',
     title: 'Das Wandern ist des Müllers Lust',
     category: 'lagerfeuer',
     origin: `Text Wilhelm Müller (1794–1827), Melodie Carl Friedrich Zöllner (1800–1860); ${VLA}; ${PD}`,
