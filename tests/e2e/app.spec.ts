@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme'];
+const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv'];
 
 function collectErrors(page: Page): string[] {
   const errors: string[] = [];
@@ -112,4 +112,30 @@ test('Rhythmus startet und stoppt', async ({ page }) => {
   await page.getByRole('button', { name: /Start/ }).click();
   await expect(page.locator('.arrow.on')).toHaveCount(1, { timeout: 3000 });
   await page.getByRole('button', { name: /Stopp/ }).click();
+});
+
+test('Blues: Einzählen, Takte laufen, Vorgabe auf dem Hals, freie Stufe zeigt die Tonleiter', async ({ page }) => {
+  await page.goto('#/blues');
+  await expect(page.locator('.blues-bar')).toHaveCount(12);
+  await expect(page.locator('.blues-target')).toHaveText('Spiel C');
+  await page.getByRole('button', { name: 'Schnell' }).click();
+  await page.getByRole('button', { name: /Start/ }).click();
+  await expect(page.locator('.feedback')).toContainText('Einzählen', { timeout: 3000 });
+  await expect(page.locator('.blues-bar.now')).toHaveCount(1, { timeout: 5000 });
+  // nach 4 Takten (16 Schläge bei 100 bpm ≈ 9,6 s + Einzähler) wechselt der Akkord auf F
+  await expect(page.locator('.blues-now .chord-name')).toHaveText('F7', { timeout: 15000 });
+  await expect(page.locator('.blues-target')).toHaveText('Spiel F');
+  await page.getByRole('button', { name: '4 · Frei spielen' }).click();
+  await expect(page.locator('.fb-mark.scale').first()).toBeVisible();
+  await expect(page.locator('.fb-mark.chord').first()).toBeVisible();
+  await page.getByRole('button', { name: /Stopp/ }).click();
+});
+
+test('Startseite: Blues und Akkord-Detektiv sind erreichbar', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('link', { name: /Akkord-Detektiv/ }).click();
+  await expect(page.getByRole('heading', { name: 'Akkord-Detektiv' })).toBeVisible();
+  await page.goto('./');
+  await page.getByRole('link', { name: /^Blues/ }).click();
+  await expect(page.getByRole('heading', { name: 'Blues' })).toBeVisible();
 });

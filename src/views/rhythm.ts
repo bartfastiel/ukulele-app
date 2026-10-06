@@ -42,7 +42,7 @@ export const rhythm: View = (root) => {
           'span',
           { class: `arrow ${st === 'D' ? 'down' : st === 'U' ? 'up' : 'rest'}` },
           h('span', { class: 'glyph' }, st === 'D' ? '↓' : st === 'U' ? '↑' : '·'),
-          h('span', { class: 'count' }, i % 2 === 0 ? String(i / 2 + 1) : 'und'),
+          h('span', { class: 'beat-count' }, i % 2 === 0 ? String(i / 2 + 1) : 'und'),
         ),
       );
     });
