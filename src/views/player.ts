@@ -139,14 +139,18 @@ class Player {
           'div',
           { class: 'seg seg-wrap' },
           toggle('Begleitung', 'backing'),
-          toggle('Melodie', 'melody'),
+          this.song.hasMelody ? toggle('Melodie', 'melody') : null,
           toggle('Klick', 'clickOn'),
-          toggle('Tabulatur', 'tab'),
+          this.song.hasMelody ? toggle('Tabulatur', 'tab') : null,
         ),
         h('p', { class: 'small' }, this.song.origin),
       ),
     );
+    const note = this.song.hasMelody
+      ? null
+      : h('p', { class: 'card small no-melody' }, 'Dieses Lied hat hier nur Akkorde und Text – die Melodie singst du so, wie du sie kennst.');
     const main = screen(root, { title: this.song.title, back: '#/lieder', theme: 'brass' }, this.stage, this.lyrics, controls);
+    if (note) main.insertBefore(note, controls);
     main.classList.add('player');
   }
 

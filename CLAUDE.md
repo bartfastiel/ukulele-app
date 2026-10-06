@@ -24,7 +24,8 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
   kein `replaceAll`. Ohne Web Audio muss die App stumm weiterlaufen (`hasAudio()`).
 - **Kindgerecht:** Tippziele ≥ 64 px (Test prüft ≥ 52 px), Text nur auf cremefarbenen Flächen, nie „Falsch“,
   unsichere Mikrofon-Erkennung darf nie blockieren („Geschafft“ immer sichtbar), alles auch ohne Mikrofon nutzbar.
-- **Lieder nur gemeinfrei oder eigene** (Herkunft in `origin`). Melodien innerhalb C4–A5 (Ukulele mit hohem G).
+- **Lieder nur gemeinfrei oder eigene** (Text UND Melodie; Urheber mit Lebensdaten und Textquelle in `origin`).
+  Text wörtlich aus gemeinfreier Quelle, nie aus dem Gedächtnis. Melodien nur, wenn sicher bekannt, innerhalb C4–A5.
 - Code-Kommentare nur, wo der Grund nicht aus dem Code hervorgeht.
 - Arbeit per Branch + Pull Request; CI (`ci.yml`) muss grün sein; `deploy.yml` deployt `main` und Vorschauen.
   Keine Secrets ins Repo.
@@ -46,7 +47,8 @@ src/audio/pluck.ts       Synthese ohne Web Audio (auch für Tests und tools/make
 src/audio/pitch.ts       YIN-Tonhöhe (Stimmgerät)
 src/audio/chord-detect.ts  Spektralspitzen → Bewertung je Griff und Saite, Hinweis auf leer klingende Saite
 src/audio/mic.ts, listen.ts  Mikrofon (ohne Echo-/Rauschunterdrückung), Lauscher mit 2er-Bestätigung
-src/music/               notes.ts, chords.ts (18 Griffe), song.ts (Notation + Parser), songs.ts (Lieddaten)
+src/music/               notes.ts, chords.ts (18 Griffe), song.ts (Notation + Parser, ChordPro-Parser, Kategorien),
+                         songs.ts (Lieder mit Melodie), songs-chordpro/-kinder/-english.ts (Akkorde + Text)
 src/audio/offline.ts     Nachbau von AnalyserNode + Lauscher für Tests und tools/eval-recordings.ts
 src/views/record.ts      Aufnahme-Werkzeug (#/aufnahme), Plan in src/music/recording-plan.ts, ZIP via src/util/zip.ts
 src/music/identify.ts    Akkord-Detektiv: alle Griffe der ersten 5 Bünde bewerten, Akkordnamen aus Tonklassen

@@ -85,6 +85,7 @@ a {
 }
 
 .card .small,
+.card.small,
 .dialog .small,
 .feedback .small {
   color: var(--ink-soft);
@@ -454,6 +455,22 @@ summary:focus-visible {
   background: transparent;
   color: #ffe7b0;
   border: 2px solid rgba(255, 231, 176, 0.7);
+}
+
+.chip-text {
+  background: rgba(95, 179, 163, 0.95);
+}
+
+.song-filter {
+  margin-bottom: 6px;
+}
+
+.song-section h2 {
+  margin-top: 14px;
+}
+
+.no-melody {
+  font-weight: 700;
 }
 
 .song-stars {

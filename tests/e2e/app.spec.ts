@@ -36,8 +36,11 @@ test('Startseite führt zu den Liedern und zurück', async ({ page }) => {
   await page.goto('./');
   await expect(page.getByRole('heading', { name: 'Ukulele-Club' })).toBeVisible();
   await page.getByRole('link', { name: /Lieder spielen/ }).click();
-  await expect(page.getByRole('heading', { name: 'Lieder' })).toBeVisible();
-  await expect(page.locator('.song-card')).toHaveCount(16);
+  await expect(page.getByRole('heading', { name: 'Lieder', exact: true })).toBeVisible();
+  await expect(page.locator('.song-card')).toHaveCount(81);
+  await page.getByRole('button', { name: /^Weihnachten/ }).click();
+  await expect(page.locator('.song-card')).toHaveCount(12);
+  await page.getByRole('button', { name: /^Alle/ }).click();
   await page.getByRole('link', { name: 'Zur Startseite' }).click();
   await expect(page.getByRole('heading', { name: 'Ukulele-Club' })).toBeVisible();
 });
@@ -149,4 +152,21 @@ test('Stille Nacht im 6/8-Takt: Einzähler, dann wandert die Silbe über das Mel
   // „Nacht,“ hält über zwei Töne (G–E), danach „hei-“ (6 Achtel bei 150/min = 2,4 s pro Takt)
   await expect(page.locator('.syl.now .syl-text')).toHaveText('Nacht,', { timeout: 4000 });
   await expect(page.locator('.syl.now .syl-text')).toHaveText('hei', { timeout: 4000 });
+});
+
+test('Lied ohne Melodie: Hinweis, keine Melodie-/Tab-Knöpfe, „Wartet auf mich“ geht von Akkord zu Akkord', async ({ page }) => {
+  await page.goto('#/lied/gedanken-sind-frei');
+  await expect(page.locator('.no-melody')).toContainText('nur Akkorde und Text');
+  await page.locator('.more summary').click();
+  await expect(page.getByRole('button', { name: 'Melodie' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Tabulatur' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Begleitung' })).toBeVisible();
+  await page.getByRole('button', { name: 'Wartet auf mich' }).click();
+  await page.locator('.btn-play').click();
+  const noMic = page.getByRole('button', { name: 'Ohne Mikrofon' });
+  if (await noMic.isVisible({ timeout: 1500 }).catch(() => false)) await noMic.click();
+  await expect(page.locator('.wait-title')).toContainText('Spiel jetzt C');
+  await page.locator('.wait').getByRole('button', { name: /Geschafft/ }).click();
+  await expect(page.locator('.wait-title')).toContainText('Spiel jetzt G7', { timeout: 10000 });
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('frei,');
 });

@@ -1,10 +1,14 @@
 import { parseSong, type Song, type SongSource } from './song.ts';
+import { CHORD_SONGS } from './songs-chordpro.ts';
+import { KINDER_SONGS } from './songs-kinder.ts';
+import { ENGLISH_SONGS } from './songs-english.ts';
 
 const PD = 'gemeinfrei';
 
 export const SONG_SOURCES: SongSource[] = [
   {
     id: 'bruder-jakob',
+    category: 'kinder',
     title: 'Bruder Jakob',
     origin: `Traditionell, ${PD}`,
     meter: 4,
@@ -17,6 +21,7 @@ Ding,:F4 dang,:C4 dong.:F4:2 | Ding,:F4 dang,:C4 dong.:F4:2 |`,
   },
   {
     id: 'row-row',
+    category: 'english',
     title: 'Row, Row, Row Your Boat',
     origin: `Traditionell (England), ${PD}`,
     meter: 4,
@@ -29,6 +34,7 @@ Mer-:C5:1/3 ri-:C5:1/3 ly,:C5:1/3 mer-:G4:1/3 ri-:G4:1/3 ly,:G4:1/3 mer-:E4:1/3 
   },
   {
     id: 'haenschen-klein',
+    category: 'kinder',
     title: 'Hänschen klein',
     origin: `Traditionell, Text Franz Wiedemann (1860), ${PD}`,
     meter: 4,
@@ -41,6 +47,7 @@ Da:G4 be-:E4 sinnt:E4:2 | [G7]sich:F4 das:D4 Kind,:D4:2 | [C]eilt:C4 nach:E4 Hau
   },
   {
     id: 'alle-meine-entchen',
+    category: 'kinder',
     title: 'Alle meine Entchen',
     origin: `Traditionell, ${PD}`,
     meter: 4,
@@ -54,6 +61,7 @@ Da:G4 be-:E4 sinnt:E4:2 | [G7]sich:F4 das:D4 Kind,:D4:2 | [C]eilt:C4 nach:E4 Hau
   },
   {
     id: 'ode-an-die-freude',
+    category: 'lagerfeuer',
     title: 'Ode an die Freude',
     origin: `Ludwig van Beethoven / Friedrich Schiller, ${PD}`,
     meter: 4,
@@ -66,6 +74,7 @@ Da:G4 be-:E4 sinnt:E4:2 | [G7]sich:F4 das:D4 Kind,:D4:2 | [C]eilt:C4 nach:E4 Hau
   },
   {
     id: 'twinkle',
+    category: 'english',
     title: 'Twinkle, Twinkle, Little Star',
     origin: `Text Jane Taylor (1806), Melodie traditionell, ${PD}`,
     meter: 4,
@@ -77,6 +86,7 @@ Up:G4 a-:G4 [F]bove:F4 the:F4 | [C]world:E4 so:E4 [G7]high,:D4:2 | [C]like:G4 a:
   },
   {
     id: 'jingle-bells',
+    category: 'weihnachten',
     title: 'Jingle Bells',
     origin: `James Lord Pierpont (1857), ${PD}`,
     meter: 4,
@@ -89,6 +99,7 @@ Up:G4 a-:G4 [F]bove:F4 the:F4 | [C]world:E4 so:E4 [G7]high,:D4:2 | [C]like:G4 a:
   },
   {
     id: 'geburtstag',
+    category: 'kinder',
     title: 'Zum Geburtstag viel Glück',
     origin: `Melodie Mildred J. Hill (1893), ${PD}`,
     meter: 3,
@@ -102,6 +113,7 @@ zum:F5:0.75 Ge-:F5:0.25 | [C]burts-:E5 tag:C5 [G7]viel:D5 | [C]Glück!:C5:3 |`,
   },
   {
     id: 'gcea',
+    category: 'eigene',
     title: 'G-C-E-A (das Saiten-Lied)',
     origin: 'Eigenes Lied für diese App, frei verwendbar (CC0)',
     meter: 4,
@@ -113,6 +125,7 @@ zum:F5:0.75 Ge-:F5:0.25 | [C]burts-:E5 tag:C5 [G7]viel:D5 | [C]Glück!:C5:3 |`,
   },
   {
     id: 'mary-lamb',
+    category: 'english',
     title: 'Mary Had a Little Lamb',
     origin: `Text Sarah Josepha Hale (1830), Melodie traditionell, ${PD}`,
     meter: 4,
@@ -125,6 +138,7 @@ Ev-:E4 ery-:D4 where:C4 that:D4 | Ma-:E4 ry:E4 went,:E4 the:E4 | [G7]lamb:D4 was
   },
   {
     id: 'london-bridge',
+    category: 'english',
     title: 'London Bridge Is Falling Down',
     origin: `Traditionell (England), ${PD}`,
     meter: 4,
@@ -135,6 +149,7 @@ Lon-:G4:1.5 don:A4:0.5 Bridge:G4 is:F4 | fal-:E4 ling:F4 down,:G4:2 | [G7]my:D4:
   },
   {
     id: 'old-macdonald',
+    category: 'english',
     title: 'Old MacDonald Had a Farm',
     origin: `Traditionell (England/USA), ${PD}`,
     meter: 4,
@@ -148,6 +163,7 @@ Old:F4 Mac-:F4 Don-:F4 ald:C4 | had:D4 a:D4 farm,:C4:2 | [C7]E-:A4 I-:A4 E-:G4 I
   },
   {
     id: 'yankee-doodle',
+    category: 'english',
     title: 'Yankee Doodle',
     origin: `Traditionell (USA, 18. Jh.), ${PD}`,
     meter: 4,
@@ -160,6 +176,7 @@ Old:F4 Mac-:F4 Don-:F4 ald:C4 | had:D4 a:D4 farm,:C4:2 | [C7]E-:A4 I-:A4 E-:G4 I
   },
   {
     id: 'stille-nacht',
+    category: 'weihnachten',
     title: 'Stille Nacht, heilige Nacht',
     origin: `Text Joseph Mohr (1816), Melodie Franz Xaver Gruber (1818), ${PD}`,
     meter: 6,
@@ -174,6 +191,7 @@ schlaf:C5 in:G4 himm-:E4 [G7]li-:G4:1.5 scher:F4:0.5 ~:D4 | [C]Ruh.:C4:6 |`,
   },
   {
     id: 'lagerfeuer',
+    category: 'eigene',
     title: 'Am Lagerfeuer',
     origin: 'Eigenes Lied für diese App, frei verwendbar (CC0)',
     meter: 4,
@@ -186,6 +204,7 @@ schlaf:C5 in:G4 himm-:E4 [G7]li-:G4:1.5 scher:F4:0.5 ~:D4 | [C]Ruh.:C4:6 |`,
   },
   {
     id: 'drunken-sailor',
+    category: 'english',
     title: 'What Shall We Do with the Drunken Sailor',
     origin: `Seemannslied (Shanty), traditionell, 19. Jahrhundert, ${PD}`,
     meter: 4,
@@ -210,7 +229,7 @@ schlaf:C5 in:G4 himm-:E4 [G7]li-:G4:1.5 scher:F4:0.5 ~:D4 | [C]Ruh.:C4:6 |`,
   },
 ];
 
-export const SONGS: Song[] = SONG_SOURCES.map(parseSong);
+export const SONGS: Song[] = SONG_SOURCES.concat(CHORD_SONGS, KINDER_SONGS, ENGLISH_SONGS).map(parseSong);
 
 export function song(id: string): Song | undefined {
   return SONGS.find((s) => s.id === id);
