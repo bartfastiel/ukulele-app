@@ -5,10 +5,11 @@ import { audio, click, strum } from '../audio/engine.ts';
 
 /** Schlagmuster je Achtel: D = abwärts, U = aufwärts, - = Pause (Hand bewegt sich trotzdem). */
 const PATTERNS = [
-  { name: 'Nur runter', meter: 4, steps: 'D-D-D-D-' },
-  { name: 'Runter-hoch', meter: 4, steps: 'DUDUDUDU' },
-  { name: 'Insel-Schlag', meter: 4, steps: 'D-DU-UDU' },
-  { name: 'Walzer', meter: 3, steps: 'D-D-D-' },
+  { name: 'Nur runter', meter: 4, steps: 'D-D-D-D-', say: 'runter, runter, runter, runter' },
+  { name: 'Runter-rauf', meter: 4, steps: 'DUDUDUDU', say: 'runter-rauf, runter-rauf, runter-rauf, runter-rauf' },
+  // „Insel-Schlag“ (Calypso), das Standardmuster vieler Ukulelenschulen
+  { name: 'Runter, runter, rauf, rauf, runter, rauf', meter: 4, steps: 'D-DU-UDU', say: 'runter, runter, rauf, rauf, runter, rauf – zwischen den beiden „rauf“ schwingt die Hand runter, ohne zu treffen' },
+  { name: 'Walzer', meter: 3, steps: 'D-D-D-', say: 'runter, runter, runter – im Dreiertakt' },
 ];
 const TEMPOS = [
   { label: 'Langsam', bpm: 60 },
@@ -29,10 +30,12 @@ export const rhythm: View = (root) => {
   let running = false;
   let releaseWake: (() => void) | null = null;
   const arrows = h('div', { class: 'arrows', 'aria-hidden': 'true' });
+  const sayLine = h('p', { class: 'say-line' });
   const playBtn = button('', () => (running ? stop() : go()), 'btn-primary btn-play');
 
   const drawArrows = () => {
     clear(arrows);
+    sayLine.textContent = `Gesprochen: ${pattern.say}`;
     pattern.steps.split('').forEach((st, i) => {
       arrows.appendChild(
         h(
@@ -110,7 +113,7 @@ export const rhythm: View = (root) => {
   screen(
     root,
     { title: 'Rhythmus', theme: 'teal' },
-    h('div', { class: 'card rhythm-card' }, arrows, h('p', { class: 'small' }, '↓ = runter streichen (Daumen oder Zeigefinger), ↑ = hoch. Die Hand schwingt immer weiter, auch bei „·“.')),
+    h('div', { class: 'card rhythm-card' }, arrows, sayLine, h('p', { class: 'small' }, '↓ = runter streichen (Daumen oder Zeigefinger), ↑ = hoch. Die Hand schwingt immer weiter, auch bei „·“.')),
     h(
       'div',
       { class: 'controls' },
