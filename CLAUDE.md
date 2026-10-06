@@ -13,12 +13,13 @@ npm test           # Unit-Tests: node --test mit Type-Stripping (tests/unit/*.te
 npm run build      # dist/ via tools/build.mjs (esbuild, Inhalts-Hash, Service Worker)
 npm run e2e        # Build + Playwright (tests/e2e), Server: tools/serve.mjs auf :4173
 node tools/shots.mjs <ordner>   # Bildschirmfotos aller Ansichten (iPad/WebKit, Handy hoch/quer)
+node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) durch die Akkorderkennung spielen
 ```
 
 ## Regeln
 
 - **Keine Laufzeit-Abhängigkeiten, keine Frameworks.** Neue devDependencies nur mit Begründung; bisher 3.
-- **Alte iPads:** Build-Ziel Safari 12. Keine Array-Destrukturierung in `src/` (esbuild kann sie für dieses Ziel
+- **Alte iPads:** Build-Ziel Safari 12. Keine Destrukturierung (weder Array noch Objekt) in `src/` (esbuild kann sie für dieses Ziel
   nicht umschreiben), kein Flexbox-`gap` (Safari < 14.1), kein `aspect-ratio`, kein `replaceChildren`,
   kein `replaceAll`. Ohne Web Audio muss die App stumm weiterlaufen (`hasAudio()`).
 - **Kindgerecht:** Tippziele ≥ 64 px (Test prüft ≥ 52 px), Text nur auf cremefarbenen Flächen, nie „Falsch“,
@@ -44,6 +45,8 @@ src/audio/pitch.ts       YIN-Tonhöhe (Stimmgerät)
 src/audio/chord-detect.ts  Spektralspitzen → Bewertung je Griff und Saite, Hinweis auf leer klingende Saite
 src/audio/mic.ts, listen.ts  Mikrofon (ohne Echo-/Rauschunterdrückung), Lauscher mit 2er-Bestätigung
 src/music/               notes.ts, chords.ts (18 Griffe), song.ts (Notation + Parser), songs.ts (Lieddaten)
+src/audio/offline.ts     Nachbau von AnalyserNode + Lauscher für Tests und tools/eval-recordings.ts
+src/views/record.ts      Aufnahme-Werkzeug (#/aufnahme), Plan in src/music/recording-plan.ts, ZIP via src/util/zip.ts
 src/store.ts             localStorage (Sterne, Übungstage, Einstellungen), storage.persist(), Export-Code
 src/styles.css           Design-Tokens, Mahagoni-Knöpfe, Layouts: Handy hoch (≤600px), Handy quer (Höhe ≤560px), ≥900px
 ```

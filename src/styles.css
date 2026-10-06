@@ -1217,6 +1217,102 @@ summary:focus-visible {
   padding: 8px;
 }
 
+/* ---------- Aufnahme-Werkzeug ---------- */
+.rec-dots {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.rec-dot {
+  width: 40px;
+  height: 40px;
+  margin: 3px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.06);
+  font: 700 0.75em var(--font);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.rec-dot.ok {
+  background: #9fdcac;
+  color: var(--ink);
+}
+
+.rec-dot.cur {
+  border-color: var(--brass-dark);
+  box-shadow: 0 0 0 3px var(--brass);
+}
+
+.rec-take {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 1.2fr;
+  grid-gap: 16px;
+  align-items: start;
+}
+
+.rec-card {
+  text-align: center;
+}
+
+.rec-card.wrong .chord-name {
+  color: var(--cherry);
+}
+
+.rec-instruction {
+  font-weight: 700;
+  font-size: 1.05em;
+}
+
+.meter {
+  height: 18px;
+  margin: 10px 6px;
+  border-radius: 9px;
+  background: rgba(255, 245, 225, 0.9);
+  overflow: hidden;
+}
+
+.meter-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #57b26d, #e2b85a);
+}
+
+.meter-bar.clip {
+  background: var(--cherry);
+}
+
+.rec-custom label {
+  display: block;
+  margin: 8px 0;
+  font-weight: 700;
+}
+
+.rec-input {
+  font: inherit;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 2px solid var(--brass-dark);
+  width: 8em;
+}
+
+.rec-input.wide {
+  width: 100%;
+}
+
+.rec-custom .check input {
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+}
+
+@media (max-width: 600px) {
+  .rec-take {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- Layout-Varianten ---------- */
 
 /* Tablet/Desktop quer: Karaoke mit Akkorden links, Text rechts */

@@ -56,6 +56,21 @@ npm run e2e        # Build + Playwright (Desktop, iPad/WebKit, Handy hoch/quer, 
 Die Mikrofon-Tests spielen Chromium ein synthetisches Signal als Mikrofon vor (`tools/make-wav.ts`): einen
 C-Akkord bzw. eine 20 Cent zu tiefe E-Saite.
 
+## Akkorderkennung verbessern: Beispielaufnahmen
+
+Unter **Meine Sterne › „Für Erwachsene: Beispiel-Akkorde aufnehmen“** (`#/aufnahme`) führt die App durch 28
+beschriftete Aufnahmen à 5 Sekunden: richtige Griffe (geschlagen, gezupft, ausklingend), typische Fehlgriffe
+(Finger drückt nicht, falscher Bund, gedämpfte Saite, verrutschte Form) und Geräusche. Eigene Aufnahmen – etwa
+Fälle, in denen die App falsch gelobt hat – lassen sich mit Bünden und Notiz ergänzen. Alles bleibt im Browser
+(IndexedDB) und wird als ZIP (WAV + `takes.json`) heruntergeladen bzw. auf dem iPad geteilt.
+
+```sh
+node tools/eval-recordings.ts ~/Downloads/ukulele-aufnahmen-….zip   # --all zeigt auch die fehlerfreien
+```
+
+Die Auswertung spielt jede Aufnahme durch denselben Lauscher wie die App (Spektrum wie der AnalyserNode, alle
+80 ms, Zweier-Bestätigung) und meldet richtige Treffer, verpasste Akkorde und falsches Lob.
+
 ## Deployment
 
 Jeder Push auf `main` baut `dist/` und legt es per SSH auf den Server von wer-ist-daniel-schwarz.de

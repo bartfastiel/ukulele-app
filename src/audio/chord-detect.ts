@@ -47,27 +47,32 @@ export interface ChordScore {
   strings: number[];
   /** Anteil der Spitzen (nach Betrag), die der Griff erklärt. */
   explained: number;
+  /** Schwächster Ton des Griffs (0..1). */
+  minPresence: number;
+  /** Stärkste Spitze, die der Griff nicht erklärt, relativ zur stärksten Spitze. */
+  foreign: number;
 }
 
 export function scoreChord(peaks: Peak[], ch: Chord): ChordScore {
   const midis = chordMidis(ch);
   const freqs = midis.map(midiToFreq);
   const maxMag = peaks.reduce((m, p) => Math.max(m, p.mag), 0) || 1;
+  // Nur der Grundton zählt als „Saite klingt“: Die Oktave darf nicht mitzählen, sonst gilt z. B. das B4 von Cmaj7
+  // als vorhanden, weil der dritte Oberton der E-Saite (989 Hz) zufällig auf seiner Oktave liegt.
   const strings = freqs.map((f) => {
     let best = 0;
-    for (const p of peaks) {
-      if (near(p.freq, f, 40)) best = Math.max(best, p.mag);
-      else if (near(p.freq, 2 * f, 40)) best = Math.max(best, p.mag * 0.6);
-    }
+    for (const p of peaks) if (near(p.freq, f, 40)) best = Math.max(best, p.mag);
     return Math.min(1, best / maxMag / 0.25);
   });
   let total = 0;
   let explainedE = 0;
+  let foreign = 0;
   // Nur Grundtöne der ersten Lage (261–523 Hz) und ihre ersten Obertöne liegen im Fenster; linear gewichtet, damit
   // ein einzelner fremder Ton (z. B. leere A-Saite statt C) nicht in den starken Obertönen untergeht.
   for (const p of peaks) {
     total += p.mag;
     if (freqs.some((f) => [1, 2, 3].some((k) => near(p.freq, k * f, 35)))) explainedE += p.mag;
+    else foreign = Math.max(foreign, p.mag / maxMag);
   }
   const explained = total > 0 ? explainedE / total : 0;
   // Gleiche Töne auf zwei Saiten zählen einmal, sonst wären Griffe mit Doppeltönen im Vorteil.
@@ -76,8 +81,9 @@ export function scoreChord(peaks: Peak[], ch: Chord): ChordScore {
   const vals = [...unique.values()];
   const presence = vals.reduce((s, v) => s + v, 0) / vals.length;
   const minPresence = Math.min(...vals);
-  const score = explained * (0.55 * presence + 0.45 * minPresence);
-  return { chord: ch.name, score, strings, explained };
+  // Ein fremder Ton kostet Punkte: Sonst gewinnt bei G7 (0212) der Griff G (0232), dessen Töne alle mitklingen.
+  const score = explained * (0.55 * presence + 0.45 * minPresence) * (1 - Math.min(1, foreign * 2));
+  return { chord: ch.name, score, strings, explained, minPresence, foreign };
 }
 
 export interface ChordVerdict {
@@ -96,7 +102,9 @@ export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] 
   const exp = scores.find((s) => s.chord === expected);
   if (!exp) throw new Error(`Akkord ${expected} fehlt in den Kandidaten`);
   const best = scores[0];
-  const ok = exp.score >= 0.42 && exp.score >= best.score - 0.02;
+  const runnerUp = scores.find((x) => x.chord !== expected)!;
+  // Streng: jeder Ton des Griffs klingt, kein deutlicher fremder Ton, und der Griff liegt klar vor jedem anderen.
+  const ok = exp.score >= 0.45 && exp.minPresence >= 0.2 && exp.foreign < 0.3 && exp.score > runnerUp.score;
   let weakString = -1;
   if (!ok) {
     // Häufigster Anfängerfehler: ein Finger drückt nicht richtig, die Saite klingt leer. Passt der Griff mit dieser
