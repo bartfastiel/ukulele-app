@@ -1,4 +1,4 @@
-// Minimale Typen für node:test und node:assert – erspart @types/node mitsamt seinen Abhängigkeiten.
+// Minimale Typen für Node-Module in Tests und Werkzeugen – erspart @types/node mitsamt seinen Abhängigkeiten.
 declare module 'node:test' {
   export function test(name: string, fn: () => void | Promise<void>): void;
 }
@@ -15,8 +15,15 @@ declare module 'node:assert/strict' {
 declare module 'node:fs' {
   export function writeFileSync(path: string, data: Uint8Array | string): void;
   export function mkdirSync(path: string, opts?: { recursive?: boolean }): void;
+  export function readFileSync(path: string): Uint8Array;
+  export function readdirSync(path: string): string[];
+  export function statSync(path: string): { isDirectory(): boolean };
 }
 declare module 'node:path' {
   export function dirname(path: string): string;
+  export function join(...parts: string[]): string;
 }
-declare const process: { env: Record<string, string | undefined>; argv: string[] };
+declare module 'node:zlib' {
+  export function crc32(data: Uint8Array): number;
+}
+declare const process: { env: Record<string, string | undefined>; argv: string[]; exit(code?: number): never };

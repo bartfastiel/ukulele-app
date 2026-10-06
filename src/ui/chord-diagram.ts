@@ -87,6 +87,12 @@ export function chordDiagram(ch: Chord, opts: { lefty?: boolean; highlight?: num
     const x = xOf(i);
     if (fret === 0) {
       svg.appendChild(s('circle', { cx: x, cy: y0 - 14, r: 4.6, fill: 'none', stroke: '#2b1608', 'stroke-width': 1.8, class: 'open' }));
+    } else if (fret === -1) {
+      svg.appendChild(
+        s('path', { d: `M${x - 4.5} ${y0 - 18.5}l9 9m0 -9l-9 9`, stroke: '#a3263a', 'stroke-width': 2.4, 'stroke-linecap': 'round', class: 'muted' }),
+      );
+    } else if (fret < 0) {
+      continue;
     } else {
       const cy = y0 + fh * (fret - 0.5);
       svg.appendChild(s('circle', { cx: x, cy: cy + 1, r: 8.6, fill: 'rgba(0,0,0,.35)' }));
