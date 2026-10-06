@@ -2,6 +2,7 @@ import { parseSong, type Song, type SongSource } from './song.ts';
 import { CHORD_SONGS } from './songs-chordpro.ts';
 import { KINDER_SONGS } from './songs-kinder.ts';
 import { ENGLISH_SONGS } from './songs-english.ts';
+import { MELODIES } from './songs-melodies.ts';
 
 const PD = 'gemeinfrei';
 
@@ -61,6 +62,7 @@ Da:G4 be-:E4 sinnt:E4:2 | [G7]sich:F4 das:D4 Kind,:D4:2 | [C]eilt:C4 nach:E4 Hau
   },
   {
     id: 'ode-an-die-freude',
+    originalKey: 'D',
     category: 'lagerfeuer',
     title: 'Ode an die Freude',
     origin: `Ludwig van Beethoven / Friedrich Schiller, ${PD}`,
@@ -176,6 +178,7 @@ Old:F4 Mac-:F4 Don-:F4 ald:C4 | had:D4 a:D4 farm,:C4:2 | [C7]E-:A4 I-:A4 E-:G4 I
   },
   {
     id: 'stille-nacht',
+    originalKey: 'D',
     category: 'weihnachten',
     title: 'Stille Nacht, heilige Nacht',
     origin: `Text Joseph Mohr (1816), Melodie Franz Xaver Gruber (1818), ${PD}`,
@@ -229,7 +232,23 @@ schlaf:C5 in:G4 himm-:E4 [G7]li-:G4:1.5 scher:F4:0.5 ~:D4 | [C]Ruh.:C4:6 |`,
   },
 ];
 
-export const SONGS: Song[] = SONG_SOURCES.concat(CHORD_SONGS, KINDER_SONGS, ENGLISH_SONGS).map(parseSong);
+/** Lieder mit Akkorden + Text bekommen eine Melodie, wenn ihr Wikipedia-Artikel ein Notenbeispiel hat. */
+function withMelody(src: SongSource): SongSource {
+  const m = MELODIES[src.id];
+  if (!m) return src;
+  return {
+    ...src,
+    chordpro: undefined,
+    text: m.text,
+    meter: m.meter,
+    pickup: m.pickup || undefined,
+    originalKey: src.originalKey || m.originalKey,
+    bpm: m.meter === 6 || m.meter === 3 ? Math.max(src.bpm, 110) : src.bpm,
+    origin: `${src.origin}; Melodie nach dem Notenbeispiel im Wikipedia-Artikel`,
+  };
+}
+
+export const SONGS: Song[] = SONG_SOURCES.concat(CHORD_SONGS, KINDER_SONGS, ENGLISH_SONGS).map(withMelody).map(parseSong);
 
 export function song(id: string): Song | undefined {
   return SONGS.find((s) => s.id === id);

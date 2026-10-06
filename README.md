@@ -47,6 +47,21 @@ Textfassungen (z. B. „Im Märzen der Bauer“ nach Hensel 1923, frei erst ab 2
 
 Die Unit-Tests prüfen Taktlängen, Griffbarkeit, eindeutige IDs und dass jeder Akkord ein Griffbild hat.
 
+**Melodien aus Notenbeispielen:** Viele Wikipedia-Artikel zu Volksliedern enthalten die (gemeinfreie) Melodie als
+LilyPond-Notenbeispiel. `tools/melody/` liest daraus Tonhöhen, Dauern, Silben und ggf. Akkorde, transponiert in die
+einfache Tonart der App und legt unsere Akkorde per Textabgleich bzw. Harmonisierung auf die Silben. Der Notentext
+wird mit unserem geprüften Text verglichen; abweichende, geschützte Fassungen (z. B. „Im Märzen der Bauer“ nach
+Hensel) werden ausgeschlossen.
+
+```sh
+node tools/melody/fetch-wiki.ts <cache>              # Artikel laden (langsam, Wikipedia drosselt)
+node tools/melody/import.ts <ordner-mit-.ly> --write  # src/music/songs-melodies.ts erzeugen
+```
+
+**Transponieren:** Jedes Lied lässt sich in alle zwölf Tonarten verschieben (Griffe für jede Tonart aus einer
+geprüften Tabelle bzw. per Grifffinder). ★ markiert den Vorschlag – bester Kompromiss aus einfachen Griffen,
+Kinderstimmlage (etwa C4–D5, Melodie in der günstigsten Oktave) und Nähe zur Original-/Quellentonart (◆).
+
 ### Rechtliches zu den Liedern
 
 Liedtexte und Melodien sind urheberrechtlich geschützt, bis 70 Jahre nach dem Tod des letzten Urhebers; reine

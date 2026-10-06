@@ -53,6 +53,8 @@ src/audio/offline.ts     Nachbau von AnalyserNode + Lauscher für Tests und tool
 src/views/record.ts      Aufnahme-Werkzeug (#/aufnahme), Plan in src/music/recording-plan.ts, ZIP via src/util/zip.ts
 src/music/identify.ts    Akkord-Detektiv: alle Griffe der ersten 5 Bünde bewerten, Akkordnamen aus Tonklassen
 src/music/blues.ts, src/audio/band.ts, src/ui/fretboard.ts   12-Takt-Blues, Begleitband aus Oszillatoren, Hals als Tabulatur
+src/music/transpose.ts   Transponieren, Tonart-Vorschlag (★) und Original-/Quellentonart (◆)
+src/music/songs-melodies.ts  erzeugt von tools/melody/import.ts (LilyPond aus Wikipedia → Melodieformat)
 src/store.ts             localStorage (Sterne, Übungstage, Einstellungen), storage.persist(), Export-Code
 src/styles.css           Design-Tokens, Mahagoni-Knöpfe, Layouts: Handy hoch (≤600px), Handy quer (Höhe ≤560px), ≥900px
 ```

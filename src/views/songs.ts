@@ -7,6 +7,11 @@ import { load } from '../store.ts';
 
 const LEVEL = ['', 'Leicht', 'Mittel', 'Knifflig'];
 
+/** Kleines Symbol mit Erklärung beim Darüberfahren (title) und für Screenreader. */
+function feature(name: string, label: string): HTMLElement {
+  return h('span', { class: 'feature', title: label, 'aria-label': label, role: 'img' }, icon(name, 'icon'));
+}
+
 export const songs: View = (root) => {
   const stars = load().stars;
   const sorted = SONGS.slice().sort((a, b) => difficulty(a) - difficulty(b) || a.chords.length - b.chords.length || a.title.localeCompare(b.title, 'de'));
@@ -24,7 +29,13 @@ export const songs: View = (root) => {
           { class: 'song-meta' },
           h('span', { class: `level level-${difficulty(s)}` }, LEVEL[difficulty(s)]),
           ...s.chords.map((c) => h('span', { class: 'chip' }, c)),
-          s.hasMelody ? null : h('span', { class: 'chip chip-text' }, 'Akkorde + Text'),
+        ),
+        h(
+          'span',
+          { class: 'song-features' },
+          feature('text', 'Liedtext'),
+          feature('chords', 'Akkorde'),
+          s.hasMelody ? feature('songs', 'Melodie zum Mitspielen und als Tabulatur') : null,
         ),
         h(
           'span',
