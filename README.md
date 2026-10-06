@@ -31,12 +31,21 @@ Ohne Mikrofon funktioniert alles weiter – dann bestätigt das Kind selbst.
 
 ## Lieder
 
-Nur gemeinfreie Lieder (Text und Melodie, Urheber seit über 70 Jahren tot oder traditionell) oder eigene:
-Bruder Jakob, Row Row Row Your Boat, Hänschen klein, Alle meine Entchen, Mary Had a Little Lamb, London Bridge,
-Old MacDonald, Yankee Doodle, What Shall We Do with the Drunken Sailor, Ode an die Freude, Twinkle Twinkle Little Star, Jingle Bells, Stille Nacht,
-Zum Geburtstag viel Glück und die eigenen Lieder „G-C-E-A (das Saiten-Lied)“ und „Am Lagerfeuer“ (CC0).
-Urheber und Herkunft stehen in der App bei jedem Lied unter „Mehr“. Neue Lieder kommen in `src/music/songs.ts` (Notation siehe `SongSource` in
-`src/music/song.ts`); die Unit-Tests prüfen Taktlängen, Griffbarkeit und Akkorde.
+Über 80 Lieder in sechs Gruppen: Kinderlieder, Lagerfeuer & Wandern, Frühling bis Herbst, Weihnachten, English Songs
+und eigene Lieder. Ein Teil hat eine ausnotierte Melodie (Karaoke mit Melodie und Tabulatur), die übrigen sind
+„Akkorde + Text“ – die Melodie kennt man, die App führt durch die Akkordwechsel.
+
+Alle Lieder sind gemeinfrei (Text **und** Melodie: Urheber vor 1956 gestorben oder nachweislich traditionell) oder
+eigene. Bei jedem Lied stehen Urheber mit Lebensdaten und die gemeinfreie Textquelle (z. B. volksliederarchiv.de,
+Erstdrucke über Wikipedia, Camp-Fire Choruses 1916, The Shanty Book 1921). Bewusst ausgeschlossen sind u. a. jüngere
+Textfassungen (z. B. „Im Märzen der Bauer“ nach Hensel 1923, frei erst ab 2027), Lieder mit geschützter Melodie
+(„Hoch auf dem gelben Wagen“) und Lieder mit rassistischen Originalstrophen.
+
+- Mit Melodie: `src/music/songs.ts` (Notation siehe `SongSource.text` in `src/music/song.ts`)
+- Akkorde + Text: `src/music/songs-chordpro.ts`, `songs-kinder.ts`, `songs-english.ts` (ChordPro-Stil `[C]Text`,
+  ein Akkord = ein Takt, `[G7:2]` = zwei Schläge)
+
+Die Unit-Tests prüfen Taktlängen, Griffbarkeit, eindeutige IDs und dass jeder Akkord ein Griffbild hat.
 
 ### Rechtliches zu den Liedern
 

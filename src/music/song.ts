@@ -1,8 +1,20 @@
 import { parsePitch } from './notes.ts';
 
+export type Category = 'kinder' | 'jahreszeiten' | 'weihnachten' | 'lagerfeuer' | 'english' | 'eigene';
+
+export const CATEGORIES: { id: Category; title: string }[] = [
+  { id: 'kinder', title: 'Kinderlieder' },
+  { id: 'lagerfeuer', title: 'Lagerfeuer & Wandern' },
+  { id: 'jahreszeiten', title: 'Frühling bis Herbst' },
+  { id: 'weihnachten', title: 'Weihnachten' },
+  { id: 'english', title: 'English Songs' },
+  { id: 'eigene', title: 'Eigene Lieder' },
+];
+
 export interface SongSource {
   id: string;
   title: string;
+  category: Category;
   /** Herkunft und Rechte – alle Lieder sind gemeinfrei oder eigene Werke. */
   origin: string;
   meter: number;
@@ -14,7 +26,12 @@ export interface SongSource {
    * `[F]` vor einem Token wechselt den Akkord. Silbe `_` = Pause (Ton `R`), `~` = gehaltene Silbe mit neuem Ton.
    * Endet eine Silbe auf „-“, geht das Wort in der nächsten Silbe weiter.
    */
-  text: string;
+  text?: string;
+  /**
+   * Alternative ohne Melodie: Text mit Akkorden im ChordPro-Stil, `[C]Im Märzen der [Dm]Bauer`. Jeder Akkord gilt
+   * einen Takt lang, `[G7:2]` zwei Schläge. Akkorde mitten im Wort sind erlaubt: `ein[C]spannt`.
+   */
+  chordpro?: string;
 }
 
 export interface SongEvent {
@@ -34,6 +51,8 @@ export interface SongEvent {
 }
 
 export interface Song extends SongSource {
+  /** false bei Liedern nur mit Akkorden und Text – dann ohne Melodie und Tabulatur. */
+  hasMelody: boolean;
   events: SongEvent[];
   lines: number;
   totalBeats: number;
@@ -49,10 +68,11 @@ function duration(text: string | undefined): number {
 }
 
 export function parseSong(src: SongSource): Song {
+  if (src.chordpro !== undefined) return parseChordPro(src);
   const events: SongEvent[] = [];
   let beat = 0;
   let current = '';
-  const lines = src.text
+  const lines = (src.text || '')
     .split('\n')
     .map((l) => l.trim())
     .filter(Boolean);
@@ -92,12 +112,83 @@ export function parseSong(src: SongSource): Song {
     }
   });
   const chords = [...new Set(events.map((e) => e.chord))];
-  return { ...src, events, lines: lines.length, totalBeats: beat, chords };
+  return { ...src, hasMelody: true, events, lines: lines.length, totalBeats: beat, chords };
+}
+
+interface Word {
+  text: string;
+  joinNext: boolean;
+  line: number;
+}
+
+interface Segment {
+  chord: string;
+  beats: number;
+  words: Word[];
+  line: number;
+}
+
+/** Lied ohne Melodie: Akkorde und Text. Die Wörter eines Akkords teilen sich seine Schläge gleichmäßig. */
+export function parseChordPro(src: SongSource): Song {
+  const segments: Segment[] = [];
+  let lastWord: Word | null = null;
+  let endedWithSpace = true;
+  const lines = (src.chordpro || '')
+    .split('\n')
+    .map((l) => l.replace(/\s+$/, ''))
+    .filter((l) => l.trim() && !/^\s*\{/.test(l));
+  const addText = (text: string, line: number) => {
+    if (!text) return;
+    if (!segments.length) segments.push({ chord: '', beats: 1, words: [], line });
+    const seg = segments[segments.length - 1];
+    // Text direkt nach einem Akkord ohne Leerzeichen davor: das Wort von vorhin geht weiter („ein[C]spannt“)
+    if (lastWord && !endedWithSpace && /^\S/.test(text)) lastWord.joinNext = true;
+    for (const w of text.split(/\s+/).filter(Boolean)) {
+      lastWord = { text: w, joinNext: false, line };
+      seg.words.push(lastWord);
+    }
+    endedWithSpace = /\s$/.test(text);
+  };
+  lines.forEach((raw, line) => {
+    const re = /\[([^\]]+)\]/g;
+    let pos = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(raw))) {
+      addText(raw.slice(pos, m.index), line);
+      const parts = m[1].split(':');
+      segments.push({ chord: parts[0].trim(), beats: parts[1] ? Number(parts[1]) : src.meter, words: [], line });
+      pos = m.index + m[0].length;
+    }
+    addText(raw.slice(pos), line);
+    endedWithSpace = true;
+  });
+  const first = segments.find((g) => g.chord);
+  if (!first) throw new Error(`${src.id}: keine Akkorde`);
+  const events: SongEvent[] = [];
+  let beat = 0;
+  let current = '';
+  for (const seg of segments) {
+    const chord = seg.chord || first.chord;
+    const change = chord !== current;
+    current = chord;
+    if (!seg.words.length) {
+      events.push({ beat, dur: seg.beats, syllable: '', joinNext: false, midi: null, chord, chordChange: change, hold: false, line: seg.line });
+    } else {
+      const d = seg.beats / seg.words.length;
+      seg.words.forEach((w, i) => {
+        events.push({ beat: beat + i * d, dur: d, syllable: w.text, joinNext: w.joinNext, midi: null, chord, chordChange: change && i === 0, hold: false, line: w.line });
+      });
+    }
+    beat += seg.beats;
+  }
+  const chords = [...new Set(events.map((e) => e.chord))];
+  return { ...src, hasMelody: false, events, lines: lines.length, totalBeats: beat, chords };
 }
 
 /** Prüft die Taktstriche: jeder Takt (außer Auftakt und letztem) muss genau `meter` Schläge haben. */
 export function barErrors(src: SongSource): string[] {
   const errors: string[] = [];
+  if (!src.text) return errors;
   // Zeilenumbrüche gliedern nur den Text; ein Takt darf über das Zeilenende weiterlaufen.
   const bars = src.text
     .split('|')

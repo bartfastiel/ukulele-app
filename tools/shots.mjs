@@ -3,7 +3,7 @@ import { chromium, webkit } from '@playwright/test';
 
 const base = process.env.BASE || 'http://localhost:4173/';
 const out = process.argv[2] || 'shots';
-const views = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv'];
+const views = ['', 'lieder', 'lied/gedanken-sind-frei', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv'];
 const devices = [
   { name: 'ipad', width: 1024, height: 768, engine: webkit },
   { name: 'phone', width: 390, height: 844, engine: chromium },
