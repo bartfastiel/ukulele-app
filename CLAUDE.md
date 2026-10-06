@@ -34,7 +34,8 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
 ## Architektur
 
 ```
-src/main.ts              Hash-Router (#/, #/lieder, #/lied/<id>, #/akkorde, #/akkord/<name>, #/spiel, #/stimmen, #/rhythmus, #/sterne)
+src/main.ts              Hash-Router (#/, #/lieder, #/lied/<id>, #/akkorde, #/akkord/<name>, #/spiel, #/stimmen, #/rhythmus, #/sterne,
+                         #/blues, #/detektiv, #/aufnahme)
 src/views/*.ts           je Ansicht eine Funktion (root, param) → Aufräumfunktion
 src/views/player.ts      Karaoke: Transport auf der AudioContext-Uhr, Vorausplanung (25-ms-Takt, 150 ms Horizont),
                          Modus „Wartet auf mich“ hält an jedem Akkordwechsel (stopBeat) und hört per listen.ts zu
@@ -48,6 +49,8 @@ src/audio/mic.ts, listen.ts  Mikrofon (ohne Echo-/Rauschunterdrückung), Lausche
 src/music/               notes.ts, chords.ts (18 Griffe), song.ts (Notation + Parser), songs.ts (Lieddaten)
 src/audio/offline.ts     Nachbau von AnalyserNode + Lauscher für Tests und tools/eval-recordings.ts
 src/views/record.ts      Aufnahme-Werkzeug (#/aufnahme), Plan in src/music/recording-plan.ts, ZIP via src/util/zip.ts
+src/music/identify.ts    Akkord-Detektiv: alle Griffe der ersten 5 Bünde bewerten, Akkordnamen aus Tonklassen
+src/music/blues.ts, src/audio/band.ts, src/ui/fretboard.ts   12-Takt-Blues, Begleitband aus Oszillatoren, Hals als Tabulatur
 src/store.ts             localStorage (Sterne, Übungstage, Einstellungen), storage.persist(), Export-Code
 src/styles.css           Design-Tokens, Mahagoni-Knöpfe, Layouts: Handy hoch (≤600px), Handy quer (Höhe ≤560px), ≥900px
 ```

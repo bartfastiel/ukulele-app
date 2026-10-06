@@ -50,6 +50,12 @@ export function now(): number {
   return audio().currentTime;
 }
 
+/** Gemeinsamer Ausgang (Lautstärke) für weitere Klangquellen wie die Blues-Band. */
+export function output(): AudioNode {
+  audio();
+  return master!;
+}
+
 export function hasAudio(): boolean {
   audio();
   return !silent;
