@@ -11,6 +11,8 @@ import { tuner } from './views/tuner.ts';
 import { rhythm } from './views/rhythm.ts';
 import { stars } from './views/stars.ts';
 import { record } from './views/record.ts';
+import { detective } from './views/detective.ts';
+import { blues } from './views/blues.ts';
 
 const ROUTES: Record<string, View> = {
   '': home,
@@ -23,6 +25,8 @@ const ROUTES: Record<string, View> = {
   rhythmus: rhythm,
   sterne: stars,
   aufnahme: record,
+  detektiv: detective,
+  blues,
 };
 
 const TITLES: Record<string, string> = {
@@ -35,6 +39,8 @@ const TITLES: Record<string, string> = {
   rhythmus: 'Rhythmus',
   sterne: 'Meine Sterne',
   aufnahme: 'Aufnahmen',
+  detektiv: 'Akkord-Detektiv',
+  blues: 'Blues',
 };
 
 let cleanup: Cleanup = undefined;

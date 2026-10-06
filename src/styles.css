@@ -1145,7 +1145,7 @@ summary:focus-visible {
   color: rgba(0, 0, 0, 0.25);
 }
 
-.arrow .count {
+.arrow .beat-count {
   font-size: 0.8em;
   font-weight: 700;
   color: var(--ink-soft);
@@ -1347,6 +1347,180 @@ summary:focus-visible {
   }
 }
 
+/* ---------- Akkord-Detektiv ---------- */
+.det-result {
+  min-height: 260px;
+}
+
+.det-wait {
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.det-glass .icon.big {
+  width: 72px;
+  height: 72px;
+  color: var(--cherry);
+}
+
+.det-chord {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  grid-gap: 16px;
+  align-items: center;
+}
+
+.det-alt {
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.det-note {
+  text-align: center;
+}
+
+.det-positions {
+  list-style: none;
+  padding: 0;
+  font-size: 1.15em;
+}
+
+/* ---------- Blues ---------- */
+.blues-top {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) 1.4fr;
+  grid-gap: 14px;
+  align-items: start;
+}
+
+.blues-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 6px;
+  margin: 6px;
+}
+
+.blues-bar {
+  background: rgba(255, 245, 225, 0.92);
+  border-radius: 10px;
+  padding: 10px 0;
+  text-align: center;
+  font-weight: 900;
+  font-size: 1.4em;
+  color: var(--ink);
+  box-shadow: 0 0 0 2px var(--binding);
+}
+
+.blues-bar small {
+  font-size: 0.6em;
+}
+
+.blues-bar.now {
+  background: linear-gradient(180deg, #ffe7a6, #c4932f);
+  box-shadow: 0 0 0 3px #fff3d6, 0 0 18px rgba(255, 210, 120, 0.8);
+}
+
+.blues-now {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.blues-target {
+  font-weight: 900;
+  font-size: 1.6em;
+  color: var(--cherry);
+}
+
+.fretboard {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 6px;
+}
+
+.fb-wood {
+  fill: #3a2116;
+}
+
+.fb-nut {
+  fill: #f3e6c4;
+}
+
+.fb-fret {
+  fill: #c9ccd1;
+}
+
+.fb-dot {
+  fill: #dfe7ee;
+  opacity: 0.7;
+}
+
+.fb-string {
+  stroke: #f7f1e6;
+  stroke-width: 1.6;
+}
+
+.fb-label,
+.fb-num {
+  font: 800 14px var(--font);
+  fill: var(--ink);
+}
+
+.fb-num {
+  font-size: 11px;
+  fill: var(--ink-soft);
+}
+
+.fb-mark.now {
+  fill: #e2b85a;
+  stroke: #fff3d6;
+  stroke-width: 3;
+}
+
+.fb-mark.next {
+  fill: rgba(226, 184, 90, 0.35);
+  stroke: #e2b85a;
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+
+.fb-mark.chord {
+  fill: #e2b85a;
+}
+
+.fb-mark.scale {
+  fill: #5fb3a3;
+}
+
+.fb-mark.played {
+  fill: none;
+  stroke: #ff5a7a;
+  stroke-width: 4;
+}
+
+.fb-mark-label {
+  font: 900 12px var(--font);
+  fill: var(--ink);
+}
+
+.fb-mark-label.scale {
+  font-size: 8px;
+  fill: #fff;
+}
+
+.blues-info {
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .blues-top,
+  .det-chord {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- Layout-Varianten ---------- */
 
 /* Tablet/Desktop quer: Karaoke mit Akkorden links, Text rechts */
@@ -1389,7 +1563,7 @@ summary:focus-visible {
   }
   .tile-big {
     grid-column: span 1;
-    grid-row: span 2;
+    grid-row: span 3;
   }
   .tile-wide {
     grid-column: span 3;

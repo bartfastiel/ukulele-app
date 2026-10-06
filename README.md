@@ -18,7 +18,12 @@ ohne Tracking. Alles bleibt auf dem Gerät.
   Rückmeldung, welche Saite noch nicht klingt.
 - **Akkord-Spiel:** 60 Sekunden – das Mikrofon zählt jeden richtig gespielten Akkord; bei zwei Akkorden als
   Wechsel-Training.
-- **Stimmgerät** mit Nadel, Saitenerkennung und Referenztönen.
+- **Blues:** 12-Takt-Blues in C mit Begleitband (Bass, Orgel, Schlagzeug – keine Ukulele). Vier Stufen, die
+  Töne direkt als Punkte auf dem Hals: Grundton → Grundton und Quinte → Boogie-Riff → frei spielen mit der
+  Blues-Tonleiter. Optional spielt die App den Ton vor oder hört zu und zählt Treffer.
+- **Akkord-Detektiv:** irgendeinen Akkord oder Ton spielen – die App zeigt Griff, Namen, Art (Dur, Moll, 7, maj7,
+  m7, 6, sus, dim, aug …), die Töne und gleichklingende Namen (z. B. Am7 = C6); bei einem Ton alle Stellen auf dem Hals.
+- **Stimmgerät** mit Nadel, Saitenerkennung, Referenztönen und Tipps bei falschem Wirbel oder hakender Saite.
 - **Rhythmus:** Metronom mit Schlagmustern (↓ ↑), auf Wunsch mit Akkord.
 - **Meine Sterne:** Übungstage, Abzeichen, Linkshänder-Modus, Sicherungs-Code zum Mitnehmen auf ein anderes Gerät.
 

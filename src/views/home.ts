@@ -48,10 +48,12 @@ export const home: View = (root) => {
         { class: 'tiles', 'aria-label': 'Bereiche' },
         last ? tile(`#/lied/${last.id}`, 'play', 'Weiterspielen', last.title, 'tile-wide theme-pearl') : null,
         tile('#/lieder', 'songs', 'Lieder spielen', 'Karaoke zum Mitspielen', 'tile-big theme-brass'),
+        tile('#/blues', 'blues', 'Blues', 'Mit der Band jammen', 'theme-teal'),
         tile('#/akkorde', 'chords', 'Akkorde', 'Griffe lernen und prüfen', 'theme-teal'),
+        tile('#/detektiv', 'detective', 'Akkord-Detektiv', 'Spiel was – ich sag, was es ist', 'theme-cherry'),
         tile('#/spiel', 'game', 'Akkord-Spiel', 'Wie viele schaffst du?', 'theme-cherry'),
         tile('#/stimmen', 'tuner', 'Stimmen', 'Stimmgerät', 'theme-pearl'),
-        tile('#/rhythmus', 'rhythm', 'Rhythmus', 'Metronom & Schlagmuster', 'theme-teal'),
+        tile('#/rhythmus', 'rhythm', 'Rhythmus', 'Metronom & Schlagmuster', 'theme-pearl'),
       ),
     ),
   );
