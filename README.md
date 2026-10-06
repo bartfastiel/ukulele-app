@@ -33,7 +33,7 @@ Ohne Mikrofon funktioniert alles weiter – dann bestätigt das Kind selbst.
 
 Nur gemeinfreie Lieder (Text und Melodie, Urheber seit über 70 Jahren tot oder traditionell) oder eigene:
 Bruder Jakob, Row Row Row Your Boat, Hänschen klein, Alle meine Entchen, Mary Had a Little Lamb, London Bridge,
-Old MacDonald, Yankee Doodle, Ode an die Freude, Twinkle Twinkle Little Star, Jingle Bells, Stille Nacht,
+Old MacDonald, Yankee Doodle, What Shall We Do with the Drunken Sailor, Ode an die Freude, Twinkle Twinkle Little Star, Jingle Bells, Stille Nacht,
 Zum Geburtstag viel Glück und die eigenen Lieder „G-C-E-A (das Saiten-Lied)“ und „Am Lagerfeuer“ (CC0).
 Urheber und Herkunft stehen in der App bei jedem Lied unter „Mehr“. Neue Lieder kommen in `src/music/songs.ts` (Notation siehe `SongSource` in
 `src/music/song.ts`); die Unit-Tests prüfen Taktlängen, Griffbarkeit und Akkorde.

@@ -184,6 +184,30 @@ schlaf:C5 in:G4 himm-:E4 [G7]li-:G4:1.5 scher:F4:0.5 ~:D4 | [C]Ruh.:C4:6 |`,
 [C]vier:G4 Sai-:G4 ten:E4 klin-:G4 | [Am]gen:A4:2 hell:C5 in:A4 | [F]dunk-:A4:2 ler:F4:2 | [G7]Nacht,:B4:4 |
 [C]wir:E4 spie-:E4 len,:G4 bis:G4 | [Am]die:A4:2 Son-:A4 ne:C5 | [G7]wie-:G4:2 der:F4:2 | [C]lacht.:C4:4 |`,
   },
+  {
+    id: 'drunken-sailor',
+    title: 'What Shall We Do with the Drunken Sailor',
+    origin: `Seemannslied (Shanty), traditionell, 19. Jahrhundert, ${PD}`,
+    meter: 4,
+    bpm: 90,
+    text: `
+[Dm]What:A4:0.5 shall:A4:0.25 we:A4:0.25 do:A4:0.5 with:A4:0.25 the:A4:0.25 drun-:A4:0.5 ken:D4:0.5 sai-:F4:0.5 lor?:A4:0.5 |
+[C]What:G4:0.5 shall:G4:0.25 we:G4:0.25 do:G4:0.5 with:G4:0.25 the:G4:0.25 drun-:G4:0.5 ken:C4:0.5 sai-:E4:0.5 lor?:G4:0.5 |
+[Dm]What:A4:0.5 shall:A4:0.25 we:A4:0.25 do:A4:0.5 with:A4:0.25 the:A4:0.25 drun-:A4:0.5 ken:B4:0.5 sai-:C5:0.5 lor?:D5:0.5 |
+[C]Ear-:C5:0.5 ly:A4:0.5 in:G4:0.5 the:E4:0.5 [Dm]mor-:D4 ning!:D4 |
+[Dm]Way,:A4 hay,:A4 and:A4:0.5 up:D4:0.5 she:F4:0.5 ri-:A4:0.25 ses,:A4:0.25 |
+[C]Way,:G4 hay,:G4 and:G4:0.5 up:C4:0.5 she:E4:0.5 ri-:G4:0.25 ses,:G4:0.25 |
+[Dm]Way,:A4 hay,:A4 and:A4:0.5 up:B4:0.5 she:C5:0.5 ri-:D5:0.25 ses,:D5:0.25 |
+[C]Ear-:C5:0.5 ly:A4:0.5 in:G4:0.5 the:E4:0.5 [Dm]mor-:D4 ning!:D4 |
+[Dm]Put:A4:0.5 him:A4:0.25 in:A4:0.25 the:A4:0.5 long-:A4:0.25 boat:A4:0.25 till:A4:0.5 he’s:D4:0.5 so-:F4:0.5 ber,:A4:0.5 |
+[C]Put:G4:0.5 him:G4:0.25 in:G4:0.25 the:G4:0.5 long-:G4:0.25 boat:G4:0.25 till:G4:0.5 he’s:C4:0.5 so-:E4:0.5 ber,:G4:0.5 |
+[Dm]Put:A4:0.5 him:A4:0.25 in:A4:0.25 the:A4:0.5 long-:A4:0.25 boat:A4:0.25 till:A4:0.5 he’s:B4:0.5 so-:C5:0.5 ber,:D5:0.5 |
+[C]Ear-:C5:0.5 ly:A4:0.5 in:G4:0.5 the:E4:0.5 [Dm]mor-:D4 ning!:D4 |
+[Dm]Way,:A4 hay,:A4 and:A4:0.5 up:D4:0.5 she:F4:0.5 ri-:A4:0.25 ses,:A4:0.25 |
+[C]Way,:G4 hay,:G4 and:G4:0.5 up:C4:0.5 she:E4:0.5 ri-:G4:0.25 ses,:G4:0.25 |
+[Dm]Way,:A4 hay,:A4 and:A4:0.5 up:B4:0.5 she:C5:0.5 ri-:D5:0.25 ses,:D5:0.25 |
+[C]Ear-:C5:0.5 ly:A4:0.5 in:G4:0.5 the:E4:0.5 [Dm]mor-:D4 ning!:D4 |`,
+  },
 ];
 
 export const SONGS: Song[] = SONG_SOURCES.map(parseSong);
