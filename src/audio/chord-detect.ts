@@ -1,5 +1,5 @@
 import { CHORDS, chordMidis, type Chord } from '../music/chords.ts';
-import { midiToFreq } from '../music/notes.ts';
+import { STRINGS, midiToFreq } from '../music/notes.ts';
 
 /**
  * Akkorderkennung aus einem Betragsspektrum (linear, z. B. aus AnalyserNode.getFloatFrequencyData umgerechnet).
@@ -8,6 +8,26 @@ import { midiToFreq } from '../music/notes.ts';
  * Grundfrequenz (oder ihre Oktave) der Saite? Und wie viel der Energie erklärt der Griff überhaupt? So lassen sich
  * auch nah verwandte Griffe wie C (0003) und Am7 (0000) unterscheiden, und die Rückmeldung kann eine Saite nennen.
  */
+
+/** Schwellen der Entscheidung – abgestimmt an echten Handy-Aufnahmen (tools/eval-recordings.ts). */
+export const TUNING = {
+  minScore: 0.45,
+  minPresence: 0.2,
+  maxForeign: 0.3,
+  /** Strengere Grenze für den Leerton einer Saite, die der Griff greift: das typische Zeichen „Finger drückt nicht“. */
+  maxOpenString: 0.06,
+  /** Spitzenhalter: Anteil, der pro Messung (80 ms) vom gehaltenen Spektrum bleibt. 0 = aus. */
+  hold: 0.75,
+};
+
+/**
+ * Spitzenhalter über die letzten Messungen: Ein Fremdton vom Anschlag (z. B. die leere G-Saite, weil der Finger
+ * nicht drückt) verklingt oft schneller als der Rest und darf sich nicht im Ausklang verstecken.
+ */
+export function holdSpectrum(held: Float32Array, current: Float32Array, keep = TUNING.hold): Float32Array {
+  for (let i = 0; i < held.length; i++) held[i] = Math.max(current[i], held[i] * keep);
+  return held;
+}
 
 export interface Peak {
   freq: number;
@@ -51,6 +71,8 @@ export interface ChordScore {
   minPresence: number;
   /** Stärkste Spitze, die der Griff nicht erklärt, relativ zur stärksten Spitze. */
   foreign: number;
+  /** Stärkster nicht erklärter Leerton einer gegriffenen Saite, relativ zur stärksten Spitze. */
+  openString: number;
 }
 
 export function scoreChord(peaks: Peak[], ch: Chord): ChordScore {
@@ -75,6 +97,13 @@ export function scoreChord(peaks: Peak[], ch: Chord): ChordScore {
     else foreign = Math.max(foreign, p.mag / maxMag);
   }
   const explained = total > 0 ? explainedE / total : 0;
+  let openString = 0;
+  ch.frets.forEach((f, i) => {
+    if (f <= 0) return;
+    const open = midiToFreq(STRINGS[i].midi);
+    if (freqs.some((g) => [1, 2, 3].some((k) => near(open, k * g, 35)))) return;
+    for (const p of peaks) if (near(p.freq, open, 40)) openString = Math.max(openString, p.mag / maxMag);
+  });
   // Gleiche Töne auf zwei Saiten zählen einmal, sonst wären Griffe mit Doppeltönen im Vorteil.
   const unique = new Map<number, number>();
   midis.forEach((m, i) => unique.set(m, Math.max(unique.get(m) ?? 0, strings[i])));
@@ -83,7 +112,7 @@ export function scoreChord(peaks: Peak[], ch: Chord): ChordScore {
   const minPresence = Math.min(...vals);
   // Ein fremder Ton kostet Punkte: Sonst gewinnt bei G7 (0212) der Griff G (0232), dessen Töne alle mitklingen.
   const score = explained * (0.55 * presence + 0.45 * minPresence) * (1 - Math.min(1, foreign * 2));
-  return { chord: ch.name, score, strings, explained, minPresence, foreign };
+  return { chord: ch.name, score, strings, explained, minPresence, foreign, openString };
 }
 
 export interface ChordVerdict {
@@ -104,7 +133,12 @@ export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] 
   const best = scores[0];
   const runnerUp = scores.find((x) => x.chord !== expected)!;
   // Streng: jeder Ton des Griffs klingt, kein deutlicher fremder Ton, und der Griff liegt klar vor jedem anderen.
-  const ok = exp.score >= 0.45 && exp.minPresence >= 0.2 && exp.foreign < 0.3 && exp.score > runnerUp.score;
+  const ok =
+    exp.score >= TUNING.minScore &&
+    exp.minPresence >= TUNING.minPresence &&
+    exp.foreign < TUNING.maxForeign &&
+    exp.openString < TUNING.maxOpenString &&
+    exp.score > runnerUp.score;
   let weakString = -1;
   if (!ok) {
     // Häufigster Anfängerfehler: ein Finger drückt nicht richtig, die Saite klingt leer. Passt der Griff mit dieser

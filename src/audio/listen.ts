@@ -1,5 +1,5 @@
 import { openMic, type Mic } from './mic.ts';
-import { dbToLinear, findPeaks, judgeChord, type ChordVerdict } from './chord-detect.ts';
+import { dbToLinear, findPeaks, holdSpectrum, judgeChord, type ChordVerdict } from './chord-detect.ts';
 import { CHORDS } from '../music/chords.ts';
 
 export interface ChordListener {
@@ -19,6 +19,7 @@ export async function listenForChord(expected: string, ev: ListenEvents): Promis
   const mic: Mic = await openMic();
   const db = new Float32Array(mic.analyser.frequencyBinCount);
   const lin = new Float32Array(db.length);
+  const held = new Float32Array(db.length);
   const time = new Float32Array(2048);
   const binHz = mic.sampleRate / mic.analyser.fftSize;
   let target = expected;
@@ -27,6 +28,8 @@ export async function listenForChord(expected: string, ev: ListenEvents): Promis
   const timer = window.setInterval(() => {
     if (paused) return;
     mic.timeData(time);
+    // auch in leisen Momenten weiterführen, damit der Spitzenhalter genauso abklingt wie in der Offline-Auswertung
+    holdSpectrum(held, dbToLinear(mic.freqData(db), lin));
     let rms = 0;
     for (let i = 0; i < time.length; i++) rms += time[i] * time[i];
     rms = Math.sqrt(rms / time.length);
@@ -35,7 +38,7 @@ export async function listenForChord(expected: string, ev: ListenEvents): Promis
       ev.onVerdict?.(null, rms);
       return;
     }
-    const peaks = findPeaks(dbToLinear(mic.freqData(db), lin), binHz);
+    const peaks = findPeaks(held, binHz);
     const v = judgeChord(peaks, target, CHORDS);
     ev.onVerdict?.(v, rms);
     if (v && v.ok) {

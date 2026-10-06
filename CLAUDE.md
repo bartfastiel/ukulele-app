@@ -29,6 +29,7 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
 - Arbeit per Branch + Pull Request; CI (`ci.yml`) muss grün sein; `deploy.yml` deployt `main` und Vorschauen.
   Keine Secrets ins Repo.
 - Commit-Nachrichten: Conventional Commits (`feat|fix|docs|test|refactor|chore|ci`), Hook in `.githooks/`.
+- Keine KI-Attribution: keine `Co-Authored-By`-Zeilen, keine Session-Links, kein „Generated with …“ in Commits und PRs.
 
 ## Architektur
 
