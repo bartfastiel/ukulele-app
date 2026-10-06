@@ -106,7 +106,9 @@ test('Linkshänder spiegelt die Griffbilder', async ({ page }) => {
 
 test('Rhythmus startet und stoppt', async ({ page }) => {
   await page.goto('#/rhythmus');
-  await page.getByRole('button', { name: 'Insel-Schlag' }).click();
+  await page.getByRole('button', { name: 'Runter, runter, rauf, rauf, runter, rauf' }).click();
+  await expect(page.locator('.say-line')).toContainText('runter, runter, rauf, rauf, runter, rauf');
+  await expect(page.locator('.arrow .glyph')).toHaveText(['↓', '·', '↓', '↑', '·', '↑', '↓', '↑']);
   await page.getByRole('button', { name: /Start/ }).click();
   await expect(page.locator('.arrow.on')).toHaveCount(1, { timeout: 3000 });
   await page.getByRole('button', { name: /Stopp/ }).click();
