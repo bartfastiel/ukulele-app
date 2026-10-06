@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne'];
+const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme'];
 
 function collectErrors(page: Page): string[] {
   const errors: string[] = [];
