@@ -31,10 +31,21 @@ Ohne Mikrofon funktioniert alles weiter – dann bestätigt das Kind selbst.
 
 ## Lieder
 
-Nur gemeinfreie Lieder oder eigene: Bruder Jakob, Row Row Row Your Boat, Hänschen klein, Alle meine Entchen,
-Ode an die Freude, Twinkle Twinkle Little Star, Jingle Bells, Zum Geburtstag viel Glück und das eigene
-„G-C-E-A (das Saiten-Lied)“. Neue Lieder kommen in `src/music/songs.ts` (Notation siehe `SongSource` in
+Nur gemeinfreie Lieder (Text und Melodie, Urheber seit über 70 Jahren tot oder traditionell) oder eigene:
+Bruder Jakob, Row Row Row Your Boat, Hänschen klein, Alle meine Entchen, Mary Had a Little Lamb, London Bridge,
+Old MacDonald, Yankee Doodle, Ode an die Freude, Twinkle Twinkle Little Star, Jingle Bells, Stille Nacht,
+Zum Geburtstag viel Glück und die eigenen Lieder „G-C-E-A (das Saiten-Lied)“ und „Am Lagerfeuer“ (CC0).
+Urheber und Herkunft stehen in der App bei jedem Lied unter „Mehr“. Neue Lieder kommen in `src/music/songs.ts` (Notation siehe `SongSource` in
 `src/music/song.ts`); die Unit-Tests prüfen Taktlängen, Griffbarkeit und Akkorde.
+
+### Rechtliches zu den Liedern
+
+Liedtexte und Melodien sind urheberrechtlich geschützt, bis 70 Jahre nach dem Tod des letzten Urhebers; reine
+Akkordfolgen sind es nach herrschender Meinung nicht. Text mit Akkorden, eine Melodie als Tabulatur oder das
+Abspielen der Melodie bräuchten für geschützte Lieder Genehmigungen der Musikverlage. Diese App enthält deshalb
+nur gemeinfreie Lieder (mit Quelle in `origin`) und eigene Lieder, auch nicht als Testdaten im Repo.
+Hinweise von Rechteinhabern bitte als Issue: https://github.com/bartfastiel/ukulele-app/issues – betroffene Inhalte
+werden sofort entfernt. (Keine Rechtsberatung.)
 
 ## Technik
 

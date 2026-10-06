@@ -37,7 +37,7 @@ test('Startseite führt zu den Liedern und zurück', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Ukulele-Club' })).toBeVisible();
   await page.getByRole('link', { name: /Lieder spielen/ }).click();
   await expect(page.getByRole('heading', { name: 'Lieder' })).toBeVisible();
-  await expect(page.locator('.song-card')).toHaveCount(9);
+  await expect(page.locator('.song-card')).toHaveCount(15);
   await page.getByRole('link', { name: 'Zur Startseite' }).click();
   await expect(page.getByRole('heading', { name: 'Ukulele-Club' })).toBeVisible();
 });
@@ -138,4 +138,15 @@ test('Startseite: Blues und Akkord-Detektiv sind erreichbar', async ({ page }) =
   await page.goto('./');
   await page.getByRole('link', { name: /^Blues/ }).click();
   await expect(page.getByRole('heading', { name: 'Blues' })).toBeVisible();
+});
+
+test('Stille Nacht im 6/8-Takt: Einzähler, dann wandert die Silbe über das Melisma hinweg', async ({ page }) => {
+  await page.goto('#/lied/stille-nacht');
+  await page.getByRole('button', { name: 'Läuft durch' }).click();
+  await page.getByRole('button', { name: 'Original' }).click();
+  await page.locator('.btn-play').click();
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('Stil', { timeout: 6000 });
+  // „Nacht,“ hält über zwei Töne (G–E), danach „hei-“ (6 Achtel bei 150/min = 2,4 s pro Takt)
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('Nacht,', { timeout: 4000 });
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('hei', { timeout: 4000 });
 });
