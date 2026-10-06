@@ -73,7 +73,7 @@ test('Karaoke „Wartet auf mich“ ohne Mikrofon: wartet bei jedem Akkordwechse
   // erster Wechsel auf F bei „schwim-“
   await expect(page.locator('.wait-title')).toContainText('Spiel jetzt F', { timeout: 10000 });
   await expect(page.locator('.syl.now .syl-text')).toHaveText('schwim');
-  await expect(page.locator('.now-card .chord-name')).toHaveText('F');
+  await expect(page.locator('.now-card .card-inner:not(.leaving) .chord-name')).toHaveText('F');
 });
 
 test('kurzes Lied bis zum Ende ergibt einen Stern', async ({ page }) => {
@@ -179,15 +179,15 @@ test('Transponieren: Tonart wechseln, Vorschlag ★ und Original ◆ markiert, W
   await expect(page.getByRole('button', { name: '◆ Original: D' })).toBeVisible();
   await page.getByRole('button', { name: '◆ Original: D' }).click();
   await expect(page.locator('.key-now')).toHaveText('Tonart D ◆');
-  await expect(page.locator('.now-card .chord-name')).toHaveText('D');
+  await expect(page.locator('.now-card .card-inner:not(.leaving) .chord-name')).toHaveText('D');
   await page.getByRole('button', { name: 'Einen Halbton höher' }).click();
   await expect(page.locator('.key-now')).toHaveText('Tonart Eb');
-  await expect(page.locator('.now-card .chord-name')).toHaveText('Eb');
+  await expect(page.locator('.now-card .card-inner:not(.leaving) .chord-name')).toHaveText('Eb');
   await page.reload();
   await page.locator('.more summary').click();
   await expect(page.locator('.key-now')).toHaveText('Tonart Eb');
   await page.getByRole('button', { name: /^Einfach: F/ }).click();
-  await expect(page.locator('.now-card .chord-name')).toHaveText('F');
+  await expect(page.locator('.now-card .card-inner:not(.leaving) .chord-name')).toHaveText('F');
 });
 
 test('Transponieren: Vorschlag für ein C-Lied ist D, Melodie-Tab wandert mit', async ({ page }) => {
@@ -196,7 +196,31 @@ test('Transponieren: Vorschlag für ein C-Lied ist D, Melodie-Tab wandert mit', 
   await page.getByRole('button', { name: 'Tabulatur' }).click();
   const before = await page.locator('.syl-tab').first().textContent();
   await page.getByRole('button', { name: '★ Vorschlag: D' }).click();
-  await expect(page.locator('.now-card .chord-name')).toHaveText('D');
+  await expect(page.locator('.now-card .card-inner:not(.leaving) .chord-name')).toHaveText('D');
   const after = await page.locator('.syl-tab').first().textContent();
   expect(after).not.toBe(before);
+});
+
+test('Akkordwechsel: „Gleich“ steht links, „Jetzt“ rechts, beim Wechsel rutscht alles nach rechts', async ({ page }) => {
+  await page.goto('#/lied/alle-meine-entchen');
+  const next = await page.locator('.next-card').boundingBox();
+  const now = await page.locator('.now-card').boundingBox();
+  expect(next!.x).toBeLessThan(now!.x);
+  await page.getByRole('button', { name: 'Wartet auf mich' }).click();
+  await page.getByRole('button', { name: 'Original' }).click();
+  await page.locator('.btn-play').click();
+  const noMic = page.getByRole('button', { name: 'Ohne Mikrofon' });
+  if (await noMic.isVisible({ timeout: 1500 }).catch(() => false)) await noMic.click();
+  // die Ausblende-Animation dauert nur 0,3 s – deshalb im Browser mitschreiben, ob sie lief
+  await page.evaluate(() => {
+    const w = window as unknown as { sawLeaving?: string };
+    new MutationObserver(() => {
+      const el = document.querySelector('.now-card .card-inner.leaving .chord-name');
+      if (el && !w.sawLeaving) w.sawLeaving = el.textContent || '?';
+    }).observe(document.body, { subtree: true, childList: true, attributes: true });
+  });
+  await page.locator('.wait').getByRole('button', { name: /Geschafft/ }).click();
+  await expect(page.locator('.now-card .card-inner:not(.leaving) .chord-name')).toHaveText('F', { timeout: 10000 });
+  expect(await page.evaluate(() => (window as unknown as { sawLeaving?: string }).sawLeaving)).toBe('C');
+  await expect(page.locator('.now-card .card-inner.leaving')).toHaveCount(0, { timeout: 2000 });
 });

@@ -93,8 +93,8 @@ class Player {
     this.stage = h(
       'section',
       { class: 'stage', 'aria-label': 'Akkorde' },
-      this.nowCard,
       this.nextCard,
+      this.nowCard,
       this.overlay,
     );
     this.stage.addEventListener('click', (e) => {
@@ -197,25 +197,49 @@ class Player {
 
   // ---------- Anzeige ----------
 
-  private showChords(idx: number): void {
+  /** Gerade angezeigter „Jetzt“-Akkord – nur bei einem echten Wechsel wird animiert. */
+  private shownChord = '';
+
+  /**
+   * Akkordkarten füllen. Mit `animate` rutscht bei einem Wechsel alles eine Position nach rechts: das alte „Jetzt“
+   * hinaus, „Gleich“ ins „Jetzt“, der nächste Akkord von links ins „Gleich“ – kurz, nur damit das Auge folgt.
+   */
+  private showChords(idx: number, animate = false): void {
     const ev = this.song.events[Math.max(0, idx)];
     const name = ev.chord;
-    clear(this.nowCard);
-    this.nowCard.appendChild(h('div', { class: 'card-label' }, 'Jetzt'));
-    this.nowCard.appendChild(h('div', { class: 'chord-name' }, name));
-    this.nowCard.appendChild(chordDiagram(chord(name), { lefty: this.settings.lefty }));
+    const moving = animate && !reducedMotion() && !!this.shownChord && name !== this.shownChord;
+    this.shownChord = name;
+
+    const nowInner = h(
+      'div',
+      { class: 'card-inner' },
+      h('div', { class: 'card-label' }, 'Jetzt'),
+      h('div', { class: 'chord-name' }, name),
+      chordDiagram(chord(name), { lefty: this.settings.lefty }),
+    );
     const next = this.changes.find((c) => c > Math.max(0, idx));
-    clear(this.nextCard);
+    const nextInner = h('div', { class: 'card-inner' }, h('div', { class: 'card-label' }, 'Gleich'));
     if (next !== undefined) {
       const nn = this.song.events[next].chord;
-      this.nextCard.appendChild(h('div', { class: 'card-label' }, 'Gleich'));
-      this.nextCard.appendChild(h('div', { class: 'chord-name' }, nn));
-      this.nextCard.appendChild(chordDiagram(chord(nn), { lefty: this.settings.lefty, labels: false }));
-      this.nextCard.appendChild(h('div', { class: 'beat-dots', 'aria-hidden': 'true' }));
-    } else {
-      this.nextCard.appendChild(h('div', { class: 'card-label' }, 'Gleich'));
-      this.nextCard.appendChild(h('div', { class: 'chord-name end' }, 'Ende'));
-    }
+      nextInner.appendChild(h('div', { class: 'chord-name' }, nn));
+      nextInner.appendChild(chordDiagram(chord(nn), { lefty: this.settings.lefty, labels: false }));
+      nextInner.appendChild(h('div', { class: 'beat-dots', 'aria-hidden': 'true' }));
+    } else nextInner.appendChild(h('div', { class: 'chord-name end' }, 'Ende'));
+
+    this.swap(this.nowCard, nowInner, moving);
+    this.swap(this.nextCard, nextInner, moving);
+  }
+
+  private swap(card: HTMLElement, inner: HTMLElement, moving: boolean): void {
+    const old = card.querySelector('.card-inner:not(.leaving)');
+    if (moving && old) {
+      // die alte Karte rutscht nach rechts hinaus und verschwindet; sie zählt nicht mehr als Inhalt
+      old.classList.add('leaving');
+      old.setAttribute('aria-hidden', 'true');
+      window.setTimeout(() => old.parentNode && old.parentNode.removeChild(old), 320);
+      inner.classList.add('entering');
+    } else clear(card);
+    card.appendChild(inner);
   }
 
   private highlight(idx: number): void {
@@ -245,7 +269,7 @@ class Player {
   }
 
   private updateDots(beat: number): void {
-    const dots = this.nextCard.querySelector('.beat-dots');
+    const dots = this.nextCard.querySelector('.card-inner:not(.leaving) .beat-dots');
     if (!dots) return;
     const next = this.changes.find((c) => this.song.events[c].beat > beat + 1e-6);
     if (next === undefined) return;
@@ -278,7 +302,7 @@ class Player {
           const prevChord = this.lastIdx >= 0 ? this.song.events[this.lastIdx].chord : '';
           this.lastIdx = idx;
           this.highlight(idx);
-          if (this.song.events[idx].chord !== prevChord) this.showChords(idx);
+          if (this.song.events[idx].chord !== prevChord) this.showChords(idx, true);
         }
         this.updateDots(beat);
       }
@@ -396,7 +420,7 @@ class Player {
     const idx = eventAt(this.song, beat + 1e-6);
     this.lastIdx = idx;
     this.highlight(idx);
-    this.showChords(idx);
+    this.showChords(idx, true);
     const name = this.song.events[idx].chord;
     const hint = h('div', { class: 'hint-line' }, this.micOk ? 'Ich höre zu …' : 'Tippe auf „Geschafft“, wenn du so weit bist.');
     this.overlayText(
@@ -431,7 +455,7 @@ class Player {
             // Nur bei wiederholt gleicher Diagnose einen Tipp geben – einzelne Fehlmessungen sollen nicht frustrieren
             if (this.hintStreak.count === 4) {
               hint.textContent = STRING_HINT[v.weakString];
-              const svg = this.nowCard.querySelector('svg');
+              const svg = this.nowCard.querySelector('.card-inner:not(.leaving) svg');
               if (svg) svg.replaceWith(chordDiagram(chord(name), { lefty: this.settings.lefty, highlight: v.weakString }));
             }
           },
