@@ -1,7 +1,7 @@
 import { h, clear } from '../ui/dom.ts';
 import { icon, soundHole } from '../ui/icons.ts';
 import { load, totalStars } from '../store.ts';
-import { song } from '../music/songs.ts';
+import { findSong } from '../music/library.ts';
 import type { View } from '../ui/screen.ts';
 
 function tile(href: string, ic: string, title: string, sub: string, cls = ''): HTMLElement {
@@ -16,7 +16,7 @@ function tile(href: string, ic: string, title: string, sub: string, cls = ''): H
 export const home: View = (root) => {
   clear(root);
   const p = load();
-  const last = p.lastSong ? song(p.lastSong) : undefined;
+  const last = p.lastSong ? findSong(p.lastSong) : undefined;
   const firstVisit = !p.days.length;
   root.appendChild(
     h(

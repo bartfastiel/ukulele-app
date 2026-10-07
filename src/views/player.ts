@@ -2,7 +2,8 @@ import { h, clear, announce, reducedMotion } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, praise, keepAwake, STRING_HINT, type View } from '../ui/screen.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
-import { song as findSong } from '../music/songs.ts';
+import { findSong } from '../music/library.ts';
+import { isOwnId } from '../music/own-songs.ts';
 import { chordChanges, eventAt, type Song } from '../music/song.ts';
 import { chord } from '../music/chords.ts';
 import { STRINGS, tabPosition } from '../music/notes.ts';
@@ -127,6 +128,14 @@ class Player {
       }, 'btn-seg', { 'aria-pressed': String(this.settings[key]) });
       return b;
     };
+    const own = isOwnId(this.song.id)
+      ? h(
+          'div',
+          { class: 'row own-tools' },
+          h('a', { class: 'btn btn-seg', href: `#/eigenes-lied/${this.song.id}` }, icon('edit'), 'Bearbeiten'),
+          h('a', { class: 'btn btn-seg', href: `#/lied-teilen/${this.song.id}` }, icon('share'), 'Teilen'),
+        )
+      : null;
     const controls = h(
       'section',
       { class: 'controls' },
@@ -154,6 +163,7 @@ class Player {
         (this.keyBox = h('div', { class: 'key-box' })),
         h('p', { class: 'small' }, this.song.origin),
       ),
+      own,
     );
     const note = this.song.hasMelody
       ? null
