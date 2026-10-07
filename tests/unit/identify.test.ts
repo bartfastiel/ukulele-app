@@ -60,15 +60,23 @@ test('Akkord ist kein einzelner Ton', () => {
   assert.equal(singleNote(peaksOf(strumFrets([0, 0, 0, 3]))), null);
 });
 
-test('Blues: alle Vorgabe-Töne liegen in den ersten drei Bünden, Grundtöne passen zu den Akkorden', async () => {
-  const { BARS, LEVELS, ROOT, position } = await import('../../src/music/blues.ts');
-  for (const level of LEVELS) {
-    if (!level.notes) continue;
-    for (const chordName of BARS) {
-      const notes = level.notes(chordName);
-      assert.equal(notes.length, 4);
-      assert.equal(notes[0].midi % 12, ROOT[chordName].uke % 12, `${level.id} ${chordName}`);
-      for (const n of notes) assert.ok(position(n.midi).fret <= 3, `${level.id} ${chordName}: ${n.midi}`);
+test('Blues in jeder Tonart: Vorgabe-Töne in den ersten drei Bünden, Grundtöne passen, Orgel unter 240 Hz', async () => {
+  const { bluesBars, LEVELS, rootOf, position, organVoicing, scalePositions } = await import('../../src/music/blues.ts');
+  for (let key = 0; key < 12; key++) {
+    const bars = bluesBars(key);
+    assert.equal(rootOf(bars[0]).uke % 12, key);
+    assert.equal(rootOf(bars[4]).uke % 12, (key + 5) % 12);
+    assert.equal(rootOf(bars[8]).uke % 12, (key + 7) % 12);
+    assert.ok(scalePositions(key, 3).length >= 6, `Tonleiter in ${bars[0]}`);
+    for (const level of LEVELS) {
+      if (!level.notes) continue;
+      for (const chordName of bars) {
+        const notes = level.notes(chordName);
+        assert.equal(notes.length, 4);
+        assert.equal(notes[0].midi % 12, rootOf(chordName).uke % 12, `${level.id} ${chordName}`);
+        for (const n of notes) assert.ok(position(n.midi).fret <= 3, `${level.id} ${chordName}: ${n.midi}`);
+      }
     }
+    for (const chordName of bars) for (const m of organVoicing(chordName)) assert.ok(m >= 47 && m <= 58, `${chordName}: ${m}`);
   }
 });
