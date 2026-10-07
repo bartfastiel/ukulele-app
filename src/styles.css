@@ -85,6 +85,7 @@ a {
 }
 
 .card .small,
+.card.small,
 .dialog .small,
 .feedback .small {
   color: var(--ink-soft);
@@ -413,57 +414,136 @@ summary:focus-visible {
 
 .song-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  grid-gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 2px 8px;
 }
 
+/* kompakte Liedzeile: Titel + Sterne oben, Akkorde + Merkmale darunter, Schwierigkeit als Farbstreifen */
 .song-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  width: calc(100% - 12px);
-  min-height: 120px;
+  align-items: stretch;
+  width: calc(100% - 8px);
+  min-height: 60px;
+  margin: 4px;
+  padding: 6px 12px 6px 22px;
   text-align: left;
-  padding: 14px 18px;
+}
+
+.song-card::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 10px;
+  bottom: 10px;
+  width: 5px;
+  border-radius: 3px;
+  background: var(--lvl, #7fd18b);
+}
+
+.lvl-2 {
+  --lvl: #f2c14e;
+}
+
+.lvl-3 {
+  --lvl: #f07a5a;
+}
+
+.song-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
 }
 
 .song-title {
-  font-size: 1.25em;
+  flex: 1;
+  margin-right: 8px;
+  font-size: 1.05em;
+  line-height: 1.2;
 }
 
 .song-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  margin-top: 6px;
+  margin-top: 3px;
 }
 
 .chip,
 .level {
   display: inline-block;
-  padding: 2px 10px;
-  margin: 3px 6px 3px 0;
+  padding: 0 7px;
+  margin: 2px 4px 2px 0;
   border-radius: 999px;
-  font-size: 0.8em;
+  font-size: 0.72em;
+  line-height: 1.5;
   background: rgba(255, 240, 210, 0.92);
   color: var(--ink);
   text-shadow: none;
 }
 
-.level {
-  background: transparent;
-  color: #ffe7b0;
-  border: 2px solid rgba(255, 231, 176, 0.7);
+.song-features {
+  display: inline-flex;
+  margin-left: auto;
+}
+
+.feature {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 240, 210, 0.18);
+  color: #fff4dc;
+}
+
+.feature .icon {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+}
+
+.song-filter {
+  margin-bottom: 6px;
+}
+
+.song-section h2 {
+  margin-top: 14px;
+}
+
+.key-box {
+  margin-top: 6px;
+}
+
+.key-now {
+  display: inline-flex;
+  align-items: center;
+  min-width: 9em;
+  justify-content: center;
+  margin: 6px;
+  padding: 0 12px;
+  font-weight: 900;
+  font-size: 1.15em;
+  color: var(--cream);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.no-melody {
+  font-weight: 700;
 }
 
 .song-stars {
-  margin-top: 8px;
+  flex: none;
+  white-space: nowrap;
 }
 
 .song-stars .icon {
-  width: 28px;
-  height: 28px;
-  margin-right: 2px;
+  width: 16px;
+  height: 16px;
+  margin: 0 0 0 1px;
 }
 
 .song-stars .icon.star.off {
@@ -622,7 +702,7 @@ summary:focus-visible {
 .stage {
   position: relative;
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: 1fr 1.4fr;
   grid-gap: 14px;
   cursor: pointer;
 }
@@ -637,6 +717,49 @@ summary:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* Akkordwechsel: alles rutscht eine Position nach rechts (Gleich → Jetzt → hinaus) */
+.chord-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.card-inner.leaving {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  pointer-events: none;
+  animation: chord-leave 0.28s ease-in forwards;
+}
+
+.card-inner.entering {
+  animation: chord-enter 0.28s ease-out;
+}
+
+@keyframes chord-leave {
+  to {
+    transform: translateX(70%);
+    opacity: 0;
+  }
+}
+
+@keyframes chord-enter {
+  from {
+    transform: translateX(-70%) scale(0.8);
+    opacity: 0.2;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
 
 .card-label {
@@ -1541,19 +1664,7 @@ summary:focus-visible {
     grid-area: controls;
   }
   .stage {
-    grid-template-columns: 1fr;
-  }
-  .next-card {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .next-card .card-label {
-    width: 100%;
-  }
-  .next-card .chord-svg {
-    max-width: 90px;
-    margin-left: 12px;
+    grid-template-columns: 0.8fr 1.2fr;
   }
   .syl-text {
     font-size: 2.1em;
@@ -1620,6 +1731,16 @@ summary:focus-visible {
   .song-list {
     grid-template-columns: 1fr;
   }
+  /* Kategorien als wischbare Zeile statt mehrerer Knopfreihen */
+  .song-filter {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+  .song-filter .btn-seg {
+    flex: none;
+  }
   .now-card .chord-name {
     font-size: 3.2em;
   }
@@ -1651,7 +1772,7 @@ summary:focus-visible {
   }
   .stage {
     grid-area: stage;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1fr 1.2fr;
   }
   .lyrics {
     grid-area: lyrics;

@@ -9,6 +9,7 @@ import { STRINGS, tabPosition } from '../music/notes.ts';
 import { audio, click, pluck, strum, successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, giveStars, markPracticed } from '../store.ts';
+import { keyLabel, originalShift, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
 
 const SPEEDS = [
   { value: 0.6, label: 'Langsam' },
@@ -58,11 +59,18 @@ class Player {
   private stage!: HTMLElement;
 
   private song: Song;
+  /** Lied in der hinterlegten (einfachen) Tonart; `song` ist die gerade gewählte Transposition davon. */
+  private base: Song;
+  private shift = 0;
+  private keyBox!: HTMLElement;
 
   constructor(root: HTMLElement, song: Song) {
-    this.song = song;
-    this.changes = chordChanges(song);
+    this.base = song;
+    this.shift = load().keys[song.id] || 0;
+    this.song = transposeSong(song, this.shift);
+    this.changes = chordChanges(this.song);
     this.render(root);
+    this.drawKeyBox();
     this.showChords(0);
     this.highlight(-1);
   }
@@ -85,8 +93,8 @@ class Player {
     this.stage = h(
       'section',
       { class: 'stage', 'aria-label': 'Akkorde' },
-      this.nowCard,
       this.nextCard,
+      this.nowCard,
       this.overlay,
     );
     this.stage.addEventListener('click', (e) => {
@@ -139,14 +147,19 @@ class Player {
           'div',
           { class: 'seg seg-wrap' },
           toggle('Begleitung', 'backing'),
-          toggle('Melodie', 'melody'),
+          this.song.hasMelody ? toggle('Melodie', 'melody') : null,
           toggle('Klick', 'clickOn'),
-          toggle('Tabulatur', 'tab'),
+          this.song.hasMelody ? toggle('Tabulatur', 'tab') : null,
         ),
+        (this.keyBox = h('div', { class: 'key-box' })),
         h('p', { class: 'small' }, this.song.origin),
       ),
     );
+    const note = this.song.hasMelody
+      ? null
+      : h('p', { class: 'card small no-melody' }, 'Dieses Lied hat hier nur Akkorde und Text – die Melodie singst du so, wie du sie kennst.');
     const main = screen(root, { title: this.song.title, back: '#/lieder', theme: 'brass' }, this.stage, this.lyrics, controls);
+    if (note) main.insertBefore(note, controls);
     main.classList.add('player');
   }
 
@@ -166,7 +179,7 @@ class Player {
         'span',
         { class: `syl${e.joinNext ? ' join' : ''}` },
         h('span', { class: 'syl-chord' }, e.chordChange ? e.chord : ''),
-        h('span', { class: 'syl-text' }, e.syllable || ' '),
+        h('span', { class: 'syl-text' }, e.syllable ? e.syllable.replace(/‿/g, ' ') : ' '),
         h(
           'span',
           { class: `syl-tab${tab ? ` s${tab.string}` : ''}` },
@@ -184,25 +197,49 @@ class Player {
 
   // ---------- Anzeige ----------
 
-  private showChords(idx: number): void {
+  /** Gerade angezeigter „Jetzt“-Akkord – nur bei einem echten Wechsel wird animiert. */
+  private shownChord = '';
+
+  /**
+   * Akkordkarten füllen. Mit `animate` rutscht bei einem Wechsel alles eine Position nach rechts: das alte „Jetzt“
+   * hinaus, „Gleich“ ins „Jetzt“, der nächste Akkord von links ins „Gleich“ – kurz, nur damit das Auge folgt.
+   */
+  private showChords(idx: number, animate = false): void {
     const ev = this.song.events[Math.max(0, idx)];
     const name = ev.chord;
-    clear(this.nowCard);
-    this.nowCard.appendChild(h('div', { class: 'card-label' }, 'Jetzt'));
-    this.nowCard.appendChild(h('div', { class: 'chord-name' }, name));
-    this.nowCard.appendChild(chordDiagram(chord(name), { lefty: this.settings.lefty }));
+    const moving = animate && !reducedMotion() && !!this.shownChord && name !== this.shownChord;
+    this.shownChord = name;
+
+    const nowInner = h(
+      'div',
+      { class: 'card-inner' },
+      h('div', { class: 'card-label' }, 'Jetzt'),
+      h('div', { class: 'chord-name' }, name),
+      chordDiagram(chord(name), { lefty: this.settings.lefty }),
+    );
     const next = this.changes.find((c) => c > Math.max(0, idx));
-    clear(this.nextCard);
+    const nextInner = h('div', { class: 'card-inner' }, h('div', { class: 'card-label' }, 'Gleich'));
     if (next !== undefined) {
       const nn = this.song.events[next].chord;
-      this.nextCard.appendChild(h('div', { class: 'card-label' }, 'Gleich'));
-      this.nextCard.appendChild(h('div', { class: 'chord-name' }, nn));
-      this.nextCard.appendChild(chordDiagram(chord(nn), { lefty: this.settings.lefty, labels: false }));
-      this.nextCard.appendChild(h('div', { class: 'beat-dots', 'aria-hidden': 'true' }));
-    } else {
-      this.nextCard.appendChild(h('div', { class: 'card-label' }, 'Gleich'));
-      this.nextCard.appendChild(h('div', { class: 'chord-name end' }, 'Ende'));
-    }
+      nextInner.appendChild(h('div', { class: 'chord-name' }, nn));
+      nextInner.appendChild(chordDiagram(chord(nn), { lefty: this.settings.lefty, labels: false }));
+      nextInner.appendChild(h('div', { class: 'beat-dots', 'aria-hidden': 'true' }));
+    } else nextInner.appendChild(h('div', { class: 'chord-name end' }, 'Ende'));
+
+    this.swap(this.nowCard, nowInner, moving);
+    this.swap(this.nextCard, nextInner, moving);
+  }
+
+  private swap(card: HTMLElement, inner: HTMLElement, moving: boolean): void {
+    const old = card.querySelector('.card-inner:not(.leaving)');
+    if (moving && old) {
+      // die alte Karte rutscht nach rechts hinaus und verschwindet; sie zählt nicht mehr als Inhalt
+      old.classList.add('leaving');
+      old.setAttribute('aria-hidden', 'true');
+      window.setTimeout(() => old.parentNode && old.parentNode.removeChild(old), 320);
+      inner.classList.add('entering');
+    } else clear(card);
+    card.appendChild(inner);
   }
 
   private highlight(idx: number): void {
@@ -232,7 +269,7 @@ class Player {
   }
 
   private updateDots(beat: number): void {
-    const dots = this.nextCard.querySelector('.beat-dots');
+    const dots = this.nextCard.querySelector('.card-inner:not(.leaving) .beat-dots');
     if (!dots) return;
     const next = this.changes.find((c) => this.song.events[c].beat > beat + 1e-6);
     if (next === undefined) return;
@@ -265,7 +302,7 @@ class Player {
           const prevChord = this.lastIdx >= 0 ? this.song.events[this.lastIdx].chord : '';
           this.lastIdx = idx;
           this.highlight(idx);
-          if (this.song.events[idx].chord !== prevChord) this.showChords(idx);
+          if (this.song.events[idx].chord !== prevChord) this.showChords(idx, true);
         }
         this.updateDots(beat);
       }
@@ -348,6 +385,9 @@ class Player {
     for (let b = Math.ceil(this.scheduledTo - 1e-6); b < until; b++) {
       if (b < this.scheduledTo - 1e-6) continue;
       const barPos = (((b - (s.pickup ? s.pickup - s.meter : 0)) % s.meter) + s.meter) % s.meter;
+      // Zusammengesetzte Takte (6/8): Schlag = Achtel, Klick und Begleitung nur auf den beiden Hauptschlägen
+      const strong = s.meter === 6 ? barPos % 3 === 0 : true;
+      if (!strong) continue;
       if (b < 0 || this.settings.clickOn) click(t(b), barPos === 0, b < 0 ? 0.6 : 0.35);
       if (b >= 0 && this.settings.backing) {
         const ev = s.events[eventAt(s, b)];
@@ -380,7 +420,7 @@ class Player {
     const idx = eventAt(this.song, beat + 1e-6);
     this.lastIdx = idx;
     this.highlight(idx);
-    this.showChords(idx);
+    this.showChords(idx, true);
     const name = this.song.events[idx].chord;
     const hint = h('div', { class: 'hint-line' }, this.micOk ? 'Ich höre zu …' : 'Tippe auf „Geschafft“, wenn du so weit bist.');
     this.overlayText(
@@ -415,7 +455,7 @@ class Player {
             // Nur bei wiederholt gleicher Diagnose einen Tipp geben – einzelne Fehlmessungen sollen nicht frustrieren
             if (this.hintStreak.count === 4) {
               hint.textContent = STRING_HINT[v.weakString];
-              const svg = this.nowCard.querySelector('svg');
+              const svg = this.nowCard.querySelector('.card-inner:not(.leaving) svg');
               if (svg) svg.replaceWith(chordDiagram(chord(name), { lefty: this.settings.lefty, highlight: v.weakString }));
             }
           },
@@ -505,6 +545,59 @@ class Player {
       this.start = audio().currentTime - beat * this.spb;
       this.scheduledTo = beat;
     }
+  }
+
+  /** Tonart wählen: Akkorde, Griffbilder, Melodie und Tabulatur wandern mit. */
+  private setShift(shift: number): void {
+    const n = ((((shift + 6) % 12) + 12) % 12) - 6;
+    this.shift = n;
+    save((p) => {
+      if (n) p.keys[this.base.id] = n;
+      else delete p.keys[this.base.id];
+    });
+    this.song = transposeSong(this.base, n);
+    this.changes = chordChanges(this.song);
+    this.buildLyrics();
+    this.lastLine = -1;
+    this.reset();
+    this.drawKeyBox();
+  }
+
+  private drawKeyBox(): void {
+    const k = songKey(this.base);
+    const suggest = suggestShift(this.base);
+    const orig = originalShift(this.base);
+    const label = (s: number) => keyLabel(k.root + s, k.minor);
+    const marks = (s: number) => `${s === suggest ? ' ★' : ''}${orig !== null && s === orig ? ' ◆' : ''}`;
+    clear(this.keyBox);
+    const quick = (text: string, s: number) =>
+      button(text, () => this.setShift(s), 'btn-seg', { 'aria-pressed': String(this.shift === s) });
+    this.keyBox.appendChild(
+      h(
+        'div',
+        { class: 'seg seg-wrap', role: 'group', 'aria-label': 'Tonart' },
+        button('−', () => this.setShift(this.shift - 1), 'btn-seg', { 'aria-label': 'Einen Halbton tiefer' }),
+        h('span', { class: 'key-now', 'aria-live': 'polite' }, `Tonart ${label(this.shift)}${marks(this.shift)}`),
+        button('+', () => this.setShift(this.shift + 1), 'btn-seg', { 'aria-label': 'Einen Halbton höher' }),
+      ),
+    );
+    this.keyBox.appendChild(
+      h(
+        'div',
+        { class: 'seg seg-wrap' },
+        quick(`Einfach: ${label(0)}${marks(0)}`, 0),
+        suggest !== 0 ? quick(`★ Vorschlag: ${label(suggest)}`, suggest) : null,
+        orig !== null && orig !== 0 && orig !== suggest ? quick(`◆ Original: ${label(orig)}`, orig) : null,
+      ),
+    );
+    this.keyBox.appendChild(
+      h(
+        'p',
+        { class: 'small' },
+        '★ Vorschlag: bester Kompromiss aus einfachen Griffen, Stimmlage und Wiedererkennung.',
+        orig !== null ? ' ◆ Original- bzw. Quellentonart.' : '',
+      ),
+    );
   }
 
   private reset(): void {

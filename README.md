@@ -31,10 +31,45 @@ Ohne Mikrofon funktioniert alles weiter – dann bestätigt das Kind selbst.
 
 ## Lieder
 
-Nur gemeinfreie Lieder oder eigene: Bruder Jakob, Row Row Row Your Boat, Hänschen klein, Alle meine Entchen,
-Ode an die Freude, Twinkle Twinkle Little Star, Jingle Bells, Zum Geburtstag viel Glück und das eigene
-„G-C-E-A (das Saiten-Lied)“. Neue Lieder kommen in `src/music/songs.ts` (Notation siehe `SongSource` in
-`src/music/song.ts`); die Unit-Tests prüfen Taktlängen, Griffbarkeit und Akkorde.
+Über 80 Lieder in sechs Gruppen: Kinderlieder, Lagerfeuer & Wandern, Frühling bis Herbst, Weihnachten, English Songs
+und eigene Lieder. Ein Teil hat eine ausnotierte Melodie (Karaoke mit Melodie und Tabulatur), die übrigen sind
+„Akkorde + Text“ – die Melodie kennt man, die App führt durch die Akkordwechsel.
+
+Alle Lieder sind gemeinfrei (Text **und** Melodie: Urheber vor 1956 gestorben oder nachweislich traditionell) oder
+eigene. Bei jedem Lied stehen Urheber mit Lebensdaten und die gemeinfreie Textquelle (z. B. volksliederarchiv.de,
+Erstdrucke über Wikipedia, Camp-Fire Choruses 1916, The Shanty Book 1921). Bewusst ausgeschlossen sind u. a. jüngere
+Textfassungen (z. B. „Im Märzen der Bauer“ nach Hensel 1923, frei erst ab 2027), Lieder mit geschützter Melodie
+(„Hoch auf dem gelben Wagen“) und Lieder mit rassistischen Originalstrophen.
+
+- Mit Melodie: `src/music/songs.ts` (Notation siehe `SongSource.text` in `src/music/song.ts`)
+- Akkorde + Text: `src/music/songs-chordpro.ts`, `songs-kinder.ts`, `songs-english.ts` (ChordPro-Stil `[C]Text`,
+  ein Akkord = ein Takt, `[G7:2]` = zwei Schläge)
+
+Die Unit-Tests prüfen Taktlängen, Griffbarkeit, eindeutige IDs und dass jeder Akkord ein Griffbild hat.
+
+**Melodien aus Notenbeispielen:** Viele Wikipedia-Artikel zu Volksliedern enthalten die (gemeinfreie) Melodie als
+LilyPond-Notenbeispiel. `tools/melody/` liest daraus Tonhöhen, Dauern, Silben und ggf. Akkorde, transponiert in die
+einfache Tonart der App und legt unsere Akkorde per Textabgleich bzw. Harmonisierung auf die Silben. Der Notentext
+wird mit unserem geprüften Text verglichen; abweichende, geschützte Fassungen (z. B. „Im Märzen der Bauer“ nach
+Hensel) werden ausgeschlossen.
+
+```sh
+node tools/melody/fetch-wiki.ts <cache>              # Artikel laden (langsam, Wikipedia drosselt)
+node tools/melody/import.ts <ordner-mit-.ly> --write  # src/music/songs-melodies.ts erzeugen
+```
+
+**Transponieren:** Jedes Lied lässt sich in alle zwölf Tonarten verschieben (Griffe für jede Tonart aus einer
+geprüften Tabelle bzw. per Grifffinder). ★ markiert den Vorschlag – bester Kompromiss aus einfachen Griffen,
+Kinderstimmlage (etwa C4–D5, Melodie in der günstigsten Oktave) und Nähe zur Original-/Quellentonart (◆).
+
+### Rechtliches zu den Liedern
+
+Liedtexte und Melodien sind urheberrechtlich geschützt, bis 70 Jahre nach dem Tod des letzten Urhebers; reine
+Akkordfolgen sind es nach herrschender Meinung nicht. Text mit Akkorden, eine Melodie als Tabulatur oder das
+Abspielen der Melodie bräuchten für geschützte Lieder Genehmigungen der Musikverlage. Diese App enthält deshalb
+nur gemeinfreie Lieder (mit Quelle in `origin`) und eigene Lieder, auch nicht als Testdaten im Repo.
+Hinweise von Rechteinhabern bitte als Issue: https://github.com/bartfastiel/ukulele-app/issues – betroffene Inhalte
+werden sofort entfernt. (Keine Rechtsberatung.)
 
 ## Technik
 

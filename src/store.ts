@@ -4,6 +4,8 @@ export interface Progress {
   /** Übungstage als YYYY-MM-DD (Ortszeit). */
   days: string[];
   bestHunt: Record<string, number>;
+  /** Gewählte Transposition je Lied in Halbtönen (0 = einfache Standardtonart). */
+  keys: Record<string, number>;
   chordsChecked: string[];
   tunedStrings: number;
   lastSong: string | null;
@@ -25,6 +27,7 @@ const DEFAULTS: Progress = {
   stars: {},
   days: [],
   bestHunt: {},
+  keys: {},
   chordsChecked: [],
   tunedStrings: 0,
   lastSong: null,
@@ -51,7 +54,7 @@ export function load(): Progress {
   } catch {
     data = {};
   }
-  cache = { ...DEFAULTS, ...data, settings: { ...DEFAULTS.settings, ...(data.settings || {}) } };
+  cache = { ...DEFAULTS, ...data, keys: { ...(data.keys || {}) }, settings: { ...DEFAULTS.settings, ...(data.settings || {}) } };
   return cache;
 }
 
