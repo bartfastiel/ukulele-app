@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.ts';
 
 // Das künstliche Mikrofon spielt eine einzelne E-Saite, 20 Cent zu tief (tools/make-wav.ts).
 

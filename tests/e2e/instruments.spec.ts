@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './fixtures.ts';
 
 /** Gitarre und Banjo auf ihren eigenen Seiten (/gitarre/, /banjo/ – in Produktion eigene Subdomains). */
 const CASES = [

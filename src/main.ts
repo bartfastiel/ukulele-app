@@ -85,10 +85,14 @@ function mount(): void {
 // zuerst das Instrument: Holz und Farben hängen davon ab
 initInstrument();
 installWood();
-if (location.hash.indexOf('#/') === 0) {
-  // frühere Adressen (#/lied/…, #/teilen/…) auf die neuen Seiten umleiten
+/** Frühere Adressen (#/lied/…, #/teilen/…) auf die neuen Seiten umleiten – auch bei einem Wechsel nur hinter dem „#“. */
+function redirectOldHash(): boolean {
+  if (location.hash.indexOf('#/') !== 0) return false;
   location.replace(link(location.hash.slice(2), isLang(html.lang) ? html.lang : 'de'));
-} else {
+  return true;
+}
+window.addEventListener('hashchange', redirectOldHash);
+if (!redirectOldHash()) {
   setLang(isLang(html.lang) ? html.lang : 'de');
   if (load().settings.calm) html.classList.add('calm');
   mount();

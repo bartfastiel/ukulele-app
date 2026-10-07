@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.ts';
 
 // Das künstliche Mikrofon spielt jede Sekunde einen C-Akkord (tools/make-wav.ts).
 
