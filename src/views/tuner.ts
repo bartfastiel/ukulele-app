@@ -7,6 +7,7 @@ import { openMic } from '../audio/mic.ts';
 import { pluck, successSound } from '../audio/engine.ts';
 import { save } from '../store.ts';
 import { TuningCoach, tipText } from '../audio/tuning-coach.ts';
+import { t } from '../i18n.ts';
 
 export const tuner: View = (root) => {
   let raf = 0;
@@ -36,13 +37,13 @@ export const tuner: View = (root) => {
     s('circle', { cx: 100, cy: 110, r: 7, class: 'hub' }),
   );
   const note = h('div', { class: 'tuner-note' }, '–');
-  const advice = h('div', { class: 'feedback', 'aria-live': 'polite' }, 'Tippe auf „Zuhören“ und zupf eine Saite.');
+  const advice = h('div', { class: 'feedback', 'aria-live': 'polite' }, t('Tippe auf „Zuhören“ und zupf eine Saite.'));
   const tipBox = h('div', { class: 'feedback tip', 'aria-live': 'polite', hidden: true });
   const coach = new TuningCoach();
   let tipString = -1;
   const showTip = (text: string | null, stringIdx = -1) => {
     tipBox.hidden = !text;
-    tipBox.textContent = text ? `Tipp: ${text}` : '';
+    tipBox.textContent = text ? t('Tipp: {text}', { text }) : '';
     tipString = stringIdx;
   };
   const stringBtns = STRINGS.map((st) =>
@@ -50,7 +51,7 @@ export const tuner: View = (root) => {
       h('span', null, h('span', { class: 'sname' }, st.name), icon('check', 'icon tick')),
       () => pluck(st.midi, 0, 0.7),
       'btn-string',
-      { 'aria-label': `${st.name}-Saite anhören` },
+      { 'aria-label': t('{s}-Saite anhören', { s: st.name }) },
     ),
   );
   stringBtns.forEach((b, i) => b.classList.toggle('ok', done[i]));
@@ -59,10 +60,10 @@ export const tuner: View = (root) => {
     const buf = new Float32Array(4096);
     const tick = () => {
       mic.timeData(buf);
-      const t = performance.now();
+      const now = performance.now();
       const p = detectPitch(buf, mic.sampleRate, 200, 900);
       if (!p || p.clarity <= 0.85) {
-        const tip = coach.silence(t);
+        const tip = coach.silence(now);
         if (tip) showTip(tipText(tip, STRINGS[tip.string].name), tip.string);
       }
       if (p && p.clarity > 0.85) {
@@ -78,7 +79,7 @@ export const tuner: View = (root) => {
         if (Math.abs(bestC) < 400) {
           let level = 0;
           for (let i = 0; i < buf.length; i++) level += buf[i] * buf[i];
-          const tip = coach.reading(best, bestC, Math.sqrt(level / buf.length), t);
+          const tip = coach.reading(best, bestC, Math.sqrt(level / buf.length), now);
           if (tip) showTip(tipText(tip, STRINGS[tip.string].name), tip.string);
           if (best !== lastString) smooth = bestC;
           smooth = smooth * 0.6 + bestC * 0.4;
@@ -90,26 +91,26 @@ export const tuner: View = (root) => {
           const ok = Math.abs(smooth) < 6;
           gauge.classList.toggle('in-tune', ok);
           if (ok) {
-            advice.textContent = `${STRINGS[best].name}-Saite: genau richtig!`;
+            advice.textContent = t('{s}-Saite: genau richtig!', { s: STRINGS[best].name });
             if (tipString === best) showTip(null);
             if (!inTuneSince) inTuneSince = performance.now();
             if (performance.now() - inTuneSince > 700 && !done[best]) {
               done[best] = true;
               stringBtns[best].classList.add('ok');
               successSound();
-              announce(`${STRINGS[best].name}-Saite gestimmt`);
+              announce(t('{s}-Saite gestimmt', { s: STRINGS[best].name }));
               const count = done.filter(Boolean).length;
               save((pr) => (pr.tunedStrings = Math.max(pr.tunedStrings, count)));
-              if (count === 4) advice.textContent = 'Alle vier Saiten gestimmt – los geht’s!';
+              if (count === 4) advice.textContent = t('Alle vier Saiten gestimmt – los geht’s!');
             }
           } else {
             inTuneSince = 0;
             advice.textContent =
               smooth < 0
-                ? `${STRINGS[best].name}-Saite ist zu tief – Wirbel etwas fester drehen.`
-                : `${STRINGS[best].name}-Saite ist zu hoch – Wirbel etwas lockern.`;
+                ? t('{s}-Saite ist zu tief – Wirbel etwas fester drehen.', { s: STRINGS[best].name })
+                : t('{s}-Saite ist zu hoch – Wirbel etwas lockern.', { s: STRINGS[best].name });
           }
-        } else if (Math.abs(bestC) >= 400) advice.textContent = 'Das klingt weit weg von G, C, E oder A – zupf eine einzelne Saite.';
+        } else if (Math.abs(bestC) >= 400) advice.textContent = t('Das klingt weit weg von G, C, E oder A – zupf eine einzelne Saite.');
       }
       raf = requestAnimationFrame(tick);
     };
@@ -117,15 +118,15 @@ export const tuner: View = (root) => {
   };
 
   const listen = button(
-    h('span', null, icon('mic'), ' Zuhören'),
+    h('span', null, icon('mic'), ' ', t('Zuhören')),
     () => {
       void ensureMic().then(async (ok) => {
         if (!ok) {
-          advice.textContent = 'Ohne Mikrofon: Tippe auf eine Saite unten, hör genau hin und dreh, bis deine Saite gleich klingt.';
+          advice.textContent = t('Ohne Mikrofon: Tippe auf eine Saite unten, hör genau hin und dreh, bis deine Saite gleich klingt.');
           return;
         }
         listen.disabled = true;
-        advice.textContent = 'Zupf eine Saite …';
+        advice.textContent = t('Zupf eine Saite …');
         releaseWake = keepAwake();
         loop(await openMic());
       });
@@ -135,7 +136,7 @@ export const tuner: View = (root) => {
 
   screen(
     root,
-    { title: 'Stimmen', theme: 'pearl' },
+    { title: t('Stimmen'), theme: 'pearl' },
     h(
       'div',
       { class: 'tuner' },
@@ -144,7 +145,7 @@ export const tuner: View = (root) => {
         'div',
         { class: 'tuner-side' },
         listen,
-        h('p', { class: 'small' }, 'Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: G – C – E – A.'),
+        h('p', { class: 'small' }, t('Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: G – C – E – A.')),
         h('div', { class: 'string-row' }, ...stringBtns),
       ),
     ),

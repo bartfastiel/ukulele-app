@@ -1,14 +1,15 @@
+import { tk } from '../i18n.ts';
 import { parsePitch } from './notes.ts';
 
 export type Category = 'kinder' | 'jahreszeiten' | 'weihnachten' | 'lagerfeuer' | 'english' | 'eigene';
 
 export const CATEGORIES: { id: Category; title: string }[] = [
-  { id: 'kinder', title: 'Kinderlieder' },
-  { id: 'lagerfeuer', title: 'Lagerfeuer & Wandern' },
-  { id: 'jahreszeiten', title: 'Frühling bis Herbst' },
-  { id: 'weihnachten', title: 'Weihnachten' },
-  { id: 'english', title: 'English Songs' },
-  { id: 'eigene', title: 'Eigene Lieder' },
+  { id: 'kinder', title: tk('Kinderlieder') },
+  { id: 'lagerfeuer', title: tk('Lagerfeuer & Wandern') },
+  { id: 'jahreszeiten', title: tk('Frühling bis Herbst') },
+  { id: 'weihnachten', title: tk('Weihnachten') },
+  { id: 'english', title: tk('English Songs') },
+  { id: 'eigene', title: tk('Eigene Lieder') },
 ];
 
 export interface SongSource {

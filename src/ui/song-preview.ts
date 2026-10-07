@@ -1,6 +1,7 @@
 import { h } from './dom.ts';
 import type { Song } from '../music/song.ts';
 import type { ImportResult } from '../music/import.ts';
+import { t, tk, tp } from '../i18n.ts';
 
 /** Liedtext mit Akkorden über den Wörtern, wie er im Player erscheint – nur ruhig, ohne Ablauf. */
 export function songPreview(song: Song): HTMLElement {
@@ -23,9 +24,9 @@ export function songPreview(song: Song): HTMLElement {
 }
 
 const FORMAT: Record<string, string> = {
-  chordpro: 'Akkorde in eckigen Klammern, z. B. [C]',
-  'chord-lines': 'Akkordzeilen über dem Text',
-  mixed: 'Akkorde in Klammern und Akkordzeilen',
+  chordpro: tk('Akkorde in eckigen Klammern, z. B. [C]'),
+  'chord-lines': tk('Akkordzeilen über dem Text'),
+  mixed: tk('Akkorde in Klammern und Akkordzeilen'),
 };
 
 /** Freundliche Hinweise zum Einlesen: erkanntes Format, Akkorde, was weggelassen oder vereinfacht wurde. */
@@ -33,21 +34,21 @@ export function importNotes(r: ImportResult): HTMLElement {
   const box = h('div', { class: 'pv-notes', 'aria-live': 'polite' });
   if (!r.chords.length) {
     box.appendChild(
-      h('p', { class: 'note-warn' }, 'Ich finde noch keine Akkorde. Schreib sie in eckige Klammern wie [C] oder in eine eigene Zeile über den Text.'),
+      h('p', { class: 'note-warn' }, t('Ich finde noch keine Akkorde. Schreib sie in eckige Klammern wie [C] oder in eine eigene Zeile über den Text.')),
     );
     return box;
   }
-  box.appendChild(h('p', null, h('strong', null, 'Erkannt: '), FORMAT[r.format] || ''));
+  box.appendChild(h('p', null, h('strong', null, t('Erkannt:')), ' ', FORMAT[r.format] ? t(FORMAT[r.format]) : ''));
   box.appendChild(h('div', { class: 'chip-row' }, ...r.chords.map((c) => h('span', { class: 'chip chip-big' }, c))));
-  if (r.german) box.appendChild(h('p', { class: 'small' }, 'Deutsche Schreibweise erkannt: H heißt hier B, und B heißt Bb.'));
+  if (r.german) box.appendChild(h('p', { class: 'small' }, t('Deutsche Schreibweise erkannt: H heißt hier B, und B heißt Bb.')));
   if (r.simplified.length)
-    box.appendChild(h('p', { class: 'small' }, 'Etwas einfacher gemacht: ' + r.simplified.map((x) => `${x.from} → ${x.to}`).join(', ') + '.'));
+    box.appendChild(h('p', { class: 'small' }, t('Etwas einfacher gemacht: {list}.', { list: r.simplified.map((x) => `${x.from} → ${x.to}`).join(', ') })));
   if (r.unknown.length)
     box.appendChild(
       h(
         'p',
         { class: 'note-warn' },
-        `Diese Akkorde kenne ich nicht: ${r.unknown.join(', ')}. Ich lasse sie weg – du kannst sie im Text ändern.`,
+        t('Diese Akkorde kenne ich nicht: {list}. Ich lasse sie weg – du kannst sie im Text ändern.', { list: r.unknown.join(', ') }),
       ),
     );
   if (r.linesWithoutChords)
@@ -55,9 +56,11 @@ export function importNotes(r: ImportResult): HTMLElement {
       h(
         'p',
         { class: 'small' },
-        r.linesWithoutChords === 1
-          ? '1 Zeile hat keinen eigenen Akkord – sie wird beim Akkord davor mitgesungen.'
-          : `${r.linesWithoutChords} Zeilen haben keinen eigenen Akkord – sie werden beim Akkord davor mitgesungen.`,
+        tp(
+          r.linesWithoutChords,
+          '{n} Zeile hat keinen eigenen Akkord – sie wird beim Akkord davor mitgesungen.',
+          '{n} Zeilen haben keinen eigenen Akkord – sie werden beim Akkord davor mitgesungen.',
+        ),
       ),
     );
   return box;

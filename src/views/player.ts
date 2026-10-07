@@ -13,11 +13,12 @@ import { load, save, giveStars, markPracticed } from '../store.ts';
 import { keyLabel, originalShift, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
 import { simplifications, simplifySong } from '../music/simplify.ts';
 import { diagnose } from '../music/diagnose.ts';
+import { t, tk, tParts } from '../i18n.ts';
 
 const SPEEDS = [
-  { value: 0.6, label: 'Langsam' },
-  { value: 0.8, label: 'Mittel' },
-  { value: 1, label: 'Original' },
+  { value: 0.6, label: tk('Langsam') },
+  { value: 0.8, label: tk('Mittel') },
+  { value: 1, label: tk('Original') },
 ];
 
 type Phase = 'idle' | 'countin' | 'playing' | 'paused' | 'waiting' | 'done';
@@ -95,7 +96,7 @@ class Player {
     this.overlay = h('div', { class: 'stage-overlay', hidden: true });
     this.stage = h(
       'section',
-      { class: 'stage', 'aria-label': 'Akkorde' },
+      { class: 'stage', 'aria-label': t('Akkorde') },
       this.nextCard,
       this.nowCard,
       this.overlay,
@@ -104,9 +105,9 @@ class Player {
       if ((e.target as HTMLElement).closest('button')) return;
       this.primary();
     });
-    this.lyrics = h('section', { class: `lyrics card ${this.settings.tab ? 'with-tab' : ''}`, 'aria-label': 'Liedtext' });
+    this.lyrics = h('section', { class: `lyrics card ${this.settings.tab ? 'with-tab' : ''}`, 'aria-label': t('Liedtext') });
     this.buildLyrics();
-    this.playBtn = button(h('span', null, icon('play'), h('span', { class: 'lbl' }, 'Los geht’s')), () => this.primary(), 'btn-primary btn-play');
+    this.playBtn = button(h('span', null, icon('play'), h('span', { class: 'lbl' }, t('Los geht’s'))), () => this.primary(), 'btn-primary btn-play');
 
     const seg = (name: string, options: { label: string; active: boolean; on: () => void }[]) =>
       h(
@@ -134,33 +135,33 @@ class Player {
       ? h(
           'div',
           { class: 'row own-tools' },
-          h('a', { class: 'btn btn-seg', href: `#/eigenes-lied/${this.song.id}` }, icon('edit'), 'Bearbeiten'),
-          h('a', { class: 'btn btn-seg', href: `#/lied-teilen/${this.song.id}` }, icon('share'), 'Teilen'),
+          h('a', { class: 'btn btn-seg', href: `#/eigenes-lied/${this.song.id}` }, icon('edit'), t('Bearbeiten')),
+          h('a', { class: 'btn btn-seg', href: `#/lied-teilen/${this.song.id}` }, icon('share'), t('Teilen')),
         )
       : null;
     const controls = h(
       'section',
       { class: 'controls' },
       this.playBtn,
-      seg('Modus', [
-        { label: 'Wartet auf mich', active: this.settings.waitMode, on: () => this.setMode(true) },
-        { label: 'Läuft durch', active: !this.settings.waitMode, on: () => this.setMode(false) },
+      seg(t('Modus'), [
+        { label: t('Wartet auf mich'), active: this.settings.waitMode, on: () => this.setMode(true) },
+        { label: t('Läuft durch'), active: !this.settings.waitMode, on: () => this.setMode(false) },
       ]),
       seg(
-        'Tempo',
-        SPEEDS.map((sp) => ({ label: sp.label, active: Math.abs(this.settings.speed - sp.value) < 0.01, on: () => this.setSpeed(sp.value) })),
+        t('Tempo'),
+        SPEEDS.map((sp) => ({ label: t(sp.label), active: Math.abs(this.settings.speed - sp.value) < 0.01, on: () => this.setSpeed(sp.value) })),
       ),
       h(
         'details',
         { class: 'more' },
-        h('summary', { class: 'btn btn-seg' }, icon('gear'), ' Mehr'),
+        h('summary', { class: 'btn btn-seg' }, icon('gear'), ' ', t('Mehr')),
         h(
           'div',
           { class: 'seg seg-wrap' },
-          toggle('Begleitung', 'backing'),
-          this.song.hasMelody ? toggle('Melodie', 'melody') : null,
-          toggle('Klick', 'clickOn'),
-          this.song.hasMelody ? toggle('Tabulatur', 'tab') : null,
+          toggle(t('Begleitung'), 'backing'),
+          this.song.hasMelody ? toggle(t('Melodie'), 'melody') : null,
+          toggle(t('Klick'), 'clickOn'),
+          this.song.hasMelody ? toggle(t('Tabulatur'), 'tab') : null,
         ),
         (this.keyBox = h('div', { class: 'key-box' })),
         h('p', { class: 'small' }, this.song.origin),
@@ -169,7 +170,7 @@ class Player {
     );
     const note = this.song.hasMelody
       ? null
-      : h('p', { class: 'card small no-melody' }, 'Dieses Lied hat hier nur Akkorde und Text – die Melodie singst du so, wie du sie kennst.');
+      : h('p', { class: 'card small no-melody' }, t('Dieses Lied hat hier nur Akkorde und Text – die Melodie singst du so, wie du sie kennst.'));
     const main = screen(root, { title: this.song.title, back: '#/lieder', theme: 'brass' }, this.stage, this.lyrics, controls);
     if (note) main.insertBefore(note, controls);
     main.classList.add('player');
@@ -225,18 +226,18 @@ class Player {
     const nowInner = h(
       'div',
       { class: 'card-inner' },
-      h('div', { class: 'card-label' }, 'Jetzt'),
+      h('div', { class: 'card-label' }, t('Jetzt')),
       h('div', { class: 'chord-name' }, name),
       chordDiagram(chord(name), { lefty: this.settings.lefty }),
     );
     const next = this.changes.find((c) => c > Math.max(0, idx));
-    const nextInner = h('div', { class: 'card-inner' }, h('div', { class: 'card-label' }, 'Gleich'));
+    const nextInner = h('div', { class: 'card-inner' }, h('div', { class: 'card-label' }, t('Gleich')));
     if (next !== undefined) {
       const nn = this.song.events[next].chord;
       nextInner.appendChild(h('div', { class: 'chord-name' }, nn));
       nextInner.appendChild(chordDiagram(chord(nn), { lefty: this.settings.lefty, labels: false }));
       nextInner.appendChild(h('div', { class: 'beat-dots', 'aria-hidden': 'true' }));
-    } else nextInner.appendChild(h('div', { class: 'chord-name end' }, 'Ende'));
+    } else nextInner.appendChild(h('div', { class: 'chord-name end' }, t('Ende')));
 
     this.swap(this.nowCard, nowInner, moving);
     this.swap(this.nextCard, nextInner, moving);
@@ -420,7 +421,7 @@ class Player {
     this.phase = 'paused';
     window.clearInterval(this.timer);
     cancelAnimationFrame(this.raf);
-    this.overlayText(h('div', { class: 'paused' }, 'Pause – tippen zum Weiterspielen'));
+    this.overlayText(h('div', { class: 'paused' }, t('Pause – tippen zum Weiterspielen')));
     this.setPlayLabel();
   }
 
@@ -434,17 +435,17 @@ class Player {
     this.highlight(idx);
     this.showChords(idx, true);
     const name = this.song.events[idx].chord;
-    const hint = h('div', { class: 'hint-line' }, this.micOk ? 'Ich höre zu …' : 'Tippe auf „Geschafft“, wenn du so weit bist.');
+    const hint = h('div', { class: 'hint-line' }, this.micOk ? t('Ich höre zu …') : t('Tippe auf „Geschafft“, wenn du so weit bist.'));
     this.overlayText(
       h(
         'div',
         { class: 'wait' },
-        h('div', { class: 'wait-title' }, 'Spiel jetzt ', h('b', null, name)),
+        h('div', { class: 'wait-title' }, ...tParts('Spiel jetzt {chord}', { chord: h('b', null, name) })),
         hint,
-        button(h('span', null, icon('check'), ' Geschafft'), () => this.confirmChord(false), 'btn-primary'),
+        button(h('span', null, icon('check'), ' ', t('Geschafft')), () => this.confirmChord(false), 'btn-primary'),
       ),
     );
-    announce(`Spiel jetzt ${name}`);
+    announce(t('Spiel jetzt {chord}', { chord: name }));
     this.setPlayLabel();
     if (this.micOk) {
       const handle = (l: ChordListener) => {
@@ -473,7 +474,7 @@ class Player {
           },
         }).then(handle, () => {
           this.micOk = false;
-          hint.textContent = 'Tippe auf „Geschafft“, wenn du so weit bist.';
+          hint.textContent = t('Tippe auf „Geschafft“, wenn du so weit bist.');
         });
     }
   }
@@ -485,7 +486,7 @@ class Player {
     if (heard) {
       successSound();
       this.overlayText(h('div', { class: 'praise' }, praise()));
-      announce('Richtig!');
+      announce(t('Richtig!'));
     } else this.overlayText(null);
     const from = this.held;
     // Erster Akkord: danach Einzähler; mitten im Lied geht es direkt weiter
@@ -509,26 +510,26 @@ class Player {
     successSound();
     const total = load().stars[this.song.id] || 0;
     const next = this.settings.waitMode
-      ? 'Nächster Stern: Spiel es mit „Läuft durch“.'
+      ? t('Nächster Stern: Spiel es mit „Läuft durch“.')
       : this.settings.speed < 1
-        ? 'Nächster Stern: Spiel es im Original-Tempo.'
-        : 'Du hast alle Sterne für dieses Lied!';
+        ? t('Nächster Stern: Spiel es im Original-Tempo.')
+        : t('Du hast alle Sterne für dieses Lied!');
     this.overlayText(
       h(
         'div',
         { class: 'result' },
         h('div', { class: 'result-stars' }, ...[1, 2, 3].map((i) => icon('star', `icon star ${i <= total ? 'on' : 'off'}`))),
-        h('div', { class: 'wait-title' }, improved ? 'Neuer Stern!' : 'Geschafft!'),
-        h('p', null, total < 3 ? next : 'Du hast alle Sterne für dieses Lied!'),
+        h('div', { class: 'wait-title' }, improved ? t('Neuer Stern!') : t('Geschafft!')),
+        h('p', null, total < 3 ? next : t('Du hast alle Sterne für dieses Lied!')),
         h(
           'div',
           { class: 'row' },
-          button('Nochmal', () => void this.begin(), 'btn-primary'),
-          h('a', { class: 'btn', href: '#/lieder' }, 'Andere Lieder'),
+          button(t('Nochmal'), () => void this.begin(), 'btn-primary'),
+          h('a', { class: 'btn', href: '#/lieder' }, t('Andere Lieder')),
         ),
       ),
     );
-    announce(improved ? 'Neuer Stern!' : 'Geschafft!');
+    announce(improved ? t('Neuer Stern!') : t('Geschafft!'));
     this.setPlayLabel();
   }
 
@@ -540,7 +541,7 @@ class Player {
         'span',
         null,
         icon(playing ? 'pause' : 'play'),
-        h('span', { class: 'lbl' }, playing ? 'Pause' : this.phase === 'paused' ? 'Weiter' : this.phase === 'waiting' ? 'Geschafft' : 'Los geht’s'),
+        h('span', { class: 'lbl' }, playing ? t('Pause') : this.phase === 'paused' ? t('Weiter') : this.phase === 'waiting' ? t('Geschafft') : t('Los geht’s')),
       ),
     );
   }
@@ -598,19 +599,19 @@ class Player {
     this.keyBox.appendChild(
       h(
         'div',
-        { class: 'seg seg-wrap', role: 'group', 'aria-label': 'Tonart' },
-        button('−', () => this.setShift(this.shift - 1), 'btn-seg', { 'aria-label': 'Einen Halbton tiefer' }),
-        h('span', { class: 'key-now', 'aria-live': 'polite' }, `Tonart ${label(this.shift)}${marks(this.shift)}`),
-        button('+', () => this.setShift(this.shift + 1), 'btn-seg', { 'aria-label': 'Einen Halbton höher' }),
+        { class: 'seg seg-wrap', role: 'group', 'aria-label': t('Tonart') },
+        button('−', () => this.setShift(this.shift - 1), 'btn-seg', { 'aria-label': t('Einen Halbton tiefer') }),
+        h('span', { class: 'key-now', 'aria-live': 'polite' }, t('Tonart {key}', { key: label(this.shift) + marks(this.shift) })),
+        button('+', () => this.setShift(this.shift + 1), 'btn-seg', { 'aria-label': t('Einen Halbton höher') }),
       ),
     );
     this.keyBox.appendChild(
       h(
         'div',
         { class: 'seg seg-wrap' },
-        quick(`Einfach: ${label(0)}${marks(0)}`, 0),
-        suggest !== 0 ? quick(`★ Vorschlag: ${label(suggest)}`, suggest) : null,
-        orig !== null && orig !== 0 && orig !== suggest ? quick(`◆ Original: ${label(orig)}`, orig) : null,
+        quick(t('Einfach: {key}', { key: label(0) + marks(0) }), 0),
+        suggest !== 0 ? quick(t('★ Vorschlag: {key}', { key: label(suggest) }), suggest) : null,
+        orig !== null && orig !== 0 && orig !== suggest ? quick(t('◆ Original: {key}', { key: label(orig) }), orig) : null,
       ),
     );
     const swaps = simplifications(transposeSong(this.base, this.shift));
@@ -619,7 +620,7 @@ class Player {
       h(
         'div',
         { class: 'seg seg-wrap' },
-        button('Einfache Griffe', () => this.setSimplify(!this.settings.simplify), 'btn-seg', { 'aria-pressed': String(this.settings.simplify) }),
+        button(t('Einfache Griffe'), () => this.setSimplify(!this.settings.simplify), 'btn-seg', { 'aria-pressed': String(this.settings.simplify) }),
       ),
     );
     this.keyBox.appendChild(
@@ -627,16 +628,16 @@ class Player {
         'p',
         { class: 'small' },
         names.length
-          ? `Einfache Griffe: ${names.map((n) => `${n} → ${swaps[n]}`).join(', ')} – klingt fast gleich, ist aber leichter zu greifen.`
-          : 'Einfache Griffe: In dieser Tonart sind schon alle Griffe so leicht wie möglich.',
+          ? t('Einfache Griffe: {swaps} – klingt fast gleich, ist aber leichter zu greifen.', { swaps: names.map((n) => `${n} → ${swaps[n]}`).join(', ') })
+          : t('Einfache Griffe: In dieser Tonart sind schon alle Griffe so leicht wie möglich.'),
       ),
     );
     this.keyBox.appendChild(
       h(
         'p',
         { class: 'small' },
-        '★ Vorschlag: bester Kompromiss aus einfachen Griffen, Stimmlage und Wiedererkennung.',
-        orig !== null ? ' ◆ Original- bzw. Quellentonart.' : '',
+        t('★ Vorschlag: bester Kompromiss aus einfachen Griffen, Stimmlage und Wiedererkennung.'),
+        orig !== null ? ' ' + t('◆ Original- bzw. Quellentonart.') : '',
       ),
     );
   }

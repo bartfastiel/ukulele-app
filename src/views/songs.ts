@@ -5,8 +5,9 @@ import { allSongs } from '../music/library.ts';
 import { difficulty, CATEGORIES, type Song } from '../music/song.ts';
 import { load } from '../store.ts';
 import { searchSongs } from '../music/search.ts';
+import { t, tk } from '../i18n.ts';
 
-const LEVEL = ['', 'Leicht', 'Mittel', 'Knifflig'];
+const LEVEL = ['', tk('Leicht'), tk('Mittel'), tk('Knifflig')];
 
 /** Kleines Symbol mit Erklärung beim Darüberfahren (title) und für Screenreader. */
 function feature(name: string, label: string): HTMLElement {
@@ -19,7 +20,7 @@ export const songs: View = (root) => {
   const sorted = SONGS.slice().sort((a, b) => difficulty(a) - difficulty(b) || a.chords.length - b.chords.length || a.title.localeCompare(b.title, 'de'));
   const card = (s: Song, snippet: [string, string, string] | null = null) => {
     const n = stars[s.id] || 0;
-    const level = LEVEL[difficulty(s)];
+    const level = t(LEVEL[difficulty(s)]);
     // kompakt: Titel und Sterne in einer Zeile, darunter Akkorde und Merkmale; Schwierigkeit als Farbstreifen
     return h(
       'li',
@@ -34,7 +35,7 @@ export const songs: View = (root) => {
           h('span', { class: 'song-title' }, s.title),
           h(
             'span',
-            { class: 'song-stars', 'aria-label': `${n} von 3 Sternen` },
+            { class: 'song-stars', 'aria-label': t('{n} von 3 Sternen', { n }) },
             ...[1, 2, 3].map((i) => icon('star', `icon star ${i <= n ? 'on' : 'off'}`)),
           ),
         ),
@@ -45,9 +46,9 @@ export const songs: View = (root) => {
           h(
             'span',
             { class: 'song-features' },
-            feature('text', 'Liedtext'),
-            feature('chords', 'Akkorde'),
-            s.hasMelody ? feature('songs', 'Melodie zum Mitspielen und als Tabulatur') : null,
+            feature('text', t('Liedtext')),
+            feature('chords', t('Akkorde')),
+            s.hasMelody ? feature('songs', t('Melodie zum Mitspielen und als Tabulatur')) : null,
           ),
         ),
         snippet ? h('span', { class: 'song-snippet' }, snippet[0], h('mark', null, snippet[1]), snippet[2]) : null,
@@ -55,7 +56,7 @@ export const songs: View = (root) => {
     );
   };
   const sections = h('div', { class: 'song-sections' });
-  const filter = h('div', { class: 'seg seg-wrap song-filter', role: 'group', 'aria-label': 'Kategorie' });
+  const filter = h('div', { class: 'seg seg-wrap song-filter', role: 'group', 'aria-label': t('Kategorie') });
   let active = 'alle';
   const render = () => {
     while (sections.firstChild) sections.removeChild(sections.firstChild);
@@ -67,15 +68,15 @@ export const songs: View = (root) => {
         h(
           'section',
           { class: 'song-section' },
-          h('h2', null, `${c.title} (${items.length})`),
+          h('h2', null, `${t(c.title)} (${items.length})`),
           h('ul', { class: 'song-list' }, ...items.map((x) => card(x))),
-          c.id === 'eigene' ? h('a', { class: 'btn own-new', href: '#/eigenes-lied' }, icon('plus'), 'Eigenes Lied hinzufügen') : null,
+          c.id === 'eigene' ? h('a', { class: 'btn own-new', href: '#/eigenes-lied' }, icon('plus'), t('Eigenes Lied hinzufügen')) : null,
         ),
       );
     });
   };
-  [{ id: 'alle', title: `Alle (${SONGS.length})` }]
-    .concat(CATEGORIES.filter((c) => SONGS.some((s) => s.category === c.id)))
+  [{ id: 'alle', title: t('Alle ({n})', { n: SONGS.length }) }]
+    .concat(CATEGORIES.filter((c) => SONGS.some((s) => s.category === c.id)).map((c) => ({ id: c.id, title: t(c.title) })))
     .forEach((c) => {
       const b = h('button', { type: 'button', class: 'btn btn-seg', 'aria-pressed': String(c.id === active) }, c.title);
       b.addEventListener('click', () => {
@@ -92,8 +93,8 @@ export const songs: View = (root) => {
   const search = h('input', {
     type: 'search',
     class: 'song-search',
-    placeholder: 'Lied suchen – Titel oder Liedtext',
-    'aria-label': 'Lied suchen, im Titel oder im Liedtext',
+    placeholder: t('Lied suchen – Titel oder Liedtext'),
+    'aria-label': t('Lied suchen, im Titel oder im Liedtext'),
     autocomplete: 'off',
     enterkeyhint: 'search',
   }) as HTMLInputElement;
@@ -109,17 +110,17 @@ export const songs: View = (root) => {
     const inTitle = hits.filter((x) => x.inTitle);
     const inText = hits.filter((x) => !x.inTitle);
     if (!hits.length) {
-      results.appendChild(h('p', { class: 'card small' }, `Kein Lied gefunden für „${q}“.`));
+      results.appendChild(h('p', { class: 'card small' }, t('Kein Lied gefunden für „{q}“.', { q })));
       return;
     }
     if (inTitle.length)
-      results.appendChild(h('section', { class: 'song-section' }, h('h2', null, `Im Titel (${inTitle.length})`), h('ul', { class: 'song-list' }, ...inTitle.map((x) => card(x.song)))));
+      results.appendChild(h('section', { class: 'song-section' }, h('h2', null, t('Im Titel ({n})', { n: inTitle.length })), h('ul', { class: 'song-list' }, ...inTitle.map((x) => card(x.song)))));
     if (inText.length)
       results.appendChild(
-        h('section', { class: 'song-section' }, h('h2', null, `Im Liedtext (${inText.length})`), h('ul', { class: 'song-list' }, ...inText.map((x) => card(x.song, x.snippet)))),
+        h('section', { class: 'song-section' }, h('h2', null, t('Im Liedtext ({n})', { n: inText.length })), h('ul', { class: 'song-list' }, ...inText.map((x) => card(x.song, x.snippet)))),
       );
   };
   search.addEventListener('input', runSearch);
-  const tools = h('div', { class: 'song-tools' }, search, h('a', { class: 'btn btn-seg own-add', href: '#/eigenes-lied' }, icon('plus'), 'Eigenes Lied'));
-  screen(root, { title: 'Lieder', theme: 'brass' }, tools, filter, sections, results);
+  const tools = h('div', { class: 'song-tools' }, search, h('a', { class: 'btn btn-seg own-add', href: '#/eigenes-lied' }, icon('plus'), t('Eigenes Lied')));
+  screen(root, { title: t('Lieder'), theme: 'brass' }, tools, filter, sections, results);
 };

@@ -3,28 +3,29 @@ import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, praise, type View } from '../ui/screen.ts';
 import { diagnose } from '../music/diagnose.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
-import { CHORDS, chord, describeChord } from '../music/chords.ts';
+import { CHORDS, chord, chordSay, describeChord } from '../music/chords.ts';
 import { strum, successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, markPracticed } from '../store.ts';
+import { t, tk } from '../i18n.ts';
 
 const GROUPS = [
-  { title: 'Die ersten Akkorde', level: 1 },
-  { title: 'Für die meisten Lieder', level: 2 },
-  { title: 'Für Fortgeschrittene', level: 3 },
-  { title: 'Profi-Griffe', level: 4 },
+  { title: tk('Die ersten Akkorde'), level: 1 },
+  { title: tk('Für die meisten Lieder'), level: 2 },
+  { title: tk('Für Fortgeschrittene'), level: 3 },
+  { title: tk('Profi-Griffe'), level: 4 },
 ];
 
 export const chords: View = (root) => {
   const p = load();
   screen(
     root,
-    { title: 'Akkorde', theme: 'teal' },
+    { title: t('Akkorde'), theme: 'teal' },
     ...GROUPS.map((g) =>
       h(
         'section',
         { class: 'chord-group' },
-        h('h2', null, g.title),
+        h('h2', null, t(g.title)),
         h(
           'div',
           { class: 'chord-grid' },
@@ -53,30 +54,30 @@ export const chordDetail: View = (root, param) => {
   let listener: ChordListener | null = null;
   let giveUp = 0;
   const diagramBox = h('div', { class: 'diagram-big' }, chordDiagram(ch, { lefty }));
-  const feedback = h('div', { class: 'feedback', 'aria-live': 'polite' }, 'Greif den Akkord und tippe auf „Prüf mich!“.');
+  const feedback = h('div', { class: 'feedback', 'aria-live': 'polite' }, t('Greif den Akkord und tippe auf „Prüf mich!“.'));
   const stopListening = () => {
     listener?.stop();
     listener = null;
     window.clearTimeout(giveUp);
   };
   const check = button(
-    h('span', null, icon('mic'), ' Prüf mich!'),
+    h('span', null, icon('mic'), ' ', t('Prüf mich!')),
     () => {
       stopListening();
       void ensureMic().then((ok) => {
         if (!ok) {
-          feedback.textContent = 'Ohne Mikrofon kann ich nicht zuhören – vergleiche deinen Klang mit „Anhören“.';
+          feedback.textContent = t('Ohne Mikrofon kann ich nicht zuhören – vergleiche deinen Klang mit „Anhören“.');
           return;
         }
         feedback.className = 'feedback listening';
-        feedback.textContent = 'Ich höre zu … schlag die Saiten an!';
+        feedback.textContent = t('Ich höre zu … schlag die Saiten an!');
         let streak = { s: -1, n: 0 };
         void listenForChord(ch.name, {
           onHit: () => {
             stopListening();
             successSound();
             feedback.className = 'feedback good';
-            feedback.textContent = `${praise()} Das ist ein schönes ${ch.name}!`;
+            feedback.textContent = `${praise()} ${t('Das ist ein schönes {chord}!', { chord: ch.name })}`;
             announce(feedback.textContent);
             save((p) => {
               if (!p.chordsChecked.includes(ch.name)) p.chordsChecked.push(ch.name);
@@ -89,7 +90,7 @@ export const chordDetail: View = (root, param) => {
             streak = streak.s === v.weakString ? { s: v.weakString, n: streak.n + 1 } : { s: v.weakString, n: 1 };
             if (streak.n === 4) {
               feedback.className = 'feedback almost';
-              feedback.textContent = `Fast! ${diagnose(ch, v.weakString, v.weakKind)}`;
+              feedback.textContent = `${t('Fast!')} ${diagnose(ch, v.weakString, v.weakKind)}`;
               diagramBox.replaceChild(chordDiagram(ch, { lefty, highlight: v.weakString }), diagramBox.firstChild!);
             }
           },
@@ -100,7 +101,7 @@ export const chordDetail: View = (root, param) => {
             stopListening();
             if (feedback.className !== 'feedback good') {
               feedback.className = 'feedback almost';
-              feedback.textContent = 'Noch nicht ganz – probier’s gleich nochmal. Jede Saite einzeln anzupfen hilft!';
+              feedback.textContent = t('Noch nicht ganz – probier’s gleich nochmal. Jede Saite einzeln anzupfen hilft!');
             }
           }, 12000);
         }, () => undefined);
@@ -111,11 +112,11 @@ export const chordDetail: View = (root, param) => {
   const others = CHORDS.filter((c) => c.level <= Math.max(2, ch.level)).slice(0, 12);
   screen(
     root,
-    { title: `Akkord ${ch.name}`, back: '#/akkorde', theme: 'teal' },
+    { title: t('Akkord {chord}', { chord: ch.name }), back: '#/akkorde', theme: 'teal' },
     h(
       'div',
       { class: 'chord-detail' },
-      h('div', { class: 'card detail-card' }, h('div', { class: 'chord-name huge' }, ch.name), h('div', { class: 'say' }, ch.say), diagramBox),
+      h('div', { class: 'card detail-card' }, h('div', { class: 'chord-name huge' }, ch.name), h('div', { class: 'say' }, chordSay(ch)), diagramBox),
       h(
         'div',
         { class: 'detail-side' },
@@ -123,11 +124,11 @@ export const chordDetail: View = (root, param) => {
         h(
           'div',
           { class: 'row' },
-          button(h('span', null, icon('sound'), ' Anhören'), () => strum(ch.name, 0, 0.45), ''),
+          button(h('span', null, icon('sound'), ' ', t('Anhören')), () => strum(ch.name, 0, 0.45), ''),
           check,
         ),
         feedback,
-        h('h2', null, 'Andere Akkorde'),
+        h('h2', null, t('Andere Akkorde')),
         h(
           'div',
           { class: 'chip-row' },

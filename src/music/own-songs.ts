@@ -1,4 +1,5 @@
 import { parseSong, type Song } from './song.ts';
+import { t } from '../i18n.ts';
 import { importSong, MAX_TEXT } from './import.ts';
 import { base64url, deflateRaw, fromBase64url, inflateRaw, utf8Decode, utf8Encode } from '../util/deflate.ts';
 
@@ -93,7 +94,7 @@ export function ownToSong(o: OwnSong): Song | null {
       id: o.id,
       title: o.title,
       category: 'eigene',
-      origin: o.shared ? 'Geschicktes Lied – nur auf diesem Gerät gespeichert.' : 'Dein eigenes Lied – nur auf diesem Gerät gespeichert.',
+      origin: o.shared ? t('Geschicktes Lied – nur auf diesem Gerät gespeichert.') : t('Dein eigenes Lied – nur auf diesem Gerät gespeichert.'),
       meter: o.meter,
       bpm: o.bpm,
       chordpro: imp.chordpro,

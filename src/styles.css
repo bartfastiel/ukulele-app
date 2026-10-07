@@ -2145,3 +2145,9 @@ summary:focus-visible {
     max-width: 80vh;
   }
 }
+
+/* ---------- Sprachwahl ---------- */
+.lang-switch {
+  justify-content: center;
+  margin-top: 22px;
+}

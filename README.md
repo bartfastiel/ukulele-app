@@ -36,6 +36,10 @@ ohne Tracking. Alles bleibt auf dem Gerät.
 
 Ohne Mikrofon funktioniert alles weiter – dann bestätigt das Kind selbst.
 
+**Sprachen:** Deutsch, English, Français – Auswahl unten auf der Startseite (und unter „Meine Sterne“), sonst nach der
+Sprache des Geräts. Liedtitel und Liedtexte bleiben in ihrer Originalsprache; Akkordnamen sind überall international
+(C, G7, Bb), ausgeschriebene Einzeltöne im Französischen Do, Ré, Mi …
+
 ## Lieder
 
 Über 80 Lieder in sechs Gruppen: Kinderlieder, Lagerfeuer & Wandern, Frühling bis Herbst, Weihnachten, English Songs
@@ -108,6 +112,21 @@ npm run e2e        # Build + Playwright (Desktop, iPad/WebKit, Handy hoch/quer, 
 
 Die Mikrofon-Tests spielen Chromium ein synthetisches Signal als Mikrofon vor (`tools/make-wav.ts`): einen
 C-Akkord bzw. eine 20 Cent zu tiefe E-Saite.
+
+### Texte und Übersetzungen
+
+Jeder sichtbare Text (auch `aria-label`, `title`, Platzhalter) läuft über `t()` aus `src/i18n.ts`. Der deutsche Text ist
+der Schlüssel, `src/i18n/en.ts` und `src/i18n/fr.ts` sind Wörterbücher; fehlt ein Eintrag, erscheint Deutsch.
+
+```ts
+t('Takt {n} von 12', { n: 3 })                      // Platzhalter
+tp(n, '{n} Blues-Ton – klingt gut!', '{n} Blues-Töne – klingt gut!') // Einzahl/Mehrzahl
+const LEVELS = [tk('Leicht'), tk('Mittel')]         // Tabellen nur markieren, beim Anzeigen t(LEVELS[i])
+```
+
+Neue Texte also immer mit `t()` schreiben und in `en.ts` und `fr.ts` ergänzen – `npm test` findet fehlende oder
+verwaiste Übersetzungen und abweichende Platzhalter. Französisch duzt („tu“); vor ! ? : ; setzt `t()` selbst das
+schmale geschützte Leerzeichen. Bildschirmfotos je Sprache: `node tools/shots.mjs <ordner> fr`.
 
 ## Akkorderkennung verbessern: Beispielaufnahmen
 

@@ -7,6 +7,8 @@
  * - „Saite hakt“: erst ändert sich trotz Drehen nichts (Plateau), dann springt die Tonhöhe über den Zielton auf
  *   die andere Seite. Typisch, wenn die Saite am Sattel oder Steg hängt und die Spannung sich plötzlich ausgleicht.
  */
+import { t } from '../i18n.ts';
+
 export type TipKind = 'wrong-peg' | 'slipping';
 
 export interface Tip {
@@ -112,12 +114,17 @@ export class TuningCoach {
 export function tipText(tip: Tip, stringName: string): string {
   if (tip.kind === 'wrong-peg')
     return (
-      `Die ${stringName}-Saite verändert sich gar nicht. Drehst du vielleicht am falschen Wirbel? ` +
-      'Fahr mit dem Finger die Saite entlang bis zu ihrem Wirbel und dreh genau an dem.'
+      t('Die {s}-Saite verändert sich gar nicht. Drehst du vielleicht am falschen Wirbel?', { s: stringName }) +
+      ' ' +
+      t('Fahr mit dem Finger die Saite entlang bis zu ihrem Wirbel und dreh genau an dem.')
     );
   return (
-    `Die ${stringName}-Saite springt: Erst passiert nichts, dann ist sie plötzlich ${tip.direction! > 0 ? 'zu hoch' : 'zu tief'}. ` +
-    'Sie hakt vermutlich am Sattel oder Steg. Zieh die Saite in der Mitte vorsichtig ein paar Mal vom Griffbrett weg, ' +
-    'damit sich die Spannung vor und hinter dem Steg ausgleicht. Dann in kleinen Schritten nachstimmen – am besten von unten an den Ton heran.'
+    (tip.direction! > 0
+      ? t('Die {s}-Saite springt: Erst passiert nichts, dann ist sie plötzlich zu hoch.', { s: stringName })
+      : t('Die {s}-Saite springt: Erst passiert nichts, dann ist sie plötzlich zu tief.', { s: stringName })) +
+    ' ' +
+    t(
+      'Sie hakt vermutlich am Sattel oder Steg. Zieh die Saite in der Mitte vorsichtig ein paar Mal vom Griffbrett weg, damit sich die Spannung vor und hinter dem Steg ausgleicht. Dann in kleinen Schritten nachstimmen – am besten von unten an den Ton heran.',
+    )
   );
 }

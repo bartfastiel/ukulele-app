@@ -5,14 +5,19 @@ import { importNotes, songPreview } from '../ui/song-preview.ts';
 import { importSong, MAX_TEXT } from '../music/import.ts';
 import { BPM_MAX, BPM_MIN, MAX_TITLE, METERS, cleanTitle, newOwnId, ownToSong, type OwnSong } from '../music/own-songs.ts';
 import { ownSongs, putOwnSong, removeOwnSong } from '../store.ts';
+import { t } from '../i18n.ts';
 
-// eigener Beispieltext, kein fremdes Lied
-const PLACEHOLDER = `C              G7
-Heute spiel ich Ukulele,
-G7           C
-und die Sonne lacht.
-
-Oder so: [C]Heute spiel ich [G7]Ukulele …`;
+// eigener Beispieltext, kein fremdes Lied; der zweite Akkord steht über dem letzten Wort der Zeile
+function placeholder(): string {
+  const over = (a: string, b: string, line: string) => {
+    const col = line.lastIndexOf(' ') + 1;
+    return a + new Array(Math.max(2, col - a.length + 1)).join(' ') + b;
+  };
+  const one = t('Heute spiel ich Ukulele,');
+  const two = t('und die Sonne lacht.');
+  const inline = '[C]' + one.replace(/,$/, '').replace(/ (\S+)$/, ' [G7]$1');
+  return [over('C', 'G7', one), one, over('G7', 'C', two), two, '', `${t('Oder so:')} ${inline} …`].join('\n');
+}
 
 /** Eigenes Lied anlegen (#/eigenes-lied) oder bearbeiten (#/eigenes-lied/<id>). */
 export const ownSongEditor: View = (root, id) => {
@@ -30,7 +35,7 @@ export const ownSongEditor: View = (root, id) => {
     id: 'own-title',
     maxlength: MAX_TITLE,
     autocomplete: 'off',
-    placeholder: 'Wie heißt dein Lied?',
+    placeholder: t('Wie heißt dein Lied?'),
   }) as HTMLInputElement;
   titleIn.value = existing ? existing.title : '';
   const textIn = h('textarea', {
@@ -42,7 +47,7 @@ export const ownSongEditor: View = (root, id) => {
     autocapitalize: 'off',
     autocomplete: 'off',
     wrap: 'off',
-    placeholder: PLACEHOLDER,
+    placeholder: placeholder(),
   }) as HTMLTextAreaElement;
   textIn.value = existing ? existing.text : '';
 
@@ -60,7 +65,7 @@ export const ownSongEditor: View = (root, id) => {
       }),
     );
   const bpmLabel = h('span', { class: 'bpm-now', 'aria-live': 'polite' });
-  const showBpm = () => (bpmLabel.textContent = `${bpm} Schläge pro Minute`);
+  const showBpm = () => (bpmLabel.textContent = t('{n} Schläge pro Minute', { n: bpm }));
   const stepBpm = (d: number) => {
     bpm = Math.max(BPM_MIN, Math.min(BPM_MAX, bpm + d));
     showBpm();
@@ -73,18 +78,18 @@ export const ownSongEditor: View = (root, id) => {
     message.hidden = !text;
   };
 
-  const preview = h('section', { class: 'card pv-card', 'aria-label': 'Vorschau' });
+  const preview = h('section', { class: 'card pv-card', 'aria-label': t('Vorschau') });
   const renderPreview = () => {
     const r = importSong(textIn.value);
     if (!titleIn.value.trim() && r.title) titleIn.value = cleanTitle(r.title);
     clear(preview);
-    preview.appendChild(h('h2', null, 'Vorschau'));
+    preview.appendChild(h('h2', null, t('Vorschau')));
     if (!textIn.value.trim()) {
-      preview.appendChild(h('p', { class: 'small' }, 'Füge links (oder oben) deinen Liedtext mit Akkorden ein. Hier siehst du dann, wie er im Lied aussieht.'));
+      preview.appendChild(h('p', { class: 'small' }, t('Füge links (oder oben) deinen Liedtext mit Akkorden ein. Hier siehst du dann, wie er im Lied aussieht.')));
       return;
     }
     preview.appendChild(importNotes(r));
-    const song = ownToSong({ id: 'mein-vorschau', title: titleIn.value || 'Vorschau', text: textIn.value, meter, bpm, created: 0, updated: 0 });
+    const song = ownToSong({ id: 'mein-vorschau', title: titleIn.value || t('Vorschau'), text: textIn.value, meter, bpm, created: 0, updated: 0 });
     if (song) preview.appendChild(songPreview(song));
   };
   let timer = 0;
@@ -99,13 +104,13 @@ export const ownSongEditor: View = (root, id) => {
   const doSave = () => {
     const title = cleanTitle(titleIn.value);
     if (!title) {
-      say('Wie heißt dein Lied? Schreib oben einen Titel hin.');
+      say(t('Wie heißt dein Lied? Schreib oben einen Titel hin.'));
       titleIn.focus();
       return;
     }
     const r = importSong(textIn.value);
     if (!r.chords.length) {
-      say('Ich finde noch keine Akkorde. Schreib sie in eckige Klammern wie [C] oder in eine eigene Zeile über den Text.');
+      say(t('Ich finde noch keine Akkorde. Schreib sie in eckige Klammern wie [C] oder in eine eigene Zeile über den Text.'));
       textIn.focus();
       return;
     }
@@ -114,62 +119,62 @@ export const ownSongEditor: View = (root, id) => {
       ? { ...existing, title, text: textIn.value, meter, bpm, updated: now }
       : { id: newOwnId(title, ownSongs().map((o) => o.id)), title, text: textIn.value, meter, bpm, created: now, updated: now };
     if (!putOwnSong(song)) {
-      say('Speichern hat nicht geklappt. Vielleicht ist der Browser im privaten Modus oder der Speicher ist voll.');
+      say(t('Speichern hat nicht geklappt. Vielleicht ist der Browser im privaten Modus oder der Speicher ist voll.'));
       return;
     }
-    announce('Gespeichert');
+    announce(t('Gespeichert'));
     location.hash = `#/lied/${song.id}`;
   };
 
   const doDelete = () => {
     if (!existing) return;
     void confirmDialog({
-      title: 'Lied löschen?',
-      text: `„${existing.title}“ ist dann von diesem Gerät weg.`,
-      yes: 'Ja, löschen',
-      no: 'Nein, behalten',
+      title: t('Lied löschen?'),
+      text: t('„{title}“ ist dann von diesem Gerät weg.', { title: existing.title }),
+      yes: t('Ja, löschen'),
+      no: t('Nein, behalten'),
       danger: true,
     }).then((yes) => {
       if (!yes) return;
       if (removeOwnSong(existing.id)) location.hash = '#/lieder';
-      else say('Löschen hat nicht geklappt.');
+      else say(t('Löschen hat nicht geklappt.'));
     });
   };
 
   const form = h(
     'section',
     { class: 'card own-form' },
-    h('label', { class: 'field-label', for: 'own-title' }, 'Titel'),
+    h('label', { class: 'field-label', for: 'own-title' }, t('Titel')),
     titleIn,
-    h('label', { class: 'field-label', for: 'own-text' }, 'Liedtext mit Akkorden'),
-    h('p', { class: 'small' }, 'Akkorde in eckigen Klammern wie [C]Text – oder jeder Akkord in einer eigenen Zeile genau über dem Wort. Ein Akkord gilt einen Takt lang.'),
+    h('label', { class: 'field-label', for: 'own-text' }, t('Liedtext mit Akkorden')),
+    h('p', { class: 'small' }, t('Akkorde in eckigen Klammern wie [C]Text – oder jeder Akkord in einer eigenen Zeile genau über dem Wort. Ein Akkord gilt einen Takt lang.')),
     textIn,
-    h('div', { class: 'field-label' }, 'Taktart'),
+    h('div', { class: 'field-label' }, t('Taktart')),
     segGroup(
-      'Taktart',
+      t('Taktart'),
       METERS.map((m) => ({ label: m.label, active: m.value === meter, on: () => ((meter = m.value), renderPreview()) })),
     ),
-    h('div', { class: 'field-label' }, 'Tempo'),
+    h('div', { class: 'field-label' }, t('Tempo')),
     h(
       'div',
-      { class: 'seg seg-bpm', role: 'group', 'aria-label': 'Tempo' },
-      button('−', () => stepBpm(-5), 'btn-seg', { 'aria-label': 'Langsamer' }),
+      { class: 'seg seg-bpm', role: 'group', 'aria-label': t('Tempo') },
+      button('−', () => stepBpm(-5), 'btn-seg', { 'aria-label': t('Langsamer') }),
       bpmLabel,
-      button('+', () => stepBpm(5), 'btn-seg', { 'aria-label': 'Schneller' }),
+      button('+', () => stepBpm(5), 'btn-seg', { 'aria-label': t('Schneller') }),
     ),
     message,
     h(
       'div',
       { class: 'row own-actions' },
-      button(h('span', null, icon('check'), 'Speichern'), doSave, 'btn-primary'),
-      existing ? h('a', { class: 'btn', href: `#/lied-teilen/${existing.id}` }, icon('share'), 'Teilen') : null,
-      existing ? button(h('span', null, icon('trash'), 'Löschen'), doDelete) : null,
+      button(h('span', null, icon('check'), t('Speichern')), doSave, 'btn-primary'),
+      existing ? h('a', { class: 'btn', href: `#/lied-teilen/${existing.id}` }, icon('share'), t('Teilen')) : null,
+      existing ? button(h('span', null, icon('trash'), t('Löschen')), doDelete) : null,
     ),
   );
 
   screen(
     root,
-    { title: existing ? 'Lied bearbeiten' : 'Eigenes Lied', back: existing ? `#/lied/${existing.id}` : '#/lieder', theme: 'brass' },
+    { title: existing ? t('Lied bearbeiten') : t('Eigenes Lied'), back: existing ? `#/lied/${existing.id}` : '#/lieder', theme: 'brass' },
     h('div', { class: 'own-edit' }, form, preview),
   );
   return () => window.clearTimeout(timer);

@@ -22,6 +22,8 @@ export interface Progress {
     calm: boolean;
     /** schwere Griffe durch leichtere Verwandte ersetzen (E → E7 …) */
     simplify: boolean;
+    /** gewählte Sprache; '' = Sprache des Geräts */
+    lang: string;
   };
 }
 
@@ -45,6 +47,7 @@ const DEFAULTS: Progress = {
     waitMode: true,
     calm: false,
     simplify: false,
+    lang: '',
   },
 };
 

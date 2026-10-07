@@ -8,6 +8,12 @@ import { identifyFingering, libraryName, nameChord, noteLabel, positions, single
 import { NOTE_NAMES, STRINGS, pitchClass } from '../music/notes.ts';
 import type { Chord } from '../music/chords.ts';
 import { load } from '../store.ts';
+import { lang, noteText, ordinal, t } from '../i18n.ts';
+
+/** Im Französischen ohne Oktavzahl: dort zählt man die Oktaven anders (C4 = Do3). */
+function noteShown(midi: number): string {
+  return lang() === 'fr' ? noteText(NOTE_NAMES[pitchClass(midi)]) : noteLabel(midi);
+}
 
 /** Akkord-Detektiv: irgendetwas spielen – die App zeigt Griff, Namen, Art und Töne. */
 export const detective: View = (root) => {
@@ -15,7 +21,7 @@ export const detective: View = (root) => {
   let timer = 0;
   let releaseWake: (() => void) | null = null;
   const result = h('div', { class: 'card det-result', 'aria-live': 'polite' });
-  const status = h('div', { class: 'feedback' }, 'Tippe auf „Zuhören“ und spiel irgendeinen Akkord – oder einen einzelnen Ton.');
+  const status = h('div', { class: 'feedback' }, t('Tippe auf „Zuhören“ und spiel irgendeinen Akkord – oder einen einzelnen Ton.'));
 
   const showIdle = (text: string) => {
     clear(result);
@@ -39,23 +45,24 @@ export const detective: View = (root) => {
         h(
           'div',
           { class: 'det-text' },
-          h('div', { class: 'card-label' }, 'Das klingt wie'),
+          h('div', { class: 'card-label' }, t('Das klingt wie')),
           h('div', { class: 'chord-name huge' }, main ? main.name : '?'),
-          main ? h('div', { class: 'say' }, `${main.root}-${main.quality.name}`) : h('div', { class: 'say' }, 'kein bekannter Akkordname'),
+          main ? h('div', { class: 'say' }, t('{root}-{quality}', { root: noteText(main.root), quality: t(main.quality.name) })) : h('div', { class: 'say' }, t('kein bekannter Akkordname')),
           h(
             'p',
             null,
-            'Töne: ',
-            h('b', null, ordered.map((t) => NOTE_NAMES[t]).join(' – ')),
+            t('Töne:'),
+            ' ',
+            h('b', null, ordered.map((x) => noteText(NOTE_NAMES[x])).join(' – ')),
           ),
-          names.length > 1 ? h('p', { class: 'det-alt' }, 'Heißt auch: ', names.slice(1, 4).map((n) => n.name).join(', ')) : null,
-          lib ? h('a', { class: 'btn btn-chip', href: `#/akkord/${encodeURIComponent(lib)}` }, `${lib} in der Akkord-Liste`) : null,
-          h('p', { class: 'small' }, `Bünde G-C-E-A: ${frets.map((f) => (f < 0 ? 'x' : f)).join(' ')}`),
+          names.length > 1 ? h('p', { class: 'det-alt' }, t('Heißt auch:'), ' ', names.slice(1, 4).map((n) => n.name).join(', ')) : null,
+          lib ? h('a', { class: 'btn btn-chip', href: `#/akkord/${encodeURIComponent(lib)}` }, t('{chord} in der Akkord-Liste', { chord: lib })) : null,
+          h('p', { class: 'small' }, t('Bünde G-C-E-A: {frets}', { frets: frets.map((f) => (f < 0 ? 'x' : f)).join(' ') })),
         ),
         h('div', { class: 'diagram-big' }, chordDiagram(ch, { lefty })),
       ),
     );
-    announce(main ? `${main.name}, ${main.quality.name}` : 'unbekannter Akkord');
+    announce(main ? `${main.name}, ${t(main.quality.name)}` : t('unbekannter Akkord'));
   };
 
   const showNote = (midi: number) => {
@@ -64,28 +71,28 @@ export const detective: View = (root) => {
       h(
         'div',
         { class: 'det-note' },
-        h('div', { class: 'card-label' }, 'Einzelner Ton'),
-        h('div', { class: 'chord-name huge' }, noteLabel(midi)),
-        h('p', null, 'Diesen Ton findest du hier:'),
+        h('div', { class: 'card-label' }, t('Einzelner Ton')),
+        h('div', { class: 'chord-name huge' }, noteShown(midi)),
+        h('p', null, t('Diesen Ton findest du hier:')),
         h(
           'ul',
           { class: 'det-positions' },
-          ...positions(midi).map((p) => h('li', null, h('b', null, `${STRINGS[p.string].name}-Saite`), p.fret === 0 ? ' leer' : ` im ${p.fret}. Bund`)),
+          ...positions(midi).map((p) => h('li', null, h('b', null, t('{s}-Saite', { s: STRINGS[p.string].name })), ' ', p.fret === 0 ? t('leer') : t('im {fret} Bund', { fret: ordinal(p.fret) }))),
         ),
       ),
     );
-    announce(`Ton ${noteLabel(midi)}`);
+    announce(t('Ton {note}', { note: noteShown(midi) }));
   };
 
   const start = () => {
     void ensureMic().then(async (ok) => {
       if (!ok) {
-        status.textContent = 'Der Detektiv braucht das Mikrofon, um zu hören, was du spielst.';
+        status.textContent = t('Der Detektiv braucht das Mikrofon, um zu hören, was du spielst.');
         return;
       }
       listenBtn.disabled = true;
       releaseWake = keepAwake();
-      status.textContent = 'Ich höre zu …';
+      status.textContent = t('Ich höre zu …');
       const mic = await openMic();
       const db = new Float32Array(mic.analyser.frequencyBinCount);
       const lin = new Float32Array(db.length);
@@ -125,26 +132,27 @@ export const detective: View = (root) => {
         if (key && key !== shown && count >= 3) {
           shown = key;
           view();
-          status.textContent = 'Ich höre zu … spiel gern noch etwas anderes!';
+          status.textContent = t('Ich höre zu … spiel gern noch etwas anderes!');
         }
-        if (!shown && quietSince && performance.now() - quietSince > 4000) showIdle('Spiel einen Akkord oder einen Ton – ich verrate dir, was es ist.');
+        if (!shown && quietSince && performance.now() - quietSince > 4000) showIdle(t('Spiel einen Akkord oder einen Ton – ich verrate dir, was es ist.'));
       }, 80);
     });
   };
 
-  const listenBtn = button(h('span', null, icon('mic'), ' Zuhören'), start, 'btn-primary btn-play');
-  showIdle('Spiel irgendeinen Akkord oder einen einzelnen Ton. Ich zeige dir, welche Saiten du gegriffen hast und wie der Akkord heißt.');
+  const listenBtn = button(h('span', null, icon('mic'), ' ', t('Zuhören')), start, 'btn-primary btn-play');
+  showIdle(t('Spiel irgendeinen Akkord oder einen einzelnen Ton. Ich zeige dir, welche Saiten du gegriffen hast und wie der Akkord heißt.'));
   screen(
     root,
-    { title: 'Akkord-Detektiv', theme: 'cherry' },
+    { title: t('Akkord-Detektiv'), theme: 'cherry' },
     result,
     h('div', { class: 'row' }, listenBtn),
     status,
     h(
       'p',
       { class: 'card small' },
-      'Tipp: Schlag die Saiten kräftig an und halte die Ukulele ruhig. Der Detektiv kennt Dur, Moll, Sept-, Major-Sept-, Sext-, sus-, verminderte und übermäßige Akkorde in den ersten fünf Bünden. ',
-      'Manche Griffe klingen gleich (z. B. Am7 und C6) – dann stehen beide Namen da.',
+      t('Tipp: Schlag die Saiten kräftig an und halte die Ukulele ruhig. Der Detektiv kennt Dur, Moll, Sept-, Major-Sept-, Sext-, sus-, verminderte und übermäßige Akkorde in den ersten fünf Bünden.'),
+      ' ',
+      t('Manche Griffe klingen gleich (z. B. Am7 und C6) – dann stehen beide Namen da.'),
     ),
   );
   return () => {

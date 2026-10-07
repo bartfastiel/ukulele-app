@@ -19,6 +19,8 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:4173/',
     trace: 'retain-on-failure',
+    // die bestehenden Tests prüfen deutsche Texte; ohne Angabe wäre die Browser-Sprache Englisch
+    locale: 'de-DE',
   },
   webServer: {
     command: 'node tools/serve.mjs dist 4173',

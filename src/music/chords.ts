@@ -1,4 +1,5 @@
 import { STRINGS, pitchClass } from './notes.ts';
+import { ordinal, t, tk } from '../i18n.ts';
 
 export interface Chord {
   name: string;
@@ -20,24 +21,24 @@ const c = (name: string, frets: string, fingers: string, say: string, level: num
 });
 
 export const CHORDS: Chord[] = [
-  c('C', '0003', '0003', 'C-Dur', 1),
-  c('Am', '2000', '2000', 'a-Moll', 1),
-  c('C7', '0001', '0001', 'C-Sieben', 1),
-  c('A7', '0100', '0100', 'A-Sieben', 1),
-  c('Am7', '0000', '0000', 'a-Moll-Sieben (alle Saiten leer)', 1),
-  c('F', '2010', '2010', 'F-Dur', 2),
-  c('G7', '0212', '0213', 'G-Sieben', 2),
-  c('Cmaj7', '0002', '0002', 'C-Major-Sieben', 2),
-  c('G', '0232', '0132', 'G-Dur', 3),
-  c('Dm', '2210', '2310', 'd-Moll', 3),
-  c('A', '2100', '2100', 'A-Dur', 3),
-  c('Em', '0432', '0321', 'e-Moll', 3),
-  c('D7', '2223', '1112', 'D-Sieben', 3),
-  c('Gm', '0231', '0231', 'g-Moll', 3),
-  c('D', '2220', '1230', 'D-Dur', 4),
-  c('E7', '1202', '1203', 'E-Sieben', 4),
-  c('B7', '2322', '1211', 'H-Sieben (international B7)', 4),
-  c('Bb', '3211', '3211', 'B-Dur (international Bb)', 4),
+  c('C', '0003', '0003', tk('C-Dur'), 1),
+  c('Am', '2000', '2000', tk('a-Moll'), 1),
+  c('C7', '0001', '0001', tk('C-Sieben'), 1),
+  c('A7', '0100', '0100', tk('A-Sieben'), 1),
+  c('Am7', '0000', '0000', tk('a-Moll-Sieben (alle Saiten leer)'), 1),
+  c('F', '2010', '2010', tk('F-Dur'), 2),
+  c('G7', '0212', '0213', tk('G-Sieben'), 2),
+  c('Cmaj7', '0002', '0002', tk('C-Major-Sieben'), 2),
+  c('G', '0232', '0132', tk('G-Dur'), 3),
+  c('Dm', '2210', '2310', tk('d-Moll'), 3),
+  c('A', '2100', '2100', tk('A-Dur'), 3),
+  c('Em', '0432', '0321', tk('e-Moll'), 3),
+  c('D7', '2223', '1112', tk('D-Sieben'), 3),
+  c('Gm', '0231', '0231', tk('g-Moll'), 3),
+  c('D', '2220', '1230', tk('D-Dur'), 4),
+  c('E7', '1202', '1203', tk('E-Sieben'), 4),
+  c('B7', '2322', '1211', tk('H-Sieben (international B7)'), 4),
+  c('Bb', '3211', '3211', tk('B-Dur (international Bb)'), 4),
 ];
 
 const BY_NAME = new Map(CHORDS.map((ch) => [ch.name, ch]));
@@ -162,11 +163,20 @@ export function chordPitchClasses(ch: Chord): Set<number> {
   return new Set(chordMidis(ch).map(pitchClass));
 }
 
+const FINGER_NAME = ['', tk('Zeigefinger'), tk('Mittelfinger'), tk('Ringfinger'), tk('kleiner Finger')];
+
 export function describeChord(ch: Chord): string {
   const parts: string[] = [];
-  const fingerName = ['', 'Zeigefinger', 'Mittelfinger', 'Ringfinger', 'kleiner Finger'];
   ch.frets.forEach((f, i) => {
-    if (f > 0) parts.push(`${fingerName[ch.fingers[i]]} auf der ${STRINGS[i].name}-Saite im ${f}. Bund`);
+    if (f > 0)
+      parts.push(
+        t('{finger} auf der {string}-Saite im {fret} Bund', { finger: t(FINGER_NAME[ch.fingers[i]] || tk('Finger')), string: STRINGS[i].name, fret: ordinal(f) }),
+      );
   });
-  return `${ch.name}: ${parts.length ? parts.join(', ') : 'alle Saiten leer'}`;
+  return `${ch.name}: ${parts.length ? parts.join(', ') : t('alle Saiten leer')}`;
+}
+
+/** Ausgesprochener Name („C-Dur“); transponierte Griffe ohne eigenen Text zeigen ihr Symbol. */
+export function chordSay(ch: Chord): string {
+  return t(ch.say);
 }
