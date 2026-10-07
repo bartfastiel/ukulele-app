@@ -12,7 +12,7 @@ npm run typecheck  # tsc --noEmit (TypeScript 7)
 npm test           # Unit-Tests: node --test mit Type-Stripping (tests/unit/*.test.ts)
 npm run build      # dist/ via tools/build.mjs (esbuild, Inhalts-Hash, Service Worker)
 npm run e2e        # Build + Playwright (tests/e2e), Server: tools/serve.mjs auf :4173
-node tools/shots.mjs <ordner> [de|en|fr]   # Bildschirmfotos aller Ansichten (iPad/WebKit, Handy hoch/quer)
+node tools/shots.mjs <ordner> [de|en|fr] [gitarre|banjo]   # Bildschirmfotos aller Ansichten (iPad/WebKit, Handy hoch/quer)
 node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) durch die Akkorderkennung spielen
 ```
 
@@ -52,7 +52,10 @@ src/audio/pluck.ts       Synthese ohne Web Audio (auch für Tests und tools/make
 src/audio/pitch.ts       YIN-Tonhöhe (Stimmgerät)
 src/audio/chord-detect.ts  Spektralspitzen → Bewertung je Griff und Saite, Hinweis auf leer klingende Saite
 src/audio/mic.ts, listen.ts  Mikrofon (ohne Echo-/Rauschunterdrückung), Lauscher mit 2er-Bestätigung
-src/music/               notes.ts, chords.ts (18 Griffe), song.ts (Notation + Parser, ChordPro-Parser, Kategorien),
+src/music/instrument.ts  Instrument-Modell: Ukulele (Standard), Gitarre, Banjo – Saiten, Griff-Bibliothek, Erkennung,
+                         Synthese, Blues; `instrument()`, Start über data-instrument am <html> oder ?instrument=gitarre.
+                         Daten je Instrument in src/music/instruments/*.ts; STRINGS/CHORDS folgen dem Instrument
+src/music/               notes.ts, chords.ts (Griffe, Tabellen, Grifffinder), song.ts (Notation + Parser, ChordPro-Parser, Kategorien),
                          songs.ts (Lieder mit Melodie), songs-chordpro/-kinder/-english.ts (Akkorde + Text)
 src/audio/offline.ts     Nachbau von AnalyserNode + Lauscher für Tests und tools/eval-recordings.ts
 src/views/record.ts      Aufnahme-Werkzeug (#/aufnahme), Plan in src/music/recording-plan.ts, ZIP via src/util/zip.ts
