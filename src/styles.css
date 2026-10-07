@@ -14,6 +14,12 @@
   --almost: #9a5a00;
   --mahogany: #6b2a12;
   --mahogany-dark: #3d160a;
+  /* Kanten, Tiefe und Schatten der Holzknöpfe – je Instrument überschrieben (siehe unten) */
+  --edge: rgba(60, 20, 6, 0.9);
+  --edge-dark: #4a1e0c;
+  --depth: #2a0f05;
+  --shade: #3a1406;
+  --btn-text: #fff4dc;
   --accent: var(--brass);
   --wood-body: none;
   --wood-btn: none;
@@ -44,7 +50,8 @@ body {
   background-color: var(--mahogany-dark);
   background-image: radial-gradient(ellipse at 50% 0%, rgba(255, 190, 120, 0.18), rgba(0, 0, 0, 0) 60%),
     linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.45)), var(--wood-body);
-  background-size: auto, auto, 512px 512px;
+  background-size: auto, auto, 768px 768px;
+  background-position: 0 0, 0 0, var(--body-x, 0) var(--body-y, 0);
   background-attachment: fixed, fixed, scroll;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   overscroll-behavior-y: none;
@@ -107,7 +114,7 @@ a {
   padding: 16px;
   box-shadow:
     0 0 0 3px var(--binding),
-    0 0 0 5px #4a1e0c,
+    0 0 0 5px var(--edge-dark),
     0 0 0 6px rgba(255, 220, 160, 0.35),
     0 10px 24px rgba(0, 0, 0, 0.45);
   margin: 6px 6px 18px;
@@ -128,18 +135,20 @@ a {
   border-radius: 16px;
   font: inherit;
   font-weight: 700;
-  color: #fff4dc;
+  color: var(--btn-text);
   text-decoration: none;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
   cursor: pointer;
   background-color: var(--mahogany);
-  background-image: var(--lacquer), var(--wood-btn);
-  background-size: auto, 256px 256px;
+  /* eigener Ausschnitt je Knopf (src/ui/wood.ts): verschoben, teils gespiegelt */
+  background-image: var(--lacquer), var(--wood-btn-el, var(--wood-btn));
+  background-size: auto, 512px 512px;
+  background-position: 0 0, var(--wx, 0) var(--wy, 0);
   box-shadow:
     inset 0 0 0 2px rgba(0, 0, 0, 0.35),
     0 0 0 3px var(--binding),
-    0 0 0 4px rgba(60, 20, 6, 0.9),
-    0 5px 0 4px #2a0f05,
+    0 0 0 4px var(--edge),
+    0 5px 0 4px var(--depth),
     0 9px 16px 4px rgba(0, 0, 0, 0.45);
   transition: transform 0.08s ease, box-shadow 0.08s ease;
   user-select: none;
@@ -153,8 +162,8 @@ a {
   box-shadow:
     inset 0 0 0 2px rgba(0, 0, 0, 0.35),
     0 0 0 3px var(--binding),
-    0 0 0 4px rgba(60, 20, 6, 0.9),
-    0 1px 0 4px #2a0f05,
+    0 0 0 4px var(--edge),
+    0 1px 0 4px var(--depth),
     0 3px 8px 4px rgba(0, 0, 0, 0.4);
 }
 
@@ -202,7 +211,7 @@ summary:focus-visible {
   box-shadow:
     inset 0 0 0 2px rgba(120, 80, 10, 0.6),
     0 0 0 3px var(--binding),
-    0 0 0 4px rgba(60, 20, 6, 0.9),
+    0 0 0 4px var(--edge),
     0 5px 0 4px #5b3d08,
     0 9px 16px 4px rgba(0, 0, 0, 0.45);
 }
@@ -211,7 +220,7 @@ summary:focus-visible {
   box-shadow:
     inset 0 0 0 2px rgba(120, 80, 10, 0.6),
     0 0 0 3px var(--binding),
-    0 0 0 4px rgba(60, 20, 6, 0.9),
+    0 0 0 4px var(--edge),
     0 1px 0 4px #5b3d08,
     0 3px 8px 4px rgba(0, 0, 0, 0.4);
 }
@@ -293,7 +302,7 @@ summary:focus-visible {
   font-size: 2.2em;
   color: #fff3d6;
   letter-spacing: 0.5px;
-  text-shadow: 0 2px 0 #3a1406, 0 4px 10px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 0 var(--shade), 0 4px 10px rgba(0, 0, 0, 0.6);
 }
 
 .brand p {
@@ -497,7 +506,7 @@ summary:focus-visible {
   justify-content: center;
   border-radius: 50%;
   background: rgba(255, 240, 210, 0.18);
-  color: #fff4dc;
+  color: var(--btn-text);
 }
 
 .feature .icon {
@@ -518,7 +527,7 @@ summary:focus-visible {
   border: 0;
   border-radius: 16px;
   background: linear-gradient(180deg, var(--cream), var(--cream-2));
-  box-shadow: 0 0 0 3px var(--binding), 0 0 0 4px rgba(60, 20, 6, 0.9), inset 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 0 3px var(--binding), 0 0 0 4px var(--edge), inset 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .song-search:focus {
@@ -784,7 +793,7 @@ summary:focus-visible {
   padding: 10px 12px 12px;
   margin: 6px;
   text-align: center;
-  box-shadow: 0 0 0 3px var(--binding), 0 0 0 5px #4a1e0c, 0 10px 22px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 0 3px var(--binding), 0 0 0 5px var(--edge-dark), 0 10px 22px rgba(0, 0, 0, 0.45);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -900,7 +909,7 @@ summary:focus-visible {
   font-size: 9em;
   font-weight: 900;
   color: #fff3d6;
-  text-shadow: 0 4px 0 #3a1406, 0 8px 24px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 4px 0 var(--shade), 0 8px 24px rgba(0, 0, 0, 0.7);
   animation: pop 0.3s ease-out;
 }
 
@@ -953,7 +962,7 @@ summary:focus-visible {
   font-size: 4em;
   font-weight: 900;
   color: #ffe08a;
-  text-shadow: 0 3px 0 #3a1406, 0 6px 20px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 3px 0 var(--shade), 0 6px 20px rgba(0, 0, 0, 0.7);
   animation: pop 0.35s ease-out;
 }
 
@@ -2088,7 +2097,7 @@ summary:focus-visible {
   font-size: 0.95em;
   padding: 2px 12px;
   font-weight: 800;
-  background: #fff4dc;
+  background: var(--btn-text);
   box-shadow: 0 0 0 2px var(--brass-dark);
 }
 
@@ -2374,4 +2383,69 @@ summary:focus-visible {
 .lang-switch a.btn-seg[aria-current='true'] {
   background: linear-gradient(180deg, var(--cream), var(--cream-2));
   color: var(--ink);
+}
+
+/* ---------- Instrumente: gleiche Formen, eigenes Holz und eigene Einfassung ---------- */
+/* Gitarre: Fichtendecke, Palisander-Knöpfe, Einfassung elfenbein mit schwarzem Zierstreifen */
+html[data-instrument='gitarre'] {
+  --mahogany: #4a2a22;
+  --mahogany-dark: #5a3c18;
+  --binding: #f6eedb;
+  --edge: #15100e;
+  --edge-dark: #15100e;
+  --depth: #140b09;
+  --shade: #2a1a0a;
+}
+
+html[data-instrument='gitarre'] .card {
+  box-shadow:
+    0 0 0 3px var(--binding),
+    0 0 0 5px #15100e,
+    0 0 0 7px #f6eedb,
+    0 0 0 8px #15100e,
+    0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* Banjo: geflammter Ahorn, Ränder wie verchromte Spannreifen, Karten wie ein mattes Trommelfell */
+html[data-instrument='banjo'] {
+  --mahogany: #8a5220;
+  --mahogany-dark: #3a1d08;
+  --binding: #e4e9ed;
+  --edge: #59626a;
+  --edge-dark: #3b434a;
+  --depth: #2e1806;
+  --shade: #2a1406;
+  --cream: #f8f5ee;
+  --cream-2: #ebe5d8;
+}
+
+html[data-instrument='banjo'] .card {
+  background:
+    radial-gradient(ellipse at 35% 25%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(210, 200, 180, 0.35), rgba(210, 200, 180, 0) 55%),
+    linear-gradient(180deg, var(--cream), var(--cream-2));
+  box-shadow:
+    0 0 0 3px #f4f7f9,
+    0 0 0 5px #9aa3aa,
+    0 0 0 6px #4b545b,
+    0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* Startseite: jede Instrument-Kachel trägt schon die Einfassung ihres Instruments */
+.start .tile-gitarre {
+  background-color: #4a2a22;
+  box-shadow:
+    0 0 0 3px #f6eedb,
+    0 0 0 4px #15100e,
+    0 5px 0 4px #140b09,
+    0 9px 16px 4px rgba(0, 0, 0, 0.45);
+}
+
+.start .tile-banjo {
+  background-color: #9a5c24;
+  box-shadow:
+    0 0 0 3px #e4e9ed,
+    0 0 0 4px #59626a,
+    0 5px 0 4px #2e1806,
+    0 9px 16px 4px rgba(0, 0, 0, 0.45);
 }

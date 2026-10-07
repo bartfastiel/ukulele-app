@@ -82,8 +82,9 @@ function mount(): void {
   }
 }
 
-installWood();
+// zuerst das Instrument: Holz und Farben hängen davon ab
 initInstrument();
+installWood();
 if (location.hash.indexOf('#/') === 0) {
   // frühere Adressen (#/lied/…, #/teilen/…) auf die neuen Seiten umleiten
   location.replace(link(location.hash.slice(2), isLang(html.lang) ? html.lang : 'de'));

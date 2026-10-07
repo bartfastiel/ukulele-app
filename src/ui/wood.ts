@@ -1,10 +1,16 @@
 /**
- * Mahagoni-Maserung, einmal beim Start auf ein Canvas gerechnet und als Hintergrundbild für alle Holzflächen
- * verwendet: kachelbar (periodisches Rauschen), damit eine kleine Textur große Flächen füllt. Danach kostet sie
- * beim Rendern nichts mehr – keine Filter, keine Shader pro Frame.
+ * Holz je Instrument, einmal beim Start auf Canvas gerechnet und als Hintergrundbild verwendet – keine Bilddateien,
+ * keine Filter pro Frame. Die Texturen sind nahtlos kachelbar (periodisches Rauschen, ganzzahlige Frequenzen) und groß
+ * genug, dass jeder Knopf einen eigenen Ausschnitt bekommt (zufällig verschoben, teils gespiegelt): So wiederholt sich
+ * die Maserung nicht sichtbar.
+ *
+ *   Ukulele  Mahagoni (Korpus und Knöpfe), cremefarbene Einfassung
+ *   Gitarre  Hintergrund aus gealterter Fichtendecke, Knöpfe aus Palisander, Einfassung elfenbein-schwarz
+ *   Banjo    gebeizter, geflammter Ahorn (Resonator und Knöpfe), Einfassung wie verchromte Spannreifen
  */
-const W = 256;
-const H = 256;
+import { instrument } from '../music/instrument.ts';
+
+type RGB = [number, number, number];
 
 function lattice(px: number, py: number, seed: number): (x: number, y: number) => number {
   const vals = new Float32Array(px * py);
@@ -27,47 +33,179 @@ function lattice(px: number, py: number, seed: number): (x: number, y: number) =
   };
 }
 
-export function renderWood(tone: 'body' | 'button' = 'body'): HTMLCanvasElement {
+/** Helligkeit 0..1 der Maserung an (u, v) ∈ [0, 1)²; waagrechte Faser, kachelbar. */
+type Grain = (u: number, v: number) => number;
+
+const TAU = Math.PI * 2;
+const clamp = (t: number) => (t < 0 ? 0 : t > 1 ? 1 : t);
+
+function mahogany(seed: number): Grain {
+  const warp = lattice(4, 4, 7 + seed);
+  const warp2 = lattice(8, 8, 5 + seed);
+  const fine = lattice(128, 24, 11 + seed);
+  const ribbon = lattice(12, 3, 3 + seed);
+  return (u, v) => {
+    const w = warp(u * 4, v * 4) * 2.2 + warp2(u * 8, v * 8) * 0.6;
+    const grain = Math.sin(v * TAU * 34 + w * 3.2) * 0.5 + 0.5;
+    const pores = fine(u * 128, v * 24);
+    // Riegel: breite, schimmernde Querbänder, typisch für Mahagoni
+    const rib = ribbon(u * 12, v * 3);
+    return clamp((0.25 + grain * 0.38 + (pores - 0.5) * 0.22) * (0.78 + rib * 0.44));
+  };
+}
+
+function rosewood(seed: number): Grain {
+  const warp = lattice(3, 6, 21 + seed);
+  const streaks = lattice(6, 48, 23 + seed);
+  const fine = lattice(160, 32, 29 + seed);
+  return (u, v) => {
+    const w = warp(u * 3, v * 6) * 3.0;
+    const grain = Math.sin(v * TAU * 40 + w * 4) * 0.5 + 0.5;
+    // lange, dunkle, unregelmäßige Adern – das Erkennungszeichen von Palisander
+    const st = streaks(u * 6, v * 48);
+    const dark = st > 0.62 ? (st - 0.62) * 2.6 : 0;
+    const pores = fine(u * 160, v * 32);
+    return clamp(0.35 + grain * 0.3 + (pores - 0.5) * 0.18 - dark);
+  };
+}
+
+function spruce(seed: number): Grain {
+  const warp = lattice(2, 4, 31 + seed);
+  const silk = lattice(40, 3, 37 + seed);
+  const fine = lattice(200, 16, 41 + seed);
+  return (u, v) => {
+    const w = warp(u * 2, v * 4) * 1.4;
+    // dichte, gerade Jahresringe: feine dunkle Spätholz-Linien auf hellem Frühholz, unterschiedlich kräftig
+    const ring = Math.sin(v * TAU * 150 + w * 5) * 0.5 + 0.5;
+    const strength = 0.15 + warp(u * 2 + 1.7, v * 4 + 0.3) * 0.35;
+    const late = Math.pow(ring, 8) * strength;
+    // „Seidenglanz“ quer zur Faser
+    const sk = silk(u * 40, v * 3);
+    return clamp(0.72 - late + (sk - 0.5) * 0.2 + (fine(u * 200, v * 16) - 0.5) * 0.08);
+  };
+}
+
+function flamedMaple(seed: number): Grain {
+  const warp = lattice(3, 3, 51 + seed);
+  const flameAmp = lattice(5, 2, 53 + seed);
+  const fine = lattice(140, 20, 57 + seed);
+  return (u, v) => {
+    const w = warp(u * 3, v * 3) * 2;
+    const grain = Math.sin(v * TAU * 24 + w * 2) * 0.5 + 0.5;
+    // Flammen: weiche Bänder quer zur Faser, die schräg verlaufen und mal kräftig, mal kaum zu sehen sind
+    const flame = Math.sin(u * TAU * 20 + v * TAU * 3 + Math.sin(v * TAU * 2 + w * 2) * 3 + w * 4) * 0.5 + 0.5;
+    const amp = Math.pow(flameAmp(u * 5, v * 2), 1.5);
+    return clamp(0.45 + grain * 0.14 + (flame - 0.5) * amp * 0.55 + (fine(u * 140, v * 20) - 0.5) * 0.1);
+  };
+}
+
+interface Material {
+  grain: (seed: number) => Grain;
+  dark: RGB;
+  light: RGB;
+}
+
+const MATERIALS: Record<string, { body: Material; button: Material }> = {
+  ukulele: {
+    body: { grain: mahogany, dark: [58, 20, 9], light: [122, 48, 22] },
+    button: { grain: mahogany, dark: [92, 32, 14], light: [168, 72, 34] },
+  },
+  gitarre: {
+    // gealterte, lackierte Fichtendecke: honigfarben, aber dunkel genug für helle Überschriften
+    body: { grain: spruce, dark: [70, 44, 16], light: [150, 104, 46] },
+    button: { grain: rosewood, dark: [28, 14, 14], light: [104, 58, 44] },
+  },
+  banjo: {
+    // tabakfarben gebeizter Ahorn (Resonator), Knöpfe aus hellerem geflammtem Ahorn
+    body: { grain: flamedMaple, dark: [40, 20, 8], light: [116, 64, 24] },
+    button: { grain: flamedMaple, dark: [112, 60, 18], light: [204, 136, 60] },
+  },
+};
+
+export function renderWood(material: Material, size: number, seed = 0): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
-  canvas.width = W;
-  canvas.height = H;
+  canvas.width = size;
+  canvas.height = size;
   const g = canvas.getContext('2d')!;
-  const img = g.createImageData(W, H);
-  const warp = lattice(4, 4, 7);
-  const warp2 = lattice(8, 8, 5);
-  const fine = lattice(64, 16, 11);
-  const ribbon = lattice(8, 2, 3);
-  const dark = tone === 'body' ? [58, 20, 9] : [92, 32, 14];
-  const light = tone === 'body' ? [122, 48, 22] : [168, 72, 34];
-  for (let y = 0; y < H; y++)
-    for (let x = 0; x < W; x++) {
-      const u = (x / W) * 4;
-      const v = (y / H) * 4;
-      const w = warp(u, v) * 2.2 + warp2(u * 2, v * 2) * 0.6;
-      // Längsmaserung: Ringe laufen waagrecht, leicht gewellt; ganzzahlige Frequenz, damit die Kachel nahtlos ist
-      const grain = Math.sin((y / H) * Math.PI * 2 * 22 + w * 3.2) * 0.5 + 0.5;
-      const pores = fine((x / W) * 64, (y / H) * 16);
-      const rib = ribbon((x / W) * 8, (y / H) * 2);
-      let t = 0.25 + grain * 0.38 + (pores - 0.5) * 0.22;
-      t *= 0.78 + rib * 0.44;
-      t = Math.max(0, Math.min(1, t));
-      const i = (y * W + x) * 4;
-      img.data[i] = dark[0] + (light[0] - dark[0]) * t;
-      img.data[i + 1] = dark[1] + (light[1] - dark[1]) * t;
-      img.data[i + 2] = dark[2] + (light[2] - dark[2]) * t;
+  const img = g.createImageData(size, size);
+  const grain = material.grain(seed);
+  const d = material.dark;
+  const l = material.light;
+  for (let y = 0; y < size; y++) {
+    const v = y / size;
+    for (let x = 0; x < size; x++) {
+      const t = grain(x / size, v);
+      const i = (y * size + x) * 4;
+      img.data[i] = d[0] + (l[0] - d[0]) * t;
+      img.data[i + 1] = d[1] + (l[1] - d[1]) * t;
+      img.data[i + 2] = d[2] + (l[2] - d[2]) * t;
       img.data[i + 3] = 255;
     }
+  }
   g.putImageData(img, 0, 0);
   return canvas;
 }
 
+/** Gespiegelte Kopie (billig, ohne neu zu rechnen): zweite Variante für die Knöpfe. */
+function mirrored(src: HTMLCanvasElement): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = src.width;
+  c.height = src.height;
+  const g = c.getContext('2d')!;
+  g.translate(src.width, src.height);
+  g.scale(-1, -1);
+  g.drawImage(src, 0, 0);
+  return c;
+}
+
+const BODY = 768;
+const BUTTON = 512;
+
+/** Jeder Knopf bekommt seinen eigenen Ausschnitt: zufällig verschoben, jeder zweite aus der gespiegelten Textur. */
+function vary(el: Element): void {
+  const s = (el as HTMLElement).style;
+  if (!s || s.getPropertyValue('--wx')) return;
+  s.setProperty('--wx', `${-Math.floor(Math.random() * BUTTON)}px`);
+  s.setProperty('--wy', `${-Math.floor(Math.random() * BUTTON)}px`);
+  if (Math.random() < 0.5) s.setProperty('--wood-btn-el', 'var(--wood-btn-b)');
+}
+
+function varyAll(root: ParentNode): void {
+  const list = root.querySelectorAll('.btn');
+  for (let i = 0; i < list.length; i++) vary(list[i]);
+}
+
 export function installWood(): void {
   const root = document.documentElement;
+  const mat = MATERIALS[instrument().id] || MATERIALS.ukulele;
   const set = (name: string, canvas: HTMLCanvasElement) => {
     const apply = (url: string) => root.style.setProperty(name, `url("${url}")`);
     if (canvas.toBlob) canvas.toBlob((b) => (b ? apply(URL.createObjectURL(b)) : apply(canvas.toDataURL())), 'image/png');
     else apply(canvas.toDataURL());
   };
-  set('--wood-body', renderWood('body'));
-  set('--wood-btn', renderWood('button'));
+  // erst nach dem ersten Zeichnen rechnen (alte iPads brauchen dafür spürbar Zeit); bis dahin gilt die Grundfarbe
+  window.setTimeout(() => {
+    const btn = renderWood(mat.button, BUTTON);
+    set('--wood-btn', btn);
+    set('--wood-btn-b', mirrored(btn));
+    window.setTimeout(() => set('--wood-body', renderWood(mat.body, BODY, 1)), 0);
+  }, 0);
+  // jede Seite beginnt an einer anderen Stelle der Maserung
+  root.style.setProperty('--body-x', `${-Math.floor(Math.random() * BODY)}px`);
+  root.style.setProperty('--body-y', `${-Math.floor(Math.random() * BODY)}px`);
+  const start = () => {
+    varyAll(document);
+    if (typeof MutationObserver === 'undefined') return;
+    new MutationObserver((records) => {
+      for (const r of records)
+        for (let i = 0; i < r.addedNodes.length; i++) {
+          const n = r.addedNodes[i];
+          if (n.nodeType !== 1) continue;
+          if ((n as Element).classList.contains('btn')) vary(n as Element);
+          varyAll(n as Element);
+        }
+    }).observe(document.body, { childList: true, subtree: true });
+  };
+  if (document.body) start();
+  else document.addEventListener('DOMContentLoaded', start);
 }

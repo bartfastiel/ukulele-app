@@ -468,7 +468,7 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
         ...SITES.filter((s) => s.instrument && env().sites.indexOf(s.id) >= 0).map((s) =>
           h(
             'a',
-            { class: 'tile btn tile-big theme-brass', href: env().url(s.id) + (l === 'de' ? '' : l + '/') },
+            { class: `tile btn tile-big theme-brass tile-${s.id}`, href: env().url(s.id) + (l === 'de' ? '' : l + '/') },
             h('span', { class: 'tile-icon' }, icon(s.id === 'ukulele' ? 'songs' : s.id === 'gitarre' ? 'chords' : 'rhythm')),
             h('span', { class: 'tile-text' }, h('span', { class: 'tile-title' }, s.brand[l]), h('span', { class: 'tile-sub' }, t('{instrument} lernen', { instrument: s.name[l] }))),
           ),
