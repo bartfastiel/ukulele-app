@@ -42,6 +42,10 @@ export function detectPitch(
     }
   }
   if (tau < 0) return null;
+  // Tiefe Saiten (Gitarre E2) haben kurz vor dem richtigen Tal manchmal ein flacheres Nebental: im Umkreis von 10 %
+  // gewinnt das tiefste Tal
+  for (let t = Math.max(tauMin, Math.floor(tau * 0.9)); t <= Math.min(tauMax - 1, Math.ceil(tau * 1.1)); t++)
+    if (d[t] < d[tau] && d[t] <= d[t - 1] && d[t] <= d[t + 1]) tau = t;
   // parabolische Interpolation für Bruchteile eines Samples
   let better = tau;
   if (tau > 1 && tau < tauMax) {

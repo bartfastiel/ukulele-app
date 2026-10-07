@@ -10,10 +10,10 @@ import { STRINGS, tabPosition } from '../music/notes.ts';
 import { audio, click, pluck, strum, successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, giveStars, markPracticed } from '../store.ts';
-import { keyLabel, originalShift, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
+import { capoHint, keyLabel, melodyOffset, originalShift, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
 import { simplifications, simplifySong } from '../music/simplify.ts';
 import { diagnose } from '../music/diagnose.ts';
-import { t, tk, tParts } from '../i18n.ts';
+import { ordinal, t, tk, tParts } from '../i18n.ts';
 
 const SPEEDS = [
   { value: 0.6, label: tk('Langsam') },
@@ -67,6 +67,8 @@ class Player {
   private base: Song;
   private shift = 0;
   private keyBox!: HTMLElement;
+  /** Melodie auf dem Instrument gegen die gesungene Lage (Gitarre eine Oktave tiefer). */
+  private melodyOffset = 0;
 
   constructor(root: HTMLElement, song: Song) {
     this.base = song;
@@ -187,7 +189,8 @@ class Player {
         this.els[i] = this.els[lastVisible];
         return;
       }
-      const tab = e.midi !== null ? tabPosition(e.midi) : null;
+      // Gitarre: Melodie eine Oktave tiefer, damit sie in den ersten Bünden liegt
+      const tab = e.midi !== null ? tabPosition(e.midi + this.melodyOffset) : null;
       const el = h(
         'span',
         { class: `syl${e.joinNext ? ' join' : ''}` },
@@ -411,7 +414,7 @@ class Player {
     if (this.settings.melody)
       for (const e of s.events) {
         if (e.midi === null || e.beat < this.scheduledTo - 1e-6 || e.beat >= until) continue;
-        pluck(e.midi, t(e.beat), 0.55);
+        pluck(e.midi + this.melodyOffset, t(e.beat), 0.55);
       }
     if (until > this.scheduledTo) this.scheduledTo = until;
   }
@@ -579,6 +582,7 @@ class Player {
   /** Gewählte Tonart, auf Wunsch mit leichteren Griffen. */
   private arrange(): Song {
     const t = transposeSong(this.base, this.shift);
+    this.melodyOffset = melodyOffset(t);
     return this.settings.simplify ? simplifySong(t) : t;
   }
 
@@ -614,6 +618,17 @@ class Player {
         orig !== null && orig !== 0 && orig !== suggest ? quick(t('◆ Original: {key}', { key: label(orig) }), orig) : null,
       ),
     );
+    const capo = capoHint(this.base, this.shift);
+    if (capo)
+      this.keyBox.appendChild(
+        h(
+          'p',
+          { class: 'small capo-hint' },
+          h('b', null, t('Kapo {n}, greif wie {key}', { n: capo.capo, key: capo.shapes })),
+          ' – ',
+          t('Mit dem Kapodaster im {fret} Bund klingen die leichten {key}-Griffe in {sound}.', { fret: ordinal(capo.capo), key: capo.shapes, sound: label(this.shift) }),
+        ),
+      );
     const swaps = simplifications(transposeSong(this.base, this.shift));
     const names = Object.keys(swaps);
     this.keyBox.appendChild(

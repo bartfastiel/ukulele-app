@@ -7,12 +7,15 @@ import { openMic } from '../audio/mic.ts';
 import { pluck, successSound } from '../audio/engine.ts';
 import { save } from '../store.ts';
 import { TuningCoach, tipText } from '../audio/tuning-coach.ts';
-import { t } from '../i18n.ts';
+import { instrument } from '../music/instrument.ts';
+import { countWord, t } from '../i18n.ts';
 
 export const tuner: View = (root) => {
   let raf = 0;
   let releaseWake: (() => void) | null = null;
-  const done = [false, false, false, false];
+  const range = instrument().tuner;
+  const done = STRINGS.map(() => false);
+  const names = STRINGS.map((st) => st.name);
   let inTuneSince = 0;
   let lastString = -1;
   let smooth = 0;
@@ -48,7 +51,7 @@ export const tuner: View = (root) => {
   };
   const stringBtns = STRINGS.map((st) =>
     button(
-      h('span', null, h('span', { class: 'sname' }, st.name), icon('check', 'icon tick')),
+      h('span', null, h('span', { class: 'sname' }, st.name, st.hint ? h('small', { class: 'shint' }, t(st.hint)) : null), icon('check', 'icon tick')),
       () => pluck(st.midi, 0, 0.7),
       'btn-string',
       { 'aria-label': t('{s}-Saite anhören', { s: st.name }) },
@@ -61,7 +64,7 @@ export const tuner: View = (root) => {
     const tick = () => {
       mic.timeData(buf);
       const now = performance.now();
-      const p = detectPitch(buf, mic.sampleRate, 200, 900);
+      const p = detectPitch(buf, mic.sampleRate, range.minHz, range.maxHz);
       if (!p || p.clarity <= 0.85) {
         const tip = coach.silence(now);
         if (tip) showTip(tipText(tip, STRINGS[tip.string].name), tip.string);
@@ -86,7 +89,8 @@ export const tuner: View = (root) => {
           lastString = best;
           const shown = Math.max(-50, Math.min(50, smooth));
           needle.setAttribute('transform', `rotate(${(shown / 50) * 70} 100 110)`);
-          note.textContent = STRINGS[best].name;
+          const hint = STRINGS[best].hint;
+          note.textContent = hint ? `${STRINGS[best].name} (${t(hint)})` : STRINGS[best].name;
           stringBtns.forEach((b, i) => b.classList.toggle('active', i === best));
           const ok = Math.abs(smooth) < 6;
           gauge.classList.toggle('in-tune', ok);
@@ -101,7 +105,7 @@ export const tuner: View = (root) => {
               announce(t('{s}-Saite gestimmt', { s: STRINGS[best].name }));
               const count = done.filter(Boolean).length;
               save((pr) => (pr.tunedStrings = Math.max(pr.tunedStrings, count)));
-              if (count === 4) advice.textContent = t('Alle vier Saiten gestimmt – los geht’s!');
+              if (count === STRINGS.length) advice.textContent = t('Alle {n} Saiten gestimmt – los geht’s!', { n: countWord(STRINGS.length) });
             }
           } else {
             inTuneSince = 0;
@@ -110,7 +114,10 @@ export const tuner: View = (root) => {
                 ? t('{s}-Saite ist zu tief – Wirbel etwas fester drehen.', { s: STRINGS[best].name })
                 : t('{s}-Saite ist zu hoch – Wirbel etwas lockern.', { s: STRINGS[best].name });
           }
-        } else if (Math.abs(bestC) >= 400) advice.textContent = t('Das klingt weit weg von G, C, E oder A – zupf eine einzelne Saite.');
+        } else if (Math.abs(bestC) >= 400)
+          advice.textContent = t('Das klingt weit weg von {notes} – zupf eine einzelne Saite.', {
+            notes: t('{a} oder {b}', { a: names.slice(0, -1).join(', '), b: names[names.length - 1] }),
+          });
       }
       raf = requestAnimationFrame(tick);
     };
@@ -145,8 +152,8 @@ export const tuner: View = (root) => {
         'div',
         { class: 'tuner-side' },
         listen,
-        h('p', { class: 'small' }, t('Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: G – C – E – A.')),
-        h('div', { class: 'string-row' }, ...stringBtns),
+        h('p', { class: 'small' }, t('Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: {strings}.', { strings: names.join(' – ') })),
+        h('div', { class: `string-row strings-${STRINGS.length}` }, ...stringBtns),
       ),
     ),
   );

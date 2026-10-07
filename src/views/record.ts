@@ -2,7 +2,10 @@ import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, type View } from '../ui/screen.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
-import { PLAN, instructionText, parseFrets, type Take } from '../music/recording-plan.ts';
+import { plan, instructionText, parseFrets, type Take } from '../music/recording-plan.ts';
+import { instrument } from '../music/instrument.ts';
+import { CHORDS } from '../music/chords.ts';
+import { STRINGS } from '../music/notes.ts';
 import { audio } from '../audio/engine.ts';
 import { openMic } from '../audio/mic.ts';
 import { startRecording, type Recording } from '../audio/recorder.ts';
@@ -31,7 +34,7 @@ const SECONDS = 5;
 function diagramFor(t: Take): SVGElement | null {
   if (!t.chord) return null;
   const frets = parseFrets(t.frets);
-  const ch = { name: t.chord, frets, fingers: [0, 0, 0, 0], say: '', level: 0 } as unknown as Chord;
+  const ch: Chord = { name: t.chord, frets, fingers: frets.map(() => 0), say: '', level: 0 };
   return chordDiagram(ch);
 }
 
@@ -41,6 +44,8 @@ function fileName(index: number, s: Stored): string {
 }
 
 export const record: View = (root) => {
+  const PLAN = plan();
+  const names = STRINGS.map((x) => x.name);
   let recording: Recording | null = null;
   let meterRaf = 0;
   let timer = 0;
@@ -107,7 +112,8 @@ export const record: View = (root) => {
     const list = Array.from(done.values()).sort((a, b) => (a.recordedAt < b.recordedAt ? -1 : 1));
     const files = list.map((s, i) => ({ name: fileName(i, s), data: new Uint8Array(s.wav) }));
     const meta = {
-      app: 'Ukulele-Club',
+      app: instrument().club,
+      instrument: instrument().id,
       createdAt: new Date().toISOString(),
       userAgent: navigator.userAgent,
       takes: list.map((s, i) => ({
@@ -130,7 +136,7 @@ export const record: View = (root) => {
   const zipFile = (): { blob: Blob; name: string } => {
     const d = new Date();
     const pad = (n: number) => (n < 10 ? '0' : '') + n;
-    const name = `ukulele-aufnahmen-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.zip`;
+    const name = `${instrument().id}-aufnahmen-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.zip`;
     return { blob: new Blob([zipBytes() as BlobPart], { type: 'application/zip' }), name };
   };
 
@@ -260,7 +266,7 @@ export const record: View = (root) => {
           { class: `card rec-card${take.correct ? '' : ' wrong'}` },
           h('div', { class: 'card-label' }, t('Aufnahme {n} von {total}', { n: idx + 1, total: PLAN.length }) + (take.correct ? '' : ' · ' + t('absichtlich falsch'))),
           h('div', { class: 'chord-name' }, take.chord ? take.chord + (take.correct ? '' : ' (' + t('falsch') + ')') : t('Geräusch')),
-          take.chord ? h('div', { class: 'say' }, t('Bünde G-C-E-A: {frets}', { frets: take.frets })) : null,
+          take.chord ? h('div', { class: 'say' }, t('Bünde {strings}: {frets}', { strings: names.join('-'), frets: take.frets })) : null,
           diag ? h('div', { class: 'diagram-big' }, diag) : null,
           h('p', { class: 'rec-instruction' }, instructionText(take)),
         ),
@@ -283,15 +289,21 @@ export const record: View = (root) => {
 
   const renderCustom = () => {
     const chordIn = h('input', { class: 'rec-input', placeholder: t('z. B. C'), 'aria-label': t('Akkord'), maxlength: 6 }) as HTMLInputElement;
-    const fretsIn = h('input', { class: 'rec-input', placeholder: t('z. B. 0003 (x = gedämpft)'), 'aria-label': t('Bünde G C E A'), maxlength: 4 }) as HTMLInputElement;
+    const example = (CHORDS[0].frets.map((f) => (f < 0 ? 'x' : String(f))).join(''));
+    const fretsIn = h('input', {
+      class: 'rec-input',
+      placeholder: t('z. B. {frets} (x = gedämpft)', { frets: example }),
+      'aria-label': t('Bünde {strings}', { strings: names.join(' ') }),
+      maxlength: names.length,
+    }) as HTMLInputElement;
     const noteIn = h('input', { class: 'rec-input wide', placeholder: t('Was ist passiert? z. B. „wurde gelobt, obwohl F gegriffen war“'), 'aria-label': t('Notiz') }) as HTMLInputElement;
     const correctIn = h('input', { type: 'checkbox', id: 'rec-correct' }) as HTMLInputElement;
     const status = h('div', { class: 'feedback', 'aria-live': 'polite' }, t('Alle geplanten Aufnahmen sind durch. Hier kannst du eigene hinzufügen – z. B. Fälle, in denen die App falsch gelobt hat.'));
     const meter = h('div', { class: 'meter-bar' });
     const recBtn = button(h('span', null, icon('mic'), ' ', t('Eigene Aufnahme')), () => {
       const frets = fretsIn.value.trim().toLowerCase();
-      if (!/^[0-9x]{4}$/.test(frets)) {
-        status.textContent = t('Bitte die Bünde als vier Zeichen eingeben (G C E A), z. B. 0003 oder 2010; x für gedämpft.');
+      if (frets.length !== names.length || !/^[0-9x]+$/.test(frets)) {
+        status.textContent = t('Bitte die Bünde als {n} Zeichen eingeben ({strings}), z. B. {frets}; x für gedämpft.', { n: names.length, strings: names.join(' '), frets: example });
         return;
       }
       const chordName = chordIn.value.trim() || null;
@@ -315,7 +327,7 @@ export const record: View = (root) => {
         { class: 'card rec-custom' },
         h('h2', null, t('Eigene Aufnahme')),
         h('label', null, t('Gewollter Akkord'), ' ', chordIn),
-        h('label', null, t('Wirklich gespielt (Bünde G C E A)'), ' ', fretsIn),
+        h('label', null, t('Wirklich gespielt (Bünde {strings})', { strings: names.join(' ') }), ' ', fretsIn),
         h('label', { class: 'check' }, correctIn, ' ', t('Das war richtig gegriffen')),
         h('label', null, t('Notiz'), ' ', noteIn),
         recBtn,
@@ -341,7 +353,10 @@ export const record: View = (root) => {
 
   void idbAll<Stored>()
     .then((list) => {
-      list.forEach((s) => done.set(s.take.id, s));
+      // Aufnahmen anderer Instrumente (andere Saitenzahl) gehören nicht in dieses Set
+      list.forEach((s) => {
+        if (s.take.frets.length === names.length) done.set(s.take.id, s);
+      });
       const firstOpen = PLAN.findIndex((x) => !done.has(x.id));
       idx = firstOpen < 0 ? PLAN.length : firstOpen;
     })

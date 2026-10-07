@@ -2,6 +2,7 @@ import { installWood } from './ui/wood.ts';
 import { closeMic } from './audio/mic.ts';
 import { load } from './store.ts';
 import { initLang, onLangChange, t, tk } from './i18n.ts';
+import { initInstrument } from './music/instrument.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
 import { songs } from './views/songs.ts';
@@ -77,6 +78,7 @@ function route(keepScroll = false): void {
 
 installWood();
 initLang(load().settings.lang);
+initInstrument();
 // Sprachwechsel: aktuelle Ansicht neu zeichnen, ohne neu zu laden
 onLangChange(() => route(true));
 if (load().settings.calm) document.documentElement.classList.add('calm');

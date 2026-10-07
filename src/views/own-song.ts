@@ -6,6 +6,7 @@ import { importSong, MAX_TEXT } from '../music/import.ts';
 import { BPM_MAX, BPM_MIN, MAX_TITLE, METERS, cleanTitle, newOwnId, ownToSong, type OwnSong } from '../music/own-songs.ts';
 import { ownSongs, putOwnSong, removeOwnSong } from '../store.ts';
 import { t } from '../i18n.ts';
+import { instrument } from '../music/instrument.ts';
 
 // eigener Beispieltext, kein fremdes Lied; der zweite Akkord steht über dem letzten Wort der Zeile
 function placeholder(): string {
@@ -13,7 +14,7 @@ function placeholder(): string {
     const col = line.lastIndexOf(' ') + 1;
     return a + new Array(Math.max(2, col - a.length + 1)).join(' ') + b;
   };
-  const one = t('Heute spiel ich Ukulele,');
+  const one = t(instrument().ownLine);
   const two = t('und die Sonne lacht.');
   const inline = '[C]' + one.replace(/,$/, '').replace(/ (\S+)$/, ' [G7]$1');
   return [over('C', 'G7', one), one, over('G7', 'C', two), two, '', `${t('Oder so:')} ${inline} …`].join('\n');

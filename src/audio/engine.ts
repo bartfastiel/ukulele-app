@@ -1,6 +1,8 @@
 import { renderPluck } from './pluck.ts';
 import { midiToFreq } from '../music/notes.ts';
 import { chordMidis, chord as chordByName } from '../music/chords.ts';
+import { stringMidi } from '../music/notes.ts';
+import { instrument, onInstrumentChange } from '../music/instrument.ts';
 
 type Ctx = AudioContext;
 
@@ -11,6 +13,7 @@ let master: GainNode | null = null;
 const plucks = new Map<number, AudioBuffer>();
 let clickHi: AudioBuffer | null = null;
 let clickLo: AudioBuffer | null = null;
+onInstrumentChange(() => plucks.clear());
 
 interface AudioSessionNav {
   audioSession?: { type: string };
@@ -65,7 +68,8 @@ function pluckBuffer(midi: number): AudioBuffer {
   let buf = plucks.get(midi);
   if (!buf) {
     const c = audio();
-    const data = renderPluck(midiToFreq(midi), c.sampleRate, 1.8, 0.5, midi);
+    const tone = instrument().synth;
+    const data = renderPluck(midiToFreq(midi), c.sampleRate, tone.seconds, tone.brightness, midi, tone.sustain, tone.position);
     buf = c.createBuffer(1, data.length, c.sampleRate);
     buf.getChannelData(0).set(data);
     plucks.set(midi, buf);
@@ -90,11 +94,20 @@ export function pluck(midi: number, when = 0, gain = 0.6): void {
   play(pluckBuffer(midi), when, gain);
 }
 
-/** Akkord anschlagen; abwärts von der G- zur A-Saite, aufwärts umgekehrt. */
+/** Akkord anschlagen; abwärts von der oberen Saite (Ukulele G) zur unteren (A), aufwärts umgekehrt. */
 export function strum(name: string, when = 0, gain = 0.35, up = false): void {
   const midis = chordMidis(chordByName(name));
-  const order = up ? [...midis].reverse() : midis;
-  order.forEach((m, i) => pluck(m, when + i * 0.016, gain * (up ? 0.75 : 1)));
+  const order = up ? midis.slice().reverse() : midis;
+  // sechs Saiten klingen zusammen lauter als vier
+  const level = gain * (up ? 0.75 : 1) * Math.sqrt(4 / Math.max(4, midis.length));
+  order.forEach((m, i) => pluck(m, when + i * 0.016, level));
+}
+
+/** Eine Saite des Griffs zupfen (Banjo-Roll); nicht angeschlagene Saiten bleiben still. */
+export function pluckString(name: string, string: number, when = 0, gain = 0.4): void {
+  const f = chordByName(name).frets[string];
+  if (f === undefined || f < 0) return;
+  pluck(stringMidi(string, f), when, gain);
 }
 
 function makeClick(freq: number): AudioBuffer {

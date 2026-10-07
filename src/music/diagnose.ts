@@ -1,7 +1,14 @@
 import type { Chord } from './chords.ts';
+import { STRINGS } from './notes.ts';
 import { ordinal, t, tk } from '../i18n.ts';
 
-const STRING_NAME = [tk('G-Saite (ganz oben)'), tk('C-Saite'), tk('E-Saite'), tk('A-Saite (ganz unten)')];
+/** „G-Saite (ganz oben)“, „C-Saite“ … „A-Saite (ganz unten)“ – oben und unten so, wie man das Instrument hält. */
+function stringName(i: number): string {
+  const s = STRINGS[i].name;
+  if (i === 0) return t('{s}-Saite (ganz oben)', { s });
+  if (i === STRINGS.length - 1) return t('{s}-Saite (ganz unten)', { s });
+  return t('{s}-Saite', { s });
+}
 const FINGER = ['', tk('Zeigefinger'), tk('Mittelfinger'), tk('Ringfinger'), tk('kleiner Finger')];
 const FINGER_ACC = ['', tk('deinen Zeigefinger'), tk('deinen Mittelfinger'), tk('deinen Ringfinger'), tk('deinen kleinen Finger')];
 
@@ -10,7 +17,7 @@ const FINGER_ACC = ['', tk('deinen Zeigefinger'), tk('deinen Mittelfinger'), tk(
  * kind 'open': gegriffene Saite klingt leer; 'muted': Saite klingt kaum (meist von einem Finger berührt).
  */
 export function diagnose(ch: Chord, string: number, kind: 'open' | 'muted' | ''): string {
-  const s = t(STRING_NAME[string]);
+  const s = stringName(string);
   const fret = ch.frets[string];
   const finger = ch.fingers[string];
   if (fret === 0) {

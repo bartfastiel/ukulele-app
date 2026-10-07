@@ -1,11 +1,15 @@
 // Bildschirmfotos aller Ansichten in typischen Geräteformaten (Sichtprüfung des Designs).
-// node tools/shots.mjs <ordner> [de|en|fr] – die Sprache kommt über die Browser-Sprache (Standard: de).
+// node tools/shots.mjs <ordner> [de|en|fr] [ukulele|gitarre|banjo] – die Sprache kommt über die Browser-Sprache
+// (Standard: de), das Instrument über ?instrument=… (Standard: Ukulele).
 import { chromium, webkit } from '@playwright/test';
 
 const base = process.env.BASE || 'http://localhost:4173/';
 const out = process.argv[2] || 'shots';
 const lang = process.argv[3] || 'de';
 const locale = { de: 'de-DE', en: 'en-US', fr: 'fr-FR' }[lang] || lang;
+const instrument = process.argv[4] || '';
+const query = instrument ? `?instrument=${instrument}` : '';
+const prefix = instrument ? `${lang}-${instrument}` : lang;
 const views = ['', 'lieder', 'lied/alle-voegel', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied', 'eigenes-lied/mein-sonnenlied', 'lied/mein-sonnenlied', 'lied-teilen/mein-sonnenlied'];
 const devices = [
   { name: 'ipad', width: 1024, height: 768, engine: webkit },
@@ -25,9 +29,9 @@ for (const d of devices) {
     localStorage.setItem('ukulele-club:eigene-lieder', JSON.stringify({ version: 1, songs: [song] }));
   });
   for (const v of views) {
-    await page.goto(`${base}#/${v}`);
+    await page.goto(`${base}${query}#/${v}`);
     await page.waitForTimeout(250);
-    await page.screenshot({ path: `${out}/${lang}-${d.name}-${v.replace(/\//g, '_') || 'home'}.png` });
+    await page.screenshot({ path: `${out}/${prefix}-${d.name}-${v.replace(/\//g, '_') || 'home'}.png` });
   }
   await browser.close();
 }
