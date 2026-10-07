@@ -1765,7 +1765,8 @@ summary:focus-visible {
     height: 84px;
   }
   .brand h1 {
-    font-size: 1.6em;
+    font-size: 1.4em;
+    overflow-wrap: break-word;
   }
   .brand p {
     font-size: 0.85em;
