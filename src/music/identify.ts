@@ -1,18 +1,22 @@
 import { tk } from '../i18n.ts';
 import { CHORDS } from './chords.ts';
-import { NOTE_NAMES, STRINGS, freqToMidi, pitchClass } from './notes.ts';
+import { NOTE_NAMES, STRINGS, freqToMidi, pitchClass, playableFret, stringMidi } from './notes.ts';
+import { instrument } from './instrument.ts';
 import type { Peak } from '../audio/chord-detect.ts';
 
 /**
  * Akkord-Detektiv: Welcher Griff (Bund je Saite, auch gedämpft) erklärt das Spektrum am besten – und wie heißt
- * der Akkord? Statt nur die 18 Griffe der Bibliothek zu prüfen, werden alle Kombinationen der ersten fünf Bünde
- * bewertet (6 Werte × 4 Saiten + gedämpft = 2401). Auf Halbtöne gerechnet, damit das unter 2 ms bleibt.
+ * der Akkord? Statt nur die Griffe der Bibliothek zu prüfen, werden alle Kombinationen der ersten fünf Bünde
+ * bewertet (Ukulele: 6 Werte × 4 Saiten + gedämpft = 2401). Auf Halbtöne gerechnet, damit das unter 2 ms bleibt.
+ * Bei sechs Saiten wären es 117 649 – dann kommen je Saite nur Bünde in Frage, deren Ton im Spektrum klingt.
  */
 
 export const MAX_FRET = 5;
 const MUTED = -1;
 /** Abstand der Obertöne 1–3 in Halbtönen. */
 const HARMONICS = [0, 12, 19.02];
+/** Mehr Kombinationen werden nicht vollständig durchsucht. */
+const FULL_SEARCH = 5000;
 const TOL = 0.4;
 
 export interface Fingering {
@@ -31,7 +35,7 @@ function prepare(peaks: Peak[]): { ps: P[]; max: number } {
   return { ps: peaks.map((p) => ({ midi: freqToMidi(p.freq), mag: p.mag / max })), max };
 }
 
-function scoreMidis(ps: P[], midis: number[]): number {
+function scoreMidis(ps: P[], midis: number[], harmonics: number[]): number {
   if (!midis.length) return 0;
   let total = 0;
   let explained = 0;
@@ -40,7 +44,7 @@ function scoreMidis(ps: P[], midis: number[]): number {
     total += p.mag;
     let hit = false;
     for (const m of midis) {
-      for (const h of HARMONICS)
+      for (const h of harmonics)
         if (Math.abs(p.midi - (m + h)) < TOL) {
           hit = true;
           break;
@@ -64,7 +68,21 @@ function scoreMidis(ps: P[], midis: number[]): number {
   return (total ? explained / total : 0) * (0.55 * presence + 0.45 * min) * (1 - Math.min(1, foreign * 2));
 }
 
-const LIBRARY = new Map(CHORDS.map((c) => [c.frets.join(','), c.name]));
+const libraries: Record<string, Map<string, string>> = {};
+
+/** Bibliotheksgriffe des aktuellen Instruments nach Bünden. */
+function library(): Map<string, string> {
+  const id = instrument().id;
+  if (!libraries[id]) libraries[id] = new Map(CHORDS.map((c) => [c.frets.join(','), c.name]));
+  return libraries[id];
+}
+
+/** Obertöne in Halbtönen, die als erklärt gelten: Ukulele 1–3, tiefe Instrumente mehr. */
+function harmonicsFor(count: number): number[] {
+  const out: number[] = [];
+  for (let k = 1; k <= Math.max(3, count); k++) out.push(k === 3 ? 19.02 : 12 * Math.log2(k));
+  return out;
+}
 
 /**
  * Handy-Mikrofone hören die tiefe C-Saite und die hohe G-Saite oft schwach. Dann erklären mehrere Griffe den
@@ -72,41 +90,62 @@ const LIBRARY = new Map(CHORDS.map((c) => [c.frets.join(','), c.name]));
  */
 export const PREFER = { perFret: 0.012, perFinger: 0.02, perMuted: 0.1, library: 0.08, minScore: 0.4 };
 
+/** Bünde, die je Saite in Frage kommen: alle der ersten fünf (und gedämpft) – bei vielen Saiten nur die hörbaren. */
+function candidates(ps: P[]): number[][] {
+  const all = STRINGS.map((_, i) => {
+    const values = [MUTED];
+    for (let f = 0; f <= MAX_FRET; f++) if (playableFret(i, f)) values.push(f);
+    return values;
+  });
+  const count = all.reduce((n, v) => n * v.length, 1);
+  if (count <= FULL_SEARCH) return all;
+  return all.map((values, i) =>
+    values.filter((f) => {
+      if (f === MUTED) return true;
+      const m = stringMidi(i, f);
+      return ps.some((p) => p.mag >= 0.05 && Math.abs(p.midi - m) < TOL);
+    }),
+  );
+}
+
 /** Bester Griff für die Spitzen; null bei zu wenig Signal. */
 export function identifyFingering(peaks: Peak[]): Fingering | null {
   if (peaks.length < 1) return null;
   const prep = prepare(peaks);
+  const harmonics = instrument().id === 'ukulele' ? HARMONICS : harmonicsFor(instrument().detect.harmonics);
+  const lib = library();
+  const values = candidates(prep.ps);
+  const n = values.length;
   let best: Fingering | null = null;
-  const frets = [0, 0, 0, 0];
-  const values = [MUTED];
-  for (let f = 0; f <= MAX_FRET; f++) values.push(f);
-  for (const a of values)
-    for (const b of values)
-      for (const c of values)
-        for (const d of values) {
-          frets[0] = a;
-          frets[1] = b;
-          frets[2] = c;
-          frets[3] = d;
-          const midis: number[] = [];
-          let fretSum = 0;
-          let fretted = 0;
-          let muted = 0;
-          frets.forEach((f, i) => {
-            if (f === MUTED) muted++;
-            else {
-              midis.push(STRINGS[i].midi + f);
-              fretSum += f;
-              if (f > 0) fretted++;
-            }
-          });
-          if (!midis.length) continue;
-          let score = scoreMidis(prep.ps, midis);
-          // Bei gleichem Klang gewinnt der einfachere Griff: wenig Bünde, keine gedämpften Saiten, bekannte Griffe
-          score -= fretSum * PREFER.perFret + fretted * PREFER.perFinger + muted * PREFER.perMuted;
-          if (LIBRARY.has(frets.join(','))) score += PREFER.library;
-          if (!best || score > best.score) best = { frets: frets.slice(), score, midis };
-        }
+  const frets: number[] = [];
+  const visit = (s: number) => {
+    if (s < n) {
+      for (const f of values[s]) {
+        frets[s] = f;
+        visit(s + 1);
+      }
+      return;
+    }
+    const midis: number[] = [];
+    let fretSum = 0;
+    let fretted = 0;
+    let muted = 0;
+    frets.forEach((f, i) => {
+      if (f === MUTED) muted++;
+      else {
+        midis.push(stringMidi(i, f));
+        fretSum += f;
+        if (f > 0) fretted++;
+      }
+    });
+    if (!midis.length) return;
+    let score = scoreMidis(prep.ps, midis, harmonics);
+    // Bei gleichem Klang gewinnt der einfachere Griff: wenig Bünde, keine gedämpften Saiten, bekannte Griffe
+    score -= fretSum * PREFER.perFret + fretted * PREFER.perFinger + muted * PREFER.perMuted;
+    if (lib.has(frets.join(','))) score += PREFER.library;
+    if (!best || score > best.score) best = { frets: frets.slice(), score, midis };
+  };
+  visit(0);
   return best;
 }
 
@@ -174,12 +213,12 @@ export function nameChord(pitchClasses: number[]): ChordName[] {
 
 /** Name des bekannten Bibliotheksgriffs, falls die Bünde genau passen. */
 export function libraryName(frets: number[]): string | null {
-  return LIBRARY.get(frets.join(',')) || null;
+  return library().get(frets.join(',')) || null;
 }
 
-/** Alle Stellen (Saite, Bund bis 12) für einen Ton auf der Ukulele mit hohem G. */
+/** Alle Stellen (Saite, Bund bis 12) für einen Ton auf dem aktuellen Instrument. */
 export function positions(midi: number): { string: number; fret: number }[] {
-  return STRINGS.map((s, i) => ({ string: i, fret: midi - s.midi })).filter((p) => p.fret >= 0 && p.fret <= 12);
+  return STRINGS.map((s, i) => ({ string: i, fret: midi - s.midi })).filter((p) => p.fret >= 0 && p.fret <= 12 && playableFret(p.string, p.fret));
 }
 
 export function noteLabel(midi: number): string {

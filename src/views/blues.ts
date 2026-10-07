@@ -2,7 +2,8 @@ import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { fretboard, type Mark } from '../ui/fretboard.ts';
-import { BLUES_SCALE, LEVELS, SWING, bluesBars, chordTones, organVoicing, position, rootOf, scalePositions, type Level } from '../music/blues.ts';
+import { BLUES_SCALE, LEVELS, SWING, bluesBars, chordTones, levelText, organVoicing, position, rootOf, scalePositions, type Level } from '../music/blues.ts';
+import { instrument } from '../music/instrument.ts';
 import { ROOTS } from '../music/chords.ts';
 import { audio, click, pluck } from '../audio/engine.ts';
 import { bass, hat, kick, organ, snare } from '../audio/band.ts';
@@ -21,8 +22,9 @@ const TEMPOS = [
 const WALK = [0, 4, 7, 9, 10, 9, 7, 4];
 
 export const blues: View = (root) => {
+  const setup = instrument().blues;
   let level: Level = LEVELS[0];
-  let key = 0;
+  let key = setup.easyKey;
   let BARS = bluesBars(key);
   let bpm = 70;
   let guide = false;
@@ -78,7 +80,7 @@ export const blues: View = (root) => {
       }
     } else {
       const tones = chordTones(chord);
-      for (const p of scalePositions(key, 3))
+      for (const p of scalePositions(key, setup.frets))
         marks.push({ string: p.string, fret: p.fret, kind: tones.indexOf(p.midi % 12) >= 0 ? 'chord' : 'scale', label: noteText(NOTE_NAMES[p.midi % 12]) });
     }
     if (played && audio().currentTime - played.at < 0.6) {
@@ -93,7 +95,7 @@ export const blues: View = (root) => {
         level.notes && beat >= 0 && targetAt(beat) !== null ? h('span', { class: 'blues-target' }, t('Spiel {note}', { note: noteText(NOTE_NAMES[pitchClass(targetAt(beat)!)]) })) : null,
       ),
     );
-    neck.appendChild(fretboard(marks, 3));
+    neck.appendChild(fretboard(marks, setup.frets));
   };
 
   const schedule = () => {
@@ -144,7 +146,7 @@ export const blues: View = (root) => {
     micTimer = window.setInterval(() => {
       if (!running) return;
       mic.timeData(buf);
-      const p = detectPitch(buf, mic.sampleRate, 240, 1100);
+      const p = detectPitch(buf, mic.sampleRate, setup.pitch.minHz, setup.pitch.maxHz);
       if (!p || p.clarity < 0.9) return;
       const midi = Math.round(freqToMidi(p.freq));
       played = { midi, at: audio().currentTime };
@@ -216,7 +218,7 @@ export const blues: View = (root) => {
 
   const setLevel = (l: Level) => {
     level = l;
-    info.textContent = t(l.text);
+    info.textContent = t(levelText(l));
     drawNeck(running ? beatNow() : 0);
   };
 
@@ -258,14 +260,14 @@ export const blues: View = (root) => {
       h('h2', null, t('Stufe')),
       seg(t('Stufe'), LEVELS, (l) => t(l.title), (l) => l === level, setLevel),
       h('h2', null, t('Tonart')),
-      seg(t('Tonart'), ROOTS.map((_, i) => i), (i) => (i === 0 ? 'C ★' : ROOTS[i]), (i) => i === key, (i) => {
+      seg(t('Tonart'), ROOTS.map((_, i) => i), (i) => (i === setup.easyKey ? `${ROOTS[i]} ★` : ROOTS[i]), (i) => i === key, (i) => {
         key = i;
         BARS = bluesBars(key);
         explain.textContent = explainText();
         drawGrid(running ? Math.floor(Math.max(0, beatNow()) / 4) % 12 : -1);
         drawNeck(running ? beatNow() : 0);
       }),
-      h('p', { class: 'card small' }, t('★ In C liegen die Grundtöne auf leeren Saiten – am bequemsten. Andere Tonarten passen zu Liedern oder Mitspielern.')),
+      h('p', { class: 'card small' }, t(setup.hint)),
       h('h2', null, t('Tempo')),
       seg(t('Tempo'), TEMPOS, (x) => t(x.label), (x) => x.bpm === bpm, (x) => {
         const beat = running ? beatNow() : 0;

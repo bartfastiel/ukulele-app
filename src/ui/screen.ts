@@ -3,6 +3,7 @@ import { icon } from './icons.ts';
 import { openMic, micState } from '../audio/mic.ts';
 import { audio } from '../audio/engine.ts';
 import { t, tk } from '../i18n.ts';
+import { link } from '../site/nav.ts';
 
 export type Cleanup = (() => void) | void;
 export type View = (root: HTMLElement, param: string) => Cleanup;
@@ -10,7 +11,7 @@ export type View = (root: HTMLElement, param: string) => Cleanup;
 /** Kopfzeile mit Zurück-Knopf immer an derselben Stelle, darunter der Inhalt auf cremefarbenem Grund. */
 export function screen(root: HTMLElement, opts: { title: string; back?: string; theme?: string }, ...content: Node[]): HTMLElement {
   clear(root);
-  const back = opts.back ?? '#/';
+  const back = opts.back ?? link('');
   const main = h('main', { class: `screen theme-${opts.theme || 'brass'}`, id: 'main' }, ...content);
   root.appendChild(
     h(
@@ -18,8 +19,8 @@ export function screen(root: HTMLElement, opts: { title: string; back?: string; 
       { class: 'topbar' },
       h(
         'a',
-        { class: 'btn btn-round', href: back, 'aria-label': back === '#/' ? t('Zur Startseite') : t('Zurück') },
-        icon(back === '#/' ? 'home' : 'back'),
+        { class: 'btn btn-round', href: back, 'aria-label': back === link('') ? t('Zur Startseite') : t('Zurück') },
+        icon(back === link('') ? 'home' : 'back'),
       ),
       h('h1', null, opts.title),
     ),

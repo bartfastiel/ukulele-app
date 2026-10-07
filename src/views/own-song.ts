@@ -6,6 +6,8 @@ import { importSong, MAX_TEXT } from '../music/import.ts';
 import { BPM_MAX, BPM_MIN, MAX_TITLE, METERS, cleanTitle, newOwnId, ownToSong, type OwnSong } from '../music/own-songs.ts';
 import { ownSongs, putOwnSong, removeOwnSong } from '../store.ts';
 import { t } from '../i18n.ts';
+import { link, go } from '../site/nav.ts';
+import { instrument } from '../music/instrument.ts';
 
 // eigener Beispieltext, kein fremdes Lied; der zweite Akkord steht über dem letzten Wort der Zeile
 function placeholder(): string {
@@ -13,7 +15,7 @@ function placeholder(): string {
     const col = line.lastIndexOf(' ') + 1;
     return a + new Array(Math.max(2, col - a.length + 1)).join(' ') + b;
   };
-  const one = t('Heute spiel ich Ukulele,');
+  const one = t(instrument().ownLine);
   const two = t('und die Sonne lacht.');
   const inline = '[C]' + one.replace(/,$/, '').replace(/ (\S+)$/, ' [G7]$1');
   return [over('C', 'G7', one), one, over('G7', 'C', two), two, '', `${t('Oder so:')} ${inline} …`].join('\n');
@@ -23,7 +25,7 @@ function placeholder(): string {
 export const ownSongEditor: View = (root, id) => {
   const existing = id ? ownSongs().find((o) => o.id === id) : undefined;
   if (id && !existing) {
-    location.hash = '#/lieder';
+    go('lieder');
     return;
   }
   let meter = existing ? existing.meter : 4;
@@ -123,7 +125,7 @@ export const ownSongEditor: View = (root, id) => {
       return;
     }
     announce(t('Gespeichert'));
-    location.hash = `#/lied/${song.id}`;
+    go(`lied/${song.id}`);
   };
 
   const doDelete = () => {
@@ -136,7 +138,7 @@ export const ownSongEditor: View = (root, id) => {
       danger: true,
     }).then((yes) => {
       if (!yes) return;
-      if (removeOwnSong(existing.id)) location.hash = '#/lieder';
+      if (removeOwnSong(existing.id)) go('lieder');
       else say(t('Löschen hat nicht geklappt.'));
     });
   };
@@ -167,14 +169,14 @@ export const ownSongEditor: View = (root, id) => {
       'div',
       { class: 'row own-actions' },
       button(h('span', null, icon('check'), t('Speichern')), doSave, 'btn-primary'),
-      existing ? h('a', { class: 'btn', href: `#/lied-teilen/${existing.id}` }, icon('share'), t('Teilen')) : null,
+      existing ? h('a', { class: 'btn', href: link(`lied-teilen/${existing.id}`) }, icon('share'), t('Teilen')) : null,
       existing ? button(h('span', null, icon('trash'), t('Löschen')), doDelete) : null,
     ),
   );
 
   screen(
     root,
-    { title: existing ? t('Lied bearbeiten') : t('Eigenes Lied'), back: existing ? `#/lied/${existing.id}` : '#/lieder', theme: 'brass' },
+    { title: existing ? t('Lied bearbeiten') : t('Eigenes Lied'), back: existing ? link(`lied/${existing.id}`) : link('lieder'), theme: 'brass' },
     h('div', { class: 'own-edit' }, form, preview),
   );
   return () => window.clearTimeout(timer);

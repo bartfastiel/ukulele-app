@@ -7,12 +7,12 @@ dreisprachig (Deutsch = Original, Englisch, Französisch), Akkordnamen internati
 ## Befehle
 
 ```sh
-npm run dev        # Watch-Build + Server auf http://localhost:5173
+npm run dev        # Watch-Build + Server auf http://localhost:5173/ukulele/ (auch /gitarre/, /banjo/, /start/)
 npm run typecheck  # tsc --noEmit (TypeScript 7)
 npm test           # Unit-Tests: node --test mit Type-Stripping (tests/unit/*.test.ts)
 npm run build      # dist/ via tools/build.mjs (esbuild, Inhalts-Hash, Service Worker)
 npm run e2e        # Build + Playwright (tests/e2e), Server: tools/serve.mjs auf :4173
-node tools/shots.mjs <ordner> [de|en|fr]   # Bildschirmfotos aller Ansichten (iPad/WebKit, Handy hoch/quer)
+node tools/shots.mjs <ordner> [de|en|fr] [gitarre|banjo]   # Bildschirmfotos aller Ansichten (iPad/WebKit, Handy hoch/quer)
 node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) durch die Akkorderkennung spielen
 ```
 
@@ -32,6 +32,10 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
   im Französischen „tu“. Liedtitel und -texte bleiben im Original; Akkordsymbole und Saitennamen (G C E A) überall als
   Buchstaben, ausgeschriebene Einzeltöne im Französischen als Do, Ré, Mi (`noteText()`). E2E-Tests laufen mit `de-DE`.
 - Code-Kommentare nur, wo der Grund nicht aus dem Code hervorgeht.
+- Links nie als `#/…` schreiben, sondern `link('lied/<id>')` bzw. `go(…)` aus `src/site/nav.ts`. Neue Seiten in
+  `src/site/routes.ts` (Pfad je Sprache) und `src/site/pages.ts` (Titel, Beschreibung) eintragen; der Unit-Test prüft
+  alle internen Links, Titel und Sprachfassungen.
+- Nie Namen anderer Apps, Seiten oder Anbieter nennen (Code, Doku, Issues, PRs) – nur Inhalte.
 - Arbeit per Branch + Pull Request; CI (`ci.yml`) muss grün sein; `deploy.yml` deployt `main` und Vorschauen.
   Keine Secrets ins Repo.
 - Commit-Nachrichten: Conventional Commits (`feat|fix|docs|test|refactor|chore|ci`), Hook in `.githooks/`.
@@ -40,8 +44,11 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
 ## Architektur
 
 ```
-src/main.ts              Hash-Router (#/, #/lieder, #/lied/<id>, #/akkorde, #/akkord/<name>, #/spiel, #/stimmen, #/rhythmus, #/sterne,
-                         #/blues, #/detektiv, #/aufnahme, #/eigenes-lied[/<id>], #/lied-teilen/<id>, #/teilen/<daten>)
+src/main.ts              startet die Ansicht der Seite (<html data-route>, Parameter ggf. hinter #); leitet alte #/…-Adressen um
+src/site/                routes.ts (interne Routen „lied/<id>“, „akkord/C“ … → Pfade je Sprache), nav.ts (link()/go() im Browser),
+                         pages.ts (Vorrendern im Build mit vdom.ts: Titel, hreflang, JSON-LD, Sitemap), sites.ts (Instrument-
+                         Seiten = Subdomains), chord-names.ts, legal-data.ts (Impressum-Angaben)
+src/content/             Wissenssammlung (Artikel je Instrument, de/en/fr, nur Daten)
 src/views/*.ts           je Ansicht eine Funktion (root, param) → Aufräumfunktion
 src/views/player.ts      Karaoke: Transport auf der AudioContext-Uhr, Vorausplanung (25-ms-Takt, 150 ms Horizont),
                          Modus „Wartet auf mich“ hält an jedem Akkordwechsel (stopBeat) und hört per listen.ts zu
@@ -52,7 +59,10 @@ src/audio/pluck.ts       Synthese ohne Web Audio (auch für Tests und tools/make
 src/audio/pitch.ts       YIN-Tonhöhe (Stimmgerät)
 src/audio/chord-detect.ts  Spektralspitzen → Bewertung je Griff und Saite, Hinweis auf leer klingende Saite
 src/audio/mic.ts, listen.ts  Mikrofon (ohne Echo-/Rauschunterdrückung), Lauscher mit 2er-Bestätigung
-src/music/               notes.ts, chords.ts (18 Griffe), song.ts (Notation + Parser, ChordPro-Parser, Kategorien),
+src/music/instrument.ts  Instrument-Modell: Ukulele (Standard), Gitarre, Banjo – Saiten, Griff-Bibliothek, Erkennung,
+                         Synthese, Blues; `instrument()`, Start über data-instrument am <html> oder ?instrument=gitarre.
+                         Daten je Instrument in src/music/instruments/*.ts; STRINGS/CHORDS folgen dem Instrument
+src/music/               notes.ts, chords.ts (Griffe, Tabellen, Grifffinder), song.ts (Notation + Parser, ChordPro-Parser, Kategorien),
                          songs.ts (Lieder mit Melodie), songs-chordpro/-kinder/-english.ts (Akkorde + Text)
 src/audio/offline.ts     Nachbau von AnalyserNode + Lauscher für Tests und tools/eval-recordings.ts
 src/views/record.ts      Aufnahme-Werkzeug (#/aufnahme), Plan in src/music/recording-plan.ts, ZIP via src/util/zip.ts

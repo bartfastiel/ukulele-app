@@ -7,15 +7,7 @@ import { successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, markPracticed } from '../store.ts';
 import { t } from '../i18n.ts';
-
-const PRESETS = [
-  { chords: ['C', 'Am'] },
-  { chords: ['C', 'F'] },
-  { chords: ['C', 'G7'] },
-  { chords: ['F', 'C7'] },
-  { chords: ['C', 'Am', 'F', 'G7'] },
-  { chords: ['C', 'F', 'G7'] },
-];
+import { instrument } from '../music/instrument.ts';
 
 const SECONDS = 60;
 
@@ -24,6 +16,7 @@ function presetLabel(chords: string[]): string {
 }
 
 export const game: View = (root) => {
+  const PRESETS = instrument().game.map((chords) => ({ chords }));
   let selected = PRESETS[0].chords;
   let listener: ChordListener | null = null;
   let timer = 0;

@@ -10,6 +10,7 @@ import { readZip } from '../src/util/zip.ts';
 import { decodeWav } from '../src/audio/wav.ts';
 import { evaluateRecording } from '../src/audio/offline.ts';
 import { CHORDS } from '../src/music/chords.ts';
+import { setInstrument } from '../src/music/instrument.ts';
 
 interface TakeMeta {
   file: string;
@@ -36,7 +37,9 @@ if (statSync(input).isDirectory()) {
 }
 const metaBytes = files.get('takes.json');
 if (!metaBytes) throw new Error('takes.json fehlt');
-const meta = JSON.parse(new TextDecoder().decode(metaBytes)) as { userAgent?: string; takes: TakeMeta[] };
+const meta = JSON.parse(new TextDecoder().decode(metaBytes)) as { userAgent?: string; instrument?: string; takes: TakeMeta[] };
+// ältere Aufnahmen ohne Angabe stammen von der Ukulele
+setInstrument(meta.instrument || 'ukulele');
 
 const fretsOf = (name: string) =>
   CHORDS.find((c) => c.name === name)!
@@ -49,7 +52,7 @@ let falseOnIntended = 0;
 let mistakeTakes = 0;
 const lines: string[] = [];
 
-console.log(`Gerät: ${meta.userAgent || 'unbekannt'}`);
+console.log(`Gerät: ${meta.userAgent || 'unbekannt'}, Instrument: ${meta.instrument || 'ukulele'}`);
 console.log(`${meta.takes.length} Aufnahmen\n`);
 
 for (const t of meta.takes) {

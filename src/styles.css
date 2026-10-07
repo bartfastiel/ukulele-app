@@ -607,6 +607,35 @@ summary:focus-visible {
   font: 800 13px var(--font);
 }
 
+.chord-svg .fret-number {
+  font: 800 13px var(--font);
+}
+
+/* Fünf und sechs Saiten sind breiter – damit die Griffbilder nicht kleiner wirken, dürfen sie breiter werden */
+.chord-tile .chord-svg.strings-5 {
+  max-width: 130px;
+}
+
+.chord-tile .chord-svg.strings-6 {
+  max-width: 150px;
+}
+
+.now-card .chord-svg.strings-5 {
+  max-width: 230px;
+}
+
+.now-card .chord-svg.strings-6 {
+  max-width: 270px;
+}
+
+.next-card .chord-svg.strings-5 {
+  max-width: 145px;
+}
+
+.next-card .chord-svg.strings-6 {
+  max-width: 170px;
+}
+
 .chord-name {
   font-weight: 900;
   font-size: 2.6em;
@@ -1057,6 +1086,12 @@ summary:focus-visible {
 .syl-tab.s3 {
   background: #a3263a;
 }
+.syl-tab.s4 {
+  background: #2f5f9e;
+}
+.syl-tab.s5 {
+  background: #6b6b1f;
+}
 
 .controls {
   display: flex;
@@ -1191,6 +1226,36 @@ summary:focus-visible {
   grid-gap: 8px;
 }
 
+/* Banjo: fünf Saiten in einer Reihe; Gitarre: zwei Reihen à drei */
+.string-row.strings-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.string-row.strings-6 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 600px) {
+  .string-row.strings-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Handy quer: Griffbilder mit fünf oder sechs Saiten brauchen eine breitere Bühne */
+@media (orientation: landscape) and (max-height: 560px) {
+  [data-strings='5'] .player,
+  [data-strings='6'] .player {
+    grid-template-columns: minmax(330px, 1fr) 1.3fr;
+  }
+}
+
+.btn-string .shint {
+  display: block;
+  font-size: 0.45em;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .btn-string {
   font-size: 1.8em;
   padding: 8px;
@@ -1308,6 +1373,11 @@ summary:focus-visible {
 
 .arrow.rest .glyph {
   color: rgba(0, 0, 0, 0.25);
+}
+
+.arrow.pick .glyph {
+  font-size: 2.4em;
+  color: var(--brass-dark);
 }
 
 .arrow .beat-count {
@@ -1654,6 +1724,11 @@ summary:focus-visible {
 .fb-string {
   stroke: #f7f1e6;
   stroke-width: 1.6;
+}
+
+.fb-string.short {
+  stroke-dasharray: 3 5;
+  opacity: 0.6;
 }
 
 .fb-label,
@@ -2151,4 +2226,152 @@ summary:focus-visible {
 .lang-switch {
   justify-content: center;
   margin-top: 22px;
+}
+
+/* ---------- Website: Fußzeile, Wissen, Hinweise ---------- */
+.topbar h1.wrap {
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.page-extra,
+.site-footer {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.seo-card h2,
+.article h2,
+.wissen-cat h2 {
+  margin: 14px 0 6px;
+  font-size: 1.2em;
+}
+
+.seo-card h2:first-child,
+.article h2:first-child,
+.wissen-cat h2:first-child {
+  margin-top: 0;
+}
+
+.seo-card p,
+.article p,
+.article li {
+  line-height: 1.55;
+}
+
+.seo-card a,
+.article a,
+.wissen-list a,
+.site-footer a {
+  color: var(--teal);
+  font-weight: 700;
+}
+
+.article {
+  font-size: 1.05em;
+  max-width: 46em;
+}
+
+.article .tip {
+  display: block;
+  margin: 12px 0;
+  padding: 10px 14px;
+  border-left: 5px solid var(--brass);
+  border-radius: 10px;
+  background: rgba(212, 168, 74, 0.18);
+}
+
+.article .article-chord {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: 130px;
+  margin: 6px 10px 6px 0;
+  padding: 8px;
+  vertical-align: top;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--cream), var(--cream-2));
+}
+
+.article .article-chord .chord-svg {
+  width: 100%;
+  height: auto;
+}
+
+.article .article-tool {
+  display: inline-flex;
+  margin: 10px 0;
+  color: var(--ink);
+}
+
+.wissen-list {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.wissen-list li {
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+.chord-index {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 4px 0;
+}
+
+.chord-index .btn-chip {
+  min-width: 52px;
+  min-height: 52px;
+  margin: 3px;
+}
+
+.site-footer {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  font-size: 0.95em;
+  text-align: center;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.site-footer nav a {
+  display: inline-block;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.site-footer nav a[aria-current='true'] {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.footer-instruments {
+  margin: 4px 0;
+}
+
+.lang-offer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1100px;
+  margin: 8px auto 12px;
+  padding: 8px 14px;
+}
+
+.lang-offer a {
+  color: var(--teal);
+  font-weight: 800;
+  margin: 6px 12px 6px 0;
+}
+
+.lang-switch a.btn-seg[aria-current='true'] {
+  background: linear-gradient(180deg, var(--cream), var(--cream-2));
+  color: var(--ink);
 }

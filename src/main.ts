@@ -1,7 +1,10 @@
 import { installWood } from './ui/wood.ts';
 import { closeMic } from './audio/mic.ts';
 import { load } from './store.ts';
-import { initLang, onLangChange, t, tk } from './i18n.ts';
+import { isLang, setLang, t, tk } from './i18n.ts';
+import { base, brand, link } from './site/nav.ts';
+import { offerLanguage } from './ui/lang-switch.ts';
+import { initInstrument } from './music/instrument.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
 import { songs } from './views/songs.ts';
@@ -54,20 +57,24 @@ const TITLES: Record<string, string> = {
 
 let cleanup: Cleanup = undefined;
 
-function route(keepScroll = false): void {
-  // ohne Array-Destrukturierung: esbuild kann sie für Safari 12 nicht umschreiben
-  const parts = location.hash.replace(/^#/, '').split('/');
-  const name = parts[1] || '';
-  const param = parts[2] || '';
+const html = document.documentElement;
+
+/** Startet das Werkzeug der Seite. Reine Inhaltsseiten (Wissen, Rechtliches) haben keins und bleiben, wie sie sind. */
+function mount(): void {
+  const route = html.getAttribute('data-route');
+  if (route === null) return;
+  const i = route.indexOf('/');
+  const name = i < 0 ? route : route.slice(0, i);
+  let param = i < 0 ? '' : route.slice(i + 1);
+  // Persönliches (eigene und geteilte Lieder) steht hinter dem „#“ und erreicht so nie den Server
+  if (html.hasAttribute('data-hash-param')) param = location.hash.slice(1);
   const view = ROUTES[name] || home;
   if (cleanup) cleanup();
   // Mikrofon nur dort offen halten, wo es gebraucht wird – die Anzeige im Browser geht dann wieder aus
   closeMic();
   const root = document.getElementById('app')!;
   cleanup = view(root, param);
-  document.title = TITLES[name] ? `${t(TITLES[name])} · Ukulele-Club` : 'Ukulele-Club';
-  if (keepScroll) return;
-  window.scrollTo(0, 0);
+  if (TITLES[name] && html.hasAttribute('data-hash-param')) document.title = `${t(TITLES[name])} · ${brand()}`;
   const focus = root.querySelector('h1');
   if (focus && name) {
     focus.setAttribute('tabindex', '-1');
@@ -76,15 +83,20 @@ function route(keepScroll = false): void {
 }
 
 installWood();
-initLang(load().settings.lang);
-// Sprachwechsel: aktuelle Ansicht neu zeichnen, ohne neu zu laden
-onLangChange(() => route(true));
-if (load().settings.calm) document.documentElement.classList.add('calm');
-window.addEventListener('hashchange', () => route());
-route();
+initInstrument();
+if (location.hash.indexOf('#/') === 0) {
+  // frühere Adressen (#/lied/…, #/teilen/…) auf die neuen Seiten umleiten
+  location.replace(link(location.hash.slice(2), isLang(html.lang) ? html.lang : 'de'));
+} else {
+  setLang(isLang(html.lang) ? html.lang : 'de');
+  if (load().settings.calm) html.classList.add('calm');
+  mount();
+  if (html.hasAttribute('data-hash-param')) window.addEventListener('hashchange', () => mount());
+  offerLanguage(load().settings.lang);
+}
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => undefined);
+    navigator.serviceWorker.register(base() + 'sw.js', { scope: base() }).catch(() => undefined);
   });
 }

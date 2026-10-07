@@ -6,6 +6,7 @@ import { difficulty, CATEGORIES, type Song } from '../music/song.ts';
 import { load } from '../store.ts';
 import { searchSongs } from '../music/search.ts';
 import { t, tk } from '../i18n.ts';
+import { link } from '../site/nav.ts';
 
 const LEVEL = ['', tk('Leicht'), tk('Mittel'), tk('Knifflig')];
 
@@ -27,7 +28,7 @@ export const songs: View = (root) => {
       null,
       h(
         'a',
-        { class: `song-card btn lvl-${difficulty(s)}`, href: `#/lied/${s.id}`, title: `${s.title} – ${level}` },
+        { class: `song-card btn lvl-${difficulty(s)}`, href: link(`lied/${s.id}`), title: `${s.title} – ${level}` },
         h('span', { class: 'sr-only' }, `${level}. `),
         h(
           'span',
@@ -70,7 +71,7 @@ export const songs: View = (root) => {
           { class: 'song-section' },
           h('h2', null, `${t(c.title)} (${items.length})`),
           h('ul', { class: 'song-list' }, ...items.map((x) => card(x))),
-          c.id === 'eigene' ? h('a', { class: 'btn own-new', href: '#/eigenes-lied' }, icon('plus'), t('Eigenes Lied hinzufügen')) : null,
+          c.id === 'eigene' ? h('a', { class: 'btn own-new', href: link('eigenes-lied') }, icon('plus'), t('Eigenes Lied hinzufügen')) : null,
         ),
       );
     });
@@ -121,6 +122,6 @@ export const songs: View = (root) => {
       );
   };
   search.addEventListener('input', runSearch);
-  const tools = h('div', { class: 'song-tools' }, search, h('a', { class: 'btn btn-seg own-add', href: '#/eigenes-lied' }, icon('plus'), t('Eigenes Lied')));
+  const tools = h('div', { class: 'song-tools' }, search, h('a', { class: 'btn btn-seg own-add', href: link('eigenes-lied') }, icon('plus'), t('Eigenes Lied')));
   screen(root, { title: t('Lieder'), theme: 'brass' }, tools, filter, sections, results);
 };

@@ -1,4 +1,4 @@
-import { findPeaks, holdSpectrum, judgeChord } from './chord-detect.ts';
+import { holdSpectrum, instrumentPeaks, judgeChord } from './chord-detect.ts';
 import { CHORDS, type Chord } from '../music/chords.ts';
 
 /**
@@ -84,7 +84,7 @@ export function evaluateRecording(signal: Float32Array, sampleRate: number, chor
       continue;
     }
     loud++;
-    const peaks = findPeaks(spec, binHz);
+    const peaks = instrumentPeaks(spec, binHz);
     for (const c of chords) {
       if (accepted[c.name] !== undefined) continue;
       const v = judgeChord(peaks, c.name, CHORDS);
