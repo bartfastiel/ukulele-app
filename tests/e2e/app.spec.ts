@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv'];
+const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied', 'teilen/0kaputt'];
 
 function collectErrors(page: Page): string[] {
   const errors: string[] = [];
@@ -21,7 +21,7 @@ test('alle Ansichten laden ohne Fehler und ohne waagrechtes Scrollen', async ({ 
 });
 
 test('Tippziele sind groß genug (mindestens 52 px)', async ({ page }) => {
-  for (const v of ['', 'lieder', 'lied/bruder-jakob', 'stimmen']) {
+  for (const v of ['', 'lieder', 'lied/bruder-jakob', 'stimmen', 'eigenes-lied']) {
     await page.goto(`#/${v}`);
     const small = await page.evaluate(() =>
       Array.from(document.querySelectorAll('.btn'))
@@ -241,4 +241,79 @@ test('Liedsuche: zuerst Treffer im Titel, darunter im Liedtext mit hervorgehoben
   await expect(page.locator('.song-results')).toContainText('Kein Lied gefunden');
   await page.getByRole('searchbox', { name: /Lied suchen/ }).fill('');
   await expect(page.locator('.song-filter')).toBeVisible();
+});
+
+test('eigenes Lied: Akkorde über dem Text einfügen, speichern, finden, spielen, per Link teilen und löschen', async ({ page, browser }) => {
+  await page.goto('#/lieder');
+  await page.getByRole('link', { name: 'Eigenes Lied', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Eigenes Lied' })).toBeVisible();
+  // eigener Testtext; die letzte Zeile hat einen Akkord ohne Griffbild
+  const text = ['C              G7', 'Heute spiel ich Ukulele,', 'G7           C', 'und die Sonne lacht.', 'C13b9', 'Schluss.'].join('\n');
+  await page.locator('#own-title').fill('Sonnenlied');
+  await page.locator('#own-text').fill(text);
+  await expect(page.locator('.pv-notes')).toContainText('Akkordzeilen über dem Text');
+  await expect(page.locator('.pv-notes')).toContainText('Diese Akkorde kenne ich nicht: C13b9');
+  await expect(page.locator('.pv-syl').filter({ hasText: 'Ukulele' }).locator('.pv-chord')).toHaveText('G7');
+  await page.getByRole('button', { name: '3/4' }).click();
+  await page.getByRole('button', { name: 'Schneller' }).click();
+  await page.getByRole('button', { name: /Speichern/ }).click();
+
+  // spielbar wie ein Lied mit Akkorden und Text
+  await expect(page.getByRole('heading', { name: 'Sonnenlied' })).toBeVisible();
+  expect(page.url()).toContain('#/lied/mein-sonnenlied');
+  await expect(page.locator('.no-melody')).toBeVisible();
+  await page.getByRole('button', { name: 'Läuft durch' }).click();
+  await page.getByRole('button', { name: 'Original' }).click();
+  await page.locator('.btn-play').click();
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('Heute', { timeout: 6000 });
+  await page.locator('.now-card').click();
+
+  // in der Liste unter „Eigene Lieder“ und über die Suche
+  await page.goto('#/lieder');
+  await expect(page.locator('.song-section').filter({ hasText: 'Eigene Lieder' }).locator('.song-card', { hasText: 'Sonnenlied' })).toBeVisible();
+  await page.getByRole('searchbox', { name: /Lied suchen/ }).fill('Sonne lacht');
+  await expect(page.locator('.song-results .song-card').first()).toContainText('Sonnenlied');
+
+  // teilen: Hinweis, QR-Code, Link
+  await page.goto('#/lied/mein-sonnenlied');
+  await page.getByRole('link', { name: 'Teilen' }).click();
+  await expect(page.locator('.share-hint')).toContainText('nur für dich und deine Familie');
+  await expect(page.locator('.qr-svg')).toBeVisible();
+  const link = await page.locator('.share-link').inputValue();
+  expect(link).toMatch(/#\/teilen\/[01][A-Za-z0-9_-]+$/);
+
+  // auf einem anderen Gerät (eigener Speicher) öffnen und hinzufügen
+  const other = await browser.newContext();
+  const page2 = await other.newPage();
+  await page2.goto(link);
+  await expect(page2.getByRole('heading', { name: 'Sonnenlied' })).toBeVisible();
+  await expect(page2.locator('.card').first()).toContainText('3/4 · 95 Schläge pro Minute');
+  await page2.getByRole('button', { name: /Zu meinen Liedern hinzufügen/ }).click();
+  await expect(page2.getByRole('heading', { name: 'Sonnenlied' })).toBeVisible();
+  expect(page2.url()).toContain('#/lied/mein-sonnenlied');
+  await page2.goto('#/lieder');
+  await expect(page2.locator('.song-card', { hasText: 'Sonnenlied' })).toBeVisible();
+  await other.close();
+
+  // derselbe Link auf dem eigenen Gerät: schon vorhanden
+  await page.goto(link);
+  await expect(page.getByText('Dieses Lied hast du schon.')).toBeVisible();
+
+  // bearbeiten und löschen mit Rückfrage im App-Stil
+  await page.goto('#/lied/mein-sonnenlied');
+  await page.getByRole('link', { name: 'Bearbeiten' }).click();
+  await expect(page.locator('#own-title')).toHaveValue('Sonnenlied');
+  await page.getByRole('button', { name: /Löschen/ }).click();
+  await expect(page.getByRole('dialog')).toContainText('Lied löschen?');
+  await page.getByRole('button', { name: 'Nein, behalten' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.getByRole('button', { name: /Löschen/ }).click();
+  await page.getByRole('button', { name: 'Ja, löschen' }).click();
+  await expect(page.getByRole('heading', { name: 'Lieder', exact: true })).toBeVisible();
+  await expect(page.locator('.song-card', { hasText: 'Sonnenlied' })).toHaveCount(0);
+});
+
+test('kaputter Teilen-Link: freundliche Meldung statt Fehler', async ({ page }) => {
+  await page.goto('#/teilen/1abc');
+  await expect(page.getByRole('heading', { name: 'Dieser Link klappt leider nicht' })).toBeVisible();
 });

@@ -1879,3 +1879,240 @@ summary:focus-visible {
   animation: none !important;
   transition: none !important;
 }
+
+/* ---------- Eigene Lieder: Eingabe, Vorschau, Teilen ---------- */
+.song-tools {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.song-tools .song-search {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.own-add {
+  flex: none;
+}
+
+.own-new {
+  margin-top: 8px;
+}
+
+.own-edit {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+.field-label {
+  display: block;
+  margin: 14px 0 6px;
+  font-weight: 800;
+}
+
+.field-label:first-child {
+  margin-top: 0;
+}
+
+.field {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 14px;
+  font: inherit;
+  color: var(--ink);
+  border: 2px solid var(--brass-dark);
+  border-radius: 12px;
+  background: #fffaf0;
+}
+
+.field:focus {
+  outline: 4px solid #ffd86b;
+  outline-offset: 2px;
+}
+
+/* Akkordzeilen brauchen gleich breite Zeichen, sonst stimmen die Spalten nicht */
+.field-song {
+  min-height: 15em;
+  font-family: Menlo, Consolas, 'Courier New', monospace;
+  font-size: 16px;
+  line-height: 1.45;
+  white-space: pre;
+  overflow: auto;
+  resize: vertical;
+}
+
+.seg-bpm {
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.bpm-now {
+  flex: 1 1 auto;
+  max-width: 12em;
+  padding: 0 8px;
+  text-align: center;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.own-msg {
+  margin: 12px 0 4px;
+  font-weight: 800;
+  color: var(--almost);
+}
+
+.own-msg[hidden] {
+  display: none;
+}
+
+.note-warn {
+  font-weight: 700;
+  color: var(--almost);
+}
+
+.pv-notes p {
+  margin: 6px 0;
+}
+
+.chip-big {
+  font-size: 0.95em;
+  padding: 2px 12px;
+  font-weight: 800;
+  background: #fff4dc;
+  box-shadow: 0 0 0 2px var(--brass-dark);
+}
+
+.pv-lyrics {
+  margin-top: 12px;
+}
+
+.pv-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  padding: 3px 0;
+  border-bottom: 1px dashed rgba(90, 58, 34, 0.18);
+}
+
+.pv-syl {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-right: 0.35em;
+}
+
+.pv-syl.join {
+  margin-right: 0;
+}
+
+.pv-chord {
+  min-height: 1.15em;
+  font-weight: 900;
+  font-size: 0.9em;
+  color: var(--cherry);
+  line-height: 1.15;
+}
+
+.pv-text {
+  font-size: 1.05em;
+  font-weight: 600;
+  white-space: pre;
+}
+
+.btn-danger {
+  background-color: var(--cherry);
+  background-image: var(--lacquer);
+}
+
+.own-tools {
+  width: 100%;
+}
+
+.share-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+.share-qr {
+  text-align: center;
+}
+
+.qr-svg {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  margin: 10px auto;
+  border-radius: 8px;
+}
+
+.share-link {
+  font-size: 14px;
+  word-break: break-all;
+  background: #fffaf0;
+  color: var(--ink);
+  border: 2px solid var(--brass-dark);
+}
+
+@media (min-width: 900px) {
+  .own-edit {
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 0 8px;
+  }
+  .share-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 'hint qr' 'url qr';
+    grid-gap: 0 8px;
+  }
+  .share-hint {
+    grid-area: hint;
+  }
+  .share-qr {
+    grid-area: qr;
+  }
+  .share-url {
+    grid-area: url;
+  }
+}
+
+@media (max-width: 600px) {
+  .song-tools {
+    flex-wrap: wrap;
+  }
+  .song-tools .song-search {
+    flex: 1 1 100%;
+    margin-bottom: 4px;
+  }
+  .qr-svg {
+    max-width: 100%;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .own-edit,
+  .share-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 0 8px;
+  }
+  .share-grid {
+    grid-template-areas: 'hint qr' 'url qr';
+  }
+  .share-hint {
+    grid-area: hint;
+  }
+  .share-qr {
+    grid-area: qr;
+  }
+  .share-url {
+    grid-area: url;
+  }
+  .qr-svg {
+    max-width: 80vh;
+  }
+}
