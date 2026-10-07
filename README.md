@@ -66,9 +66,8 @@ Kinderstimmlage (etwa C4–D5, Melodie in der günstigsten Oktave) und Nähe zur
 
 Liedtexte und Melodien sind urheberrechtlich geschützt, bis 70 Jahre nach dem Tod des letzten Urhebers; reine
 Akkordfolgen sind es nach herrschender Meinung nicht. Text mit Akkorden, eine Melodie als Tabulatur oder das
-Abspielen der Melodie bräuchten für geschützte Lieder Genehmigungen der Musikverlage – große Seiten wie Ultimate
-Guitar oder MuseScore haben dafür Lizenzverträge und finanzieren sie über Abos und Werbung. Diese App enthält
-deshalb nur gemeinfreie Lieder (mit Quelle in `origin`) und eigene Lieder, auch nicht als Testdaten im Repo.
+Abspielen der Melodie bräuchten für geschützte Lieder Genehmigungen der Musikverlage. Diese App enthält deshalb
+nur gemeinfreie Lieder (mit Quelle in `origin`) und eigene Lieder, auch nicht als Testdaten im Repo.
 Hinweise von Rechteinhabern bitte als Issue: https://github.com/bartfastiel/ukulele-app/issues – betroffene Inhalte
 werden sofort entfernt. (Keine Rechtsberatung.)
 
