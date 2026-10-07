@@ -118,6 +118,22 @@ test('Rhythmus startet und stoppt', async ({ page }) => {
   await page.getByRole('button', { name: /Stopp/ }).click();
 });
 
+test('Metronom: Taktarten, Tempo mit Plus/Minus und Tippen', async ({ page }) => {
+  await page.goto('#/rhythmus');
+  await page.getByRole('button', { name: 'Schaukeln (6/8)' }).click();
+  await expect(page.locator('.arrow .beat-count')).toHaveText(['1', '2', '3', '4', '5', '6']);
+  await page.getByRole('button', { name: 'Schneller' }).click();
+  await expect(page.locator('.bpm-value')).toHaveText('85 Schläge pro Minute');
+  const tapBtn = page.getByRole('button', { name: 'Tempo durch Tippen bestimmen' });
+  for (let i = 0; i < 4; i++) {
+    await tapBtn.click();
+    await page.waitForTimeout(500);
+  }
+  const bpm = Number((await page.locator('.bpm-value').textContent())!.split(' ')[0]);
+  expect(bpm).toBeGreaterThan(90);
+  expect(bpm).toBeLessThan(135);
+});
+
 test('Blues: Einzählen, Takte laufen, Vorgabe auf dem Hals, freie Stufe zeigt die Tonleiter', async ({ page }) => {
   await page.goto('#/blues');
   await expect(page.locator('.blues-bar')).toHaveCount(12);
@@ -241,4 +257,15 @@ test('Liedsuche: zuerst Treffer im Titel, darunter im Liedtext mit hervorgehoben
   await expect(page.locator('.song-results')).toContainText('Kein Lied gefunden');
   await page.getByRole('searchbox', { name: /Lied suchen/ }).fill('');
   await expect(page.locator('.song-filter')).toBeVisible();
+});
+
+test('Einfache Griffe: D7 wird zu D, Hinweis nennt den Tausch', async ({ page }) => {
+  await page.goto('#/lied/my-bonnie');
+  await page.locator('details.more summary').click();
+  await expect(page.locator('.key-box')).toContainText('D7 → D');
+  await page.getByRole('button', { name: 'Einfache Griffe' }).click();
+  await expect(page.getByRole('button', { name: 'Einfache Griffe' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.lyrics .syl-chord', { hasText: /^D7$/ })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Einfache Griffe' }).click();
+  await expect(page.locator('.lyrics .syl-chord', { hasText: /^D7$/ }).first()).toBeVisible();
 });
