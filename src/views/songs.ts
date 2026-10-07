@@ -1,7 +1,7 @@
 import { h } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, type View } from '../ui/screen.ts';
-import { SONGS } from '../music/songs.ts';
+import { allSongs } from '../music/library.ts';
 import { difficulty, CATEGORIES, type Song } from '../music/song.ts';
 import { load } from '../store.ts';
 import { searchSongs } from '../music/search.ts';
@@ -15,6 +15,7 @@ function feature(name: string, label: string): HTMLElement {
 
 export const songs: View = (root) => {
   const stars = load().stars;
+  const SONGS = allSongs();
   const sorted = SONGS.slice().sort((a, b) => difficulty(a) - difficulty(b) || a.chords.length - b.chords.length || a.title.localeCompare(b.title, 'de'));
   const card = (s: Song, snippet: [string, string, string] | null = null) => {
     const n = stars[s.id] || 0;
@@ -62,7 +63,15 @@ export const songs: View = (root) => {
       if (active !== 'alle' && active !== c.id) return;
       const items = sorted.filter((s) => s.category === c.id);
       if (!items.length) return;
-      sections.appendChild(h('section', { class: 'song-section' }, h('h2', null, `${c.title} (${items.length})`), h('ul', { class: 'song-list' }, ...items.map((x) => card(x)))));
+      sections.appendChild(
+        h(
+          'section',
+          { class: 'song-section' },
+          h('h2', null, `${c.title} (${items.length})`),
+          h('ul', { class: 'song-list' }, ...items.map((x) => card(x))),
+          c.id === 'eigene' ? h('a', { class: 'btn own-new', href: '#/eigenes-lied' }, icon('plus'), 'Eigenes Lied hinzufügen') : null,
+        ),
+      );
     });
   };
   [{ id: 'alle', title: `Alle (${SONGS.length})` }]
@@ -111,5 +120,6 @@ export const songs: View = (root) => {
       );
   };
   search.addEventListener('input', runSearch);
-  screen(root, { title: 'Lieder', theme: 'brass' }, search, filter, sections, results);
+  const tools = h('div', { class: 'song-tools' }, search, h('a', { class: 'btn btn-seg own-add', href: '#/eigenes-lied' }, icon('plus'), 'Eigenes Lied'));
+  screen(root, { title: 'Lieder', theme: 'brass' }, tools, filter, sections, results);
 };
