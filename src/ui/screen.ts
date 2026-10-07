@@ -124,13 +124,6 @@ export function praise(): string {
   return PRAISE[praiseIdx];
 }
 
-export const STRING_HINT = [
-  'Die G-Saite (ganz oben) klingt noch nicht richtig.',
-  'Die C-Saite klingt noch nicht richtig.',
-  'Die E-Saite klingt noch nicht richtig.',
-  'Die A-Saite (ganz unten) klingt noch nicht richtig.',
-];
-
 /** Bildschirm wach halten, solange gespielt wird (Safari ab 16.4, Chrome; ältere Geräte ignorieren es). */
 export function keepAwake(): () => void {
   const nav = navigator as unknown as { wakeLock?: { request(t: string): Promise<{ release(): Promise<void> }> } };

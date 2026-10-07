@@ -1,6 +1,7 @@
 import { h, announce } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
-import { screen, button, ensureMic, praise, STRING_HINT, type View } from '../ui/screen.ts';
+import { screen, button, ensureMic, praise, type View } from '../ui/screen.ts';
+import { diagnose } from '../music/diagnose.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
 import { CHORDS, chord, describeChord } from '../music/chords.ts';
 import { strum, successSound } from '../audio/engine.ts';
@@ -88,7 +89,7 @@ export const chordDetail: View = (root, param) => {
             streak = streak.s === v.weakString ? { s: v.weakString, n: streak.n + 1 } : { s: v.weakString, n: 1 };
             if (streak.n === 4) {
               feedback.className = 'feedback almost';
-              feedback.textContent = `Fast! ${STRING_HINT[v.weakString]} Drück den Finger fest direkt hinter dem Bundstäbchen.`;
+              feedback.textContent = `Fast! ${diagnose(ch, v.weakString, v.weakKind)}`;
               diagramBox.replaceChild(chordDiagram(ch, { lefty, highlight: v.weakString }), diagramBox.firstChild!);
             }
           },

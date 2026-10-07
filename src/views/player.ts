@@ -1,6 +1,6 @@
 import { h, clear, announce, reducedMotion } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
-import { screen, button, ensureMic, praise, keepAwake, STRING_HINT, type View } from '../ui/screen.ts';
+import { screen, button, ensureMic, praise, keepAwake, type View } from '../ui/screen.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
 import { song as findSong } from '../music/songs.ts';
 import { chordChanges, eventAt, type Song } from '../music/song.ts';
@@ -11,6 +11,7 @@ import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, giveStars, markPracticed } from '../store.ts';
 import { keyLabel, originalShift, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
 import { simplifications, simplifySong } from '../music/simplify.ts';
+import { diagnose } from '../music/diagnose.ts';
 
 const SPEEDS = [
   { value: 0.6, label: 'Langsam' },
@@ -455,7 +456,7 @@ class Player {
                 : { string: v.weakString, count: 1 };
             // Nur bei wiederholt gleicher Diagnose einen Tipp geben – einzelne Fehlmessungen sollen nicht frustrieren
             if (this.hintStreak.count === 4) {
-              hint.textContent = STRING_HINT[v.weakString];
+              hint.textContent = diagnose(chord(name), v.weakString, v.weakKind);
               const svg = this.nowCard.querySelector('.card-inner:not(.leaving) svg');
               if (svg) svg.replaceWith(chordDiagram(chord(name), { lefty: this.settings.lefty, highlight: v.weakString }));
             }
