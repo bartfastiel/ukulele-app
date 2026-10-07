@@ -7,6 +7,7 @@ import { METERS, decodeShare, encodeShare, newOwnId, ownToSong } from '../music/
 import { encodeQr, qrPath } from '../util/qr.ts';
 import { ownSongs, putOwnSong } from '../store.ts';
 import { t } from '../i18n.ts';
+import { link, go } from '../site/nav.ts';
 
 /** Größte QR-Version, die auf einem Bildschirm noch zuverlässig abfotografiert werden kann. */
 const MAX_QR_VERSION = 25;
@@ -18,7 +19,7 @@ function meterLabel(m: number): string {
 
 /** Link zum Lied: alles steckt im Fragment hinter „#“ – das schickt der Browser nie an den Server. */
 export function shareLink(data: string): string {
-  return `${location.href.split('#')[0]}#/teilen/${data}`;
+  return location.protocol + '//' + location.host + link(`teilen/${data}`);
 }
 
 function qrSvg(text: string): SVGElement | null {
@@ -52,7 +53,7 @@ function copyText(text: string, area: HTMLTextAreaElement): Promise<boolean> {
 export const shareSong: View = (root, id) => {
   const own = ownSongs().find((o) => o.id === id);
   if (!own) {
-    location.hash = '#/lieder';
+    go('lieder');
     return;
   }
   const url = shareLink(encodeShare({ title: own.title, text: importSong(own.text).chordpro, meter: own.meter, bpm: own.bpm }));
@@ -63,7 +64,7 @@ export const shareSong: View = (root, id) => {
   const nav = navigator as Navigator & { share?: (d: { title?: string; url?: string }) => Promise<void> };
   screen(
     root,
-    { title: t('Lied teilen'), back: `#/lied/${own.id}`, theme: 'brass' },
+    { title: t('Lied teilen'), back: link(`lied/${own.id}`), theme: 'brass' },
     h(
       'div',
       { class: 'share-grid' },
@@ -113,13 +114,13 @@ export const receiveSong: View = (root, data) => {
   if (!shared || !song) {
     screen(
       root,
-      { title: t('Geschicktes Lied'), back: '#/lieder', theme: 'brass' },
+      { title: t('Geschicktes Lied'), back: link('lieder'), theme: 'brass' },
       h(
         'section',
         { class: 'card' },
         h('h2', null, t('Dieser Link klappt leider nicht')),
         h('p', null, t('Vielleicht wurde er beim Kopieren abgeschnitten. Frag nach, ob man ihn dir noch einmal schicken kann.')),
-        h('a', { class: 'btn btn-primary', href: '#/lieder' }, t('Zu den Liedern')),
+        h('a', { class: 'btn btn-primary', href: link('lieder') }, t('Zu den Liedern')),
       ),
     );
     return;
@@ -135,11 +136,11 @@ export const receiveSong: View = (root, data) => {
       msg.hidden = false;
       return;
     }
-    location.hash = `#/lied/${id}`;
+    go(`lied/${id}`);
   };
   screen(
     root,
-    { title: t('Geschicktes Lied'), back: '#/lieder', theme: 'brass' },
+    { title: t('Geschicktes Lied'), back: link('lieder'), theme: 'brass' },
     h(
       'div',
       { class: 'own-edit' },
@@ -156,9 +157,9 @@ export const receiveSong: View = (root, data) => {
           'div',
           { class: 'row' },
           same
-            ? h('a', { class: 'btn btn-primary', href: `#/lied/${same.id}` }, icon('play'), t('Spielen'))
+            ? h('a', { class: 'btn btn-primary', href: link(`lied/${same.id}`) }, icon('play'), t('Spielen'))
             : button(h('span', null, icon('plus'), t('Zu meinen Liedern hinzufügen')), add, 'btn-primary'),
-          h('a', { class: 'btn', href: '#/lieder' }, same ? t('Zu den Liedern') : t('Nein, danke')),
+          h('a', { class: 'btn', href: link('lieder') }, same ? t('Zu den Liedern') : t('Nein, danke')),
         ),
       ),
       h('section', { class: 'card pv-card', 'aria-label': t('Vorschau') }, h('h2', null, t('Vorschau')), songPreview(song)),

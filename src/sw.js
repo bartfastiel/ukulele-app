@@ -1,5 +1,6 @@
-// Service Worker: App-Dateien offline verfügbar. Gehashte Assets cache-first, Seite network-first.
-const CACHE = 'ukulele-club-__VERSION__';
+// Service Worker je Instrument-Seite: Skript, Stil und die wichtigsten Seiten offline. Gehashte Dateien cache-first,
+// Seiten network-first (besuchte Seiten bleiben offline verfügbar).
+const CACHE = 'saiten-club-__VERSION__';
 const FILES = __FILES__;
 
 self.addEventListener('install', (e) => {
@@ -27,11 +28,13 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(
       fetch(req)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put('./', copy));
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then((c) => c.put(req, copy));
+          }
           return res;
         })
-        .catch(() => caches.match('./')),
+        .catch(() => caches.match(req, { ignoreSearch: true }).then((hit) => hit || caches.match('./'))),
     );
     return;
   }

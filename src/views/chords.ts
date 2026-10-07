@@ -3,11 +3,14 @@ import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, praise, type View } from '../ui/screen.ts';
 import { diagnose } from '../music/diagnose.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
-import { CHORDS, chord, chordSay, describeChord } from '../music/chords.ts';
+import { CHORDS, ROOTS, chord, chordSay, describeChord, parseChordName } from '../music/chords.ts';
+import { canonicalChord } from '../site/routes.ts';
 import { strum, successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, markPracticed } from '../store.ts';
-import { t, tk } from '../i18n.ts';
+import { lang, t, tk } from '../i18n.ts';
+import { chordLongName } from '../site/chord-names.ts';
+import { link, go } from '../site/nav.ts';
 
 const GROUPS = [
   { title: tk('Die ersten Akkorde'), level: 1 },
@@ -32,7 +35,7 @@ export const chords: View = (root) => {
           ...CHORDS.filter((c) => c.level === g.level).map((c) =>
             h(
               'a',
-              { class: 'chord-tile btn', href: `#/akkord/${encodeURIComponent(c.name)}`, 'aria-label': describeChord(c) },
+              { class: 'chord-tile btn', href: link(`akkord/${encodeURIComponent(c.name)}`), 'aria-label': describeChord(c) },
               h('span', { class: 'chord-name' }, c.name, p.chordsChecked.includes(c.name) ? icon('check', 'icon tick') : null),
               chordDiagram(c, { lefty: p.settings.lefty, labels: false }),
             ),
@@ -45,9 +48,10 @@ export const chords: View = (root) => {
 
 export const chordDetail: View = (root, param) => {
   const name = decodeURIComponent(param);
-  const ch = CHORDS.find((c) => c.name === name);
+  // Jeder benennbare Akkord hat eine Seite, nicht nur die Griffe der Bibliothek
+  const ch = CHORDS.find((c) => c.name === name) || (parseChordName(name) ? chord(canonicalChord(name)) : null);
   if (!ch) {
-    location.hash = '#/akkorde';
+    go('akkorde');
     return;
   }
   const lefty = load().settings.lefty;
@@ -109,14 +113,16 @@ export const chordDetail: View = (root, param) => {
     },
     'btn-primary',
   );
-  const others = CHORDS.filter((c) => c.level <= Math.max(2, ch.level)).slice(0, 12);
+  const p = parseChordName(ch.name);
+  const family = p ? ['', 'm', '7', 'm7', 'maj7', 'sus4'].map((q) => ROOTS[p.root] + q) : [];
+  const others = family.concat(CHORDS.filter((c) => c.level <= 2 && family.indexOf(c.name) < 0).map((c) => c.name)).slice(0, 14);
   screen(
     root,
-    { title: t('Akkord {chord}', { chord: ch.name }), back: '#/akkorde', theme: 'teal' },
+    { title: t('Akkord {chord}', { chord: ch.name }), back: link('akkorde'), theme: 'teal' },
     h(
       'div',
       { class: 'chord-detail' },
-      h('div', { class: 'card detail-card' }, h('div', { class: 'chord-name huge' }, ch.name), h('div', { class: 'say' }, chordSay(ch)), diagramBox),
+      h('div', { class: 'card detail-card' }, h('div', { class: 'chord-name huge' }, ch.name), h('div', { class: 'say' }, CHORDS.indexOf(ch) >= 0 ? chordSay(ch) : chordLongName(ch.name, lang())), diagramBox),
       h(
         'div',
         { class: 'detail-side' },
@@ -132,7 +138,7 @@ export const chordDetail: View = (root, param) => {
         h(
           'div',
           { class: 'chip-row' },
-          ...others.map((c) => h('a', { class: `btn btn-chip${c.name === ch.name ? ' active' : ''}`, href: `#/akkord/${encodeURIComponent(c.name)}` }, c.name)),
+          ...others.map((c) => h('a', { class: `btn btn-chip${c === ch.name ? ' active' : ''}`, href: link(`akkord/${encodeURIComponent(c)}`) }, c)),
         ),
       ),
     ),

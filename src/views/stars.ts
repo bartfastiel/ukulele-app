@@ -5,6 +5,7 @@ import { allSongs } from '../music/library.ts';
 import { load, save, totalStars, daysThisWeek, exportCode, importCode } from '../store.ts';
 import { t, tk } from '../i18n.ts';
 import { langSwitch } from '../ui/lang-switch.ts';
+import { link } from '../site/nav.ts';
 
 const WEEKDAYS = [tk('So'), tk('Mo'), tk('Di'), tk('Mi'), tk('Do'), tk('Fr'), tk('Sa')];
 
@@ -70,7 +71,7 @@ export const stars: View = (root) => {
         h(
           'li',
           null,
-          h('a', { href: `#/lied/${s.id}` }, s.title),
+          h('a', { href: link(`lied/${s.id}`) }, s.title),
           h('span', null, ...[1, 2, 3].map((i) => icon('star', `icon star ${i <= (p.stars[s.id] || 0) ? 'on' : 'off'}`))),
         ),
       ),
@@ -99,7 +100,7 @@ export const stars: View = (root) => {
     ),
     h(
       'a',
-      { class: 'btn', href: '#/aufnahme' },
+      { class: 'btn', href: link('aufnahme') },
       t('Für Erwachsene: Beispiel-Akkorde aufnehmen'),
     ),
   );

@@ -14,6 +14,7 @@ import { keyLabel, originalShift, songKey, suggestShift, transposeSong } from '.
 import { simplifications, simplifySong } from '../music/simplify.ts';
 import { diagnose } from '../music/diagnose.ts';
 import { t, tk, tParts } from '../i18n.ts';
+import { link, go } from '../site/nav.ts';
 
 const SPEEDS = [
   { value: 0.6, label: tk('Langsam') },
@@ -26,7 +27,7 @@ type Phase = 'idle' | 'countin' | 'playing' | 'paused' | 'waiting' | 'done';
 export const player: View = (root, id) => {
   const song = findSong(id);
   if (!song) {
-    location.hash = '#/lieder';
+    go('lieder');
     return;
   }
   save((p) => (p.lastSong = song.id));
@@ -135,8 +136,8 @@ class Player {
       ? h(
           'div',
           { class: 'row own-tools' },
-          h('a', { class: 'btn btn-seg', href: `#/eigenes-lied/${this.song.id}` }, icon('edit'), t('Bearbeiten')),
-          h('a', { class: 'btn btn-seg', href: `#/lied-teilen/${this.song.id}` }, icon('share'), t('Teilen')),
+          h('a', { class: 'btn btn-seg', href: link(`eigenes-lied/${this.song.id}`) }, icon('edit'), t('Bearbeiten')),
+          h('a', { class: 'btn btn-seg', href: link(`lied-teilen/${this.song.id}`) }, icon('share'), t('Teilen')),
         )
       : null;
     const controls = h(
@@ -171,7 +172,7 @@ class Player {
     const note = this.song.hasMelody
       ? null
       : h('p', { class: 'card small no-melody' }, t('Dieses Lied hat hier nur Akkorde und Text – die Melodie singst du so, wie du sie kennst.'));
-    const main = screen(root, { title: this.song.title, back: '#/lieder', theme: 'brass' }, this.stage, this.lyrics, controls);
+    const main = screen(root, { title: this.song.title, back: link('lieder'), theme: 'brass' }, this.stage, this.lyrics, controls);
     if (note) main.insertBefore(note, controls);
     main.classList.add('player');
   }
@@ -525,7 +526,7 @@ class Player {
           'div',
           { class: 'row' },
           button(t('Nochmal'), () => void this.begin(), 'btn-primary'),
-          h('a', { class: 'btn', href: '#/lieder' }, t('Andere Lieder')),
+          h('a', { class: 'btn', href: link('lieder') }, t('Andere Lieder')),
         ),
       ),
     );

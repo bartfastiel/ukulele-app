@@ -9,6 +9,7 @@ import { NOTE_NAMES, STRINGS, pitchClass } from '../music/notes.ts';
 import type { Chord } from '../music/chords.ts';
 import { load } from '../store.ts';
 import { lang, noteText, ordinal, t } from '../i18n.ts';
+import { link } from '../site/nav.ts';
 
 /** Im Französischen ohne Oktavzahl: dort zählt man die Oktaven anders (C4 = Do3). */
 function noteShown(midi: number): string {
@@ -56,7 +57,7 @@ export const detective: View = (root) => {
             h('b', null, ordered.map((x) => noteText(NOTE_NAMES[x])).join(' – ')),
           ),
           names.length > 1 ? h('p', { class: 'det-alt' }, t('Heißt auch:'), ' ', names.slice(1, 4).map((n) => n.name).join(', ')) : null,
-          lib ? h('a', { class: 'btn btn-chip', href: `#/akkord/${encodeURIComponent(lib)}` }, t('{chord} in der Akkord-Liste', { chord: lib })) : null,
+          lib ? h('a', { class: 'btn btn-chip', href: link(`akkord/${encodeURIComponent(lib)}`) }, t('{chord} in der Akkord-Liste', { chord: lib })) : null,
           h('p', { class: 'small' }, t('Bünde G-C-E-A: {frets}', { frets: frets.map((f) => (f < 0 ? 'x' : f)).join(' ') })),
         ),
         h('div', { class: 'diagram-big' }, chordDiagram(ch, { lefty })),

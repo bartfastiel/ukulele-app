@@ -11,6 +11,7 @@ import { makeZip } from '../util/zip.ts';
 import { idbAll, idbClear, idbPut } from '../util/idb.ts';
 import type { Chord } from '../music/chords.ts';
 import { t, tp } from '../i18n.ts';
+import { link } from '../site/nav.ts';
 
 /**
  * Aufnahmewerkzeug für Erwachsene: sammelt beschriftete Beispielaufnahmen (richtige Akkorde, typische Fehler,
@@ -327,7 +328,7 @@ export const record: View = (root) => {
 
   screen(
     root,
-    { title: t('Beispielaufnahmen'), back: '#/sterne', theme: 'pearl' },
+    { title: t('Beispielaufnahmen'), back: link('sterne'), theme: 'pearl' },
     h(
       'p',
       { class: 'card rec-intro' },

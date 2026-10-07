@@ -5,6 +5,7 @@ import { t } from '../i18n.ts';
 import { langSwitch } from '../ui/lang-switch.ts';
 import { findSong } from '../music/library.ts';
 import type { View } from '../ui/screen.ts';
+import { link } from '../site/nav.ts';
 
 function tile(href: string, ic: string, title: string, sub: string, cls = ''): HTMLElement {
   return h(
@@ -31,7 +32,7 @@ export const home: View = (root) => {
         h('div', { class: 'brand' }, h('h1', null, 'Ukulele-Club'), h('p', null, t('Üben, mitspielen, Spaß haben'))),
         h(
           'a',
-          { class: 'btn star-badge', href: '#/sterne', 'aria-label': t('Meine Sterne: {n}', { n: totalStars() }) },
+          { class: 'btn star-badge', href: link('sterne'), 'aria-label': t('Meine Sterne: {n}', { n: totalStars() }) },
           icon('star', 'icon star'),
           h('span', null, String(totalStars())),
         ),
@@ -39,7 +40,7 @@ export const home: View = (root) => {
       firstVisit
         ? h(
             'a',
-            { class: 'card hint', href: '#/stimmen' },
+            { class: 'card hint', href: link('stimmen') },
             h('strong', null, t('Hallo!'), ' '),
             t('Zuerst stimmen wir deine Ukulele – dann klingt alles viel schöner.'),
             ' ',
@@ -49,14 +50,14 @@ export const home: View = (root) => {
       h(
         'nav',
         { class: 'tiles', 'aria-label': t('Bereiche') },
-        last ? tile(`#/lied/${last.id}`, 'play', t('Weiterspielen'), last.title, 'tile-wide theme-pearl') : null,
-        tile('#/lieder', 'songs', t('Lieder spielen'), t('Karaoke zum Mitspielen'), 'tile-big theme-brass'),
-        tile('#/blues', 'blues', t('Blues'), t('Mit der Band jammen'), 'theme-teal'),
-        tile('#/akkorde', 'chords', t('Akkorde'), t('Griffe lernen und prüfen'), 'theme-teal'),
-        tile('#/detektiv', 'detective', t('Akkord-Detektiv'), t('Spiel was – ich sag, was es ist'), 'theme-cherry'),
-        tile('#/spiel', 'game', t('Akkord-Spiel'), t('Wie viele schaffst du?'), 'theme-cherry'),
-        tile('#/stimmen', 'tuner', t('Stimmen'), t('Stimmgerät'), 'theme-pearl'),
-        tile('#/rhythmus', 'rhythm', t('Rhythmus'), t('Metronom & Schlagmuster'), 'theme-pearl'),
+        last ? tile(link(`lied/${last.id}`), 'play', t('Weiterspielen'), last.title, 'tile-wide theme-pearl') : null,
+        tile(link('lieder'), 'songs', t('Lieder spielen'), t('Karaoke zum Mitspielen'), 'tile-big theme-brass'),
+        tile(link('blues'), 'blues', t('Blues'), t('Mit der Band jammen'), 'theme-teal'),
+        tile(link('akkorde'), 'chords', t('Akkorde'), t('Griffe lernen und prüfen'), 'theme-teal'),
+        tile(link('detektiv'), 'detective', t('Akkord-Detektiv'), t('Spiel was – ich sag, was es ist'), 'theme-cherry'),
+        tile(link('spiel'), 'game', t('Akkord-Spiel'), t('Wie viele schaffst du?'), 'theme-cherry'),
+        tile(link('stimmen'), 'tuner', t('Stimmen'), t('Stimmgerät'), 'theme-pearl'),
+        tile(link('rhythmus'), 'rhythm', t('Rhythmus'), t('Metronom & Schlagmuster'), 'theme-pearl'),
       ),
       langSwitch(),
     ),
