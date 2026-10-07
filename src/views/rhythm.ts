@@ -3,19 +3,34 @@ import { icon } from '../ui/icons.ts';
 import { screen, button, keepAwake, type View } from '../ui/screen.ts';
 import { audio, click, strum } from '../audio/engine.ts';
 
-/** Schlagmuster je Achtel: D = abwärts, U = aufwärts, - = Pause (Hand bewegt sich trotzdem). */
-const PATTERNS = [
-  { name: 'Nur runter', meter: 4, steps: 'D-D-D-D-', say: 'runter, runter, runter, runter' },
-  { name: 'Runter-rauf', meter: 4, steps: 'DUDUDUDU', say: 'runter-rauf, runter-rauf, runter-rauf, runter-rauf' },
+/**
+ * Schlagmuster je Achtel: D = abwärts, U = aufwärts, - = Pause (Hand bewegt sich trotzdem).
+ * sub = Achtel je gezähltem Schlag (2 bei x/4, 3 beim schwingenden 6/8).
+ */
+interface Pattern {
+  name: string;
+  meter: string;
+  steps: string;
+  sub: number;
+  say: string;
+}
+const PATTERNS: Pattern[] = [
+  { name: 'Nur runter', meter: '4/4', steps: 'D-D-D-D-', sub: 2, say: 'runter, runter, runter, runter' },
+  { name: 'Runter-rauf', meter: '4/4', steps: 'DUDUDUDU', sub: 2, say: 'runter-rauf, runter-rauf, runter-rauf, runter-rauf' },
   // „Insel-Schlag“ (Calypso), das Standardmuster vieler Ukulelenschulen
-  { name: 'Runter, runter, rauf, rauf, runter, rauf', meter: 4, steps: 'D-DU-UDU', say: 'runter, runter, rauf, rauf, runter, rauf – zwischen den beiden „rauf“ schwingt die Hand runter, ohne zu treffen' },
-  { name: 'Walzer', meter: 3, steps: 'D-D-D-', say: 'runter, runter, runter – im Dreiertakt' },
+  { name: 'Runter, runter, rauf, rauf, runter, rauf', meter: '4/4', steps: 'D-DU-UDU', sub: 2, say: 'runter, runter, rauf, rauf, runter, rauf – zwischen den beiden „rauf“ schwingt die Hand runter, ohne zu treffen' },
+  { name: 'Marsch (2/4)', meter: '2/4', steps: 'D-DU', sub: 2, say: 'runter, runter-rauf – im Zweiertakt' },
+  { name: 'Walzer (3/4)', meter: '3/4', steps: 'D-D-D-', sub: 2, say: 'runter, runter, runter – im Dreiertakt' },
+  { name: 'Walzer mit rauf (3/4)', meter: '3/4', steps: 'D-DUDU', sub: 2, say: 'runter, runter-rauf, runter-rauf' },
+  { name: 'Schaukeln (6/8)', meter: '6/8', steps: 'D-UD-U', sub: 3, say: 'runter … rauf, runter … rauf – schaukelnd, zwei große Schläge mit je drei Achteln' },
 ];
 const TEMPOS = [
   { label: 'Langsam', bpm: 60 },
   { label: 'Mittel', bpm: 80 },
   { label: 'Schnell', bpm: 100 },
 ];
+const MIN_BPM = 40;
+const MAX_BPM = 200;
 const CHORD_CHOICES = ['C', 'Am', 'F', 'G7'];
 
 export const rhythm: View = (root) => {
@@ -23,6 +38,8 @@ export const rhythm: View = (root) => {
   let bpm = 80;
   let chordName = 'C';
   let playStrum = true;
+  let accent = true;
+  let taps: number[] = [];
   let timer = 0;
   let raf = 0;
   let start = 0;
@@ -42,7 +59,7 @@ export const rhythm: View = (root) => {
           'span',
           { class: `arrow ${st === 'D' ? 'down' : st === 'U' ? 'up' : 'rest'}` },
           h('span', { class: 'glyph' }, st === 'D' ? '↓' : st === 'U' ? '↑' : '·'),
-          h('span', { class: 'beat-count' }, i % 2 === 0 ? String(i / 2 + 1) : 'und'),
+          h('span', { class: 'beat-count' }, pattern.sub === 3 ? String(i + 1) : i % 2 === 0 ? String(i / 2 + 1) : 'und'),
         ),
       );
     });
@@ -72,14 +89,15 @@ export const rhythm: View = (root) => {
     Array.prototype.forEach.call(arrows.children, (a: Element) => a.classList.remove('on'));
     label();
   };
-  const stepDur = () => 60 / bpm / 2;
+  const stepDur = () => 60 / bpm / pattern.sub;
   const schedule = () => {
     const horizon = audio().currentTime + 0.15;
     const steps = pattern.steps;
     while (start + scheduled * stepDur() < horizon) {
       const i = scheduled % steps.length;
       const t = start + scheduled * stepDur();
-      if (i % 2 === 0) click(t, i === 0, 0.4);
+      if (i % pattern.sub === 0) click(t, accent && i === 0, 0.4);
+      else if (pattern.sub === 3) click(t, false, 0.12);
       if (playStrum && steps[i] !== '-') strum(chordName, t, 0.28, steps[i] === 'U');
       scheduled++;
     }
@@ -108,12 +126,46 @@ export const rhythm: View = (root) => {
       }),
     );
 
+  const restart = () => {
+    if (running) {
+      stop();
+      go();
+    }
+  };
+  const bpmShow = h('span', { class: 'bpm-value', 'aria-live': 'polite' });
+  const tempoSeg = h('div', { class: 'seg seg-wrap', role: 'group', 'aria-label': 'Tempo' });
+  const setBpm = (v: number) => {
+    bpm = Math.max(MIN_BPM, Math.min(MAX_BPM, Math.round(v)));
+    bpmShow.textContent = `${bpm} Schläge pro Minute`;
+    Array.prototype.forEach.call(tempoSeg.children, (c: Element, i: number) => c.setAttribute('aria-pressed', String(TEMPOS[i] && TEMPOS[i].bpm === bpm)));
+    restart();
+  };
+  TEMPOS.forEach((t) => tempoSeg.appendChild(button(`${t.label} (${t.bpm})`, () => setBpm(t.bpm), 'btn-seg', { 'aria-pressed': String(t.bpm === bpm) })));
+  // Tippen: Mittel der letzten Abstände, nach 2 s Pause beginnt eine neue Messung
+  const tap = () => {
+    const t = performance.now();
+    if (taps.length && t - taps[taps.length - 1] > 2000) taps = [];
+    taps.push(t);
+    if (taps.length > 5) taps.shift();
+    if (taps.length >= 2) setBpm((60000 * (taps.length - 1)) / (taps[taps.length - 1] - taps[0]));
+    else bpmShow.textContent = 'Weiter tippen …';
+  };
+  const tempoRow = h(
+    'div',
+    { class: 'tempo-row' },
+    button('−', () => setBpm(bpm - 5), 'btn-seg tempo-step', { 'aria-label': 'Langsamer' }),
+    bpmShow,
+    button('+', () => setBpm(bpm + 5), 'btn-seg tempo-step', { 'aria-label': 'Schneller' }),
+    button('Tippen', tap, 'btn-seg tempo-tap', { 'aria-label': 'Tempo durch Tippen bestimmen' }),
+  );
+  bpmShow.textContent = `${bpm} Schläge pro Minute`;
+
   drawArrows();
   label();
   screen(
     root,
     { title: 'Rhythmus', theme: 'teal' },
-    h('div', { class: 'card rhythm-card' }, arrows, sayLine, h('p', { class: 'small' }, '↓ = runter streichen (Daumen oder Zeigefinger), ↑ = hoch. Die Hand schwingt immer weiter, auch bei „·“.')),
+    h('div', { class: 'card rhythm-card' }, arrows, sayLine, h('p', { class: 'small' }, '↓ = runter streichen (Daumen oder Zeigefinger), ↑ = hoch. Die Hand schwingt immer weiter, auch bei „·“. Tipp: Tippe mehrmals im Takt eines Liedes auf „Tippen“ – dann passt sich das Tempo an.')),
     h(
       'div',
       { class: 'controls' },
@@ -124,9 +176,12 @@ export const rhythm: View = (root) => {
         drawArrows();
       }),
       h('h2', null, 'Tempo'),
-      seg('Tempo', TEMPOS, (t) => `${t.label} (${t.bpm})`, (t) => t.bpm === bpm, (t) => (bpm = t.bpm)),
+      tempoSeg,
+      tempoRow,
+      h('h2', null, 'Betonung'),
+      seg('Betonung', ['Eins betont', 'Alle gleich'], (c) => c, (c) => (c === 'Eins betont') === accent, (c) => (accent = c === 'Eins betont')),
       h('h2', null, 'Akkord'),
-      seg('Akkord', [...CHORD_CHOICES, 'nur Klick'], (c) => c, (c) => c === chordName, (c) => {
+      seg('Akkord', CHORD_CHOICES.concat(['nur Klick']), (c) => c, (c) => c === chordName, (c) => {
         playStrum = c !== 'nur Klick';
         if (playStrum) chordName = c;
       }),

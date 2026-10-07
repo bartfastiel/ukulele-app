@@ -10,6 +10,7 @@ import { audio, click, pluck, strum, successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, giveStars, markPracticed } from '../store.ts';
 import { keyLabel, originalShift, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
+import { simplifications, simplifySong } from '../music/simplify.ts';
 
 const SPEEDS = [
   { value: 0.6, label: 'Langsam' },
@@ -67,7 +68,7 @@ class Player {
   constructor(root: HTMLElement, song: Song) {
     this.base = song;
     this.shift = load().keys[song.id] || 0;
-    this.song = transposeSong(song, this.shift);
+    this.song = this.arrange();
     this.changes = chordChanges(this.song);
     this.render(root);
     this.drawKeyBox();
@@ -555,12 +556,23 @@ class Player {
       if (n) p.keys[this.base.id] = n;
       else delete p.keys[this.base.id];
     });
-    this.song = transposeSong(this.base, n);
+    this.song = this.arrange();
     this.changes = chordChanges(this.song);
     this.buildLyrics();
     this.lastLine = -1;
     this.reset();
     this.drawKeyBox();
+  }
+
+  /** Gewählte Tonart, auf Wunsch mit leichteren Griffen. */
+  private arrange(): Song {
+    const t = transposeSong(this.base, this.shift);
+    return this.settings.simplify ? simplifySong(t) : t;
+  }
+
+  private setSimplify(on: boolean): void {
+    save((p) => (p.settings.simplify = on));
+    this.setShift(this.shift);
   }
 
   private drawKeyBox(): void {
@@ -588,6 +600,24 @@ class Player {
         quick(`Einfach: ${label(0)}${marks(0)}`, 0),
         suggest !== 0 ? quick(`★ Vorschlag: ${label(suggest)}`, suggest) : null,
         orig !== null && orig !== 0 && orig !== suggest ? quick(`◆ Original: ${label(orig)}`, orig) : null,
+      ),
+    );
+    const swaps = simplifications(transposeSong(this.base, this.shift));
+    const names = Object.keys(swaps);
+    this.keyBox.appendChild(
+      h(
+        'div',
+        { class: 'seg seg-wrap' },
+        button('Einfache Griffe', () => this.setSimplify(!this.settings.simplify), 'btn-seg', { 'aria-pressed': String(this.settings.simplify) }),
+      ),
+    );
+    this.keyBox.appendChild(
+      h(
+        'p',
+        { class: 'small' },
+        names.length
+          ? `Einfache Griffe: ${names.map((n) => `${n} → ${swaps[n]}`).join(', ')} – klingt fast gleich, ist aber leichter zu greifen.`
+          : 'Einfache Griffe: In dieser Tonart sind schon alle Griffe so leicht wie möglich.',
       ),
     );
     this.keyBox.appendChild(

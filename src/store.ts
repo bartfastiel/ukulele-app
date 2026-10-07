@@ -18,6 +18,8 @@ export interface Progress {
     clickOn: boolean;
     waitMode: boolean;
     calm: boolean;
+    /** schwere Griffe durch leichtere Verwandte ersetzen (E → E7 …) */
+    simplify: boolean;
   };
 }
 
@@ -40,6 +42,7 @@ const DEFAULTS: Progress = {
     clickOn: true,
     waitMode: true,
     calm: false,
+    simplify: false,
   },
 };
 

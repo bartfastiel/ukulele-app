@@ -1321,6 +1321,35 @@ summary:focus-visible {
   box-shadow: 0 0 0 3px var(--brass);
 }
 
+.tempo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0;
+}
+
+.tempo-row .btn-seg {
+  margin: 4px;
+}
+
+.tempo-step {
+  min-width: 64px;
+  font-size: 1.5em;
+}
+
+.bpm-value {
+  display: inline-block;
+  min-width: 13em;
+  margin: 4px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  text-align: center;
+  font-weight: 800;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--cream), var(--cream-2));
+}
+
 /* ---------- Sterne ---------- */
 .total {
   display: flex;
