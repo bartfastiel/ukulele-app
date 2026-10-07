@@ -25,6 +25,13 @@ ohne Tracking. Alles bleibt auf dem Gerät.
   m7, 6, sus, dim, aug …), die Töne und gleichklingende Namen (z. B. Am7 = C6); bei einem Ton alle Stellen auf dem Hals.
 - **Stimmgerät** mit Nadel, Saitenerkennung, Referenztönen und Tipps bei falschem Wirbel oder hakender Saite.
 - **Rhythmus:** Metronom mit Schlagmustern (↓ ↑), auf Wunsch mit Akkord.
+- **Eigene Lieder:** Text mit Akkorden einfügen – als `[C]Text` oder im verbreiteten Format „Akkordzeile über
+  Textzeile“ (die Spalte bestimmt das Wort). Vorschau, freundlicher Hinweis bei unbekannten Akkorden, Taktart und
+  Tempo wählbar. Gespeichert nur im Browser; spielbar wie die „Akkorde + Text“-Lieder.
+  - **Teilen per Link oder QR-Code:** Das ganze Lied steckt komprimiert im Link hinter `#/teilen/…` – der Teil hinter
+    „#“ erreicht nie den Server. QR-Code ohne Fremdbibliothek (Byte-Modus, Fehlerkorrektur L/M, bis Version 25):
+    reicht für etwa 1500 Zeichen Liedtext, längere Lieder lassen sich nur per Link teilen. Beim Teilen erinnert die App
+    daran, nur eigene oder freie Lieder weiterzugeben.
 - **Meine Sterne:** Übungstage, Abzeichen, Linkshänder-Modus, Sicherungs-Code zum Mitnehmen auf ein anderes Gerät.
 
 Ohne Mikrofon funktioniert alles weiter – dann bestätigt das Kind selbst.
@@ -66,9 +73,8 @@ Kinderstimmlage (etwa C4–D5, Melodie in der günstigsten Oktave) und Nähe zur
 
 Liedtexte und Melodien sind urheberrechtlich geschützt, bis 70 Jahre nach dem Tod des letzten Urhebers; reine
 Akkordfolgen sind es nach herrschender Meinung nicht. Text mit Akkorden, eine Melodie als Tabulatur oder das
-Abspielen der Melodie bräuchten für geschützte Lieder Genehmigungen der Musikverlage – große Seiten wie Ultimate
-Guitar oder MuseScore haben dafür Lizenzverträge und finanzieren sie über Abos und Werbung. Diese App enthält
-deshalb nur gemeinfreie Lieder (mit Quelle in `origin`) und eigene Lieder, auch nicht als Testdaten im Repo.
+Abspielen der Melodie bräuchten für geschützte Lieder Genehmigungen der Musikverlage. Diese App enthält deshalb
+nur gemeinfreie Lieder (mit Quelle in `origin`) und eigene Lieder, auch nicht als Testdaten im Repo.
 Hinweise von Rechteinhabern bitte als Issue: https://github.com/bartfastiel/ukulele-app/issues – betroffene Inhalte
 werden sofort entfernt. (Keine Rechtsberatung.)
 

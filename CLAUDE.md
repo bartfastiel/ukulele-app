@@ -36,7 +36,7 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
 
 ```
 src/main.ts              Hash-Router (#/, #/lieder, #/lied/<id>, #/akkorde, #/akkord/<name>, #/spiel, #/stimmen, #/rhythmus, #/sterne,
-                         #/blues, #/detektiv, #/aufnahme)
+                         #/blues, #/detektiv, #/aufnahme, #/eigenes-lied[/<id>], #/lied-teilen/<id>, #/teilen/<daten>)
 src/views/*.ts           je Ansicht eine Funktion (root, param) → Aufräumfunktion
 src/views/player.ts      Karaoke: Transport auf der AudioContext-Uhr, Vorausplanung (25-ms-Takt, 150 ms Horizont),
                          Modus „Wartet auf mich“ hält an jedem Akkordwechsel (stopBeat) und hört per listen.ts zu
@@ -55,6 +55,11 @@ src/music/identify.ts    Akkord-Detektiv: alle Griffe der ersten 5 Bünde bewert
 src/music/blues.ts, src/audio/band.ts, src/ui/fretboard.ts   12-Takt-Blues, Begleitband aus Oszillatoren, Hals als Tabulatur
 src/music/transpose.ts   Transponieren, Tonart-Vorschlag (★) und Original-/Quellentonart (◆)
 src/music/songs-melodies.ts  erzeugt von tools/melody/import.ts (LilyPond aus Wikipedia → Melodieformat)
-src/store.ts             localStorage (Sterne, Übungstage, Einstellungen), storage.persist(), Export-Code
+src/music/import.ts      Eigene Lieder einlesen: ChordPro oder Akkordzeile über Text → ChordPro, Akkordnamen normalisieren
+src/music/own-songs.ts   Eigene Lieder (Prüfung, ids, als Song) und Teilen-Kodierung (JSON → DEFLATE → Base64url)
+src/music/library.ts     mitgelieferte + eigene Lieder (allSongs, findSong)
+src/util/deflate.ts, qr.ts  eigenes DEFLATE (packen/entpacken) und QR-Encoder (Byte-Modus, L/M, Maskenwahl)
+src/views/own-song.ts, share.ts  Eingabe/Bearbeiten, Teilen (QR + Link), geschicktes Lied hinzufügen
+src/store.ts             localStorage (Sterne, Übungstage, Einstellungen, eigene Lieder), storage.persist(), Export-Code
 src/styles.css           Design-Tokens, Mahagoni-Knöpfe, Layouts: Handy hoch (≤600px), Handy quer (Höhe ≤560px), ≥900px
 ```

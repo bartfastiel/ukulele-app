@@ -39,6 +39,35 @@ function dialog(...content: Node[]): { el: HTMLElement; close: () => void } {
   return { el, close: () => el.parentNode && el.parentNode.removeChild(el) };
 }
 
+/**
+ * Rückfrage im Stil der App (statt window.confirm). Schließt sich auch, wenn die Ansicht wechselt; dann gilt „Nein“.
+ */
+export function confirmDialog(opts: { title: string; text: string; yes: string; no: string; danger?: boolean }): Promise<boolean> {
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (v: boolean) => {
+      if (done) return;
+      done = true;
+      window.removeEventListener('hashchange', onLeave);
+      document.removeEventListener('keydown', onKey);
+      d.close();
+      resolve(v);
+    };
+    const onLeave = () => finish(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') finish(false);
+    };
+    // „Nein“ zuerst: der Fokus landet auf der sicheren Wahl
+    const d = dialog(
+      h('h2', null, opts.title),
+      h('p', null, opts.text),
+      h('div', { class: 'row' }, button(opts.no, () => finish(false), 'btn-primary'), button(opts.yes, () => finish(true), opts.danger ? 'btn-danger' : '')),
+    );
+    window.addEventListener('hashchange', onLeave);
+    document.addEventListener('keydown', onKey);
+  });
+}
+
 const EXPLAINED = 'ukulele-club:mic-explained';
 
 /**

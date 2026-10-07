@@ -1,13 +1,14 @@
 import { h } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, type View } from '../ui/screen.ts';
-import { SONGS } from '../music/songs.ts';
+import { allSongs } from '../music/library.ts';
 import { load, save, totalStars, daysThisWeek, exportCode, importCode } from '../store.ts';
 
 const WEEKDAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 
 export const stars: View = (root) => {
   const p = load();
+  const SONGS = allSongs();
   const week = daysThisWeek();
   const practiced = week.filter(Boolean).length;
   const badges = [

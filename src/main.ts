@@ -13,6 +13,8 @@ import { stars } from './views/stars.ts';
 import { record } from './views/record.ts';
 import { detective } from './views/detective.ts';
 import { blues } from './views/blues.ts';
+import { ownSongEditor } from './views/own-song.ts';
+import { receiveSong, shareSong } from './views/share.ts';
 
 const ROUTES: Record<string, View> = {
   '': home,
@@ -27,6 +29,9 @@ const ROUTES: Record<string, View> = {
   aufnahme: record,
   detektiv: detective,
   blues,
+  'eigenes-lied': ownSongEditor,
+  'lied-teilen': shareSong,
+  teilen: receiveSong,
 };
 
 const TITLES: Record<string, string> = {
@@ -41,6 +46,9 @@ const TITLES: Record<string, string> = {
   aufnahme: 'Aufnahmen',
   detektiv: 'Akkord-Detektiv',
   blues: 'Blues',
+  'eigenes-lied': 'Eigenes Lied',
+  'lied-teilen': 'Lied teilen',
+  teilen: 'Geschicktes Lied',
 };
 
 let cleanup: Cleanup = undefined;
