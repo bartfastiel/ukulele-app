@@ -124,11 +124,21 @@ test('Metronom: Taktarten, Tempo mit Plus/Minus und Tippen', async ({ page }) =>
   await expect(page.locator('.arrow .beat-count')).toHaveText(['1', '2', '3', '4', '5', '6']);
   await page.getByRole('button', { name: 'Schneller' }).click();
   await expect(page.locator('.bpm-value')).toHaveText('85 Schläge pro Minute');
-  const tapBtn = page.getByRole('button', { name: 'Tempo durch Tippen bestimmen' });
-  for (let i = 0; i < 4; i++) {
-    await tapBtn.click();
-    await page.waitForTimeout(500);
-  }
+  // Tippen im Abstand von 500 ms direkt im Browser, damit die Testgeschwindigkeit das Ergebnis nicht verfälscht
+  await page.evaluate(
+    () =>
+      new Promise<void>((done) => {
+        const b = document.querySelector('[aria-label="Tempo durch Tippen bestimmen"]') as HTMLElement;
+        let n = 0;
+        const t = window.setInterval(() => {
+          b.click();
+          if (++n === 4) {
+            window.clearInterval(t);
+            done();
+          }
+        }, 500);
+      }),
+  );
   const bpm = Number((await page.locator('.bpm-value').textContent())!.split(' ')[0]);
   expect(bpm).toBeGreaterThan(90);
   expect(bpm).toBeLessThan(135);
