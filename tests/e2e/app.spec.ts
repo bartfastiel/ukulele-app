@@ -38,7 +38,7 @@ test('Startseite führt zu den Liedern und zurück', async ({ page }) => {
   await page.getByRole('link', { name: /Lieder spielen/ }).click();
   await expect(page.getByRole('heading', { name: 'Lieder', exact: true })).toBeVisible();
   await expect(page.locator('.song-card')).toHaveCount(81);
-  await expect(page.locator('.song-card .feature[title^="Melodie"]')).toHaveCount(50);
+  await expect(page.locator('.song-card .feature[title^="Melodie"]')).toHaveCount(59);
   await page.getByRole('button', { name: /^Weihnachten/ }).click();
   await expect(page.locator('.song-card')).toHaveCount(12);
   await page.getByRole('button', { name: /^Alle/ }).click();
@@ -156,7 +156,7 @@ test('Stille Nacht im 6/8-Takt: Einzähler, dann wandert die Silbe über das Mel
 });
 
 test('Lied ohne Melodie: Hinweis, keine Melodie-/Tab-Knöpfe, „Wartet auf mich“ geht von Akkord zu Akkord', async ({ page }) => {
-  await page.goto('#/lied/muss-i-denn');
+  await page.goto('#/lied/horch-was-kommt');
   await expect(page.locator('.no-melody')).toContainText('nur Akkorde und Text');
   await page.locator('.more summary').click();
   await expect(page.getByRole('button', { name: 'Melodie' })).toHaveCount(0);
@@ -169,7 +169,7 @@ test('Lied ohne Melodie: Hinweis, keine Melodie-/Tab-Knöpfe, „Wartet auf mich
   await expect(page.locator('.wait-title')).toContainText('Spiel jetzt C');
   await page.locator('.wait').getByRole('button', { name: /Geschafft/ }).click();
   await expect(page.locator('.wait-title')).toContainText('Spiel jetzt G7', { timeout: 10000 });
-  await expect(page.locator('.syl.now .syl-text')).toHaveText('Städele');
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('draußen');
 });
 
 test('Transponieren: Tonart wechseln, Vorschlag ★ und Original ◆ markiert, Wahl bleibt gespeichert', async ({ page }) => {
