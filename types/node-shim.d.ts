@@ -27,3 +27,9 @@ declare module 'node:zlib' {
   export function crc32(data: Uint8Array): number;
 }
 declare const process: { env: Record<string, string | undefined>; argv: string[]; exit(code?: number): never };
+declare module 'node:fs' {
+  export function existsSync(path: string): boolean;
+}
+declare module 'node:fs' {
+  export function writeFileSync(path: string | URL, data: Uint8Array | string): void;
+}
