@@ -224,3 +224,21 @@ test('Akkordwechsel: „Gleich“ steht links, „Jetzt“ rechts, beim Wechsel 
   expect(await page.evaluate(() => (window as unknown as { sawLeaving?: string }).sawLeaving)).toBe('C');
   await expect(page.locator('.now-card .card-inner.leaving')).toHaveCount(0, { timeout: 2000 });
 });
+
+test('Liedsuche: zuerst Treffer im Titel, darunter im Liedtext mit hervorgehobener Fundstelle', async ({ page }) => {
+  await page.goto('#/lieder');
+  const search = page.getByRole('searchbox', { name: /Lied suchen/ });
+  await search.fill('Glocken');
+  await expect(page.locator('.song-results h2').first()).toContainText('Im Titel');
+  await expect(page.locator('.song-results .song-card').first()).toContainText('Süßer die Glocken');
+  await search.fill('Schwänzchen');
+  await expect(page.locator('.song-results h2')).toHaveText(['Im Liedtext (1)']);
+  await expect(page.locator('.song-results mark')).toHaveText('Schwänzchen');
+  await page.locator('.song-results .song-card').first().click();
+  await expect(page.getByRole('heading', { name: 'Alle meine Entchen' })).toBeVisible();
+  await page.goto('#/lieder');
+  await page.getByRole('searchbox', { name: /Lied suchen/ }).fill('xylophonquatsch');
+  await expect(page.locator('.song-results')).toContainText('Kein Lied gefunden');
+  await page.getByRole('searchbox', { name: /Lied suchen/ }).fill('');
+  await expect(page.locator('.song-filter')).toBeVisible();
+});

@@ -4,6 +4,7 @@ import { screen, type View } from '../ui/screen.ts';
 import { SONGS } from '../music/songs.ts';
 import { difficulty, CATEGORIES, type Song } from '../music/song.ts';
 import { load } from '../store.ts';
+import { searchSongs } from '../music/search.ts';
 
 const LEVEL = ['', 'Leicht', 'Mittel', 'Knifflig'];
 
@@ -15,7 +16,7 @@ function feature(name: string, label: string): HTMLElement {
 export const songs: View = (root) => {
   const stars = load().stars;
   const sorted = SONGS.slice().sort((a, b) => difficulty(a) - difficulty(b) || a.chords.length - b.chords.length || a.title.localeCompare(b.title, 'de'));
-  const card = (s: Song) => {
+  const card = (s: Song, snippet: [string, string, string] | null = null) => {
     const n = stars[s.id] || 0;
     const level = LEVEL[difficulty(s)];
     // kompakt: Titel und Sterne in einer Zeile, darunter Akkorde und Merkmale; Schwierigkeit als Farbstreifen
@@ -48,6 +49,7 @@ export const songs: View = (root) => {
             s.hasMelody ? feature('songs', 'Melodie zum Mitspielen und als Tabulatur') : null,
           ),
         ),
+        snippet ? h('span', { class: 'song-snippet' }, snippet[0], h('mark', null, snippet[1]), snippet[2]) : null,
       ),
     );
   };
@@ -60,7 +62,7 @@ export const songs: View = (root) => {
       if (active !== 'alle' && active !== c.id) return;
       const items = sorted.filter((s) => s.category === c.id);
       if (!items.length) return;
-      sections.appendChild(h('section', { class: 'song-section' }, h('h2', null, `${c.title} (${items.length})`), h('ul', { class: 'song-list' }, ...items.map(card))));
+      sections.appendChild(h('section', { class: 'song-section' }, h('h2', null, `${c.title} (${items.length})`), h('ul', { class: 'song-list' }, ...items.map((x) => card(x)))));
     });
   };
   [{ id: 'alle', title: `Alle (${SONGS.length})` }]
@@ -76,5 +78,38 @@ export const songs: View = (root) => {
       filter.appendChild(b);
     });
   render();
-  screen(root, { title: 'Lieder', theme: 'brass' }, filter, sections);
+  // Suche: zuerst Treffer im Titel, darunter Treffer im Liedtext mit Ausschnitt
+  const results = h('div', { class: 'song-results', 'aria-live': 'polite', hidden: true });
+  const search = h('input', {
+    type: 'search',
+    class: 'song-search',
+    placeholder: 'Lied suchen – Titel oder Liedtext',
+    'aria-label': 'Lied suchen, im Titel oder im Liedtext',
+    autocomplete: 'off',
+    enterkeyhint: 'search',
+  }) as HTMLInputElement;
+  const runSearch = () => {
+    const q = search.value.trim();
+    const searching = q.length > 0;
+    filter.hidden = searching;
+    sections.hidden = searching;
+    results.hidden = !searching;
+    while (results.firstChild) results.removeChild(results.firstChild);
+    if (!searching) return;
+    const hits = searchSongs(sorted, q);
+    const inTitle = hits.filter((x) => x.inTitle);
+    const inText = hits.filter((x) => !x.inTitle);
+    if (!hits.length) {
+      results.appendChild(h('p', { class: 'card small' }, `Kein Lied gefunden für „${q}“.`));
+      return;
+    }
+    if (inTitle.length)
+      results.appendChild(h('section', { class: 'song-section' }, h('h2', null, `Im Titel (${inTitle.length})`), h('ul', { class: 'song-list' }, ...inTitle.map((x) => card(x.song)))));
+    if (inText.length)
+      results.appendChild(
+        h('section', { class: 'song-section' }, h('h2', null, `Im Liedtext (${inText.length})`), h('ul', { class: 'song-list' }, ...inText.map((x) => card(x.song, x.snippet)))),
+      );
+  };
+  search.addEventListener('input', runSearch);
+  screen(root, { title: 'Lieder', theme: 'brass' }, search, filter, sections, results);
 };
