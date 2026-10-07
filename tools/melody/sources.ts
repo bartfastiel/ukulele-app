@@ -62,8 +62,8 @@ export const WIKI: Record<string, string> = {
   'amazing-grace': 'en:Amazing_Grace',
   shenandoah: 'en:Shenandoah_(song)',
   'blow-the-man-down': 'en:Blow_the_Man_Down',
-  'rio-grande': 'en:Rio_Grande_(sea_shanty)',
-  'leave-her-bullies': 'en:Leave_Her,_Johnny',
+  'rio-grande': 'en:Rio_Grande_(shanty)',
+  'leave-her-bullies': 'en:Leave_Her_Johnny',
   'loch-lomond': 'en:The_Bonnie_Banks_o%27_Loch_Lomond',
   'auld-lang-syne': 'en:Auld_Lang_Syne',
 };

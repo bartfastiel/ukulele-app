@@ -9,6 +9,12 @@ export interface LyNote {
   tie: boolean;
   slurStart: boolean;
   slurEnd: boolean;
+  /** zweite (dritte …) Runde einer ausgeschriebenen Wiederholung: Nummer der Wiederholung und Note der ersten Runde */
+  repeat?: number;
+  copyOf?: LyNote;
+  /** „Fine“ bzw. „D.C.“ steht an dieser Note */
+  fine?: boolean;
+  daCapo?: boolean;
 }
 
 export interface LySyllable {
@@ -17,6 +23,10 @@ export interface LySyllable {
   hyphen: boolean;
   /** „_“: Note ohne neue Silbe */
   skip: boolean;
+  /** nach `\set ignoreMelismata = ##t`: Bindebögen tragen hier trotzdem je Note eine Silbe */
+  ignoreMelismata?: boolean;
+  /** aus einer parallelen Textzeile (`<< {…} \new Lyrics {…} >>`): Text für die zweite Runde einer Wiederholung */
+  stanza?: number;
 }
 
 export interface LyChord {
@@ -45,7 +55,7 @@ function stripComments(src: string): string {
 
 function tokenize(src: string): Tok[] {
   const out: Tok[] = [];
-  const re = /"(?:\\.|[^"\\])*"|<<|>>|\\\\|\\[A-Za-z]+|--|__|[{}<>()\[\]~|=]|[^\s{}<>()\[\]~|="\\]+/g;
+  const re = /"(?:\\.|[^"\\])*"|<<|>>|\\\\|\\[A-Za-z]+|\\[<>!]|--|__|[{}<>()\[\]~|=]|[^\s{}<>()\[\]~|="\\]+/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(src))) out.push(m[0]);
   return out;
@@ -104,6 +114,8 @@ interface Ctx {
   scale: number;
   slurOpen: boolean;
   beamMelisma: boolean;
+  voltaOnce: boolean;
+  repeats: number;
 }
 
 function absPitch(ctx: Ctx, step: number, pc: number, marks: string): number {
@@ -138,7 +150,22 @@ function parseDuration(ctx: Ctx, text: string): void {
   ctx.dur = d;
 }
 
-const SKIP_ONE = new Set(['\\clef', '\\tempo', '\\mark', '\\bar', '\\override', '\\set', '\\once', '\\revert', '\\markup', '\\tweak', '\\omit', '\\hide', '\\unset', '\\midiInstrument', '\\label']);
+/** \alternative darf (seit LilyPond 2.23) auch am Ende innerhalb der Wiederholung stehen: herauslösen. */
+function innerAlternatives(body: Tok[], alts: Tok[][]): void {
+  const inside = body.lastIndexOf('\\alternative');
+  if (alts.length || inside < 0 || body[inside + 1] !== '{') return;
+  const aEnd = blockEnd(body, inside + 1);
+  const inner = body.slice(inside + 2, aEnd - 1);
+  for (let j = 0; j < inner.length; j++)
+    if (inner[j] === '{') {
+      const e = blockEnd(inner, j);
+      alts.push(inner.slice(j + 1, e - 1));
+      j = e - 1;
+    }
+  body.splice(inside, aEnd - inside);
+}
+
+const SKIP_ONE =new Set(['\\clef', '\\tempo', '\\mark', '\\bar', '\\override', '\\set', '\\once', '\\revert', '\\markup', '\\tweak', '\\omit', '\\hide', '\\unset', '\\midiInstrument', '\\label']);
 
 /** Melodie aus Tokens lesen (erste Stimme bei `<< … \\ … >>`). */
 function music(t: Tok[], ctx: Ctx, out: LyNote[]): void {
@@ -231,7 +258,8 @@ function music(t: Tok[], ctx: Ctx, out: LyNote[]): void {
       }
       // Wiederholungen ausschreiben – Liedtexte in Wikipedia schreiben die zweite Runde meist aus
       // Relative Tonhöhen gelten wie geschrieben (einmal ausgewertet), erst danach wird ausgeschrieben
-      const n = kind === 'unfold' || kind === 'volta' ? times : 1;
+      const n = kind === 'unfold' || (kind === 'volta' && !ctx.voltaOnce) ? times : 1;
+      innerAlternatives(body, alts);
       const bodyNotes: LyNote[] = [];
       music(body, ctx, bodyNotes);
       const altNotes = alts.map((a) => {
@@ -239,8 +267,9 @@ function music(t: Tok[], ctx: Ctx, out: LyNote[]): void {
         music(a, ctx, x);
         return x;
       });
+      const id = ++ctx.repeats;
       for (let k = 0; k < n; k++) {
-        out.push(...bodyNotes.map((x) => ({ ...x })));
+        out.push(...bodyNotes.map((x) => (k ? { ...x, repeat: id, copyOf: x } : x)));
         if (altNotes.length) out.push(...altNotes[Math.min(k, altNotes.length - 1)].map((x) => ({ ...x })));
       }
       i = next - 1;
@@ -274,6 +303,10 @@ function music(t: Tok[], ctx: Ctx, out: LyNote[]): void {
       const name = tok.slice(1);
       const v = ctx.vars.get(name);
       if (v) music(v, ctx, out);
+    } else if (tok[0] === '"') {
+      // Textmarke an der Note davor (^"Fine", ^"D.C. al fine")
+      if (out.length && /D\.\s*C\./.test(tok)) out[out.length - 1].daCapo = true;
+      else if (out.length && /^"Fine"$/i.test(tok)) out[out.length - 1].fine = true;
     } else if (tok === '~') {
       if (out.length) out[out.length - 1].tie = true;
     } else if (tok === '(') {
@@ -321,7 +354,7 @@ function music(t: Tok[], ctx: Ctx, out: LyNote[]): void {
   }
 }
 
-function lyrics(t: Tok[], vars: Map<string, Tok[]>): LySyllable[] {
+function lyrics(t: Tok[], vars: Map<string, Tok[]>, state = { ignore: false }): LySyllable[] {
   const out: LySyllable[] = [];
   for (let i = 0; i < t.length; i++) {
     const tok = t[i];
@@ -339,10 +372,15 @@ function lyrics(t: Tok[], vars: Map<string, Tok[]>): LySyllable[] {
       // parallele Strophen (Text der ersten und zweiten Runde einer Wiederholung): nacheinander
       const end = blockEnd(t, i);
       const inner = t.slice(i + 1, end - 1);
+      let block = 0;
       for (let j = 0; j < inner.length; j++) {
         if (inner[j] === '{') {
           const e = blockEnd(inner, j);
-          out.push(...lyrics(inner.slice(j + 1, e - 1), vars));
+          const part = lyrics(inner.slice(j + 1, e - 1), vars, state);
+          // die weiteren Zeilen gehören zur zweiten Runde – align() kann sie dort einsetzen
+          if (block) for (const y of part) y.stanza = y.stanza || block;
+          out.push(...part);
+          block++;
           j = e - 1;
         }
       }
@@ -370,8 +408,8 @@ function lyrics(t: Tok[], vars: Map<string, Tok[]>): LySyllable[] {
         next = aEnd;
       }
       for (let k = 0; k < times; k++) {
-        out.push(...lyrics(body, vars));
-        if (alts.length) out.push(...lyrics(alts[Math.min(k, alts.length - 1)], vars));
+        out.push(...lyrics(body, vars, state));
+        if (alts.length) out.push(...lyrics(alts[Math.min(k, alts.length - 1)], vars, state));
       }
       i = next - 1;
       continue;
@@ -387,30 +425,37 @@ function lyrics(t: Tok[], vars: Map<string, Tok[]>): LySyllable[] {
       continue;
     }
     if (tok === '\\set' || tok === '\\override') {
+      const prop = t[i + 1];
       while (i + 1 < t.length && t[i + 1] !== '=') i++;
       i += 2;
+      if (prop === 'ignoreMelismata') state.ignore = t[i] === '##t';
       // Wert wie #"1. " (Strophennummer): das Zeichen # und die Zeichenkette gehören zusammen
       if (t[i]?.startsWith('#') && /^"/.test(t[i + 1] || '')) i++;
       continue;
     }
+    if (tok === '\\unset' && t[i + 1] === 'ignoreMelismata') {
+      state.ignore = false;
+      i++;
+      continue;
+    }
     if (tok === '\\skip') {
-      out.push({ text: '', hyphen: false, skip: true });
+      out.push({ text: '', hyphen: false, skip: true, ignoreMelismata: state.ignore });
       i++;
       continue;
     }
     if (tok.startsWith('\\')) {
       const v = vars.get(tok.slice(1));
-      if (v) out.push(...lyrics(v, vars));
+      if (v) out.push(...lyrics(v, vars, state));
       continue;
     }
     if (tok === '_') {
-      out.push({ text: '', hyphen: false, skip: true });
+      out.push({ text: '', hyphen: false, skip: true, ignoreMelismata: state.ignore });
       continue;
     }
     let text = tok.replace(/^"|"$/g, '').replace(/~/g, ' ');
-    text = text.replace(/_$/, '').replace(/_/g, ' ');
+    text = text.replace(/_+$/, '').replace(/_/g, ' ');
     if (!text || text === '=') continue;
-    out.push({ text, hyphen: false, skip: false });
+    out.push({ text, hyphen: false, skip: false, ignoreMelismata: state.ignore });
   }
   return out;
 }
@@ -457,6 +502,7 @@ function chords(t: Tok[], lang: string, state = { dur: 1 }, out: LyChord[] = [])
           }
         next = aEnd;
       }
+      innerAlternatives(body, alts);
       for (let k = 0; k < times; k++) {
         chords(body, lang, state, out);
         if (alts.length) chords(alts[Math.min(k, alts.length - 1)], lang, state, out);
@@ -477,12 +523,19 @@ function chords(t: Tok[], lang: string, state = { dur: 1 }, out: LyChord[] = [])
     }
     const m = /^([a-h](?:is|es|s)*)[',]*(\d+\.*)?(?::([a-z0-9.+-]+))?(?:\/.*)?$/.exec(tok);
     const r = /^[rsR](\d+\.*)?$/.exec(tok);
-    if (!m && !r) continue;
-    const durTok = m ? m[2] : r![1];
+    // „q“ wiederholt den letzten Akkord
+    const q = /^q(\d+\.*)?$/.exec(tok);
+    if (!m && !r && !q) continue;
+    const durTok = m ? m[2] : r ? r[1] : q![1];
     if (durTok) {
       const ctx = { dur: state.dur } as Ctx;
       parseDuration(ctx, durTok);
       state.dur = ctx.dur;
+    }
+    if (q) {
+      const last = out[out.length - 1];
+      out.push({ root: last ? last.root : -1, quality: last ? last.quality : '', dur: state.dur });
+      continue;
     }
     if (r) {
       out.push({ root: -1, quality: '', dur: state.dur });
@@ -495,7 +548,25 @@ function chords(t: Tok[], lang: string, state = { dur: 1 }, out: LyChord[] = [])
   return out;
 }
 
-export function parseLily(src: string): LyScore | null {
+/** Akkordfolge auf die ersten `beats` Viertel kürzen bzw. mit Pause auffüllen. */
+function cutChords(list: LyChord[], beats: number): LyChord[] {
+  const out: LyChord[] = [];
+  let pos = 0;
+  for (const c of list) {
+    if (pos >= beats - 1e-6) break;
+    out.push({ ...c, dur: Math.min(c.dur, beats - pos) });
+    pos += c.dur;
+  }
+  if (pos < beats - 1e-6) out.push({ root: -1, quality: '', dur: beats - pos });
+  return out;
+}
+
+export interface LyOptions {
+  /** Wiederholungen (volta) nur einmal lesen – wenn der Liedtext die zweite Runde nicht ausschreibt. */
+  voltaOnce?: boolean;
+}
+
+export function parseLily(src: string, opts: LyOptions = {}): LyScore | null {
   const clean = stripComments(src);
   const t = tokenize(clean);
   const langM = /\\language\s+"(\w+)"/.exec(clean);
@@ -557,6 +628,7 @@ export function parseLily(src: string): LyScore | null {
     for (let i = 0; i < t.length; i++)
       if (t[i] === '\\new' && t[i + 1] === 'Voice' && t[i + 2] === '=' && t[i + 3]?.replace(/"/g, '') === voice) {
         let j = i + 4;
+        if (t[j] === '\\with' && t[j + 1] === '{') j = blockEnd(t, j + 1);
         while (j < t.length && t[j] !== '{') j++;
         melodyToks = t.slice(j, blockEnd(t, j));
         break;
@@ -576,7 +648,7 @@ export function parseLily(src: string): LyScore | null {
   }
   if (!melodyToks || !verses.length) return null;
 
-  const ctx: Ctx = { lang, vars, rel: null, dur: 1, timeNum: 4, timeDen: 4, partial: 0, keyTonic: 0, minor: false, scale: 1, slurOpen: false, beamMelisma: t.indexOf('\\autoBeamOff') >= 0 };
+  const ctx: Ctx = { lang, vars, rel: null, dur: 1, timeNum: 4, timeDen: 4, partial: 0, keyTonic: 0, minor: false, scale: 1, slurOpen: false, beamMelisma: t.indexOf('\\autoBeamOff') >= 0, voltaOnce: !!opts.voltaOnce, repeats: 0 };
   // Taktart/Tonart können außerhalb der Melodie stehen (global-Variable, Staff-Kopf)
   const pre: LyNote[] = [];
   const g = vars.get('global');
@@ -604,14 +676,29 @@ export function parseLily(src: string): LyScore | null {
   const notes: LyNote[] = [];
   music(melodyToks, ctx, notes);
   if (notes.filter((n) => n.midi !== null).length < 4) return null;
+  // Da capo al fine: vom Anfang bis „Fine“ noch einmal
+  const dc = notes.findIndex((n) => n.daCapo);
+  const fine = notes.findIndex((n) => n.fine);
+  let daCapo: { end: number; fine: number } | null = null;
+  if (dc >= 0 && fine >= 0 && fine < dc) {
+    notes.splice(dc + 1, notes.length - dc - 1);
+    const beats = (k: number) => notes.slice(0, k + 1).reduce((x, n) => x + n.dur, 0);
+    daCapo = { end: beats(dc), fine: beats(fine) };
+    notes.push(...notes.slice(0, fine + 1).map((x) => ({ ...x, fine: false })));
+  }
 
   let chordList: LyChord[] | null = null;
   const cm = t.indexOf('\\chordmode');
-  if (cm >= 0 && t[cm + 1] === '{') chordList = chords(t.slice(cm + 2, blockEnd(t, cm + 1) - 1), lang);
+  // \new ChordNames { \teilA \teilB }: mehrere Akkord-Variablen nacheinander
+  const cn = t.findIndex((x, k) => x === '\\new' && t[k + 1] === 'ChordNames' && t[k + 2] === '{');
+  const parts = cn >= 0 ? t.slice(cn + 3, blockEnd(t, cn + 2) - 1).filter((x) => x.startsWith('\\') && vars.get(x.slice(1))?.[0] === '\\chordmode') : [];
+  if (parts.length > 1) chordList = chords(parts.flatMap((x) => vars.get(x.slice(1))!.slice(1)), lang);
+  else if (cm >= 0 && t[cm + 1] === '{') chordList = chords(t.slice(cm + 2, blockEnd(t, cm + 1) - 1), lang);
   else {
     for (const [, v] of vars)
       if (v[0] === '\\chordmode' && v[1] === '{') chordList = chords(v.slice(2, blockEnd(v, 1) - 1), lang);
   }
+  if (chordList && daCapo) chordList = cutChords(chordList, daCapo.end).concat(cutChords(chordList, daCapo.fine));
   return { notes, verses, chords: chordList && chordList.length ? chordList : null, timeNum: ctx.timeNum, timeDen: ctx.timeDen, partial: ctx.partial, keyTonic: ctx.keyTonic, minor: ctx.minor };
 }
 
@@ -623,35 +710,92 @@ export interface Aligned {
   hold: boolean;
 }
 
+export interface AlignOptions {
+  /** Bögen nicht als Melisma werten – manche Beispiele setzen sie nur als Phrasierung und halten Silben mit „_“ */
+  ignoreSlurs?: boolean;
+  /** Text paralleler Zeilen erst in der zweiten Runde einer Wiederholung einsetzen (statt der Reihe nach) */
+  stanzaQueue?: boolean;
+  /** Wiederholungen, deren zweite Runde den Text der ersten wiederholt (im Beispiel nicht ausgeschrieben) */
+  reuse?: Set<number>;
+}
+
 /** Silben auf Noten verteilen: Haltebogen und Bindebogen tragen keine neue Silbe, „_“ hält die vorige. */
-export function align(notes: LyNote[], syl: LySyllable[]): { events: Aligned[]; leftoverSyllables: number; leftoverNotes: number } {
+export function align(notes: LyNote[], syl: LySyllable[], opts: AlignOptions = {}): { events: Aligned[]; leftoverSyllables: number; leftoverNotes: number } {
   const events: Aligned[] = [];
+  const main = opts.stanzaQueue ? syl.filter((y) => !y.stanza) : syl;
+  const second = opts.stanzaQueue ? syl.filter((y) => y.stanza) : [];
   let s = 0;
+  let s2 = 0;
   let inSlur = false;
   let tied = false;
   let unsung = 0;
+  const eventOf = new Map<LyNote, Aligned>();
   for (const n of notes) {
     if (n.midi === null) {
       events.push({ syllable: '', joinNext: false, midi: null, dur: n.dur, hold: false });
       tied = false;
       continue;
     }
-    const continuation = tied || inSlur;
+    const fromSecond = n.repeat !== undefined && s2 < second.length;
+    const next = fromSecond ? second[s2] : main[s];
+    const slurHolds = inSlur && !opts.ignoreSlurs && !(next && next.ignoreMelismata);
+    const continuation = tied || slurHolds;
     if (n.slurStart) inSlur = true;
     if (n.slurEnd) inSlur = false;
-    if (continuation) {
+    const reuse = !!n.copyOf && n.repeat !== undefined && !!opts.reuse && opts.reuse.has(n.repeat) && !fromSecond;
+    const reused = reuse ? eventOf.get(n.copyOf!) : undefined;
+    let ev: Aligned | null = null;
+    if (reuse && !reused) {
+      // in der ersten Runde per Haltebogen angehängt
+      const last = events[events.length - 1];
+      if (last) last.dur += n.dur;
+    } else if (reused) {
+      ev = { syllable: reused.syllable, joinNext: reused.joinNext, midi: n.midi, dur: n.dur, hold: reused.hold };
+    } else if (continuation) {
       const last = events[events.length - 1];
       if (tied && last && last.midi === n.midi) last.dur += n.dur;
-      else events.push({ syllable: '', joinNext: false, midi: n.midi, dur: n.dur, hold: true });
-    } else if (s < syl.length) {
-      const y = syl[s++];
-      if (y.skip) events.push({ syllable: '', joinNext: false, midi: n.midi, dur: n.dur, hold: true });
-      else events.push({ syllable: y.text, joinNext: y.hyphen, midi: n.midi, dur: n.dur, hold: false });
+      else ev = { syllable: '', joinNext: false, midi: n.midi, dur: n.dur, hold: true };
+    } else if (next) {
+      if (fromSecond) s2++;
+      else s++;
+      ev = next.skip ? { syllable: '', joinNext: false, midi: n.midi, dur: n.dur, hold: true } : { syllable: next.text, joinNext: next.hyphen, midi: n.midi, dur: n.dur, hold: false };
     } else {
       unsung++;
-      events.push({ syllable: '', joinNext: false, midi: n.midi, dur: n.dur, hold: true });
+      ev = { syllable: '', joinNext: false, midi: n.midi, dur: n.dur, hold: true };
+    }
+    if (ev) {
+      events.push(ev);
+      eventOf.set(n, ev);
     }
     tied = n.tie;
   }
-  return { events, leftoverSyllables: syl.length - s, leftoverNotes: unsung };
+  return { events, leftoverSyllables: main.length - s + second.length - s2, leftoverNotes: unsung };
+}
+
+/** Wiederholungen mit ausgeschriebener zweiter Runde (für die Suche nach der passenden Lesart). */
+export function repeatIds(notes: LyNote[]): number[] {
+  return Array.from(new Set(notes.flatMap((n) => (n.repeat === undefined ? [] : [n.repeat]))));
+}
+
+/**
+ * Die Lesarten (Bögen, parallele Zeilen, wiederholter Text), bei denen Noten und Silben am besten aufgehen –
+ * bei Gleichstand alle, damit der Abgleich mit unserem Liedtext entscheiden kann.
+ */
+export function bestAligns(notes: LyNote[], syl: LySyllable[]): { opts: AlignOptions[]; leftover: number } {
+  const ids = repeatIds(notes).slice(0, 6);
+  let best: AlignOptions[] = [];
+  let min = Infinity;
+  for (const ignoreSlurs of [false, true])
+    for (const stanzaQueue of [false, true])
+      for (let mask = 0; mask < 1 << ids.length; mask++) {
+        const opts: AlignOptions = { ignoreSlurs, stanzaQueue, reuse: new Set(ids.filter((_, k) => mask & (1 << k))) };
+        const a = align(notes, syl, opts);
+        const leftover = a.leftoverNotes + a.leftoverSyllables;
+        if (leftover < min) {
+          min = leftover;
+          best = [];
+        }
+        if (leftover === min) best.push(opts);
+      }
+  return { opts: best, leftover: min };
 }

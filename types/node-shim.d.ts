@@ -32,4 +32,6 @@ declare module 'node:fs' {
 }
 declare module 'node:fs' {
   export function writeFileSync(path: string | URL, data: Uint8Array | string): void;
+  export function readFileSync(path: string | URL, encoding: 'utf8'): string;
+  export function readdirSync(path: string | URL): string[];
 }

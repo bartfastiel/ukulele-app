@@ -51,11 +51,17 @@ Die Unit-Tests prüfen Taktlängen, Griffbarkeit, eindeutige IDs und dass jeder 
 LilyPond-Notenbeispiel. `tools/melody/` liest daraus Tonhöhen, Dauern, Silben und ggf. Akkorde, transponiert in die
 einfache Tonart der App und legt unsere Akkorde per Textabgleich bzw. Harmonisierung auf die Silben. Der Notentext
 wird mit unserem geprüften Text verglichen; abweichende, geschützte Fassungen (z. B. „Im Märzen der Bauer“ nach
-Hensel) werden ausgeschlossen.
+Hensel) werden ausgeschlossen. Außer dem Artikel selbst werden seine anderen Sprachversionen und per Volltextsuche
+weitere Seiten in Wikipedia und Wikisource (z. B. transkribierte gemeinfreie Liederbücher) durchsucht; die Herkunft
+landet im `origin` des Lieds. Melodien ohne solche Quelle können als ABC-Datei in `tools/melody/abc/<id>.abc`
+ergänzt werden (Herkunft im Feld `S:`).
 
 ```sh
-node tools/melody/fetch-wiki.ts <cache>              # Artikel laden (langsam, Wikipedia drosselt)
-node tools/melody/import.ts <ordner-mit-.ly> --write  # src/music/songs-melodies.ts erzeugen
+node tools/melody/fetch-wiki.ts <cache>                       # Artikel laden (langsam, Wikipedia drosselt)
+node tools/melody/fetch-langs.ts <cache2> [id …]              # andere Sprachversionen mit Notenbeispiel
+node tools/melody/search-wiki.ts <cache3> <id> <wiki> "<text>" # Volltextsuche, z. B. en.wikisource.org
+node tools/melody/extract.ts <cache>                          # <score>-Blöcke als .ly ablegen (je Cache)
+node tools/melody/import.ts <cache> [<cache2> …] --write      # src/music/songs-melodies.ts erzeugen
 ```
 
 **Transponieren:** Jedes Lied lässt sich in alle zwölf Tonarten verschieben (Griffe für jede Tonart aus einer

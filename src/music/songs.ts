@@ -232,7 +232,7 @@ schlaf:C5 in:G4 himm-:E4 [G7]li-:G4:1.5 scher:F4:0.5 ~:D4 | [C]Ruh.:C4:6 |`,
   },
 ];
 
-/** Lieder mit Akkorden + Text bekommen eine Melodie, wenn ihr Wikipedia-Artikel ein Notenbeispiel hat. */
+/** Lieder mit Akkorden + Text bekommen eine Melodie, wenn es dafür eine gemeinfreie Notenquelle gibt (songs-melodies.ts). */
 function withMelody(src: SongSource): SongSource {
   const m = MELODIES[src.id];
   if (!m) return src;
@@ -244,7 +244,7 @@ function withMelody(src: SongSource): SongSource {
     pickup: m.pickup || undefined,
     originalKey: src.originalKey || m.originalKey,
     bpm: m.meter === 6 || m.meter === 3 ? Math.max(src.bpm, 110) : src.bpm,
-    origin: `${src.origin}; Melodie nach dem Notenbeispiel im Wikipedia-Artikel`,
+    origin: `${src.origin}; Melodie ${m.source}`,
   };
 }
 
