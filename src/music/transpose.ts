@@ -1,4 +1,6 @@
 import { ROOTS, chord, chordCost, parseChordName } from './chords.ts';
+import { instrument } from './instrument.ts';
+import { tabPosition } from './notes.ts';
 import type { Song } from './song.ts';
 
 const SING_LOW = 60;
@@ -28,8 +30,34 @@ export function melodyShift(song: Song, shift: number): number {
 }
 
 function vocalPenalty(lo: number, hi: number): number {
-  // Kinderstimme etwa C4–D5; unter C4 lässt sich die Melodie auf der Ukulele mit hohem G nicht mehr greifen
-  return 0.8 * Math.max(0, SING_LOW - lo) + 0.8 * Math.max(0, hi - SING_HIGH) + 1.5 * Math.max(0, 60 - lo);
+  // Kinderstimme etwa C4–D5; tiefer als der tiefste Ton des Instruments (Ukulele mit hohem G: C4) lässt sich die
+  // Melodie nicht mehr greifen – die Gitarre spielt sie eine Oktave tiefer
+  const m = instrument().melody;
+  return 0.8 * Math.max(0, SING_LOW - lo) + 0.8 * Math.max(0, hi - SING_HIGH) + 1.5 * Math.max(0, m.low - (lo + m.offset));
+}
+
+/**
+ * Wie viele Halbtöne die Melodie auf dem Instrument gegen die gesungene Lage verschoben klingt und gegriffen wird:
+ * Gitarre eine Oktave tiefer, Banjo je Lied die Oktave, die tiefer am Hals liegt.
+ */
+export function melodyOffset(song: Song): number {
+  const m = instrument().melody;
+  const midis = song.events.flatMap((e) => (e.midi === null ? [] : [e.midi]));
+  if (!m.flexible || !midis.length) return m.offset;
+  let best = m.offset;
+  let bestCost = Infinity;
+  for (const o of [m.offset, m.offset - 12]) {
+    let cost = 0;
+    for (const x of midis) {
+      const p = tabPosition(x + o);
+      cost += p ? Math.max(0, p.fret - 5) : 1000;
+    }
+    if (cost < bestCost) {
+      bestCost = cost;
+      best = o;
+    }
+  }
+  return best;
 }
 
 export function transposeSong(song: Song, shift: number): Song {
@@ -76,9 +104,36 @@ export interface KeyRating {
   total: number;
 }
 
+/** Spielbarkeit der Griffe eines Liedes: schwerster Griff zählt voll, der Durchschnitt etwas. */
+function playCost(chords: string[], shift: number): number {
+  const costs = chords.map((c) => chordCost(chord(transposeName(c, shift))));
+  return Math.max(...costs) + (0.3 * costs.reduce((a, b) => a + b, 0)) / costs.length;
+}
+
+/**
+ * Kapodaster (Gitarre): Klingt das Lied in dieser Tonart nur mit schweren Griffen, aber mit Kapo im Bund `capo` und
+ * den Griffen einer leichten Tonart? Dann z. B. { capo: 2, shapes: 'G' } – „Kapo 2, greif wie G“.
+ */
+export function capoHint(song: Song, shift: number): { capo: number; shapes: string } | null {
+  if (!instrument().capo) return null;
+  const own = playCost(song.chords, shift);
+  let best: { capo: number; shapes: string } | null = null;
+  // nur, wenn es deutlich leichter wird – ein kleiner Gewinn ist den Kapodaster nicht wert
+  let bestCost = own - 3;
+  for (let capo = 1; capo <= 7; capo++) {
+    const cost = playCost(song.chords, shift - capo) + capo * 0.3;
+    if (cost < bestCost) {
+      bestCost = cost;
+      const k = songKey(song);
+      best = { capo, shapes: keyLabel(k.root + shift - capo, k.minor) };
+    }
+  }
+  return best;
+}
+
 /**
  * Bester Kompromiss aus Spielbarkeit (Griffe), Wiedererkennung (Nähe zur Original-/Quellentonart) und Stimmlage
- * (Kinderstimme etwa C4–D5, nur bei Liedern mit Melodie; die Melodie muss außerdem auf der Ukulele liegen).
+ * (Kinderstimme etwa C4–D5, nur bei Liedern mit Melodie; die Melodie muss außerdem auf dem Instrument liegen).
  */
 export function rateKeys(song: Song): KeyRating[] {
   const orig = originalShift(song);
@@ -86,8 +141,7 @@ export function rateKeys(song: Song): KeyRating[] {
   const midis = song.events.flatMap((e) => (e.midi === null ? [] : [e.midi]));
   const out: KeyRating[] = [];
   for (let shift = -6; shift <= 5; shift++) {
-    const costs = song.chords.map((c) => chordCost(chord(transposeName(c, shift))));
-    const play = Math.max(...costs) + (0.3 * costs.reduce((a, b) => a + b, 0)) / costs.length;
+    const play = playCost(song.chords, shift);
     let total = play;
     if (orig !== null) total += 0.6 * Math.abs(shiftBetween(orig, shift));
     if (midis.length) {

@@ -62,10 +62,6 @@ export const EN: Record<string, string> = {
   'Finger': 'finger',
   'alle Saiten leer': 'all strings open',
   // src/music/diagnose.ts
-  'G-Saite (ganz oben)': 'G string (at the top)',
-  'C-Saite': 'C string',
-  'E-Saite': 'E string',
-  'A-Saite (ganz unten)': 'A string (at the bottom)',
   'deinen Zeigefinger': 'your index finger',
   'deinen Mittelfinger': 'your middle finger',
   'deinen Ringfinger': 'your ring finger',
@@ -103,7 +99,6 @@ export const EN: Record<string, string> = {
   'Dein eigenes Lied – nur auf diesem Gerät gespeichert.': 'Your own song – saved only on this device.',
   // src/music/recording-plan.ts
   'Viermal langsam mit dem Daumen oder Zeigefinger abwärts über alle Saiten streichen.': 'Strum down slowly across all strings four times with your thumb or index finger.',
-  'Die Saiten einzeln zupfen, von oben (G) nach unten (A), danach einmal alle zusammen.': 'Pick the strings one by one, from the top (G) to the bottom (A), then all together once.',
   'Einmal kräftig anschlagen und ausklingen lassen.': 'Strum once firmly and let it ring out.',
   'Absichtlich falsch: C greifen, aber der Ringfinger drückt NICHT – alle Saiten klingen leer.': 'Deliberate mistake: hold C, but the ring finger does NOT press – all strings ring open.',
   'Absichtlich falsch: Ringfinger im 2. statt im 3. Bund der A-Saite.': 'Deliberate mistake: ring finger on the 2nd instead of the 3rd fret of the A string.',
@@ -211,7 +206,6 @@ export const EN: Record<string, string> = {
   'Töne:': 'Notes:',
   'Heißt auch:': 'Also called:',
   '{chord} in der Akkord-Liste': '{chord} in the chord list',
-  'Bünde G-C-E-A: {frets}': 'Frets G-C-E-A: {frets}',
   'unbekannter Akkord': 'unknown chord',
   'Einzelner Ton': 'Single note',
   'Diesen Ton findest du hier:': 'You can find this note here:',
@@ -226,8 +220,6 @@ export const EN: Record<string, string> = {
   'Zuhören': 'Listen',
   'Spiel irgendeinen Akkord oder einen einzelnen Ton. Ich zeige dir, welche Saiten du gegriffen hast und wie der Akkord heißt.':
     'Play any chord or a single note. I’ll show you which strings you’re holding and what the chord is called.',
-  'Tipp: Schlag die Saiten kräftig an und halte die Ukulele ruhig. Der Detektiv kennt Dur, Moll, Sept-, Major-Sept-, Sext-, sus-, verminderte und übermäßige Akkorde in den ersten fünf Bünden.':
-    'Tip: strum firmly and hold the ukulele still. The detective knows major, minor, seventh, major seventh, sixth, sus, diminished and augmented chords in the first five frets.',
   'Manche Griffe klingen gleich (z. B. Am7 und C6) – dann stehen beide Namen da.': 'Some shapes sound the same (e.g. Am7 and C6) – then both names are shown.',
   // src/views/game.ts
   '{a} und {b}': '{a} and {b}',
@@ -250,7 +242,6 @@ export const EN: Record<string, string> = {
   'Üben, mitspielen, Spaß haben': 'Practise, play along, have fun',
   'Meine Sterne: {n}': 'My stars: {n}',
   'Hallo!': 'Hello!',
-  'Zuerst stimmen wir deine Ukulele – dann klingt alles viel schöner.': 'First let’s tune your ukulele – then everything sounds much nicer.',
   'Zum Stimmgerät': 'To the tuner',
   'Bereiche': 'Sections',
   'Weiterspielen': 'Keep playing',
@@ -355,16 +346,12 @@ export const EN: Record<string, string> = {
   'falsch': 'mistake',
   'Geräusch': 'Noise',
   'z. B. C': 'e.g. C',
-  'z. B. 0003 (x = gedämpft)': 'e.g. 0003 (x = muted)',
-  'Bünde G C E A': 'Frets G C E A',
   'Was ist passiert? z. B. „wurde gelobt, obwohl F gegriffen war“': 'What happened? e.g. “praised although F was held”',
   'Notiz': 'Note',
   'Alle geplanten Aufnahmen sind durch. Hier kannst du eigene hinzufügen – z. B. Fälle, in denen die App falsch gelobt hat.':
     'All planned recordings are done. You can add your own here – e.g. cases where the app praised by mistake.',
   'Eigene Aufnahme': 'Extra recording',
-  'Bitte die Bünde als vier Zeichen eingeben (G C E A), z. B. 0003 oder 2010; x für gedämpft.': 'Please enter the frets as four characters (G C E A), e.g. 0003 or 2010; x for muted.',
   'Gewollter Akkord': 'Intended chord',
-  'Wirklich gespielt (Bünde G C E A)': 'Actually played (frets G C E A)',
   'Das war richtig gegriffen': 'The chord was held correctly',
   'Beispielaufnahmen': 'Sample Recordings',
   'Für Erwachsene: je 5 Sekunden spielen, was angezeigt wird – auch absichtlich falsch.': 'For grown-ups: play what is shown for 5 seconds each – including deliberate mistakes.',
@@ -441,7 +428,6 @@ export const EN: Record<string, string> = {
   'Fr': 'Fr',
   'Sa': 'Sa',
   'Gestimmt wie ein Profi': 'Tuned like a pro',
-  'Alle vier Saiten stimmen': 'Tune all four strings',
   'Erster Akkord': 'First chord',
   'Einen Akkord mit „Prüf mich!“ schaffen': 'Pass “Check me!” with one chord',
   'Akkord-Sammler': 'Chord collector',
@@ -477,13 +463,10 @@ export const EN: Record<string, string> = {
   '{s}-Saite anhören': 'Hear the {s} string',
   '{s}-Saite: genau richtig!': '{s} string: spot on!',
   '{s}-Saite gestimmt': '{s} string tuned',
-  'Alle vier Saiten gestimmt – los geht’s!': 'All four strings tuned – let’s go!',
   '{s}-Saite ist zu tief – Wirbel etwas fester drehen.': 'The {s} string is too low – tighten the peg a little.',
   '{s}-Saite ist zu hoch – Wirbel etwas lockern.': 'The {s} string is too high – loosen the peg a little.',
-  'Das klingt weit weg von G, C, E oder A – zupf eine einzelne Saite.': 'That sounds far from G, C, E or A – pick a single string.',
   'Ohne Mikrofon: Tippe auf eine Saite unten, hör genau hin und dreh, bis deine Saite gleich klingt.': 'Without a microphone: tap a string below, listen closely and turn the peg until your string sounds the same.',
   'Zupf eine Saite …': 'Pick a string …',
-  'Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: G – C – E – A.': 'Tap a string to hear its note. From top to bottom: G – C – E – A.',
   // src/site/pages.ts
   "Rhythmus üben": "Practise rhythm",
   "Akkord-Spiel starten": "Start the chord game",
@@ -584,4 +567,86 @@ export const EN: Record<string, string> = {
   "Kostenlos, ohne Werbung, ohne Konto – Open Source.": "Free, no ads, no account – open source.",
   "Tipps & Wissen": "Tips & know-how",
   "Stimmen, Akkorde, Üben – kurz erklärt": "Tuning, chords, practice – explained simply",
+  // src/music/instruments/*.ts
+  'Ukulele': 'Ukulele',
+  'Ukulele-Club': 'Ukulele-Club',
+  'die Ukulele': 'the ukulele',
+  'deine Ukulele': 'your ukulele',
+  'der Ukulele': 'the ukulele',
+  'Gitarre': 'Guitar',
+  'Gitarren-Club': 'Guitar-Club',
+  'die Gitarre': 'the guitar',
+  'deine Gitarre': 'your guitar',
+  'der Gitarre': 'the guitar',
+  'Heute spiel ich Gitarre,': 'Today I play guitar,',
+  'Banjo': 'Banjo',
+  'Banjo-Club': 'Banjo-Club',
+  'das Banjo': 'the banjo',
+  'dein Banjo': 'your banjo',
+  'des Banjos': 'the banjo',
+  'Heute spiel ich Banjo,': 'Today I play banjo,',
+  'kurz': 'short',
+  'tief': 'low',
+  'hoch': 'high',
+  'E-Dur': 'E major',
+  'e-Moll-Sieben': 'E minor seven',
+  'a-Moll-Sieben': 'A minor seven',
+  'F-Major-Sieben': 'F major seven',
+  'h-Moll (international Bm)': 'B minor',
+  'fis-Moll (international F#m)': 'F sharp minor',
+  '★ In E liegen die Grundtöne E und A auf leeren Saiten – am bequemsten. Andere Tonarten passen zu Liedern oder Mitspielern.':
+    '★ In E the root notes E and A are on open strings – the easiest. Other keys fit songs or friends you play with.',
+  'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In E liegt es ganz bequem auf den beiden tiefsten Saiten.':
+    'Root, third, fifth, sixth – the classic boogie riff. In E it sits comfortably on the two lowest strings.',
+  '★ In G liegen die Grundtöne G und D auf leeren Saiten – am bequemsten. Andere Tonarten passen zu Liedern oder Mitspielern.':
+    '★ In G the root notes G and D are on open strings – the easiest. Other keys fit songs or friends you play with.',
+  'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In G sind G, B und D leere Saiten!':
+    'Root, third, fifth, sixth – the classic boogie riff. In G, the notes G, B and D are open strings!',
+  'Der Daumen zupft die G-Saite und die kurze g-Saite, der Zeigefinger die B-Saite, der Mittelfinger die hohe D-Saite. Die Buchstaben zeigen, welcher Finger dran ist.':
+    'Your thumb picks the G string and the short g string, your index finger the B string, your middle finger the high D string. The letters show whose turn it is.',
+  // src/i18n.ts
+  'vier': 'four',
+  'fünf': 'five',
+  'sechs': 'six',
+  // src/music/chords.ts, src/music/diagnose.ts
+  'nicht anschlagen: {strings}': 'don’t strum: {strings}',
+  '{s}-Saite (ganz oben)': '{s} string (at the top)',
+  '{s}-Saite (ganz unten)': '{s} string (at the bottom)',
+  // src/music/recording-plan.ts
+  'Die Saiten einzeln zupfen, von oben (G) nach unten (A), danach einmal alle zusammen.': 'Pick the strings one by one, from the top (G) to the bottom (A), then all together once.',
+  'Die Saiten einzeln zupfen, von oben ({first}) nach unten ({last}), danach einmal alle zusammen.':
+    'Pick the strings one by one, from the top ({first}) to the bottom ({last}), then all together once.',
+  'Absichtlich falsch: {chord} greifen, aber der Finger auf der {s}-Saite drückt NICHT – sie klingt leer.':
+    'Deliberate mistake: hold {chord}, but the finger on the {s} string does NOT press – it rings open.',
+  'Absichtlich falsch: {chord} greifen, aber den Finger auf der {s}-Saite einen Bund zu tief setzen ({fret} statt {right}).':
+    'Deliberate mistake: hold {chord}, but put the finger on the {s} string one fret too low ({fret} instead of {right}).',
+  'Absichtlich falsch: {chord} greifen, aber ein Finger berührt die {s}-Saite, sodass sie gedämpft klingt.':
+    'Deliberate mistake: hold {chord}, but let a finger touch the {s} string so it sounds muffled.',
+  'Mit den Fingern auf den Korpus {of} klopfen.': 'Tap on the body of {of} with your fingers.',
+  'Nur die {s}-Saite (oben) leer zupfen, mehrmals.': 'Pick only the open {s} string (top), several times.',
+  // src/views/*.ts
+  '{s}-Saite ({hint})': '{s} string ({hint})',
+  'Bünde {strings}: {frets}': 'Frets {strings}: {frets}',
+  'Tipp: Schlag die Saiten kräftig an und halte {obj} ruhig. Der Detektiv kennt Dur, Moll, Sept-, Major-Sept-, Sext-, sus-, verminderte und übermäßige Akkorde in den ersten fünf Bünden.':
+    'Tip: strum firmly and hold {obj} still. The detective knows major, minor, seventh, major seventh, sixth, sus, diminished and augmented chords in the first five frets.',
+  'Zuerst stimmen wir {yours} – dann klingt alles viel schöner.':
+    'First let’s tune {yours} – then everything sounds much nicer.',
+  'Kapo {n}, greif wie {key}': 'Capo {n}, play {key} shapes',
+  'Mit dem Kapodaster im {fret} Bund klingen die leichten {key}-Griffe in {sound}.':
+    'With a capo on the {fret} fret, the easy {key} shapes sound in {sound}.',
+  'z. B. {frets} (x = gedämpft)': 'e.g. {frets} (x = muted)',
+  'Bünde {strings}': 'Frets {strings}',
+  'Bitte die Bünde als {n} Zeichen eingeben ({strings}), z. B. {frets}; x für gedämpft.':
+    'Please enter the frets as {n} characters ({strings}), e.g. {frets}; x for muted.',
+  'Wirklich gespielt (Bünde {strings})': 'Actually played (frets {strings})',
+  'Daumen': 'thumb',
+  'Banjo-Roll: Daumen – Zeige – Mittel': 'Banjo roll: thumb – index – middle',
+  'Daumen, Zeige, Mittel, Daumen, Zeige, Mittel, Daumen, Mittel – gleichmäßig wie ein Uhrwerk':
+    'thumb, index, middle, thumb, index, middle, thumb, middle – steady like clockwork',
+  'Alle {n} Saiten stimmen': 'Tune all {n} strings',
+  'Alle {n} Saiten gestimmt – los geht’s!': 'All {n} strings tuned – let’s go!',
+  'Das klingt weit weg von {notes} – zupf eine einzelne Saite.': 'That sounds far from {notes} – pick a single string.',
+  '{a} oder {b}': '{a} or {b}',
+  'Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: {strings}.':
+    'Tap a string to hear its note. From top to bottom: {strings}.',
 };

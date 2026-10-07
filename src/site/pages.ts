@@ -13,6 +13,7 @@ import type { Song } from '../music/song.ts';
 import { ROOTS, chord } from '../music/chords.ts';
 import { ARTICLES } from '../content/wissen.ts';
 import { LEGAL } from './legal-data.ts';
+import { setInstrument } from '../music/instrument.ts';
 import type { Article, Block, L10n } from '../content/types.ts';
 import { h } from '../ui/dom.ts';
 import { icon, soundHole } from '../ui/icons.ts';
@@ -599,7 +600,7 @@ function env(): BuildEnv {
 }
 
 function footer(siteDef: SiteDef, l: Lang, alternates: Partial<Record<Lang, string>>): Node {
-  const others = SITES.filter((s) => s.instrument && s.id !== siteDef.id && env().sites.indexOf(s.id) >= 0);
+  const others = siteDef.id === 'start' ? [] : SITES.filter((s) => s.instrument && s.id !== siteDef.id && env().sites.indexOf(s.id) >= 0);
   const links: [string, string][] =
     siteDef.id === 'start'
       ? []
@@ -709,6 +710,8 @@ export function renderSite(siteId: SiteId, buildEnv: BuildEnv): Page[] {
   currentEnv = buildEnv;
   const siteDef = SITES.filter((s) => s.id === siteId)[0];
   currentBase = pathname(buildEnv.url(siteId));
+  // Griffe, Saiten und Texte des Instruments der Seite (die Startseite zeigt keine Griffe)
+  setInstrument(siteDef.instrument || 'ukulele');
   const pages: Page[] = [];
   for (const x of LANGS) {
     setLang(x.id);

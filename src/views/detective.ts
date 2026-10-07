@@ -3,17 +3,24 @@ import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
 import { openMic } from '../audio/mic.ts';
-import { dbToLinear, findPeaks, holdSpectrum } from '../audio/chord-detect.ts';
+import { dbToLinear, holdSpectrum, instrumentPeaks } from '../audio/chord-detect.ts';
 import { identifyFingering, libraryName, nameChord, noteLabel, positions, singleNote, PREFER } from '../music/identify.ts';
 import { NOTE_NAMES, STRINGS, pitchClass } from '../music/notes.ts';
 import type { Chord } from '../music/chords.ts';
 import { load } from '../store.ts';
+import { instrument } from '../music/instrument.ts';
 import { lang, noteText, ordinal, t } from '../i18n.ts';
 import { link } from '../site/nav.ts';
 
 /** Im Französischen ohne Oktavzahl: dort zählt man die Oktaven anders (C4 = Do3). */
 function noteShown(midi: number): string {
   return lang() === 'fr' ? noteText(NOTE_NAMES[pitchClass(midi)]) : noteLabel(midi);
+}
+
+/** „E-Saite“; doppelte Namen (Banjo: zwei D-Saiten) mit Zusatz „D-Saite (tief)“. */
+function stringText(i: number): string {
+  const st = STRINGS[i];
+  return st.hint ? t('{s}-Saite ({hint})', { s: st.name, hint: t(st.hint) }) : t('{s}-Saite', { s: st.name });
 }
 
 /** Akkord-Detektiv: irgendetwas spielen – die App zeigt Griff, Namen, Art und Töne. */
@@ -35,7 +42,7 @@ export const detective: View = (root) => {
     const names = nameChord(pcs);
     const lib = libraryName(frets);
     const main = lib ? names.find((n) => n.name === lib) || names[0] : names[0];
-    const ch = { name: main ? main.name : '?', frets, fingers: [0, 0, 0, 0], say: '', level: 0 } as unknown as Chord;
+    const ch: Chord = { name: main ? main.name : '?', frets, fingers: frets.map(() => 0), say: '', level: 0 };
     const tones = Array.from(new Set(pcs));
     const rootPc = main ? (NOTE_NAMES as readonly string[]).indexOf(main.root) : tones[0];
     const ordered = tones.slice().sort((a, b) => ((a - rootPc + 12) % 12) - ((b - rootPc + 12) % 12));
@@ -58,7 +65,7 @@ export const detective: View = (root) => {
           ),
           names.length > 1 ? h('p', { class: 'det-alt' }, t('Heißt auch:'), ' ', names.slice(1, 4).map((n) => n.name).join(', ')) : null,
           lib ? h('a', { class: 'btn btn-chip', href: link(`akkord/${encodeURIComponent(lib)}`) }, t('{chord} in der Akkord-Liste', { chord: lib })) : null,
-          h('p', { class: 'small' }, t('Bünde G-C-E-A: {frets}', { frets: frets.map((f) => (f < 0 ? 'x' : f)).join(' ') })),
+          h('p', { class: 'small' }, t('Bünde {strings}: {frets}', { strings: STRINGS.map((x) => x.name).join('-'), frets: frets.map((f) => (f < 0 ? 'x' : f)).join(' ') })),
         ),
         h('div', { class: 'diagram-big' }, chordDiagram(ch, { lefty })),
       ),
@@ -78,7 +85,7 @@ export const detective: View = (root) => {
         h(
           'ul',
           { class: 'det-positions' },
-          ...positions(midi).map((p) => h('li', null, h('b', null, t('{s}-Saite', { s: STRINGS[p.string].name })), ' ', p.fret === 0 ? t('leer') : t('im {fret} Bund', { fret: ordinal(p.fret) }))),
+          ...positions(midi).map((p) => h('li', null, h('b', null, stringText(p.string)), ' ', p.fret === 0 ? t('leer') : t('im {fret} Bund', { fret: ordinal(p.fret) }))),
         ),
       ),
     );
@@ -113,7 +120,7 @@ export const detective: View = (root) => {
         let view: () => void = () => undefined;
         if (rms >= 0.006) {
           quietSince = 0;
-          const peaks = findPeaks(held, binHz);
+          const peaks = instrumentPeaks(held, binHz);
           const note = singleNote(peaks);
           if (note !== null) {
             key = `n${note}`;
@@ -151,7 +158,7 @@ export const detective: View = (root) => {
     h(
       'p',
       { class: 'card small' },
-      t('Tipp: Schlag die Saiten kräftig an und halte die Ukulele ruhig. Der Detektiv kennt Dur, Moll, Sept-, Major-Sept-, Sext-, sus-, verminderte und übermäßige Akkorde in den ersten fünf Bünden.'),
+      t('Tipp: Schlag die Saiten kräftig an und halte {obj} ruhig. Der Detektiv kennt Dur, Moll, Sept-, Major-Sept-, Sext-, sus-, verminderte und übermäßige Akkorde in den ersten fünf Bünden.', { obj: t(instrument().obj) }),
       ' ',
       t('Manche Griffe klingen gleich (z. B. Am7 und C6) – dann stehen beide Namen da.'),
     ),

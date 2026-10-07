@@ -1,12 +1,15 @@
 // Bildschirmfotos aller Ansichten in typischen Geräteformaten (Sichtprüfung des Designs).
-// node tools/shots.mjs <ordner> [de|en|fr] – die Sprache kommt über die Browser-Sprache (Standard: de).
+// node tools/shots.mjs <ordner> [de|en|fr] [ukulele|gitarre|banjo] – die Sprache kommt über die Browser-Sprache
+// (Standard: de), das Instrument über ?instrument=… (Standard: Ukulele).
 import { chromium, webkit } from '@playwright/test';
 
-const base = process.env.BASE || `http://localhost:4173/${process.env.SITE || 'ukulele'}/`;
+const base = process.env.BASE || `http://localhost:4173/${process.argv[4] || process.env.SITE || 'ukulele'}/`;
 const out = process.argv[2] || 'shots';
 const lang = process.argv[3] || 'de';
 const prefix = lang === 'de' ? '' : `${lang}/`;
 const locale = { de: 'de-DE', en: 'en-US', fr: 'fr-FR' }[lang] || lang;
+const instrument = process.argv[4] || '';
+const shotPrefix = instrument ? `${lang}-${instrument}` : lang;
 const views = ['', 'lieder', 'lied/alle-voegel', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied', 'eigenes-lied/mein-sonnenlied', 'lied/mein-sonnenlied', 'lied-teilen/mein-sonnenlied', '/wissen/', '/wissen/ukulele-stimmen/', '/impressum/', '/akkorde/f-sharp-m/'];
 const devices = [
   { name: 'ipad', width: 1024, height: 768, engine: webkit },
@@ -28,8 +31,9 @@ for (const d of devices) {
   for (const v of views) {
     // frühere Hash-Adressen leiten auf die echten Seiten der Sprache weiter
     await page.goto(v.indexOf('/') === 0 ? `${base}${prefix}${v.slice(1)}` : `${base}${prefix}#/${v}`);
-    await page.waitForTimeout(250);
-    await page.screenshot({ path: `${out}/${lang}-${d.name}-${v.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home'}.png` });
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: `${out}/${shotPrefix}-${d.name}-${v.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home'}.png` });
   }
   await browser.close();
 }

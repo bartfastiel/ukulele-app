@@ -1,5 +1,6 @@
-import { CHORDS, chordMidis, type Chord } from '../music/chords.ts';
-import { STRINGS, midiToFreq } from '../music/notes.ts';
+import { CHORDS, type Chord } from '../music/chords.ts';
+import { STRINGS, midiToFreq, stringMidi } from '../music/notes.ts';
+import { instrument } from '../music/instrument.ts';
 
 /**
  * Akkorderkennung aus einem Betragsspektrum (linear, z. B. aus AnalyserNode.getFloatFrequencyData umgerechnet).
@@ -20,6 +21,12 @@ export const TUNING = {
   hold: 0.75,
 };
 
+/** Schwellen für das aktuelle Instrument: TUNING, ggf. mit eigenen Werten (Gitarre, Banjo). */
+export function tuning(): typeof TUNING {
+  const own = instrument().detect.tuning;
+  return own ? { ...TUNING, ...own } : TUNING;
+}
+
 /**
  * Spitzenhalter über die letzten Messungen: Ein Fremdton vom Anschlag (z. B. die leere G-Saite, weil der Finger
  * nicht drückt) verklingt oft schneller als der Rest und darf sich nicht im Ausklang verstecken.
@@ -32,6 +39,12 @@ export function holdSpectrum(held: Float32Array, current: Float32Array, keep = T
 export interface Peak {
   freq: number;
   mag: number;
+}
+
+/** Spektralspitzen im Fenster des aktuellen Instruments (Ukulele 240–1100 Hz, Gitarre ab 75 Hz). */
+export function instrumentPeaks(spec: Float32Array, binHz: number): Peak[] {
+  const d = instrument().detect;
+  return findPeaks(spec, binHz, d.minHz, d.maxHz);
 }
 
 export function findPeaks(spec: Float32Array, binHz: number, minHz = 240, maxHz = 1100): Peak[] {
@@ -63,7 +76,7 @@ function near(freq: number, target: number, centsTol: number): boolean {
 export interface ChordScore {
   chord: string;
   score: number;
-  /** Anteil 0..1 je Saite G, C, E, A: wie deutlich der erwartete Ton zu hören ist. */
+  /** Anteil 0..1 je Saite (Ukulele G, C, E, A): wie deutlich der erwartete Ton zu hören ist; nicht angeschlagene Saiten 1. */
   strings: number[];
   /** Anteil der Spitzen (nach Betrag), die der Griff erklärt. */
   explained: number;
@@ -76,24 +89,31 @@ export interface ChordScore {
 }
 
 export function scoreChord(peaks: Peak[], ch: Chord): ChordScore {
-  const midis = chordMidis(ch);
+  const d = instrument().detect;
+  const ks: number[] = [];
+  for (let k = 1; k <= d.harmonics; k++) ks.push(k);
+  const midiOf = ch.frets.map((f, i) => (f >= 0 ? stringMidi(i, f) : -1));
+  const midis = midiOf.filter((m) => m >= 0);
   const freqs = midis.map(midiToFreq);
   const maxMag = peaks.reduce((m, p) => Math.max(m, p.mag), 0) || 1;
   // Nur der Grundton zählt als „Saite klingt“: Die Oktave darf nicht mitzählen, sonst gilt z. B. das B4 von Cmaj7
   // als vorhanden, weil der dritte Oberton der E-Saite (989 Hz) zufällig auf seiner Oktave liegt.
-  const strings = freqs.map((f) => {
+  const strings = midiOf.map((m) => {
+    if (m < 0) return 1;
+    const f = midiToFreq(m);
     let best = 0;
-    for (const p of peaks) if (near(p.freq, f, 40)) best = Math.max(best, p.mag);
+    for (const p of peaks) if (near(p.freq, f, d.presenceCents)) best = Math.max(best, p.mag);
     return Math.min(1, best / maxMag / 0.25);
   });
   let total = 0;
   let explainedE = 0;
   let foreign = 0;
-  // Nur Grundtöne der ersten Lage (261–523 Hz) und ihre ersten Obertöne liegen im Fenster; linear gewichtet, damit
-  // ein einzelner fremder Ton (z. B. leere A-Saite statt C) nicht in den starken Obertönen untergeht.
+  // Ukulele: nur Grundtöne der ersten Lage (261–523 Hz) und ihre ersten Obertöne liegen im Fenster; linear gewichtet,
+  // damit ein einzelner fremder Ton (z. B. leere A-Saite statt C) nicht in den starken Obertönen untergeht. Tiefe
+  // Gitarrensaiten bringen viele Obertöne ins Fenster – sie gelten bis zum `harmonics`-ten als erklärt.
   for (const p of peaks) {
     total += p.mag;
-    if (freqs.some((f) => [1, 2, 3].some((k) => near(p.freq, k * f, 35)))) explainedE += p.mag;
+    if (freqs.some((f) => ks.some((k) => near(p.freq, k * f, 35)))) explainedE += p.mag;
     else foreign = Math.max(foreign, p.mag / maxMag);
   }
   const explained = total > 0 ? explainedE / total : 0;
@@ -101,13 +121,15 @@ export function scoreChord(peaks: Peak[], ch: Chord): ChordScore {
   ch.frets.forEach((f, i) => {
     if (f <= 0) return;
     const open = midiToFreq(STRINGS[i].midi);
-    if (freqs.some((g) => [1, 2, 3].some((k) => near(open, k * g, 35)))) return;
+    if (freqs.some((g) => ks.some((k) => near(open, k * g, 35)))) return;
     for (const p of peaks) if (near(p.freq, open, 40)) openString = Math.max(openString, p.mag / maxMag);
   });
   // Gleiche Töne auf zwei Saiten zählen einmal, sonst wären Griffe mit Doppeltönen im Vorteil.
   const unique = new Map<number, number>();
-  midis.forEach((m, i) => unique.set(m, Math.max(unique.get(m) ?? 0, strings[i])));
-  const vals = [...unique.values()];
+  midiOf.forEach((m, i) => {
+    if (m >= 0) unique.set(m, Math.max(unique.get(m) ?? 0, strings[i]));
+  });
+  const vals = Array.from(unique.values());
   const presence = vals.reduce((s, v) => s + v, 0) / vals.length;
   const minPresence = Math.min(...vals);
   // Ein fremder Ton kostet Punkte: Sonst gewinnt bei G7 (0212) der Griff G (0232), dessen Töne alle mitklingen.
@@ -121,7 +143,7 @@ export interface ChordVerdict {
   /** Wahrscheinlichster Akkord aus der Bibliothek. */
   best: string;
   expected: ChordScore;
-  /** Index der Saite (0 = G … 3 = A), die beim erwarteten Akkord fehlt, sonst -1. */
+  /** Index der Saite (Ukulele 0 = G … 3 = A), die beim erwarteten Akkord fehlt, sonst -1. */
   weakString: number;
   /** 'open': gegriffene Saite klingt leer (Finger drückt nicht); 'muted': Saite klingt kaum (gedämpft). */
   weakKind: 'open' | 'muted' | '';
@@ -134,12 +156,13 @@ export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] 
   if (!exp) throw new Error(`Akkord ${expected} fehlt in den Kandidaten`);
   const best = scores[0];
   const runnerUp = scores.find((x) => x.chord !== expected)!;
+  const tun = tuning();
   // Streng: jeder Ton des Griffs klingt, kein deutlicher fremder Ton, und der Griff liegt klar vor jedem anderen.
   const ok =
-    exp.score >= TUNING.minScore &&
-    exp.minPresence >= TUNING.minPresence &&
-    exp.foreign < TUNING.maxForeign &&
-    exp.openString < TUNING.maxOpenString &&
+    exp.score >= tun.minScore &&
+    exp.minPresence >= tun.minPresence &&
+    exp.foreign < tun.maxForeign &&
+    exp.openString < tun.maxOpenString &&
     exp.score > runnerUp.score;
   let weakString = -1;
   let weakKind: ChordVerdict['weakKind'] = '';
@@ -149,8 +172,8 @@ export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] 
     const ch = candidates.find((c) => c.name === expected)!;
     let bestVariant = exp.score;
     ch.frets.forEach((f, i) => {
-      if (f === 0) return;
-      const frets = ch.frets.slice() as Chord['frets'];
+      if (f <= 0) return;
+      const frets = ch.frets.slice();
       frets[i] = 0;
       const v = scoreChord(peaks, { ...ch, frets });
       if (v.score > bestVariant + 0.05) {
@@ -162,7 +185,7 @@ export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] 
     if (weakString < 0 && exp.explained > 0.5) {
       let min = 0.25;
       exp.strings.forEach((v, i) => {
-        if (v < min) {
+        if (ch.frets[i] >= 0 && v < min) {
           min = v;
           weakString = i;
           weakKind = 'muted';

@@ -2,6 +2,7 @@ import { h, clear } from '../ui/dom.ts';
 import { icon, soundHole } from '../ui/icons.ts';
 import { load, totalStars } from '../store.ts';
 import { t } from '../i18n.ts';
+import { instrument } from '../music/instrument.ts';
 import { langSwitch } from '../ui/lang-switch.ts';
 import { findSong } from '../music/library.ts';
 import type { View } from '../ui/screen.ts';
@@ -29,7 +30,7 @@ export const home: View = (root) => {
         'header',
         { class: 'home-head' },
         soundHole(),
-        h('div', { class: 'brand' }, h('h1', null, 'Ukulele-Club'), h('p', null, t('Üben, mitspielen, Spaß haben'))),
+        h('div', { class: 'brand' }, h('h1', null, t(instrument().club)), h('p', null, t('Üben, mitspielen, Spaß haben'))),
         h(
           'a',
           { class: 'btn star-badge', href: link('sterne'), 'aria-label': t('Meine Sterne: {n}', { n: totalStars() }) },
@@ -42,7 +43,7 @@ export const home: View = (root) => {
             'a',
             { class: 'card hint', href: link('stimmen') },
             h('strong', null, t('Hallo!'), ' '),
-            t('Zuerst stimmen wir deine Ukulele – dann klingt alles viel schöner.'),
+            t('Zuerst stimmen wir {yours} – dann klingt alles viel schöner.', { yours: t(instrument().yours) }),
             ' ',
             h('span', { class: 'hint-go' }, t('Zum Stimmgerät'), ' ›'),
           )

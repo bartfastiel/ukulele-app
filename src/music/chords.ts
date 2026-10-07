@@ -1,55 +1,27 @@
-import { STRINGS, pitchClass } from './notes.ts';
+import { STRINGS, pitchClass, playableFret, stringMidi } from './notes.ts';
+import { instrument, onInstrumentChange } from './instrument.ts';
+import { findBarre, type Chord } from './grip.ts';
 import { ordinal, t, tk } from '../i18n.ts';
 
-export interface Chord {
-  name: string;
-  /** Bund je Saite G, C, E, A; 0 = leer. */
-  frets: [number, number, number, number];
-  /** Finger je Saite (1 Zeige-, 2 Mittel-, 3 Ring-, 4 kleiner Finger), 0 = keiner. */
-  fingers: [number, number, number, number];
-  /** Kindgerechte Aussprache/Beschreibung. */
-  say: string;
-  level: number;
-}
+export type { Chord };
 
-const c = (name: string, frets: string, fingers: string, say: string, level: number): Chord => ({
-  name,
-  frets: frets.split('').map(Number) as Chord['frets'],
-  fingers: fingers.split('').map(Number) as Chord['fingers'],
-  say,
-  level,
+/** Griff-Bibliothek des aktuellen Instruments. */
+export let CHORDS: Chord[] = instrument().chords;
+
+let byName = new Map(CHORDS.map((ch) => [ch.name, ch]));
+
+onInstrumentChange(() => {
+  CHORDS = instrument().chords;
+  byName = new Map(CHORDS.map((ch) => [ch.name, ch]));
 });
-
-export const CHORDS: Chord[] = [
-  c('C', '0003', '0003', tk('C-Dur'), 1),
-  c('Am', '2000', '2000', tk('a-Moll'), 1),
-  c('C7', '0001', '0001', tk('C-Sieben'), 1),
-  c('A7', '0100', '0100', tk('A-Sieben'), 1),
-  c('Am7', '0000', '0000', tk('a-Moll-Sieben (alle Saiten leer)'), 1),
-  c('F', '2010', '2010', tk('F-Dur'), 2),
-  c('G7', '0212', '0213', tk('G-Sieben'), 2),
-  c('Cmaj7', '0002', '0002', tk('C-Major-Sieben'), 2),
-  c('G', '0232', '0132', tk('G-Dur'), 3),
-  c('Dm', '2210', '2310', tk('d-Moll'), 3),
-  c('A', '2100', '2100', tk('A-Dur'), 3),
-  c('Em', '0432', '0321', tk('e-Moll'), 3),
-  c('D7', '2223', '1112', tk('D-Sieben'), 3),
-  c('Gm', '0231', '0231', tk('g-Moll'), 3),
-  c('D', '2220', '1230', tk('D-Dur'), 4),
-  c('E7', '1202', '1203', tk('E-Sieben'), 4),
-  c('B7', '2322', '1211', tk('H-Sieben (international B7)'), 4),
-  c('Bb', '3211', '3211', tk('B-Dur (international Bb)'), 4),
-];
-
-const BY_NAME = new Map(CHORDS.map((ch) => [ch.name, ch]));
 
 /** Akkord nach Namen – aus der Bibliothek oder, für jede Tonart beim Transponieren, aus Tabelle bzw. Grifffinder. */
 export function chord(name: string): Chord {
-  const ch = BY_NAME.get(name);
+  const ch = byName.get(name);
   if (ch) return ch;
   const made = makeChord(name);
   if (!made) throw new Error(`Unbekannter Akkord: ${name}`);
-  BY_NAME.set(name, made);
+  byName.set(name, made);
   return made;
 }
 
@@ -76,13 +48,6 @@ export const QUALITY_INTERVALS: Record<string, number[]> = {
   aug: [0, 4, 8],
 };
 
-/** Übliche Ukulele-Griffe (G C E A) für Dur, Moll und Sept in allen zwölf Tonarten. */
-const SHAPES: Record<string, string[]> = {
-  '': ['0003', '1114', '2220', '0331', '4442', '2010', '3121', '0232', '5343', '2100', '3211', '4322'],
-  m: ['0333', '1104', '2210', '3321', '0432', '1013', '2120', '0231', '4342', '2000', '3111', '4222'],
-  '7': ['0001', '1112', '2223', '3334', '1202', '2310', '3424', '0212', '1323', '0100', '1211', '2322'],
-};
-
 export function parseChordName(name: string): { root: number; quality: string } | null {
   const m = /^([A-G])(#|b)?(.*)$/.exec(name);
   if (!m) return null;
@@ -92,75 +57,152 @@ export function parseChordName(name: string): { root: number; quality: string } 
   return { root, quality: m[3] };
 }
 
-/** Finger nach Bund verteilen; liegen drei oder mehr Saiten im tiefsten Bund, greift der Zeigefinger quer (Barré). */
-function assignFingers(frets: number[]): Chord['fingers'] {
-  const fingers = [0, 0, 0, 0];
+interface Fingering {
+  fingers: number[];
+  barre: boolean;
+}
+
+/**
+ * Finger nach Bund verteilen; liegen drei oder mehr Saiten im tiefsten Bund (ohne leere Saite dazwischen) oder
+ * braucht der Griff sonst mehr als vier Finger, greift der Zeigefinger quer (Barré). null = nicht greifbar.
+ */
+function assignFingers(frets: number[]): Fingering | null {
+  const fingers = frets.map(() => 0);
   const pressed = frets.map((f, i) => ({ f, i })).filter((x) => x.f > 0);
-  if (!pressed.length) return fingers as Chord['fingers'];
+  if (!pressed.length) return { fingers, barre: false };
   const min = Math.min(...pressed.map((x) => x.f));
   const atMin = pressed.filter((x) => x.f === min);
+  const first = atMin[0].i;
+  const last = atMin[atMin.length - 1].i;
+  let canBarre = atMin.length >= 2;
+  for (let i = first; i <= last; i++) if (frets[i] === 0) canBarre = false;
+  const barre = canBarre && (atMin.length >= 3 || pressed.length > 4);
   let next = 1;
-  if (atMin.length >= 3) {
+  if (barre) {
     atMin.forEach((x) => (fingers[x.i] = 1));
     next = 2;
   }
-  pressed
-    .filter((x) => !(atMin.length >= 3 && x.f === min))
-    .sort((a, b) => a.f - b.f || a.i - b.i)
-    .forEach((x) => (fingers[x.i] = Math.min(4, next++)));
-  return fingers as Chord['fingers'];
+  const rest = pressed.filter((x) => !(barre && x.f === min)).sort((a, b) => a.f - b.f || a.i - b.i);
+  if (next + rest.length - 1 > 4 && frets.length > 4) return null;
+  rest.forEach((x) => (fingers[x.i] = Math.min(4, next++)));
+  return { fingers, barre };
 }
 
-/** Griff suchen: alle Akkordtöne (bei Vierklängen darf die Quinte fehlen), möglichst wenige Finger, kleine Spanne. */
+/**
+ * Griff suchen: nur Akkordtöne, alle nötigen dabei (bei Vierklängen darf die Quinte fehlen), möglichst wenige Finger,
+ * kleine Spanne, tiefe Bünde. Weglassen darf man nur Bass-Saiten (Gitarre) bzw. die kurze Banjo-Saite.
+ */
 function findShape(root: number, intervals: number[]): number[] | null {
+  const inst = instrument();
+  const set = inst.finder;
+  const n = STRINGS.length;
   const pcs = intervals.map((i) => (root + i) % 12);
   const required = intervals.length === 4 ? pcs.filter((_, k) => intervals[k] !== 7) : pcs;
+  const options: number[][] = STRINGS.map((s, i) => {
+    const out: number[] = [];
+    if (s.start) {
+      // die kurze Banjo-Saite klingt leer mit, wenn ihr Ton passt – sonst bleibt sie still
+      out.push(pcs.indexOf(pitchClass(s.midi)) >= 0 ? 0 : -1);
+      return out;
+    }
+    if (i < set.mutable) out.push(-1);
+    for (let f = 0; f <= set.maxFret; f++) if (pcs.indexOf(pitchClass(stringMidi(i, f))) >= 0) out.push(f);
+    return out;
+  });
   let best: number[] | null = null;
   let bestCost = Infinity;
-  for (let a = 0; a <= 7; a++)
-    for (let b = 0; b <= 7; b++)
-      for (let c = 0; c <= 7; c++)
-        for (let d = 0; d <= 7; d++) {
-          const frets = [a, b, c, d];
-          const notes = frets.map((f, i) => (STRINGS[i].midi + f) % 12);
-          if (!notes.every((n) => pcs.indexOf(n) >= 0)) continue;
-          if (!required.every((p) => notes.indexOf(p) >= 0)) continue;
-          const pressed = frets.filter((f) => f > 0);
-          const span = pressed.length ? Math.max(...pressed) - Math.min(...pressed) : 0;
-          if (span > 3) continue;
-          const cost = pressed.length + span * 1.5 + Math.max(0, Math.max(0, ...frets) - 3) * 0.8;
-          if (cost < bestCost) {
-            bestCost = cost;
-            best = frets;
-          }
-        }
+  const frets: number[] = [];
+  const visit = (i: number) => {
+    if (i === n) {
+      const cost = shapeCost(frets, root, required);
+      if (cost < bestCost) {
+        bestCost = cost;
+        best = frets.slice();
+      }
+      return;
+    }
+    for (const f of options[i]) {
+      // weggelassen nur zusammenhängend von der Bass-Saite her
+      if (f < 0 && i > 0 && frets[i - 1] >= 0 && !STRINGS[i].start) continue;
+      frets[i] = f;
+      visit(i + 1);
+    }
+  };
+  visit(0);
   return best;
+}
+
+function shapeCost(frets: number[], root: number, required: number[]): number {
+  const set = instrument().finder;
+  const notes: number[] = [];
+  frets.forEach((f, i) => {
+    if (f >= 0) notes.push(pitchClass(stringMidi(i, f)));
+  });
+  if (notes.length < set.minSounding) return Infinity;
+  if (!required.every((p) => notes.indexOf(p) >= 0)) return Infinity;
+  const pressed = frets.filter((f) => f > 0);
+  const span = pressed.length ? Math.max(...pressed) - Math.min(...pressed) : 0;
+  if (span > 3) return Infinity;
+  let cost = pressed.length + span * 1.5 + Math.max(0, Math.max(0, ...frets) - 3) * 0.8;
+  if (frets.length > 4) {
+    const fi = assignFingers(frets);
+    if (!fi) return Infinity;
+    if (fi.barre) cost += set.barreCost;
+    cost += frets.filter((f) => f < 0).length * set.mutedCost;
+    if (notes[0] !== root) cost += set.bassRootCost;
+  }
+  return cost;
 }
 
 function makeChord(name: string): Chord | null {
   const p = parseChordName(name);
   if (!p) return null;
-  const table = SHAPES[p.quality];
-  const frets = table ? table[p.root].split('').map(Number) : findShape(p.root, QUALITY_INTERVALS[p.quality]);
+  const inst = instrument();
+  const table = inst.shapes[p.quality];
+  const entry = table ? table[p.root] : null;
+  const frets = entry ? entry.frets : findShape(p.root, QUALITY_INTERVALS[p.quality]);
   if (!frets) return null;
-  return { name, frets: frets as Chord['frets'], fingers: assignFingers(frets), say: name, level: 5 };
+  let fingers = entry && entry.fingers;
+  let barre = !!(entry && entry.barre);
+  if (!fingers) {
+    const fi = assignFingers(frets);
+    if (!fi) return null;
+    fingers = fi.fingers;
+    barre = fi.barre;
+  }
+  const ch: Chord = { name, frets, fingers, say: name, level: 5 };
+  // auf der Ukulele zeigen Griffbilder wie im Schulheft einzelne Finger, Gitarre und Banjo den Querbalken
+  if (barre && inst.id !== 'ukulele') ch.barre = findBarre(frets, fingers);
+  return ch;
 }
 
-/** Wie schwer ist ein Griff? Finger, Spanne, hohe Bünde und Barré kosten. */
+/** Wie schwer ist ein Griff? Finger, Spanne, hohe Bünde, Barré und weggelassene Saiten kosten. */
 export function chordCost(ch: Chord): number {
+  const inst = instrument();
   const pressed = ch.frets.filter((f) => f > 0);
-  if (!pressed.length) return 0;
+  const muted = ch.frets.filter((f) => f < 0).length * inst.cost.muted;
+  if (!pressed.length) return muted;
   const span = Math.max(...pressed) - Math.min(...pressed);
-  const barre = ch.fingers.filter((f) => f === 1).length >= 3 ? 1.5 : 0;
-  return pressed.length + span + Math.max(0, Math.max(...pressed) - 3) * 1.2 + barre;
+  const barre = ch.fingers.filter((f) => f === 1).length >= 3 ? inst.cost.barre : 0;
+  return pressed.length + span + Math.max(0, Math.max(...pressed) - 3) * 1.2 + barre + muted;
 }
 
+/** Klingende Töne des Griffs (ohne weggelassene Saiten), von oben nach unten. */
 export function chordMidis(ch: Chord): number[] {
-  return ch.frets.map((f, i) => STRINGS[i].midi + f);
+  const out: number[] = [];
+  ch.frets.forEach((f, i) => {
+    if (f >= 0) out.push(stringMidi(i, f));
+  });
+  return out;
 }
 
 export function chordPitchClasses(ch: Chord): Set<number> {
   return new Set(chordMidis(ch).map(pitchClass));
+}
+
+/** Liegt der Griff auf dem Instrument (Bünde, kurze Banjo-Saite nur leer)? */
+export function playableChord(ch: Chord): boolean {
+  return ch.frets.length === STRINGS.length && ch.frets.every((f, i) => f < 0 || playableFret(i, f));
 }
 
 const FINGER_NAME = ['', tk('Zeigefinger'), tk('Mittelfinger'), tk('Ringfinger'), tk('kleiner Finger')];
@@ -173,6 +215,8 @@ export function describeChord(ch: Chord): string {
         t('{finger} auf der {string}-Saite im {fret} Bund', { finger: t(FINGER_NAME[ch.fingers[i]] || tk('Finger')), string: STRINGS[i].name, fret: ordinal(f) }),
       );
   });
+  const muted = ch.frets.map((f, i) => (f < 0 ? STRINGS[i].name : '')).filter(Boolean);
+  if (muted.length) parts.push(t('nicht anschlagen: {strings}', { strings: muted.join(', ') }));
   return `${ch.name}: ${parts.length ? parts.join(', ') : t('alle Saiten leer')}`;
 }
 

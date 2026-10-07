@@ -36,6 +36,11 @@ ohne Tracking. Alles bleibt auf dem Gerät.
 
 Ohne Mikrofon funktioniert alles weiter – dann bestätigt das Kind selbst.
 
+**Instrumente:** Ukulele (G C E A, hohes G) ist der Standard. Dieselbe App kann auch **Gitarre** (E A D G B e) und
+**5-saitiges Banjo** in Open G (g D G B D, die kurze g-Saite beginnt am 5. Bund) – zum Ausprobieren mit
+`?instrument=gitarre` bzw. `?instrument=banjo` in der Adresse (vorgerenderte Seiten setzen `data-instrument` am
+`<html>`).
+
 **Sprachen:** Deutsch, English, Français – Auswahl unten auf der Startseite (und unter „Meine Sterne“), sonst nach der
 Sprache des Geräts. Liedtitel und Liedtexte bleiben in ihrer Originalsprache; Akkordnamen sind überall international
 (C, G7, Bb), ausgeschriebene Einzeltöne im Französischen Do, Ré, Mi …
@@ -88,6 +93,28 @@ nur gemeinfreie Lieder (mit Quelle in `origin`) und eigene Lieder, auch nicht al
 Hinweise von Rechteinhabern bitte als Issue: https://github.com/bartfastiel/ukulele-app/issues – betroffene Inhalte
 werden sofort entfernt. (Keine Rechtsberatung.)
 
+## Instrument-Modell
+
+`src/music/instrument.ts` beschreibt ein Instrument; die Daten stehen in `src/music/instruments/*.ts`:
+
+- **Saiten** in Spielreihenfolge (Name, MIDI-Ton, ggf. Startbund wie die kurze Banjo-Saite), Bundzahl, Perlmutt-Punkte.
+- **Griff-Bibliothek** mit Fingersatz (Ukulele 18, Gitarre 23 offene und Barré-Griffe, Banjo 16), dazu eine Tabelle
+  üblicher Griffe für alle zwölf Tonarten (Ukulele: Dur/Moll/Sept; Gitarre: E- und A-Barréform für Dur, Moll, 7, m7,
+  maj7) und ein Grifffinder für alles andere (nur Akkordtöne, Spanne ≤ 3 Bünde, höchstens vier Finger mit Barré,
+  Gitarre: nur Bass-Saiten weglassen, Grundton im Bass; Banjo: die kurze Saite klingt leer mit, wenn G zum Akkord
+  gehört, sonst bleibt sie still).
+- **Erkennung:** Frequenzfenster (Ukulele 240–1100 Hz, Gitarre ab 75 Hz, Banjo ab 130 Hz), wie viele Obertöne als
+  erklärt gelten (Ukulele 3, Gitarre 8, Banjo 5), Stimmgerät-Bereich. Die Ukulele-Werte sind unverändert.
+- **Klang:** Karplus-Strong mit Helligkeit, Ausklingen und Zupfstelle je Instrument (Gitarre tiefer und länger,
+  Banjo hell und kurz).
+- **Melodie:** Gitarre spielt und zeigt Melodien eine Oktave tiefer (erste Lage), das Banjo wählt je Lied die Oktave.
+- **Blues** (bequeme Tonart ★: Ukulele C, Gitarre E, Banjo G), **Akkord-Spiel**, **Rhythmus** (Banjo zusätzlich mit
+  Roll: Daumen – Zeige – Mittel), **Aufnahmeplan** und **Kapodaster-Hinweis** (Gitarre: „Kapo 3, greif wie A“).
+
+`STRINGS` und `CHORDS` folgen dem aktuellen Instrument (`setInstrument()`); die Unit-Tests prüfen je Instrument
+Stimmung, Tabulatur, alle Griffe aller Lieder in allen zwölf Tonarten sowie die Erkennung mit synthetischen Akkorden.
+Echte Beispielaufnahmen gibt es bisher nur von der Ukulele.
+
 ## Technik
 
 - **Vanilla TypeScript, keine Laufzeit-Abhängigkeiten.** Entwicklung braucht nur `esbuild`, `typescript` und
@@ -134,7 +161,7 @@ const LEVELS = [tk('Leicht'), tk('Mittel')]         // Tabellen nur markieren, b
 
 Neue Texte also immer mit `t()` schreiben und in `en.ts` und `fr.ts` ergänzen – `npm test` findet fehlende oder
 verwaiste Übersetzungen und abweichende Platzhalter. Französisch duzt („tu“); vor ! ? : ; setzt `t()` selbst das
-schmale geschützte Leerzeichen. Bildschirmfotos je Sprache: `node tools/shots.mjs <ordner> fr`.
+schmale geschützte Leerzeichen. Bildschirmfotos je Sprache: `node tools/shots.mjs <ordner> fr`, je Instrument: `node tools/shots.mjs <ordner> de gitarre`.
 
 ## Akkorderkennung verbessern: Beispielaufnahmen
 

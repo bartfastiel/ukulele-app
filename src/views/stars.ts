@@ -3,7 +3,8 @@ import { icon } from '../ui/icons.ts';
 import { screen, button, type View } from '../ui/screen.ts';
 import { allSongs } from '../music/library.ts';
 import { load, save, totalStars, daysThisWeek, exportCode, importCode } from '../store.ts';
-import { t, tk } from '../i18n.ts';
+import { countWord, t, tk } from '../i18n.ts';
+import { STRINGS } from '../music/notes.ts';
 import { langSwitch } from '../ui/lang-switch.ts';
 import { link } from '../site/nav.ts';
 
@@ -15,7 +16,7 @@ export const stars: View = (root) => {
   const week = daysThisWeek();
   const practiced = week.filter(Boolean).length;
   const badges = [
-    { name: t('Gestimmt wie ein Profi'), ok: p.tunedStrings >= 4, how: t('Alle vier Saiten stimmen') },
+    { name: t('Gestimmt wie ein Profi'), ok: p.tunedStrings >= STRINGS.length, how: t('Alle {n} Saiten stimmen', { n: countWord(STRINGS.length) }) },
     { name: t('Erster Akkord'), ok: p.chordsChecked.length >= 1, how: t('Einen Akkord mit „Prüf mich!“ schaffen') },
     { name: t('Akkord-Sammler'), ok: p.chordsChecked.length >= 5, how: t('5 verschiedene Akkorde schaffen') },
     { name: t('Erstes Lied'), ok: Object.keys(p.stars).length >= 1, how: t('Ein Lied bis zum Ende spielen') },

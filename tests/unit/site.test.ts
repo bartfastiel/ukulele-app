@@ -75,7 +75,9 @@ test('Lied- und Akkordseiten enthalten ihren Inhalt schon ohne Skript', () => {
   assert.ok(/class="syl-text">Ent</.test(song.html), 'Liedtext fehlt');
   const ch = rendered.ukulele.filter((p) => p.file === 'akkorde/f-sharp-m/index.html')[0];
   assert.ok(ch.html.indexOf('Fis-Moll') >= 0);
-  assert.ok(ch.html.indexOf('class="chord-svg"') >= 0);
+  assert.ok(ch.html.indexOf('class="chord-svg') >= 0);
+  const guitar = renderSite('gitarre', env).filter((p) => p.file === 'akkorde/c/index.html')[0];
+  assert.ok(guitar.html.indexOf('strings-6') >= 0, 'Gitarrenseite zeigt kein 6-saitiges Griffbild');
   const en = rendered.ukulele.filter((p) => p.file === 'en/chords/b-flat/index.html')[0];
   assert.ok(en.html.indexOf('B flat major') >= 0);
 });

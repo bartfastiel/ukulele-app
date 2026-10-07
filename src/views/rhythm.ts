@@ -1,12 +1,14 @@
 import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, keepAwake, type View } from '../ui/screen.ts';
-import { audio, click, strum } from '../audio/engine.ts';
+import { audio, click, pluckString, strum } from '../audio/engine.ts';
+import { instrument } from '../music/instrument.ts';
 import { t, tk } from '../i18n.ts';
 
 /**
  * Schlagmuster je Achtel: D = abwärts, U = aufwärts, - = Pause (Hand bewegt sich trotzdem).
  * sub = Achtel je gezähltem Schlag (2 bei x/4, 3 beim schwingenden 6/8).
+ * Zupfmuster (roll): T = Daumen, I = Zeigefinger, M = Mittelfinger; welche Saite, steht beim Instrument.
  */
 interface Pattern {
   name: string;
@@ -14,6 +16,7 @@ interface Pattern {
   steps: string;
   sub: number;
   say: string;
+  roll?: boolean;
 }
 const PATTERNS: Pattern[] = [
   { name: tk('Nur runter'), meter: '4/4', steps: 'D-D-D-D-', sub: 2, say: tk('runter, runter, runter, runter') },
@@ -32,12 +35,28 @@ const TEMPOS = [
 ];
 const MIN_BPM = 40;
 const MAX_BPM = 200;
-const CHORD_CHOICES = ['C', 'Am', 'F', 'G7'];
+/** Erster Buchstabe des Fingers in der gewählten Sprache: Daumen → D, thumb → T, pouce → P. */
+const FINGER_WORD: Record<string, string> = { T: tk('Daumen'), I: tk('Zeigefinger'), M: tk('Mittelfinger') };
 
 export const rhythm: View = (root) => {
-  let pattern = PATTERNS[0];
+  const inst = instrument();
+  const roll = inst.roll;
+  const patterns = roll
+    ? PATTERNS.concat([
+        {
+          name: tk('Banjo-Roll: Daumen – Zeige – Mittel'),
+          meter: '4/4',
+          steps: roll.fingers,
+          sub: 2,
+          say: tk('Daumen, Zeige, Mittel, Daumen, Zeige, Mittel, Daumen, Mittel – gleichmäßig wie ein Uhrwerk'),
+          roll: true,
+        },
+      ])
+    : PATTERNS;
+  const CHORD_CHOICES = inst.rhythmChords;
+  let pattern = patterns[0];
   let bpm = 80;
-  let chordName = 'C';
+  let chordName = CHORD_CHOICES[0];
   let playStrum = true;
   let accent = true;
   let taps: number[] = [];
@@ -51,15 +70,20 @@ export const rhythm: View = (root) => {
   const sayLine = h('p', { class: 'say-line' });
   const playBtn = button('', () => (running ? stop() : go()), 'btn-primary btn-play');
 
+  const explain = h('p', { class: 'small' });
   const drawArrows = () => {
     clear(arrows);
+    explain.textContent = pattern.roll && roll
+      ? t(roll.explain)
+      : t('↓ = runter streichen (Daumen oder Zeigefinger), ↑ = hoch. Die Hand schwingt immer weiter, auch bei „·“. Tipp: Tippe mehrmals im Takt eines Liedes auf „Tippen“ – dann passt sich das Tempo an.');
     sayLine.textContent = t('Gesprochen: {say}', { say: t(pattern.say) });
     pattern.steps.split('').forEach((st, i) => {
+      const glyph = pattern.roll ? t(FINGER_WORD[st]).charAt(0).toUpperCase() : st === 'D' ? '↓' : st === 'U' ? '↑' : '·';
       arrows.appendChild(
         h(
           'span',
-          { class: `arrow ${st === 'D' ? 'down' : st === 'U' ? 'up' : 'rest'}` },
-          h('span', { class: 'glyph' }, st === 'D' ? '↓' : st === 'U' ? '↑' : '·'),
+          { class: `arrow ${pattern.roll ? 'pick' : st === 'D' ? 'down' : st === 'U' ? 'up' : 'rest'}` },
+          h('span', { class: 'glyph' }, glyph),
           h('span', { class: 'beat-count' }, pattern.sub === 3 ? String(i + 1) : i % 2 === 0 ? String(i / 2 + 1) : t('und')),
         ),
       );
@@ -99,7 +123,8 @@ export const rhythm: View = (root) => {
       const t = start + scheduled * stepDur();
       if (i % pattern.sub === 0) click(t, accent && i === 0, 0.4);
       else if (pattern.sub === 3) click(t, false, 0.12);
-      if (playStrum && steps[i] !== '-') strum(chordName, t, 0.28, steps[i] === 'U');
+      if (playStrum && pattern.roll && roll) pluckString(chordName, roll.strings[i], t, 0.4);
+      else if (playStrum && steps[i] !== '-') strum(chordName, t, 0.28, steps[i] === 'U');
       scheduled++;
     }
   };
@@ -166,13 +191,13 @@ export const rhythm: View = (root) => {
   screen(
     root,
     { title: t('Rhythmus'), theme: 'teal' },
-    h('div', { class: 'card rhythm-card' }, arrows, sayLine, h('p', { class: 'small' }, t('↓ = runter streichen (Daumen oder Zeigefinger), ↑ = hoch. Die Hand schwingt immer weiter, auch bei „·“. Tipp: Tippe mehrmals im Takt eines Liedes auf „Tippen“ – dann passt sich das Tempo an.'))),
+    h('div', { class: 'card rhythm-card' }, arrows, sayLine, explain),
     h(
       'div',
       { class: 'controls' },
       playBtn,
       h('h2', null, t('Muster')),
-      seg(t('Muster'), PATTERNS, (p) => t(p.name), (p) => p === pattern, (p) => {
+      seg(t('Muster'), patterns, (p) => t(p.name), (p) => p === pattern, (p) => {
         pattern = p;
         drawArrows();
       }),

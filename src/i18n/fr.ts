@@ -65,10 +65,6 @@ export const FR: Record<string, string> = {
   'Finger': 'doigt',
   'alle Saiten leer': 'toutes les cordes à vide',
   // src/music/diagnose.ts
-  'G-Saite (ganz oben)': 'corde G (tout en haut)',
-  'C-Saite': 'corde C',
-  'E-Saite': 'corde E',
-  'A-Saite (ganz unten)': 'corde A (tout en bas)',
   'deinen Zeigefinger': 'ton index',
   'deinen Mittelfinger': 'ton majeur',
   'deinen Ringfinger': 'ton annulaire',
@@ -106,7 +102,6 @@ export const FR: Record<string, string> = {
   'Dein eigenes Lied – nur auf diesem Gerät gespeichert.': 'Ta propre chanson – enregistrée seulement sur cet appareil.',
   // src/music/recording-plan.ts
   'Viermal langsam mit dem Daumen oder Zeigefinger abwärts über alle Saiten streichen.': 'Gratter lentement vers le bas sur toutes les cordes, quatre fois, avec le pouce ou l’index.',
-  'Die Saiten einzeln zupfen, von oben (G) nach unten (A), danach einmal alle zusammen.': 'Pincer les cordes une par une, de haut (G) en bas (A), puis toutes ensemble une fois.',
   'Einmal kräftig anschlagen und ausklingen lassen.': 'Gratter une fois franchement et laisser sonner.',
   'Absichtlich falsch: C greifen, aber der Ringfinger drückt NICHT – alle Saiten klingen leer.': 'Erreur volontaire : faire Do, mais l’annulaire n’appuie PAS – toutes les cordes sonnent à vide.',
   'Absichtlich falsch: Ringfinger im 2. statt im 3. Bund der A-Saite.': 'Erreur volontaire : annulaire sur la 2e case au lieu de la 3e de la corde A.',
@@ -214,7 +209,6 @@ export const FR: Record<string, string> = {
   'Töne:': 'Notes :',
   'Heißt auch:': 'S’appelle aussi :',
   '{chord} in der Akkord-Liste': '{chord} dans la liste des accords',
-  'Bünde G-C-E-A: {frets}': 'Cases G-C-E-A : {frets}',
   'unbekannter Akkord': 'accord inconnu',
   'Einzelner Ton': 'Une seule note',
   'Diesen Ton findest du hier:': 'Tu trouves cette note ici :',
@@ -229,8 +223,6 @@ export const FR: Record<string, string> = {
   'Zuhören': 'Écouter',
   'Spiel irgendeinen Akkord oder einen einzelnen Ton. Ich zeige dir, welche Saiten du gegriffen hast und wie der Akkord heißt.':
     'Joue n’importe quel accord ou une seule note. Je te montre quelles cordes tu appuies et comment s’appelle l’accord.',
-  'Tipp: Schlag die Saiten kräftig an und halte die Ukulele ruhig. Der Detektiv kennt Dur, Moll, Sept-, Major-Sept-, Sext-, sus-, verminderte und übermäßige Akkorde in den ersten fünf Bünden.':
-    'Astuce : gratte franchement et tiens ton ukulélé immobile. Le détective connaît les accords majeurs, mineurs, de septième, de septième majeure, de sixte, sus, diminués et augmentés sur les cinq premières cases.',
   'Manche Griffe klingen gleich (z. B. Am7 und C6) – dann stehen beide Namen da.': 'Certains accords sonnent pareil (par ex. Am7 et C6) – alors les deux noms s’affichent.',
   // src/views/game.ts
   '{a} und {b}': '{a} et {b}',
@@ -253,7 +245,6 @@ export const FR: Record<string, string> = {
   'Üben, mitspielen, Spaß haben': 'S’entraîner, jouer ensemble, s’amuser',
   'Meine Sterne: {n}': 'Mes étoiles : {n}',
   'Hallo!': 'Salut !',
-  'Zuerst stimmen wir deine Ukulele – dann klingt alles viel schöner.': 'D’abord, on accorde ton ukulélé – après, tout sonne beaucoup mieux.',
   'Zum Stimmgerät': 'Vers l’accordeur',
   'Bereiche': 'Rubriques',
   'Weiterspielen': 'Continuer',
@@ -358,16 +349,12 @@ export const FR: Record<string, string> = {
   'falsch': 'erreur',
   'Geräusch': 'Bruit',
   'z. B. C': 'par ex. C',
-  'z. B. 0003 (x = gedämpft)': 'par ex. 0003 (x = étouffée)',
-  'Bünde G C E A': 'Cases G C E A',
   'Was ist passiert? z. B. „wurde gelobt, obwohl F gegriffen war“': 'Que s’est-il passé ? par ex. « félicité alors que c’était Fa »',
   'Notiz': 'Note',
   'Alle geplanten Aufnahmen sind durch. Hier kannst du eigene hinzufügen – z. B. Fälle, in denen die App falsch gelobt hat.':
     'Tous les enregistrements prévus sont faits. Tu peux en ajouter ici – par ex. des cas où l’appli a félicité à tort.',
   'Eigene Aufnahme': 'Enregistrement perso',
-  'Bitte die Bünde als vier Zeichen eingeben (G C E A), z. B. 0003 oder 2010; x für gedämpft.': 'Entre les cases en quatre caractères (G C E A), par ex. 0003 ou 2010 ; x pour une corde étouffée.',
   'Gewollter Akkord': 'Accord voulu',
-  'Wirklich gespielt (Bünde G C E A)': 'Vraiment joué (cases G C E A)',
   'Das war richtig gegriffen': 'L’accord était bien fait',
   'Beispielaufnahmen': 'Enregistrements d’exemple',
   'Für Erwachsene: je 5 Sekunden spielen, was angezeigt wird – auch absichtlich falsch.': 'Pour les adultes : jouer 5 secondes ce qui s’affiche – y compris les erreurs volontaires.',
@@ -444,7 +431,6 @@ export const FR: Record<string, string> = {
   'Fr': 'Ve',
   'Sa': 'Sa',
   'Gestimmt wie ein Profi': 'Accordage de pro',
-  'Alle vier Saiten stimmen': 'Accorder les quatre cordes',
   'Erster Akkord': 'Premier accord',
   'Einen Akkord mit „Prüf mich!“ schaffen': 'Réussir un accord avec « Teste-moi ! »',
   'Akkord-Sammler': 'Collection d’accords',
@@ -480,13 +466,10 @@ export const FR: Record<string, string> = {
   '{s}-Saite anhören': 'Écouter la corde {s}',
   '{s}-Saite: genau richtig!': 'Corde {s} : parfait !',
   '{s}-Saite gestimmt': 'Corde {s} accordée',
-  'Alle vier Saiten gestimmt – los geht’s!': 'Les quatre cordes sont accordées – c’est parti !',
   '{s}-Saite ist zu tief – Wirbel etwas fester drehen.': 'La corde {s} est trop grave – tends-la un peu en tournant la cheville.',
   '{s}-Saite ist zu hoch – Wirbel etwas lockern.': 'La corde {s} est trop aiguë – détends un peu la cheville.',
-  'Das klingt weit weg von G, C, E oder A – zupf eine einzelne Saite.': 'C’est loin de G, C, E ou A – pince une seule corde.',
   'Ohne Mikrofon: Tippe auf eine Saite unten, hör genau hin und dreh, bis deine Saite gleich klingt.': 'Sans micro : touche une corde en bas, écoute bien et tourne la cheville jusqu’à ce que ta corde sonne pareil.',
   'Zupf eine Saite …': 'Pince une corde …',
-  'Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: G – C – E – A.': 'Touche une corde pour entendre sa note. De haut en bas : G – C – E – A.',
   // src/site/pages.ts
   "Rhythmus üben": "Travailler le rythme",
   "Akkord-Spiel starten": "Lancer le jeu des accords",
@@ -587,4 +570,86 @@ export const FR: Record<string, string> = {
   "Kostenlos, ohne Werbung, ohne Konto – Open Source.": "Gratuit, sans pub, sans compte – open source.",
   "Tipps & Wissen": "Astuces et savoir",
   "Stimmen, Akkorde, Üben – kurz erklärt": "Accorder, accords, s’entraîner – expliqué simplement",
+  // src/music/instruments/*.ts
+  'Ukulele': 'Ukulélé',
+  'Ukulele-Club': 'Ukulele-Club',
+  'die Ukulele': 'ton ukulélé',
+  'deine Ukulele': 'ton ukulélé',
+  'der Ukulele': 'du ukulélé',
+  'Gitarre': 'Guitare',
+  'Gitarren-Club': 'Guitare-Club',
+  'die Gitarre': 'ta guitare',
+  'deine Gitarre': 'ta guitare',
+  'der Gitarre': 'de la guitare',
+  'Heute spiel ich Gitarre,': 'Aujourd’hui je joue de la guitare,',
+  'Banjo': 'Banjo',
+  'Banjo-Club': 'Banjo-Club',
+  'das Banjo': 'ton banjo',
+  'dein Banjo': 'ton banjo',
+  'des Banjos': 'du banjo',
+  'Heute spiel ich Banjo,': 'Aujourd’hui je joue du banjo,',
+  'kurz': 'courte',
+  'tief': 'grave',
+  'hoch': 'aiguë',
+  'E-Dur': 'Mi majeur',
+  'e-Moll-Sieben': 'Mi mineur sept',
+  'a-Moll-Sieben': 'La mineur sept',
+  'F-Major-Sieben': 'Fa septième majeure',
+  'h-Moll (international Bm)': 'Si mineur',
+  'fis-Moll (international F#m)': 'Fa dièse mineur',
+  '★ In E liegen die Grundtöne E und A auf leeren Saiten – am bequemsten. Andere Tonarten passen zu Liedern oder Mitspielern.':
+    '★ En Mi, les fondamentales Mi et La sont sur des cordes à vide – c’est le plus facile. Les autres tonalités vont avec des chansons ou d’autres musiciens.',
+  'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In E liegt es ganz bequem auf den beiden tiefsten Saiten.':
+    'Fondamentale, tierce, quinte, sixte – le riff boogie classique. En Mi, il se joue tout confortablement sur les deux cordes les plus graves.',
+  '★ In G liegen die Grundtöne G und D auf leeren Saiten – am bequemsten. Andere Tonarten passen zu Liedern oder Mitspielern.':
+    '★ En Sol, les fondamentales Sol et Ré sont sur des cordes à vide – c’est le plus facile. Les autres tonalités vont avec des chansons ou d’autres musiciens.',
+  'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In G sind G, B und D leere Saiten!':
+    'Fondamentale, tierce, quinte, sixte – le riff boogie classique. En Sol, Sol, Si et Ré sont des cordes à vide !',
+  'Der Daumen zupft die G-Saite und die kurze g-Saite, der Zeigefinger die B-Saite, der Mittelfinger die hohe D-Saite. Die Buchstaben zeigen, welcher Finger dran ist.':
+    'Le pouce pince la corde G et la petite corde g, l’index la corde B, le majeur la corde D aiguë. Les lettres montrent quel doigt joue.',
+  // src/i18n.ts
+  'vier': 'quatre',
+  'fünf': 'cinq',
+  'sechs': 'six',
+  // src/music/chords.ts, src/music/diagnose.ts
+  'nicht anschlagen: {strings}': 'ne pas gratter : {strings}',
+  '{s}-Saite (ganz oben)': 'corde {s} (tout en haut)',
+  '{s}-Saite (ganz unten)': 'corde {s} (tout en bas)',
+  // src/music/recording-plan.ts
+  'Die Saiten einzeln zupfen, von oben (G) nach unten (A), danach einmal alle zusammen.': 'Pincer les cordes une par une, de haut (G) en bas (A), puis toutes ensemble une fois.',
+  'Die Saiten einzeln zupfen, von oben ({first}) nach unten ({last}), danach einmal alle zusammen.':
+    'Pincer les cordes une par une, de haut ({first}) en bas ({last}), puis toutes ensemble une fois.',
+  'Absichtlich falsch: {chord} greifen, aber der Finger auf der {s}-Saite drückt NICHT – sie klingt leer.':
+    'Erreur volontaire : faire {chord}, mais le doigt sur la corde {s} n’appuie PAS – elle sonne à vide.',
+  'Absichtlich falsch: {chord} greifen, aber den Finger auf der {s}-Saite einen Bund zu tief setzen ({fret} statt {right}).':
+    'Erreur volontaire : faire {chord}, mais poser le doigt sur la corde {s} une case trop bas ({fret} au lieu de {right}).',
+  'Absichtlich falsch: {chord} greifen, aber ein Finger berührt die {s}-Saite, sodass sie gedämpft klingt.':
+    'Erreur volontaire : faire {chord}, mais un doigt touche la corde {s}, qui sonne étouffée.',
+  'Mit den Fingern auf den Korpus {of} klopfen.': 'Tapoter sur la caisse {of} avec les doigts.',
+  'Nur die {s}-Saite (oben) leer zupfen, mehrmals.': 'Pincer seulement la corde {s} à vide (en haut), plusieurs fois.',
+  // src/views/*.ts
+  '{s}-Saite ({hint})': 'corde {s} ({hint})',
+  'Bünde {strings}: {frets}': 'Cases {strings} : {frets}',
+  'Tipp: Schlag die Saiten kräftig an und halte {obj} ruhig. Der Detektiv kennt Dur, Moll, Sept-, Major-Sept-, Sext-, sus-, verminderte und übermäßige Akkorde in den ersten fünf Bünden.':
+    'Astuce : gratte franchement et tiens {obj} immobile. Le détective connaît les accords majeurs, mineurs, de septième, de septième majeure, de sixte, sus, diminués et augmentés sur les cinq premières cases.',
+  'Zuerst stimmen wir {yours} – dann klingt alles viel schöner.':
+    'D’abord, on accorde {yours} – après, tout sonne beaucoup mieux.',
+  'Kapo {n}, greif wie {key}': 'Capo case {n}, joue comme en {key}',
+  'Mit dem Kapodaster im {fret} Bund klingen die leichten {key}-Griffe in {sound}.':
+    'Avec le capodastre sur la {fret} case, les accords faciles de {key} sonnent en {sound}.',
+  'z. B. {frets} (x = gedämpft)': 'par ex. {frets} (x = étouffée)',
+  'Bünde {strings}': 'Cases {strings}',
+  'Bitte die Bünde als {n} Zeichen eingeben ({strings}), z. B. {frets}; x für gedämpft.':
+    'Entre les cases en {n} caractères ({strings}), par ex. {frets} ; x pour une corde étouffée.',
+  'Wirklich gespielt (Bünde {strings})': 'Vraiment joué (cases {strings})',
+  'Daumen': 'pouce',
+  'Banjo-Roll: Daumen – Zeige – Mittel': 'Roulement banjo : pouce – index – majeur',
+  'Daumen, Zeige, Mittel, Daumen, Zeige, Mittel, Daumen, Mittel – gleichmäßig wie ein Uhrwerk':
+    'pouce, index, majeur, pouce, index, majeur, pouce, majeur – régulier comme une horloge',
+  'Alle {n} Saiten stimmen': 'Accorder les {n} cordes',
+  'Alle {n} Saiten gestimmt – los geht’s!': 'Les {n} cordes sont accordées – c’est parti !',
+  'Das klingt weit weg von {notes} – zupf eine einzelne Saite.': 'C’est loin de {notes} – pince une seule corde.',
+  '{a} oder {b}': '{a} ou {b}',
+  'Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: {strings}.':
+    'Touche une corde pour entendre sa note. De haut en bas : {strings}.',
 };

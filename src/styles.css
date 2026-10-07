@@ -607,6 +607,35 @@ summary:focus-visible {
   font: 800 13px var(--font);
 }
 
+.chord-svg .fret-number {
+  font: 800 13px var(--font);
+}
+
+/* Fünf und sechs Saiten sind breiter – damit die Griffbilder nicht kleiner wirken, dürfen sie breiter werden */
+.chord-tile .chord-svg.strings-5 {
+  max-width: 130px;
+}
+
+.chord-tile .chord-svg.strings-6 {
+  max-width: 150px;
+}
+
+.now-card .chord-svg.strings-5 {
+  max-width: 230px;
+}
+
+.now-card .chord-svg.strings-6 {
+  max-width: 270px;
+}
+
+.next-card .chord-svg.strings-5 {
+  max-width: 145px;
+}
+
+.next-card .chord-svg.strings-6 {
+  max-width: 170px;
+}
+
 .chord-name {
   font-weight: 900;
   font-size: 2.6em;
@@ -1057,6 +1086,12 @@ summary:focus-visible {
 .syl-tab.s3 {
   background: #a3263a;
 }
+.syl-tab.s4 {
+  background: #2f5f9e;
+}
+.syl-tab.s5 {
+  background: #6b6b1f;
+}
 
 .controls {
   display: flex;
@@ -1191,6 +1226,36 @@ summary:focus-visible {
   grid-gap: 8px;
 }
 
+/* Banjo: fünf Saiten in einer Reihe; Gitarre: zwei Reihen à drei */
+.string-row.strings-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.string-row.strings-6 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 600px) {
+  .string-row.strings-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Handy quer: Griffbilder mit fünf oder sechs Saiten brauchen eine breitere Bühne */
+@media (orientation: landscape) and (max-height: 560px) {
+  [data-strings='5'] .player,
+  [data-strings='6'] .player {
+    grid-template-columns: minmax(330px, 1fr) 1.3fr;
+  }
+}
+
+.btn-string .shint {
+  display: block;
+  font-size: 0.45em;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .btn-string {
   font-size: 1.8em;
   padding: 8px;
@@ -1308,6 +1373,11 @@ summary:focus-visible {
 
 .arrow.rest .glyph {
   color: rgba(0, 0, 0, 0.25);
+}
+
+.arrow.pick .glyph {
+  font-size: 2.4em;
+  color: var(--brass-dark);
 }
 
 .arrow .beat-count {
@@ -1654,6 +1724,11 @@ summary:focus-visible {
 .fb-string {
   stroke: #f7f1e6;
   stroke-width: 1.6;
+}
+
+.fb-string.short {
+  stroke-dasharray: 3 5;
+  opacity: 0.6;
 }
 
 .fb-label,

@@ -4,6 +4,7 @@ import { load } from './store.ts';
 import { isLang, setLang, t, tk } from './i18n.ts';
 import { base, brand, link } from './site/nav.ts';
 import { offerLanguage } from './ui/lang-switch.ts';
+import { initInstrument } from './music/instrument.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
 import { songs } from './views/songs.ts';
@@ -82,6 +83,7 @@ function mount(): void {
 }
 
 installWood();
+initInstrument();
 if (location.hash.indexOf('#/') === 0) {
   // frühere Adressen (#/lied/…, #/teilen/…) auf die neuen Seiten umleiten
   location.replace(link(location.hash.slice(2), isLang(html.lang) ? html.lang : 'de'));

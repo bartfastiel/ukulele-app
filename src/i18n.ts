@@ -101,6 +101,13 @@ export function tp(n: number, one: string, other: string, params?: Params): stri
   return t(single ? one : other, p);
 }
 
+const COUNT_WORDS: Record<number, string> = { 4: tk('vier'), 5: tk('fünf'), 6: tk('sechs') };
+
+/** Saitenzahl als Wort („Alle vier Saiten“), sonst als Ziffer. */
+export function countWord(n: number): string {
+  return COUNT_WORDS[n] ? t(COUNT_WORDS[n]) : String(n);
+}
+
 /** Ordnungszahl für Bünde: „3.“, „3rd“, „3e“ (la case → „1re“). */
 export function ordinal(n: number): string {
   if (current === 'en') {

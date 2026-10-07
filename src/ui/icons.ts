@@ -1,4 +1,5 @@
 import { s } from './dom.ts';
+import { STRINGS } from '../music/notes.ts';
 
 /** Eigene, schlichte Symbole statt Emojis: sehen auf jedem Betriebssystem gleich aus. */
 const PATHS: Record<string, string> = {
@@ -84,8 +85,12 @@ export function soundHole(): SVGElement {
   }
   g.appendChild(s('circle', { cx: 100, cy: 100, r: 74, fill: '#f1e2bf' }));
   g.appendChild(s('circle', { cx: 100, cy: 100, r: 70, fill: 'url(#hole)' }));
-  [64, 88, 112, 136].forEach((x, i) =>
-    g.appendChild(s('rect', { x: x - 1.2 - i * 0.2, y: 0, width: 2.4 + i * 0.4, height: 200, fill: 'url(#str)', opacity: 0.95 })),
-  );
+  // so viele Saiten wie das Instrument (Ukulele: 4 im Abstand 24)
+  const n = STRINGS.length;
+  for (let i = 0; i < n; i++) {
+    const x = 64 + (i * 72) / (n - 1);
+    const k = (i * 3) / (n - 1);
+    g.appendChild(s('rect', { x: x - 1.2 - k * 0.2, y: 0, width: 2.4 + k * 0.4, height: 200, fill: 'url(#str)', opacity: 0.95 }));
+  }
   return g;
 }

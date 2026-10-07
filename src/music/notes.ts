@@ -1,3 +1,5 @@
+import { instrument, onInstrumentChange, type InstrumentString } from './instrument.ts';
+
 export const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B'] as const;
 
 const LETTER: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
@@ -26,20 +28,27 @@ export function noteName(midi: number): string {
   return NOTE_NAMES[pitchClass(midi)];
 }
 
-/** Leersaiten der Ukulele in Standardstimmung mit hohem G, in Spielreihenfolge von oben (G) nach unten (A). */
-export const STRINGS = [
-  { name: 'G', midi: 67 },
-  { name: 'C', midi: 60 },
-  { name: 'E', midi: 64 },
-  { name: 'A', midi: 69 },
-] as const;
+/** Leersaiten des aktuellen Instruments in Spielreihenfolge von oben nach unten (Ukulele G C E A). */
+export let STRINGS: InstrumentString[] = instrument().strings;
+onInstrumentChange(() => (STRINGS = instrument().strings));
 
-/** Wo spielt man einen Melodieton am einfachsten? Niedrigster Bund gewinnt, bei Gleichstand die tiefere Saite. */
+/** Ton der Saite `string` im Bund `fret`; die kurze Banjo-Saite zählt ihre Bünde ab ihrem Wirbel. */
+export function stringMidi(string: number, fret: number): number {
+  const s = STRINGS[string];
+  return fret <= 0 ? s.midi : s.midi + fret - (s.start || 0);
+}
+
+/** Bünde, auf denen eine Saite gegriffen werden kann (die kurze Banjo-Saite nur leer). */
+export function playableFret(string: number, fret: number): boolean {
+  return fret === 0 || (fret > 0 && !STRINGS[string].start);
+}
+
+/** Wo spielt man einen Melodieton am einfachsten? Niedrigster Bund gewinnt, bei Gleichstand die obere Saite. */
 export function tabPosition(midi: number): { string: number; fret: number } | null {
   let best: { string: number; fret: number } | null = null;
   STRINGS.forEach((s, i) => {
     const fret = midi - s.midi;
-    if (fret < 0 || fret > 15) return;
+    if (fret < 0 || fret > instrument().frets || !playableFret(i, fret)) return;
     if (!best || fret < best.fret) best = { string: i, fret };
   });
   return best;

@@ -1,5 +1,5 @@
 import { openMic, type Mic } from './mic.ts';
-import { dbToLinear, findPeaks, holdSpectrum, judgeChord, type ChordVerdict } from './chord-detect.ts';
+import { dbToLinear, holdSpectrum, instrumentPeaks, judgeChord, type ChordVerdict } from './chord-detect.ts';
 import { CHORDS, chord } from '../music/chords.ts';
 
 export interface ChordListener {
@@ -38,7 +38,7 @@ export async function listenForChord(expected: string, ev: ListenEvents): Promis
       ev.onVerdict?.(null, rms);
       return;
     }
-    const peaks = findPeaks(held, binHz);
+    const peaks = instrumentPeaks(held, binHz);
     // transponierte Lieder können Akkorde außerhalb der Bibliothek verlangen
     const candidates = CHORDS.some((c) => c.name === target) ? CHORDS : CHORDS.concat([chord(target)]);
     const v = judgeChord(peaks, target, candidates);
