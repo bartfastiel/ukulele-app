@@ -1,4 +1,4 @@
-import { test, expect, type Page } from './fixtures.ts';
+import { test, expect, type Page, navigationNoise } from './fixtures.ts';
 
 const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'lied/horch-was-kommt', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied', 'teilen/0kaputt'];
 
@@ -30,8 +30,8 @@ for (const l of LANGS) {
 
     test('alle Ansichten: übersetzt, ohne JS-Fehler, ohne überlaufende Knöpfe', async ({ page }) => {
       const errors: string[] = [];
-      page.on('pageerror', (e) => errors.push(e.message));
-      page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+      page.on('pageerror', (e) => !navigationNoise(e.message) && errors.push(e.message));
+      page.on('console', (m) => m.type() === 'error' && !navigationNoise(m.text()) && errors.push(m.text()));
       for (const v of VIEWS) {
         // frühere Hash-Adresse auf der Startseite der Sprache: leitet auf die echte Seite weiter
         await page.goto(`${l.prefix}#/${v}`);

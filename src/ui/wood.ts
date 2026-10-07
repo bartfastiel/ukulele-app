@@ -122,28 +122,37 @@ const MATERIALS: Record<string, { body: Material; button: Material }> = {
   },
 };
 
-export function renderWood(material: Material, size: number, seed = 0): HTMLCanvasElement {
+/** Rechnet die Textur in Streifen und gibt dazwischen den Browser frei (alte iPads, langsame Rechner). */
+export function renderWood(material: Material, size: number, seed: number, done: (canvas: HTMLCanvasElement) => void): void {
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
   const g = canvas.getContext('2d')!;
-  const img = g.createImageData(size, size);
+  const rows = 32;
   const grain = material.grain(seed);
   const d = material.dark;
   const l = material.light;
-  for (let y = 0; y < size; y++) {
-    const v = y / size;
-    for (let x = 0; x < size; x++) {
-      const t = grain(x / size, v);
-      const i = (y * size + x) * 4;
-      img.data[i] = d[0] + (l[0] - d[0]) * t;
-      img.data[i + 1] = d[1] + (l[1] - d[1]) * t;
-      img.data[i + 2] = d[2] + (l[2] - d[2]) * t;
-      img.data[i + 3] = 255;
+  let y0 = 0;
+  const step = () => {
+    const h = Math.min(rows, size - y0);
+    const img = g.createImageData(size, h);
+    for (let y = 0; y < h; y++) {
+      const v = (y0 + y) / size;
+      for (let x = 0; x < size; x++) {
+        const t = grain(x / size, v);
+        const i = (y * size + x) * 4;
+        img.data[i] = d[0] + (l[0] - d[0]) * t;
+        img.data[i + 1] = d[1] + (l[1] - d[1]) * t;
+        img.data[i + 2] = d[2] + (l[2] - d[2]) * t;
+        img.data[i + 3] = 255;
+      }
     }
-  }
-  g.putImageData(img, 0, 0);
-  return canvas;
+    g.putImageData(img, 0, y0);
+    y0 += h;
+    if (y0 < size) window.setTimeout(step, 0);
+    else done(canvas);
+  };
+  window.setTimeout(step, 0);
 }
 
 /** Gespiegelte Kopie (billig, ohne neu zu rechnen): zweite Variante für die Knöpfe. */
@@ -175,21 +184,60 @@ function varyAll(root: ParentNode): void {
   for (let i = 0; i < list.length; i++) vary(list[i]);
 }
 
+/** Einmal gerechnete Texturen bleiben im Cache des Browsers: Jede weitere Seite bekommt sie sofort. Ändert sich die
+ * Maserung, die Nummer erhöhen. */
+const CACHE = 'saiten-holz-1';
+
+function cached(key: string): Promise<string | null> {
+  if (typeof caches === 'undefined') return Promise.resolve(null);
+  return caches
+    .open(CACHE)
+    .then((c) => c.match(key))
+    .then((r) => (r ? r.blob() : null))
+    .then((b) => (b ? URL.createObjectURL(b) : null))
+    .catch(() => null);
+}
+
+function store(key: string, canvas: HTMLCanvasElement, apply: (url: string) => void): void {
+  if (!canvas.toBlob) {
+    apply(canvas.toDataURL());
+    return;
+  }
+  canvas.toBlob((b) => {
+    if (!b) return apply(canvas.toDataURL());
+    apply(URL.createObjectURL(b));
+    if (typeof caches !== 'undefined')
+      caches
+        .open(CACHE)
+        .then((c) => c.put(key, new Response(b, { headers: { 'Content-Type': 'image/png' } })))
+        .catch(() => undefined);
+  }, 'image/png');
+}
+
 export function installWood(): void {
   const root = document.documentElement;
-  const mat = MATERIALS[instrument().id] || MATERIALS.ukulele;
-  const set = (name: string, canvas: HTMLCanvasElement) => {
-    const apply = (url: string) => root.style.setProperty(name, `url("${url}")`);
-    if (canvas.toBlob) canvas.toBlob((b) => (b ? apply(URL.createObjectURL(b)) : apply(canvas.toDataURL())), 'image/png');
-    else apply(canvas.toDataURL());
-  };
-  // erst nach dem ersten Zeichnen rechnen (alte iPads brauchen dafür spürbar Zeit); bis dahin gilt die Grundfarbe
-  window.setTimeout(() => {
-    const btn = renderWood(mat.button, BUTTON);
-    set('--wood-btn', btn);
-    set('--wood-btn-b', mirrored(btn));
-    window.setTimeout(() => set('--wood-body', renderWood(mat.body, BODY, 1)), 0);
-  }, 0);
+  const id = instrument().id;
+  const mat = MATERIALS[id] || MATERIALS.ukulele;
+  const css = (name: string) => (url: string) => root.style.setProperty(name, `url("${url}")`);
+  const key = (name: string) => `${root.getAttribute('data-base') || '/'}holz/${id}-${name}.png`;
+  const texture = (name: string, m: Material, size: number, seed: number, then?: (c: HTMLCanvasElement | null) => void) =>
+    cached(key(name)).then((url) => {
+      if (url) {
+        css(`--wood-${name}`)(url);
+        if (then) then(null);
+        return;
+      }
+      renderWood(m, size, seed, (c) => {
+        store(key(name), c, css(`--wood-${name}`));
+        if (then) then(c);
+      });
+    });
+  // erst die Knöpfe, dann der Hintergrund; bis dahin gilt die Grundfarbe
+  void texture('btn', mat.button, BUTTON, 0, (c) => {
+    if (c) store(key('btn-b'), mirrored(c), css('--wood-btn-b'));
+    else void cached(key('btn-b')).then((url) => url && css('--wood-btn-b')(url));
+    void texture('body', mat.body, BODY, 1);
+  });
   // jede Seite beginnt an einer anderen Stelle der Maserung
   root.style.setProperty('--body-x', `${-Math.floor(Math.random() * BODY)}px`);
   root.style.setProperty('--body-y', `${-Math.floor(Math.random() * BODY)}px`);
