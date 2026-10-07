@@ -161,6 +161,16 @@ test('Blues: Einzählen, Takte laufen, Vorgabe auf dem Hals, freie Stufe zeigt d
   await page.getByRole('button', { name: /Stopp/ }).click();
 });
 
+test('Blues in G: Akkorde, Erklärung und Vorgabe wandern mit', async ({ page }) => {
+  await page.goto('#/blues');
+  await page.getByRole('group', { name: 'Tonart' }).getByRole('button', { name: 'G', exact: true }).click();
+  await expect(page.locator('.blues-bar').first()).toContainText('G');
+  await expect(page.locator('.blues-bar').nth(4)).toContainText('C');
+  await expect(page.locator('.blues-bar').nth(8)).toContainText('D');
+  await expect(page.locator('.blues-target')).toHaveText('Spiel G');
+  await expect(page.getByText(/4 Takte G, 2 Takte C/)).toBeVisible();
+});
+
 test('Startseite: Blues und Akkord-Detektiv sind erreichbar', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('link', { name: /Akkord-Detektiv/ }).click();

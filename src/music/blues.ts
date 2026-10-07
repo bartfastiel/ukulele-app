@@ -1,19 +1,25 @@
 import { tabPosition } from './notes.ts';
+import { ROOTS, parseChordName } from './chords.ts';
 
 /**
- * 12-Takt-Blues in C – auf der Ukulele (hohes G) besonders bequem: Grundtöne C, F, G liegen auf der leeren
- * C-Saite, der E-Saite im 1. Bund und der leeren G-Saite; die ganze Blues-Tonleiter passt in die ersten drei Bünde.
+ * 12-Takt-Blues: I7 I7 I7 I7 | IV7 IV7 I7 I7 | V7 IV7 I7 V7. In C ist er auf der Ukulele (hohes G) besonders bequem:
+ * Grundtöne C, F, G liegen auf der leeren C-Saite, der E-Saite im 1. Bund und der leeren G-Saite.
  */
-export const BARS = ['C7', 'C7', 'C7', 'C7', 'F7', 'F7', 'C7', 'C7', 'G7', 'F7', 'C7', 'G7'];
+const DEGREES = [0, 0, 0, 0, 5, 5, 0, 0, 7, 5, 0, 7];
 
-/** Grundton je Akkord auf der Ukulele (MIDI) und in der Basslage. */
-export const ROOT: Record<string, { uke: number; bass: number }> = {
-  C7: { uke: 60, bass: 36 },
-  F7: { uke: 65, bass: 41 },
-  G7: { uke: 67, bass: 43 },
-};
+/** Akkordfolge in der Tonart `key` (Tonklasse 0 = C). */
+export function bluesBars(key: number): string[] {
+  return DEGREES.map((d) => ROOTS[(key + d) % 12] + '7');
+}
 
-/** Blues-Tonleiter in C: Moll-Pentatonik plus „blue note“ (Fis/Ges). */
+/** Grundton eines Sept-Akkords auf der Ukulele (C4–B4) und in der Basslage. */
+export function rootOf(chord: string): { uke: number; bass: number } {
+  const p = parseChordName(chord);
+  const pc = p ? p.root : 0;
+  return { uke: 60 + pc, bass: 36 + pc };
+}
+
+/** Blues-Tonleiter (relativ zum Grundton der Tonart): Moll-Pentatonik plus „blue note“. */
 export const BLUES_SCALE = [0, 3, 5, 6, 7, 10];
 
 export interface LevelNote {
@@ -36,13 +42,13 @@ function inReach(midi: number): number {
 }
 
 const pattern = (intervals: number[]) => (chord: string) =>
-  intervals.map((iv, beat) => ({ beat, midi: inReach(ROOT[chord].uke + iv) }));
+  intervals.map((iv, beat) => ({ beat, midi: inReach(rootOf(chord).uke + iv) }));
 
 export const LEVELS: Level[] = [
   {
     id: 'grundton',
     title: '1 · Grundton',
-    text: 'Spiel in jedem Takt viermal den Grundton – den Ton, nach dem der Akkord heißt. Bei C die leere C-Saite, bei F die E-Saite im 1. Bund, bei G die leere G-Saite.',
+    text: 'Spiel in jedem Takt viermal den Grundton – den Ton, nach dem der Akkord heißt. Wo er liegt, zeigt der goldene Punkt auf dem Hals.',
     notes: pattern([0, 0, 0, 0]),
   },
   {
@@ -54,7 +60,7 @@ export const LEVELS: Level[] = [
   {
     id: 'boogie',
     title: '3 · Boogie-Riff',
-    text: 'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. Bei C sind das alles leere Saiten: C, E, G, A!',
+    text: 'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In C sind das alles leere Saiten: C, E, G, A!',
     notes: pattern([0, 4, 7, 9]),
   },
   {
@@ -67,16 +73,16 @@ export const LEVELS: Level[] = [
 
 /** Töne des Akkords (Dominantsept) als Tonklassen. */
 export function chordTones(chord: string): number[] {
-  const r = ROOT[chord].uke % 12;
+  const r = rootOf(chord).uke % 12;
   return [0, 4, 7, 10].map((i) => (r + i) % 12);
 }
 
 /** Alle Stellen der Blues-Tonleiter auf dem Hals (Bund 0–maxFret), je Saite. */
-export function scalePositions(maxFret = 3): { string: number; fret: number; midi: number }[] {
+export function scalePositions(key: number, maxFret = 3): { string: number; fret: number; midi: number }[] {
   const open = [67, 60, 64, 69];
   const out: { string: number; fret: number; midi: number }[] = [];
   open.forEach((m, s) => {
-    for (let f = 0; f <= maxFret; f++) if (BLUES_SCALE.indexOf((m + f) % 12) >= 0) out.push({ string: s, fret: f, midi: m + f });
+    for (let f = 0; f <= maxFret; f++) if (BLUES_SCALE.indexOf((m + f - key + 12) % 12) >= 0) out.push({ string: s, fret: f, midi: m + f });
   });
   return out;
 }
@@ -87,3 +93,9 @@ export function position(midi: number): { string: number; fret: number } {
 
 /** Swing: die zweite Achtel jedes Schlags kommt bei 2/3 statt bei 1/2. */
 export const SWING = 2 / 3;
+
+/** Orgel-Griff des Sept-Akkords unter 240 Hz (B2–Bb3), damit das Mikrofon die Ukulele darüber gut hört. */
+export function organVoicing(chord: string): number[] {
+  const r = rootOf(chord).uke % 12;
+  return [0, 4, 7, 10].map((i) => 47 + ((((r + i - 47) % 12) + 12) % 12)).sort((a, b) => a - b);
+}

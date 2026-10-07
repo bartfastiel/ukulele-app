@@ -2,7 +2,8 @@ import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { fretboard, type Mark } from '../ui/fretboard.ts';
-import { BARS, BLUES_SCALE, LEVELS, ROOT, SWING, chordTones, position, scalePositions, type Level } from '../music/blues.ts';
+import { BLUES_SCALE, LEVELS, SWING, bluesBars, chordTones, organVoicing, position, rootOf, scalePositions, type Level } from '../music/blues.ts';
+import { ROOTS } from '../music/chords.ts';
 import { audio, click, pluck } from '../audio/engine.ts';
 import { bass, hat, kick, organ, snare } from '../audio/band.ts';
 import { openMic, type Mic } from '../audio/mic.ts';
@@ -16,16 +17,12 @@ const TEMPOS = [
   { label: 'Schnell', bpm: 100 },
 ];
 
-/** Orgel-Griffe unter 240 Hz, damit das Mikrofon die Ukulele darüber gut hört. */
-const ORGAN: Record<string, number[]> = {
-  C7: [48, 52, 55, 58],
-  F7: [48, 51, 53, 57],
-  G7: [47, 50, 53, 55],
-};
 const WALK = [0, 4, 7, 9, 10, 9, 7, 4];
 
 export const blues: View = (root) => {
   let level: Level = LEVELS[0];
+  let key = 0;
+  let BARS = bluesBars(key);
   let bpm = 70;
   let guide = false;
   let listening = false;
@@ -80,7 +77,7 @@ export const blues: View = (root) => {
       }
     } else {
       const tones = chordTones(chord);
-      for (const p of scalePositions(3))
+      for (const p of scalePositions(key, 3))
         marks.push({ string: p.string, fret: p.fret, kind: tones.indexOf(p.midi % 12) >= 0 ? 'chord' : 'scale', label: NOTE_NAMES[p.midi % 12] });
     }
     if (played && audio().currentTime - played.at < 0.6) {
@@ -116,9 +113,9 @@ export const blues: View = (root) => {
         for (let k = 0; k < 2; k++) {
           const step = inBar * 2 + k;
           const off = k ? SWING : 0;
-          bass(ROOT[chord].bass + WALK[step], t + off * spb(), (k ? 1 - SWING : SWING) * spb());
+          bass(rootOf(chord).bass + WALK[step], t + off * spb(), (k ? 1 - SWING : SWING) * spb());
         }
-        if (inBar === 1 || inBar === 3) organ(ORGAN[chord], t + SWING * spb(), spb() * 0.45);
+        if (inBar === 1 || inBar === 3) organ(organVoicing(chord), t + SWING * spb(), spb() * 0.45);
         if (guide && level.notes) {
           const target = targetAt(b);
           if (target !== null) pluck(target, t, 0.35);
@@ -160,7 +157,7 @@ export const blues: View = (root) => {
           hits++;
           counter.textContent = `Treffer: ${hits}`;
         }
-      } else if (BLUES_SCALE.indexOf(pitchClass(midi)) >= 0 && hitBeat !== Math.floor(beat)) {
+      } else if (BLUES_SCALE.indexOf((pitchClass(midi) - key + 12) % 12) >= 0 && hitBeat !== Math.floor(beat)) {
         hitBeat = Math.floor(beat);
         hits++;
         counter.textContent = `${hits} Blues-Töne – klingt gut!`;
@@ -236,6 +233,12 @@ export const blues: View = (root) => {
     });
   }, 'btn-seg', { 'aria-pressed': 'false' });
 
+  const explainText = () => {
+    const n = (i: number) => BARS[i].replace('7', '');
+    return `Der 12-Takt-Blues: 4 Takte ${n(0)}, 2 Takte ${n(4)}, 2 Takte ${n(0)}, dann ${n(8)}, ${n(9)}, ${n(10)}, ${n(11)} – und wieder von vorn. Die Band spielt im „Shuffle“: lang-kurz, lang-kurz.`;
+  };
+  const explain = h('p', { class: 'card small' }, explainText());
+
   label();
   drawGrid(-1);
   setLevel(LEVELS[0]);
@@ -250,6 +253,15 @@ export const blues: View = (root) => {
       playBtn,
       h('h2', null, 'Stufe'),
       seg('Stufe', LEVELS, (l) => l.title, (l) => l === level, setLevel),
+      h('h2', null, 'Tonart'),
+      seg('Tonart', ROOTS.map((_, i) => i), (i) => (i === 0 ? 'C ★' : ROOTS[i]), (i) => i === key, (i) => {
+        key = i;
+        BARS = bluesBars(key);
+        explain.textContent = explainText();
+        drawGrid(running ? Math.floor(Math.max(0, beatNow()) / 4) % 12 : -1);
+        drawNeck(running ? beatNow() : 0);
+      }),
+      h('p', { class: 'card small' }, '★ In C liegen die Grundtöne auf leeren Saiten – am bequemsten. Andere Tonarten passen zu Liedern oder Mitspielern.'),
       h('h2', null, 'Tempo'),
       seg('Tempo', TEMPOS, (t) => t.label, (t) => t.bpm === bpm, (t) => {
         const beat = running ? beatNow() : 0;
@@ -263,11 +275,7 @@ export const blues: View = (root) => {
       h('div', { class: 'seg seg-wrap' }, guideBtn, micBtn),
     ),
     counter,
-    h(
-      'p',
-      { class: 'card small' },
-      'Der 12-Takt-Blues: 4 Takte C, 2 Takte F, 2 Takte C, dann G, F, C, G – und wieder von vorn. Die Band spielt im „Shuffle“: lang-kurz, lang-kurz.',
-    ),
+    explain,
   );
   return () => {
     stop();
