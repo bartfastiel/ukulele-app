@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv'];
+const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied', 'teilen/0kaputt'];
 
 function collectErrors(page: Page): string[] {
   const errors: string[] = [];
@@ -21,7 +21,7 @@ test('alle Ansichten laden ohne Fehler und ohne waagrechtes Scrollen', async ({ 
 });
 
 test('Tippziele sind groß genug (mindestens 52 px)', async ({ page }) => {
-  for (const v of ['', 'lieder', 'lied/bruder-jakob', 'stimmen']) {
+  for (const v of ['', 'lieder', 'lied/bruder-jakob', 'stimmen', 'eigenes-lied']) {
     await page.goto(`#/${v}`);
     const small = await page.evaluate(() =>
       Array.from(document.querySelectorAll('.btn'))
@@ -38,7 +38,7 @@ test('Startseite führt zu den Liedern und zurück', async ({ page }) => {
   await page.getByRole('link', { name: /Lieder spielen/ }).click();
   await expect(page.getByRole('heading', { name: 'Lieder', exact: true })).toBeVisible();
   await expect(page.locator('.song-card')).toHaveCount(81);
-  await expect(page.locator('.song-card .feature[title^="Melodie"]')).toHaveCount(50);
+  await expect(page.locator('.song-card .feature[title^="Melodie"]')).toHaveCount(59);
   await page.getByRole('button', { name: /^Weihnachten/ }).click();
   await expect(page.locator('.song-card')).toHaveCount(12);
   await page.getByRole('button', { name: /^Alle/ }).click();
@@ -118,6 +118,32 @@ test('Rhythmus startet und stoppt', async ({ page }) => {
   await page.getByRole('button', { name: /Stopp/ }).click();
 });
 
+test('Metronom: Taktarten, Tempo mit Plus/Minus und Tippen', async ({ page }) => {
+  await page.goto('#/rhythmus');
+  await page.getByRole('button', { name: 'Schaukeln (6/8)' }).click();
+  await expect(page.locator('.arrow .beat-count')).toHaveText(['1', '2', '3', '4', '5', '6']);
+  await page.getByRole('button', { name: 'Schneller' }).click();
+  await expect(page.locator('.bpm-value')).toHaveText('85 Schläge pro Minute');
+  // Tippen im Abstand von 500 ms direkt im Browser, damit die Testgeschwindigkeit das Ergebnis nicht verfälscht
+  await page.evaluate(
+    () =>
+      new Promise<void>((done) => {
+        const b = document.querySelector('[aria-label="Tempo durch Tippen bestimmen"]') as HTMLElement;
+        let n = 0;
+        const t = window.setInterval(() => {
+          b.click();
+          if (++n === 4) {
+            window.clearInterval(t);
+            done();
+          }
+        }, 500);
+      }),
+  );
+  const bpm = Number((await page.locator('.bpm-value').textContent())!.split(' ')[0]);
+  expect(bpm).toBeGreaterThan(90);
+  expect(bpm).toBeLessThan(135);
+});
+
 test('Blues: Einzählen, Takte laufen, Vorgabe auf dem Hals, freie Stufe zeigt die Tonleiter', async ({ page }) => {
   await page.goto('#/blues');
   await expect(page.locator('.blues-bar')).toHaveCount(12);
@@ -156,7 +182,7 @@ test('Stille Nacht im 6/8-Takt: Einzähler, dann wandert die Silbe über das Mel
 });
 
 test('Lied ohne Melodie: Hinweis, keine Melodie-/Tab-Knöpfe, „Wartet auf mich“ geht von Akkord zu Akkord', async ({ page }) => {
-  await page.goto('#/lied/muss-i-denn');
+  await page.goto('#/lied/horch-was-kommt');
   await expect(page.locator('.no-melody')).toContainText('nur Akkorde und Text');
   await page.locator('.more summary').click();
   await expect(page.getByRole('button', { name: 'Melodie' })).toHaveCount(0);
@@ -169,7 +195,7 @@ test('Lied ohne Melodie: Hinweis, keine Melodie-/Tab-Knöpfe, „Wartet auf mich
   await expect(page.locator('.wait-title')).toContainText('Spiel jetzt C');
   await page.locator('.wait').getByRole('button', { name: /Geschafft/ }).click();
   await expect(page.locator('.wait-title')).toContainText('Spiel jetzt G7', { timeout: 10000 });
-  await expect(page.locator('.syl.now .syl-text')).toHaveText('Städele');
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('draußen');
 });
 
 test('Transponieren: Tonart wechseln, Vorschlag ★ und Original ◆ markiert, Wahl bleibt gespeichert', async ({ page }) => {
@@ -223,4 +249,108 @@ test('Akkordwechsel: „Gleich“ steht links, „Jetzt“ rechts, beim Wechsel 
   await expect(page.locator('.now-card .card-inner:not(.leaving) .chord-name')).toHaveText('F', { timeout: 10000 });
   expect(await page.evaluate(() => (window as unknown as { sawLeaving?: string }).sawLeaving)).toBe('C');
   await expect(page.locator('.now-card .card-inner.leaving')).toHaveCount(0, { timeout: 2000 });
+});
+
+test('Liedsuche: zuerst Treffer im Titel, darunter im Liedtext mit hervorgehobener Fundstelle', async ({ page }) => {
+  await page.goto('#/lieder');
+  const search = page.getByRole('searchbox', { name: /Lied suchen/ });
+  await search.fill('Glocken');
+  await expect(page.locator('.song-results h2').first()).toContainText('Im Titel');
+  await expect(page.locator('.song-results .song-card').first()).toContainText('Süßer die Glocken');
+  await search.fill('Schwänzchen');
+  await expect(page.locator('.song-results h2')).toHaveText(['Im Liedtext (1)']);
+  await expect(page.locator('.song-results mark')).toHaveText('Schwänzchen');
+  await page.locator('.song-results .song-card').first().click();
+  await expect(page.getByRole('heading', { name: 'Alle meine Entchen' })).toBeVisible();
+  await page.goto('#/lieder');
+  await page.getByRole('searchbox', { name: /Lied suchen/ }).fill('xylophonquatsch');
+  await expect(page.locator('.song-results')).toContainText('Kein Lied gefunden');
+  await page.getByRole('searchbox', { name: /Lied suchen/ }).fill('');
+  await expect(page.locator('.song-filter')).toBeVisible();
+});
+
+test('Einfache Griffe: D7 wird zu D, Hinweis nennt den Tausch', async ({ page }) => {
+  await page.goto('#/lied/my-bonnie');
+  await page.locator('details.more summary').click();
+  await expect(page.locator('.key-box')).toContainText('D7 → D');
+  await page.getByRole('button', { name: 'Einfache Griffe' }).click();
+  await expect(page.getByRole('button', { name: 'Einfache Griffe' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.lyrics .syl-chord', { hasText: /^D7$/ })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Einfache Griffe' }).click();
+  await expect(page.locator('.lyrics .syl-chord', { hasText: /^D7$/ }).first()).toBeVisible();
+});
+
+test('eigenes Lied: Akkorde über dem Text einfügen, speichern, finden, spielen, per Link teilen und löschen', async ({ page, browser }) => {
+  await page.goto('#/lieder');
+  await page.getByRole('link', { name: 'Eigenes Lied', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Eigenes Lied' })).toBeVisible();
+  // eigener Testtext; die letzte Zeile hat einen Akkord ohne Griffbild
+  const text = ['C              G7', 'Heute spiel ich Ukulele,', 'G7           C', 'und die Sonne lacht.', 'C13b9', 'Schluss.'].join('\n');
+  await page.locator('#own-title').fill('Sonnenlied');
+  await page.locator('#own-text').fill(text);
+  await expect(page.locator('.pv-notes')).toContainText('Akkordzeilen über dem Text');
+  await expect(page.locator('.pv-notes')).toContainText('Diese Akkorde kenne ich nicht: C13b9');
+  await expect(page.locator('.pv-syl').filter({ hasText: 'Ukulele' }).locator('.pv-chord')).toHaveText('G7');
+  await page.getByRole('button', { name: '3/4' }).click();
+  await page.getByRole('button', { name: 'Schneller' }).click();
+  await page.getByRole('button', { name: /Speichern/ }).click();
+
+  // spielbar wie ein Lied mit Akkorden und Text
+  await expect(page.getByRole('heading', { name: 'Sonnenlied' })).toBeVisible();
+  expect(page.url()).toContain('#/lied/mein-sonnenlied');
+  await expect(page.locator('.no-melody')).toBeVisible();
+  await page.getByRole('button', { name: 'Läuft durch' }).click();
+  await page.getByRole('button', { name: 'Original' }).click();
+  await page.locator('.btn-play').click();
+  await expect(page.locator('.syl.now .syl-text')).toHaveText('Heute', { timeout: 6000 });
+  await page.locator('.now-card').click();
+
+  // in der Liste unter „Eigene Lieder“ und über die Suche
+  await page.goto('#/lieder');
+  await expect(page.locator('.song-section').filter({ hasText: 'Eigene Lieder' }).locator('.song-card', { hasText: 'Sonnenlied' })).toBeVisible();
+  await page.getByRole('searchbox', { name: /Lied suchen/ }).fill('Sonne lacht');
+  await expect(page.locator('.song-results .song-card').first()).toContainText('Sonnenlied');
+
+  // teilen: Hinweis, QR-Code, Link
+  await page.goto('#/lied/mein-sonnenlied');
+  await page.getByRole('link', { name: 'Teilen' }).click();
+  await expect(page.locator('.share-hint')).toContainText('nur für dich und deine Familie');
+  await expect(page.locator('.qr-svg')).toBeVisible();
+  const link = await page.locator('.share-link').inputValue();
+  expect(link).toMatch(/#\/teilen\/[01][A-Za-z0-9_-]+$/);
+
+  // auf einem anderen Gerät (eigener Speicher) öffnen und hinzufügen
+  const other = await browser.newContext();
+  const page2 = await other.newPage();
+  await page2.goto(link);
+  await expect(page2.getByRole('heading', { name: 'Sonnenlied' })).toBeVisible();
+  await expect(page2.locator('.card').first()).toContainText('3/4 · 95 Schläge pro Minute');
+  await page2.getByRole('button', { name: /Zu meinen Liedern hinzufügen/ }).click();
+  await expect(page2.getByRole('heading', { name: 'Sonnenlied' })).toBeVisible();
+  expect(page2.url()).toContain('#/lied/mein-sonnenlied');
+  await page2.goto('#/lieder');
+  await expect(page2.locator('.song-card', { hasText: 'Sonnenlied' })).toBeVisible();
+  await other.close();
+
+  // derselbe Link auf dem eigenen Gerät: schon vorhanden
+  await page.goto(link);
+  await expect(page.getByText('Dieses Lied hast du schon.')).toBeVisible();
+
+  // bearbeiten und löschen mit Rückfrage im App-Stil
+  await page.goto('#/lied/mein-sonnenlied');
+  await page.getByRole('link', { name: 'Bearbeiten' }).click();
+  await expect(page.locator('#own-title')).toHaveValue('Sonnenlied');
+  await page.getByRole('button', { name: /Löschen/ }).click();
+  await expect(page.getByRole('dialog')).toContainText('Lied löschen?');
+  await page.getByRole('button', { name: 'Nein, behalten' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.getByRole('button', { name: /Löschen/ }).click();
+  await page.getByRole('button', { name: 'Ja, löschen' }).click();
+  await expect(page.getByRole('heading', { name: 'Lieder', exact: true })).toBeVisible();
+  await expect(page.locator('.song-card', { hasText: 'Sonnenlied' })).toHaveCount(0);
+});
+
+test('kaputter Teilen-Link: freundliche Meldung statt Fehler', async ({ page }) => {
+  await page.goto('#/teilen/1abc');
+  await expect(page.getByRole('heading', { name: 'Dieser Link klappt leider nicht' })).toBeVisible();
 });

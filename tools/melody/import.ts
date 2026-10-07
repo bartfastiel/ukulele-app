@@ -1,11 +1,12 @@
-// Erzeugt src/music/songs-melodies.ts: Melodien aus den Wikipedia-Notenbeispielen für Lieder, die bisher nur
-// Akkorde und Text haben. Transponiert in die einfache Tonart der App, Akkorde aus dem Notenbeispiel (falls vorhanden)
+// Erzeugt src/music/songs-melodies.ts: Melodien für Lieder, die bisher nur Akkorde und Text haben – aus den
+// Wikipedia-Notenbeispielen (LilyPond; Cache von fetch-wiki.ts, fetch-langs.ts, search-wiki.ts, dann extract.ts) und
+// aus tools/melody/abc/. Transponiert in die einfache Tonart der App, Akkorde aus dem Notenbeispiel (falls vorhanden)
 // oder per Textabgleich aus unserem Akkordsatz. Meldet, wo der Notentext von unserem geprüften Text abweicht.
-//   node tools/melody/import.ts <ordner-mit-.ly> [--write]
+//   node tools/melody/import.ts <ordner-mit-.ly> [weitere Ordner …] [--write]
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { parseLily, align, type Aligned, type LyScore } from './lily.ts';
-import { WIKI } from './sources.ts';
+import { parseLily, align, bestAligns, type Aligned, type AlignOptions, type LyScore, type LySyllable } from './lily.ts';
+import { parseAbc } from './abc.ts';
 import { CHORD_SONGS } from '../../src/music/songs-chordpro.ts';
 import { KINDER_SONGS } from '../../src/music/songs-kinder.ts';
 import { ENGLISH_SONGS } from '../../src/music/songs-english.ts';
@@ -17,9 +18,10 @@ import { NOTE_NAMES } from '../../src/music/notes.ts';
 /** Nicht übernehmen – der Notentext ist eine geschützte oder abweichende Fassung. */
 const EXCLUDE: Record<string, string> = {
   'im-maerzen-der-bauer': 'Notentext ist die Fassung von Walther Hensel (1923), geschützt bis Ende 2026',
+  'wandern-muellers-lust': 'Notenbeispiel ist der vierstimmige Chorsatz mit Textwiederholungen, nicht die Liedfassung',
 };
 
-const dir = process.argv[2];
+const dirs = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const write = process.argv.includes('--write');
 const songs = new Map<string, Song>();
 for (const s of CHORD_SONGS.concat(KINDER_SONGS, ENGLISH_SONGS)) songs.set(s.id, parseSong(s));
@@ -130,17 +132,26 @@ interface Result {
   leftover: number;
   chordSource: 'Notenbeispiel' | 'Textabgleich' | 'Harmonisierung';
   file: string;
+  source: string;
 }
 
-function convert(id: string, sc: LyScore, file: string): Result | null {
+function convert(id: string, sc: LyScore, file: string, syl: LySyllable[], source: string, opts: AlignOptions = {}): Result | null {
   const song = songs.get(id);
   if (!song) return null;
-  const al = align(sc.notes, sc.verses[0]);
+  const al = align(sc.notes, syl, opts);
   const leftover = al.leftoverNotes + al.leftoverSyllables;
   let ev: Aligned[] = al.events;
+  // Pausen vor dem ersten Ton (Vorspiel-Takte) weglassen; der Auftakt verschiebt sich entsprechend
+  let skip = 0;
+  let lead = 0;
+  while (skip < ev.length && ev[skip].midi === null) lead += ev[skip++].dur;
+  ev = ev.slice(skip);
   // Taktart in Schläge der App umrechnen: x/8 → Achtel als Schlag, sonst Viertel
   const factor = sc.timeDen === 8 ? 2 : 1;
   const meter = sc.timeDen === 2 ? sc.timeNum * 2 : sc.timeNum;
+  const barQ = (sc.timeNum * 4) / sc.timeDen;
+  const pickupQ = (((sc.partial - lead) % barQ) + barQ) % barQ;
+  const pickup = (pickupQ < 1e-6 || barQ - pickupQ < 1e-6 ? 0 : pickupQ) * factor;
   // Tonart: in die einfache Tonart unseres Liedes, Oktave so, dass die Melodie auf der Ukulele (ab C4) liegt
   const ours = songKey(song);
   const shift = shiftBetween(sc.keyTonic, ours.root);
@@ -165,7 +176,11 @@ function convert(id: string, sc: LyScore, file: string): Result | null {
   // Akkorde je Ereignis
   const chordAt: string[] = new Array(ev.length).fill('');
   let chordSource: Result['chordSource'] = 'Textabgleich';
-  if (sc.chords) {
+  // Choralsätze wechseln fast auf jedem Schlag den Akkord – dann lieber unsere einfachen Akkorde
+  const totalBeats = sc.notes.reduce((x, n) => x + n.dur, 0);
+  const changes = sc.chords ? sc.chords.filter((c, i) => c.root >= 0 && (i === 0 || c.root !== sc.chords![i - 1].root || c.quality !== sc.chords![i - 1].quality)).length : 0;
+  const busy = changes > (1.5 * totalBeats) / ((sc.timeNum * 4) / sc.timeDen);
+  if (sc.chords && !busy) {
     chordSource = 'Notenbeispiel';
     const timeline: { beat: number; name: string }[] = [];
     let beat = 0;
@@ -173,7 +188,7 @@ function convert(id: string, sc: LyScore, file: string): Result | null {
       if (c.root >= 0) timeline.push({ beat, name: ROOTS[(((c.root + shift) % 12) + 12) % 12] + c.quality });
       beat += c.dur * factor;
     }
-    let pos = 0;
+    let pos = lead * factor;
     let k = 0;
     ev.forEach((e, i) => {
       while (k + 1 < timeline.length && timeline[k + 1].beat <= pos + 1e-6) k++;
@@ -214,7 +229,7 @@ function convert(id: string, sc: LyScore, file: string): Result | null {
   // akkordfremden Tönen nehmen (unsere Akkordstellen aus dem Textabgleich sind nur ungefähr)
   if (chordSource === 'Textabgleich') {
     const vocab = Array.from(new Set(chordAt.filter(Boolean)));
-    const harm = harmonize(ev, vocab, meter, sc.partial * factor, ours.root);
+    const harm = harmonize(ev, vocab, meter, pickup, ours.root);
     if (foreignShare(ev, harm) + 0.05 < foreignShare(ev, chordAt)) {
       harm.forEach((c, i) => (chordAt[i] = c));
       chordSource = 'Harmonisierung';
@@ -254,37 +269,88 @@ function convert(id: string, sc: LyScore, file: string): Result | null {
     id,
     text: '\n' + lines.join('\n'),
     meter,
-    pickup: sc.partial * factor,
+    pickup,
     originalKey: ROOTS[sc.keyTonic] + (sc.minor ? 'm' : ''),
     similarity,
     leftover,
     chordSource,
     file,
+    source,
   };
 }
 
+const LANG: Record<string, string> = { de: 'deutschen', en: 'englischen', hu: 'ungarischen', fr: 'französischen', nl: 'niederländischen', es: 'spanischen', it: 'italienischen', sv: 'schwedischen', pl: 'polnischen', cs: 'tschechischen' };
+
+/** Herkunft der Melodie für `origin`: aus dem Dateinamen des Notenbeispiels bzw. dem S:-Feld der ABC-Datei. */
+function sourceOf(dir: string, id: string, file: string): string {
+  const tag = new RegExp(`^${id}@([a-z]+)(\\d*)-`).exec(file);
+  if (!tag) return 'nach dem Notenbeispiel im Wikipedia-Artikel';
+  if (tag[2]) {
+    // Suchtreffer (search-wiki.ts): Wiki und Seitentitel stehen in <id>@<tag>.title
+    let meta = ['wikipedia', 'unbekannt'];
+    try {
+      meta = readFileSync(join(dir, `${id}@${tag[1]}${tag[2]}.title`), 'utf8').split('|');
+    } catch {
+      // ältere Suchtreffer ohne .title
+    }
+    const title = meta.slice(1).join('|').replace(/^Page:/, '').replace(/\.djvu\/\d+$/, '');
+    return meta[0].includes('wikisource') ? `nach „${title}“ (Wikisource)` : `nach dem Notenbeispiel im Wikipedia-Artikel „${title}“`;
+  }
+  return `nach dem Notenbeispiel im ${LANG[tag[1]] || tag[1]} Wikipedia-Artikel`;
+}
+
+const abcDir = new URL('./abc/', import.meta.url);
+const abcFiles = new Set<string>();
+try {
+  for (const f of readdirSync(abcDir)) if (f.endsWith('.abc')) abcFiles.add(f);
+} catch {
+  // noch keine ABC-Dateien
+}
+
 const results: Result[] = [];
-for (const id of Object.keys(WIKI)) {
-  const files = readdirSync(dir).filter((f) => f.startsWith(id + '-') && f.endsWith('.ly'));
+for (const id of songs.keys()) {
   let chosen: Result | null = null;
-  for (const f of files) {
-    const sc = parseLily(new TextDecoder().decode(readFileSync(join(dir, f))));
-    if (!sc) continue;
-    const r = convert(id, sc, f);
-    if (r && (!chosen || r.leftover < chosen.leftover)) chosen = r;
+  const consider = (r: Result | null) => {
+    if (r && (!chosen || r.leftover < chosen.leftover || (r.leftover === chosen.leftover && r.similarity > chosen.similarity + 0.005))) chosen = r;
+  };
+  // ausgeschlossenes Notenbeispiel: stattdessen die ABC-Fassung, falls vorhanden
+  const skipWiki = !!EXCLUDE[id] && abcFiles.has(id + '.abc');
+  for (const dir of skipWiki ? [] : dirs) {
+    const files = readdirSync(dir).filter((f) => (f.startsWith(id + '-') || f.startsWith(id + '@')) && f.endsWith('.ly'));
+    for (const f of files) {
+      const src = new TextDecoder().decode(readFileSync(join(dir, f)));
+      // manche Notenbeispiele schreiben den Text der Wiederholung nicht aus – dann die Wiederholung nur einmal;
+      // je Lesart (Bögen, parallele Zeilen, wiederholter Text) zählt der kleinste Rest, dann die Nähe zu unserem Text
+      for (const voltaOnce of [false, true]) {
+        const sc = parseLily(src, { voltaOnce });
+        if (!sc) continue;
+        const texts = [sc.verses[0]];
+        // eine kurze zweite Textzeile ist meist der Text für die zweite Runde der Wiederholung
+        if (sc.verses.length > 1 && sc.verses[1].length < sc.verses[0].length * 0.6)
+          texts.push(sc.verses[0].concat(sc.verses[1].map((y) => ({ ...y, stanza: 1 }))));
+        for (const syl of texts) for (const opts of bestAligns(sc.notes, syl).opts) consider(convert(id, sc, f, syl, sourceOf(dir, id, f), opts));
+      }
+    }
+  }
+  // selbst notierte bzw. aus gemeinfreien Liederbüchern übertragene Melodien (tools/melody/abc/<id>.abc)
+  if (abcFiles.has(id + '.abc')) {
+    const sc = parseAbc(readFileSync(new URL(id + '.abc', abcDir), 'utf8'));
+    consider(convert(id, sc, id + '.abc', sc.verses[0], sc.source));
   }
   if (!chosen) continue;
-  const ok = chosen.leftover <= 4 && !EXCLUDE[id];
+  const c: Result = chosen;
+  // unter 70 % Textübereinstimmung ist es meist ein anderes Lied (Suchtreffer) oder ein Text in anderer Sprache
+  const ok = c.leftover <= 4 && c.similarity >= 0.7 && !(EXCLUDE[id] && c.file.endsWith('.ly'));
   console.log(
-    `${ok ? (chosen.similarity < 0.8 ? '⚠' : '✓') : '✗'} ${id.padEnd(28)} Rest ${chosen.leftover}  Text ${(chosen.similarity * 100).toFixed(0)} %  Akkorde: ${chosen.chordSource}  Quelle ${chosen.originalKey}${EXCLUDE[id] ? '  (' + EXCLUDE[id] + ')' : ''}`,
+    `${ok ? (c.similarity < 0.8 ? '⚠' : '✓') : '✗'} ${id.padEnd(28)} Rest ${c.leftover}  Text ${(c.similarity * 100).toFixed(0)} %  Akkorde: ${c.chordSource}  Quelle ${c.originalKey} ${c.file}${EXCLUDE[id] ? '  (' + EXCLUDE[id] + ')' : ''}`,
   );
-  if (ok) results.push(chosen);
+  if (ok) results.push(c);
 }
 
 if (write) {
   const out = [
-    '// Erzeugt von tools/melody/import.ts aus den Notenbeispielen der Wikipedia-Artikel (gemeinfreie Melodien;',
-    '// übernommen sind nur Tonhöhen, Dauern, Silben und ggf. Akkordfolgen). Nicht von Hand bearbeiten.',
+    '// Erzeugt von tools/melody/import.ts aus den Notenbeispielen der Wikipedia-Artikel und tools/melody/abc/ (gemeinfreie',
+    '// Melodien; übernommen sind nur Tonhöhen, Dauern, Silben und ggf. Akkordfolgen). Nicht von Hand bearbeiten.',
     '',
     'export interface ImportedMelody {',
     '  text: string;',
@@ -293,12 +359,14 @@ if (write) {
     '  originalKey: string;',
     '  /** Anteil des Notentexts, der mit unserem geprüften Text übereinstimmt. */',
     '  similarity: number;',
+    '  /** Herkunft der Melodie, wird an `origin` angehängt. */',
+    '  source: string;',
     '}',
     '',
     'export const MELODIES: Record<string, ImportedMelody> = {',
     ...results.map(
       (r) =>
-        `  '${r.id}': { meter: ${r.meter}, pickup: ${r.pickup}, originalKey: '${r.originalKey}', similarity: ${r.similarity.toFixed(2)}, text: \`${r.text.replace(/`/g, '\\`')}\` },`,
+        `  '${r.id}': { meter: ${r.meter}, pickup: ${r.pickup}, originalKey: '${r.originalKey}', similarity: ${r.similarity.toFixed(2)}, source: '${r.source.replace(/'/g, '’')}', text: \`${r.text.replace(/`/g, '\\`')}\` },`,
     ),
     '};',
     '',

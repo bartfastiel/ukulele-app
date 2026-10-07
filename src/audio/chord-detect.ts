@@ -123,6 +123,8 @@ export interface ChordVerdict {
   expected: ChordScore;
   /** Index der Saite (0 = G … 3 = A), die beim erwarteten Akkord fehlt, sonst -1. */
   weakString: number;
+  /** 'open': gegriffene Saite klingt leer (Finger drückt nicht); 'muted': Saite klingt kaum (gedämpft). */
+  weakKind: 'open' | 'muted' | '';
 }
 
 export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] = CHORDS): ChordVerdict | null {
@@ -140,6 +142,7 @@ export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] 
     exp.openString < TUNING.maxOpenString &&
     exp.score > runnerUp.score;
   let weakString = -1;
+  let weakKind: ChordVerdict['weakKind'] = '';
   if (!ok) {
     // Häufigster Anfängerfehler: ein Finger drückt nicht richtig, die Saite klingt leer. Passt der Griff mit dieser
     // leeren Saite besser als der gewünschte, ist das die Saite für den Hinweis.
@@ -153,6 +156,7 @@ export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] 
       if (v.score > bestVariant + 0.05) {
         bestVariant = v.score;
         weakString = i;
+        weakKind = 'open';
       }
     });
     if (weakString < 0 && exp.explained > 0.5) {
@@ -161,11 +165,12 @@ export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] 
         if (v < min) {
           min = v;
           weakString = i;
+          weakKind = 'muted';
         }
       });
     }
   }
-  return { ok, best: best.chord, expected: exp, weakString };
+  return { ok, best: best.chord, expected: exp, weakString, weakKind };
 }
 
 /** dB-Spektrum des AnalyserNode in lineare Beträge umrechnen. */

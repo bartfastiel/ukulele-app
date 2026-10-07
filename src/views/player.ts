@@ -1,8 +1,9 @@
 import { h, clear, announce, reducedMotion } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
-import { screen, button, ensureMic, praise, keepAwake, STRING_HINT, type View } from '../ui/screen.ts';
+import { screen, button, ensureMic, praise, keepAwake, type View } from '../ui/screen.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
-import { song as findSong } from '../music/songs.ts';
+import { findSong } from '../music/library.ts';
+import { isOwnId } from '../music/own-songs.ts';
 import { chordChanges, eventAt, type Song } from '../music/song.ts';
 import { chord } from '../music/chords.ts';
 import { STRINGS, tabPosition } from '../music/notes.ts';
@@ -10,6 +11,8 @@ import { audio, click, pluck, strum, successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, giveStars, markPracticed } from '../store.ts';
 import { keyLabel, originalShift, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
+import { simplifications, simplifySong } from '../music/simplify.ts';
+import { diagnose } from '../music/diagnose.ts';
 
 const SPEEDS = [
   { value: 0.6, label: 'Langsam' },
@@ -67,7 +70,7 @@ class Player {
   constructor(root: HTMLElement, song: Song) {
     this.base = song;
     this.shift = load().keys[song.id] || 0;
-    this.song = transposeSong(song, this.shift);
+    this.song = this.arrange();
     this.changes = chordChanges(this.song);
     this.render(root);
     this.drawKeyBox();
@@ -127,6 +130,14 @@ class Player {
       }, 'btn-seg', { 'aria-pressed': String(this.settings[key]) });
       return b;
     };
+    const own = isOwnId(this.song.id)
+      ? h(
+          'div',
+          { class: 'row own-tools' },
+          h('a', { class: 'btn btn-seg', href: `#/eigenes-lied/${this.song.id}` }, icon('edit'), 'Bearbeiten'),
+          h('a', { class: 'btn btn-seg', href: `#/lied-teilen/${this.song.id}` }, icon('share'), 'Teilen'),
+        )
+      : null;
     const controls = h(
       'section',
       { class: 'controls' },
@@ -154,6 +165,7 @@ class Player {
         (this.keyBox = h('div', { class: 'key-box' })),
         h('p', { class: 'small' }, this.song.origin),
       ),
+      own,
     );
     const note = this.song.hasMelody
       ? null
@@ -454,7 +466,7 @@ class Player {
                 : { string: v.weakString, count: 1 };
             // Nur bei wiederholt gleicher Diagnose einen Tipp geben – einzelne Fehlmessungen sollen nicht frustrieren
             if (this.hintStreak.count === 4) {
-              hint.textContent = STRING_HINT[v.weakString];
+              hint.textContent = diagnose(chord(name), v.weakString, v.weakKind);
               const svg = this.nowCard.querySelector('.card-inner:not(.leaving) svg');
               if (svg) svg.replaceWith(chordDiagram(chord(name), { lefty: this.settings.lefty, highlight: v.weakString }));
             }
@@ -555,12 +567,23 @@ class Player {
       if (n) p.keys[this.base.id] = n;
       else delete p.keys[this.base.id];
     });
-    this.song = transposeSong(this.base, n);
+    this.song = this.arrange();
     this.changes = chordChanges(this.song);
     this.buildLyrics();
     this.lastLine = -1;
     this.reset();
     this.drawKeyBox();
+  }
+
+  /** Gewählte Tonart, auf Wunsch mit leichteren Griffen. */
+  private arrange(): Song {
+    const t = transposeSong(this.base, this.shift);
+    return this.settings.simplify ? simplifySong(t) : t;
+  }
+
+  private setSimplify(on: boolean): void {
+    save((p) => (p.settings.simplify = on));
+    this.setShift(this.shift);
   }
 
   private drawKeyBox(): void {
@@ -588,6 +611,24 @@ class Player {
         quick(`Einfach: ${label(0)}${marks(0)}`, 0),
         suggest !== 0 ? quick(`★ Vorschlag: ${label(suggest)}`, suggest) : null,
         orig !== null && orig !== 0 && orig !== suggest ? quick(`◆ Original: ${label(orig)}`, orig) : null,
+      ),
+    );
+    const swaps = simplifications(transposeSong(this.base, this.shift));
+    const names = Object.keys(swaps);
+    this.keyBox.appendChild(
+      h(
+        'div',
+        { class: 'seg seg-wrap' },
+        button('Einfache Griffe', () => this.setSimplify(!this.settings.simplify), 'btn-seg', { 'aria-pressed': String(this.settings.simplify) }),
+      ),
+    );
+    this.keyBox.appendChild(
+      h(
+        'p',
+        { class: 'small' },
+        names.length
+          ? `Einfache Griffe: ${names.map((n) => `${n} → ${swaps[n]}`).join(', ')} – klingt fast gleich, ist aber leichter zu greifen.`
+          : 'Einfache Griffe: In dieser Tonart sind schon alle Griffe so leicht wie möglich.',
       ),
     );
     this.keyBox.appendChild(

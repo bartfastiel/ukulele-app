@@ -1,3 +1,5 @@
+import { sanitizeOwnSong, type OwnSong } from './music/own-songs.ts';
+
 /** Fortschritt und Einstellungen – nur lokal im Browser, kein Konto, nichts verlässt das Gerät. */
 export interface Progress {
   stars: Record<string, number>;
@@ -18,6 +20,8 @@ export interface Progress {
     clickOn: boolean;
     waitMode: boolean;
     calm: boolean;
+    /** schwere Griffe durch leichtere Verwandte ersetzen (E → E7 …) */
+    simplify: boolean;
   };
 }
 
@@ -40,6 +44,7 @@ const DEFAULTS: Progress = {
     clickOn: true,
     waitMode: true,
     calm: false,
+    simplify: false,
   },
 };
 
@@ -111,13 +116,21 @@ export function daysThisWeek(): boolean[] {
 }
 
 export function exportCode(): string {
-  return btoa(unescape(encodeURIComponent(JSON.stringify(load()))));
+  const data: Progress & { ownSongs?: OwnSong[] } = { ...load() };
+  if (ownSongs().length) data.ownSongs = ownSongs();
+  return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
 }
 
 export function importCode(code: string): boolean {
   try {
-    const data = JSON.parse(decodeURIComponent(escape(atob(code.trim())))) as Progress;
+    const data = JSON.parse(decodeURIComponent(escape(atob(code.trim())))) as Progress & { ownSongs?: unknown };
     if (typeof data !== 'object' || !data.stars) return false;
+    // eigene Lieder kommen dazu, vorhandene mit gleicher id werden ersetzt
+    if (Array.isArray(data.ownSongs)) {
+      const incoming = readOwn(JSON.stringify({ songs: data.ownSongs }));
+      writeOwn(ownSongs().filter((s) => !incoming.some((x) => x.id === s.id)).concat(incoming));
+    }
+    delete data.ownSongs;
     cache = null;
     localStorage.setItem(KEY, JSON.stringify(data));
     load();
@@ -125,4 +138,70 @@ export function importCode(code: string): boolean {
   } catch {
     return false;
   }
+}
+
+// ---------- Eigene Lieder: eigener Schlüssel mit Versionsnummer, damit sich das Format später ändern kann ----------
+
+const OWN_KEY = 'ukulele-club:eigene-lieder';
+const OWN_VERSION = 1;
+let ownCache: OwnSong[] | null = null;
+
+function readOwn(raw: string | null): OwnSong[] {
+  if (!raw) return [];
+  try {
+    const data = JSON.parse(raw) as { version?: number; songs?: unknown };
+    if (!data || !Array.isArray(data.songs)) return [];
+    // neuere Version (von einem anderen Gerät mit neuerer App): lesen, was sich lesen lässt
+    const out: OwnSong[] = [];
+    for (const x of data.songs) {
+      const s = sanitizeOwnSong(x);
+      if (s && !out.some((o) => o.id === s.id)) out.push(s);
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
+export function ownSongs(): OwnSong[] {
+  if (ownCache) return ownCache;
+  let raw: string | null = null;
+  try {
+    raw = localStorage.getItem(OWN_KEY);
+  } catch {
+    raw = null;
+  }
+  ownCache = readOwn(raw);
+  return ownCache;
+}
+
+function writeOwn(list: OwnSong[]): boolean {
+  try {
+    localStorage.setItem(OWN_KEY, JSON.stringify({ version: OWN_VERSION, songs: list }));
+  } catch {
+    return false;
+  }
+  ownCache = list;
+  if (!persistAsked && navigator.storage && navigator.storage.persist) {
+    persistAsked = true;
+    navigator.storage.persist().catch(() => undefined);
+  }
+  return true;
+}
+
+/** Neu anlegen oder ersetzen. false, wenn der Browser nichts speichern lässt (privater Modus, Speicher voll). */
+export function putOwnSong(song: OwnSong): boolean {
+  const list = ownSongs().filter((s) => s.id !== song.id);
+  list.push(song);
+  return writeOwn(list);
+}
+
+export function removeOwnSong(id: string): boolean {
+  const ok = writeOwn(ownSongs().filter((s) => s.id !== id));
+  if (ok)
+    save((p) => {
+      delete p.keys[id];
+      if (p.lastSong === id) p.lastSong = null;
+    });
+  return ok;
 }
