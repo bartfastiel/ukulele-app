@@ -58,6 +58,7 @@ export const home: View = (root) => {
         tile(link('spiel'), 'game', t('Akkord-Spiel'), t('Wie viele schaffst du?'), 'theme-cherry'),
         tile(link('stimmen'), 'tuner', t('Stimmen'), t('Stimmgerät'), 'theme-pearl'),
         tile(link('rhythmus'), 'rhythm', t('Rhythmus'), t('Metronom & Schlagmuster'), 'theme-pearl'),
+        tile(link('wissen'), 'text', t('Tipps & Wissen'), t('Stimmen, Akkorde, Üben – kurz erklärt'), 'theme-teal'),
       ),
       langSwitch(),
     ),

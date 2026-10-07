@@ -1,8 +1,11 @@
-# Deployment per SSH auf den Server von wer-ist-daniel-schwarz.de. Dort liefert Caddy /mnt/frag-daniel/ukulele/app
-# nur lesend als Seite aus (Repo frag-daniel, infra/Caddyfile.prod), die Vorschauen daneben unter eigenem Pfad.
+# Deployment per SSH auf den Server von wer-ist-daniel-schwarz.de. Dort liefert Caddy die Instrument-Seiten nur lesend
+# aus (Repo frag-daniel, infra/Caddyfile.prod), die Vorschauen daneben unter eigenem Pfad.
 #
-#   Produktion  https://ukulele.wer-ist-daniel-schwarz.de/                          ← dist/ aus jedem Push auf main
-#   Vorschau    https://ukulele.wer-ist-daniel-schwarz.de/<UKULELE_PREVIEW_PATH>/pr-<nr>/  ← dist/ je Pull Request
+#   Produktion  https://ukulele.wer-ist-daniel-schwarz.de/  ← dist/ukulele  (Server: app/)
+#               https://gitarre.wer-ist-daniel-schwarz.de/  ← dist/gitarre  (Server: app-gitarre/)
+#               https://banjo.wer-ist-daniel-schwarz.de/    ← dist/banjo    (Server: app-banjo/)
+#               (dist/start, die Instrumentenwahl, kommt erst mit einer eigenen Domain dazu)
+#   Vorschau    https://ukulele.wer-ist-daniel-schwarz.de/<UKULELE_PREVIEW_PATH>/pr-<nr>/<seite>/  ← dist/ je Pull Request
 #
 # Secrets: DEPLOY_HOST, DEPLOY_USER (Standard root), DEPLOY_SSH_KEY. Variablen: UKULELE_PREVIEW_PATH, UKULELE_HOST (optional).
 # Forks bekommen keine Secrets – die Deployments werden dann sauber übersprungen.
@@ -74,10 +77,16 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run build
+        env:
+          SITE_URL: https://{site}.wer-ist-daniel-schwarz.de/
+          PUBLIC_URL: https://{site}.wer-ist-daniel-schwarz.de/
       - name: SSH-Schlüssel
         run: .github/scripts/ssh-setup.sh
       - name: Hochladen
-        run: .github/scripts/upload-dir.sh dist "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app"
+        run: |
+          .github/scripts/upload-dir.sh dist/ukulele "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app"
+          .github/scripts/upload-dir.sh dist/gitarre "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-gitarre"
+          .github/scripts/upload-dir.sh dist/banjo "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-banjo"
       - name: Live-Prüfung
         run: |
           curl -fsS --retry 5 --retry-delay 5 "https://$UKULELE_HOST/" | grep -q '<title>Ukulele-Club'
@@ -91,14 +100,14 @@ jobs:
     timeout-minutes: 10
     environment:
       name: preview-pr-${{ github.event.pull_request.number }}
-      url: ${{ needs.prerequisites.outputs.preview_base }}/pr-${{ github.event.pull_request.number }}/
+      url: ${{ needs.prerequisites.outputs.preview_base }}/pr-${{ github.event.pull_request.number }}/ukulele/
     env:
       DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'root' }}
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
       UKULELE_PREVIEW_PATH: ${{ vars.UKULELE_PREVIEW_PATH }}
       PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
-      URL: ${{ needs.prerequisites.outputs.preview_base }}/pr-${{ github.event.pull_request.number }}/
+      URL: ${{ needs.prerequisites.outputs.preview_base }}/pr-${{ github.event.pull_request.number }}/ukulele/
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -106,6 +115,10 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --no-audit --no-fund && npm run build
+        env:
+          SITE_URL: ${{ needs.prerequisites.outputs.preview_base }}/pr-${{ github.event.pull_request.number }}/{site}/
+          PUBLIC_URL: https://{site}.wer-ist-daniel-schwarz.de/
+          PREVIEW: '1'
       - name: SSH-Schlüssel
         run: .github/scripts/ssh-setup.sh
       - name: Hochladen

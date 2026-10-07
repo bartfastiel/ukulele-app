@@ -98,6 +98,14 @@ werden sofort entfernt. (Keine Rechtsberatung.)
   Kein WebAssembly nötig: beides braucht weniger als 1 ms pro Messung.
 - **Design:** Mahagoni-Maserung einmal beim Start prozedural auf ein Canvas gerechnet und als Textur verwendet;
   Griffbilder, Schallloch und Symbole als SVG. Keine Bilder, keine Webfonts.
+- **Website statt einer einzigen Seite:** Jede Adresse ist eine beim Build vorgerenderte HTML-Seite (Lieder,
+  Akkorde in allen Tonarten, Werkzeuge, Wissensartikel, Rechtliches) mit Titel, Beschreibung, Sprachfassungen
+  (`hreflang`), strukturierten Daten und Sitemap. Ein gemeinsames Skript startet auf Werkzeugseiten die Ansicht;
+  Links sind normale Seitenwechsel. Deutsch ohne Präfix, Englisch unter `/en/`, Französisch unter `/fr/`.
+  Persönliches (eigene und geteilte Lieder) steht in der Adresse hinter `#` und erreicht nie den Server. Frühere
+  `#/…`-Adressen werden weitergeleitet.
+- **Instrumente als Subdomains:** `ukulele.`, `gitarre.`, `banjo.` – derselbe Code, das Instrument steht in der Seite
+  (`data-instrument`). Eine Startseite ohne Subdomain (nur Instrumentenwahl) kommt mit einer eigenen Domain dazu.
 - **Kompatibilität:** gebaut für Safari 12 (alte iPads), Chrome 70, Firefox 68. Ohne Web Audio läuft die App stumm
   weiter. PWA mit Service Worker – nach dem ersten Besuch offline nutzbar, auf dem Home-Bildschirm installierbar.
 
@@ -105,7 +113,7 @@ werden sofort entfernt. (Keine Rechtsberatung.)
 
 ```sh
 npm install
-npm run dev        # baut bei jeder Änderung neu, http://localhost:5173
+npm run dev        # baut bei jeder Änderung neu, http://localhost:5173/ukulele/ (auch /gitarre/, /banjo/, /start/)
 npm run check      # Typen, Unit-Tests, Build
 npm run e2e        # Build + Playwright (Desktop, iPad/WebKit, Handy hoch/quer, Mikrofon-Simulation)
 ```
@@ -145,8 +153,11 @@ Die Auswertung spielt jede Aufnahme durch denselben Lauscher wie die App (Spektr
 
 ## Deployment
 
-Jeder Push auf `main` baut `dist/` und legt es per SSH auf den Server von wer-ist-daniel-schwarz.de
-(`/mnt/frag-daniel/ukulele/app`), jeder Pull Request bekommt eine Vorschau. Caddy-Konfiguration und
+Jeder Push auf `main` baut `dist/<instrument>/` und legt es per SSH auf den Server von wer-ist-daniel-schwarz.de
+(`/mnt/frag-daniel/ukulele/app`, `app-gitarre`, `app-banjo` → https://ukulele.wer-ist-daniel-schwarz.de/ usw.), jeder Pull
+Request bekommt eine Vorschau mit allen Instrumenten (`…/pr-<nr>/ukulele/`, `…/gitarre/`, …). Der Build liest
+`SITE_URL` (Adresse je Seite, `{site}` wird ersetzt), `PUBLIC_URL` (für canonical/hreflang/Sitemap) und `PREVIEW=1`
+(nicht indexieren). Caddy-Konfiguration und
 TLS liegen im Repo `frag-daniel`. Secrets (`DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`) liegen nur in den
 GitHub-Einstellungen, nie im Repo.
 

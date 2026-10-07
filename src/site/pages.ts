@@ -30,6 +30,7 @@ import { record } from '../views/record.ts';
 import { detective } from '../views/detective.ts';
 import { blues } from '../views/blues.ts';
 import { ownSongEditor } from '../views/own-song.ts';
+import { receiveSong, shareSong } from '../views/share.ts';
 
 export interface BuildEnv {
   /** Adresse der Seite, wie im Build verlinkt (Produktion https://ukulele.…/, Vorschau /vorschau-…/pr-1/ukulele/). */
@@ -86,6 +87,8 @@ const VIEW_NAMES: Record<string, View> = {
   detektiv: detective,
   blues,
   'eigenes-lied': ownSongEditor,
+  'lied-teilen': shareSong,
+  teilen: receiveSong,
 };
 
 function paramOf(route: string): string {
@@ -235,6 +238,9 @@ function songsWith(name: string): Song[] {
 function staticScreen(title: string, back: string, ...content: (Node | null)[]): Node[] {
   const root = document.createElement('div');
   screen(root as unknown as HTMLElement, { title, back, theme: 'pearl' }, ...(content.filter((c) => c !== null) as Node[]));
+  // lange Titel (Wissensartikel) dürfen umbrechen statt abgeschnitten zu werden
+  const header = root.childNodes[0] as unknown as { childNodes: { tagName?: string; setAttribute: (k: string, v: string) => void }[] };
+  for (const c of header.childNodes) if (c.tagName === 'h1') c.setAttribute('class', 'wrap');
   return Array.prototype.slice.call(root.childNodes);
 }
 
@@ -320,8 +326,8 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
     view: ownSongEditor,
     hashParam: true,
   });
-  specs.push({ route: 'lied-teilen', title: t('Lied teilen'), description: t('Eigenes Lied per Link oder QR-Code teilen.'), hashParam: true, noindex: true, body: () => staticScreen(t('Lied teilen'), rel('lieder', l)) });
-  specs.push({ route: 'teilen', title: t('Geschicktes Lied'), description: t('Ein geteiltes Lied öffnen.'), hashParam: true, noindex: true, body: () => staticScreen(t('Geschicktes Lied'), rel('lieder', l)) });
+  specs.push({ route: 'lied-teilen', title: t('Lied teilen'), description: t('Eigenes Lied per Link oder QR-Code teilen.'), view: shareSong, hashParam: true, noindex: true, body: () => staticScreen(t('Lied teilen'), rel('lieder', l)) });
+  specs.push({ route: 'teilen', title: t('Geschicktes Lied'), description: t('Ein geteiltes Lied öffnen.'), view: receiveSong, hashParam: true, noindex: true, body: () => staticScreen(t('Geschicktes Lied'), rel('lieder', l)) });
   const articles = ARTICLES.filter((a) => a.instruments.indexOf(siteDef.instrument as 'ukulele') >= 0);
   specs.push({
     route: 'wissen',
@@ -345,7 +351,7 @@ function legalSpecs(siteDef: SiteDef, l: Lang): Spec[] {
   const brand = siteDef.brand[l];
   return [
     { route: 'ueber', title: t('Über den {brand}', { brand }), description: t('Wer hinter der App steht und warum sie kostenlos ist: ein privates Projekt, ohne Werbung, ohne Abo, Open Source.'), body: () => legalPage('ueber', siteDef, l) },
-    { route: 'impressum', title: t('Impressum'), description: t('Impressum und Kontakt.'), body: () => legalPage('impressum', siteDef, l) },
+    { route: 'impressum', title: t('Impressum'), description: t('Impressum und Kontakt: ein privates, nicht-kommerzielles Projekt – kostenlos, ohne Werbung und ohne Abo.'), body: () => legalPage('impressum', siteDef, l) },
     { route: 'datenschutz', title: t('Datenschutz'), description: t('Datenschutz: keine Konten, keine Cookies, kein Tracking – Fortschritt und Mikrofon bleiben auf deinem Gerät.'), body: () => legalPage('datenschutz', siteDef, l) },
   ];
 }
@@ -694,7 +700,7 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
     '\n<div id="live" class="sr-only" aria-live="polite"></div>\n' +
     `<script src="${currentBase}${e.assets.js}" defer></script>\n</body>\n</html>\n`;
   const path = pathOf(spec.route, l).replace(/#.*$/, '');
-  return { file: path + 'index.html', html, alternates: indexable ? alternates : {}, url: indexable && !e.preview ? canonical : undefined };
+  return { file: path + 'index.html', html, alternates: indexable ? alternates : {}, url: indexable ? canonical : undefined };
 }
 
 /** Alle Seiten einer Instrument-Seite (bzw. der Startseite) in allen Sprachen. */

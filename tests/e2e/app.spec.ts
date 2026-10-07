@@ -307,7 +307,7 @@ test('eigenes Lied: Akkorde über dem Text einfügen, speichern, finden, spielen
 
   // spielbar wie ein Lied mit Akkorden und Text
   await expect(page.getByRole('heading', { name: 'Sonnenlied' })).toBeVisible();
-  expect(page.url()).toContain('#/lied/mein-sonnenlied');
+  await expect(page).toHaveURL(/\/lieder\/eigen\/#mein-sonnenlied$/);
   await expect(page.locator('.no-melody')).toBeVisible();
   await page.getByRole('button', { name: 'Läuft durch' }).click();
   await page.getByRole('button', { name: 'Original' }).click();
@@ -327,7 +327,7 @@ test('eigenes Lied: Akkorde über dem Text einfügen, speichern, finden, spielen
   await expect(page.locator('.share-hint')).toContainText('nur für dich und deine Familie');
   await expect(page.locator('.qr-svg')).toBeVisible();
   const link = await page.locator('.share-link').inputValue();
-  expect(link).toMatch(/#\/teilen\/[01][A-Za-z0-9_-]+$/);
+  expect(link).toMatch(/\/geteiltes-lied\/#[01][A-Za-z0-9_-]+$/);
 
   // auf einem anderen Gerät (eigener Speicher) öffnen und hinzufügen
   const other = await browser.newContext();
@@ -337,7 +337,7 @@ test('eigenes Lied: Akkorde über dem Text einfügen, speichern, finden, spielen
   await expect(page2.locator('.card').first()).toContainText('3/4 · 95 Schläge pro Minute');
   await page2.getByRole('button', { name: /Zu meinen Liedern hinzufügen/ }).click();
   await expect(page2.getByRole('heading', { name: 'Sonnenlied' })).toBeVisible();
-  expect(page2.url()).toContain('#/lied/mein-sonnenlied');
+  await expect(page2).toHaveURL(/\/lieder\/eigen\/#mein-sonnenlied$/);
   await page2.goto('#/lieder');
   await expect(page2.locator('.song-card', { hasText: 'Sonnenlied' })).toBeVisible();
   await other.close();

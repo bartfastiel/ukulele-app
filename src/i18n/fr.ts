@@ -528,7 +528,7 @@ export const FR: Record<string, string> = {
   "Über den {brand}": "À propos de {brand}",
   "Wer hinter der App steht und warum sie kostenlos ist: ein privates Projekt, ohne Werbung, ohne Abo, Open Source.": "Qui se cache derrière l’appli et pourquoi elle est gratuite : un projet privé, sans pub, sans abonnement, open source.",
   "Impressum": "Mentions légales",
-  "Impressum und Kontakt.": "Mentions légales et contact.",
+  "Impressum und Kontakt: ein privates, nicht-kommerzielles Projekt – kostenlos, ohne Werbung und ohne Abo.": "Mentions légales et contact : un projet privé et non commercial – gratuit, sans pub et sans abonnement.",
   "Datenschutz": "Confidentialité",
   "Datenschutz: keine Konten, keine Cookies, kein Tracking – Fortschritt und Mikrofon bleiben auf deinem Gerät.": "Confidentialité : pas de compte, pas de cookies, pas de pistage – progression et micro restent sur ton appareil.",
   "Kostenlos {instrument} lernen": "Apprendre le {instrument} gratuitement",
@@ -585,4 +585,6 @@ export const FR: Record<string, string> = {
   "Rechtliches": "Mentions",
   "Über": "À propos",
   "Kostenlos, ohne Werbung, ohne Konto – Open Source.": "Gratuit, sans pub, sans compte – open source.",
+  "Tipps & Wissen": "Astuces et savoir",
+  "Stimmen, Akkorde, Üben – kurz erklärt": "Accorder, accords, s’entraîner – expliqué simplement",
 };

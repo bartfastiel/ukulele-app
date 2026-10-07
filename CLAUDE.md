@@ -7,7 +7,7 @@ dreisprachig (Deutsch = Original, Englisch, Französisch), Akkordnamen internati
 ## Befehle
 
 ```sh
-npm run dev        # Watch-Build + Server auf http://localhost:5173
+npm run dev        # Watch-Build + Server auf http://localhost:5173/ukulele/ (auch /gitarre/, /banjo/, /start/)
 npm run typecheck  # tsc --noEmit (TypeScript 7)
 npm test           # Unit-Tests: node --test mit Type-Stripping (tests/unit/*.test.ts)
 npm run build      # dist/ via tools/build.mjs (esbuild, Inhalts-Hash, Service Worker)
@@ -32,6 +32,10 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
   im Französischen „tu“. Liedtitel und -texte bleiben im Original; Akkordsymbole und Saitennamen (G C E A) überall als
   Buchstaben, ausgeschriebene Einzeltöne im Französischen als Do, Ré, Mi (`noteText()`). E2E-Tests laufen mit `de-DE`.
 - Code-Kommentare nur, wo der Grund nicht aus dem Code hervorgeht.
+- Links nie als `#/…` schreiben, sondern `link('lied/<id>')` bzw. `go(…)` aus `src/site/nav.ts`. Neue Seiten in
+  `src/site/routes.ts` (Pfad je Sprache) und `src/site/pages.ts` (Titel, Beschreibung) eintragen; der Unit-Test prüft
+  alle internen Links, Titel und Sprachfassungen.
+- Nie Namen anderer Apps, Seiten oder Anbieter nennen (Code, Doku, Issues, PRs) – nur Inhalte.
 - Arbeit per Branch + Pull Request; CI (`ci.yml`) muss grün sein; `deploy.yml` deployt `main` und Vorschauen.
   Keine Secrets ins Repo.
 - Commit-Nachrichten: Conventional Commits (`feat|fix|docs|test|refactor|chore|ci`), Hook in `.githooks/`.
@@ -40,8 +44,11 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
 ## Architektur
 
 ```
-src/main.ts              Hash-Router (#/, #/lieder, #/lied/<id>, #/akkorde, #/akkord/<name>, #/spiel, #/stimmen, #/rhythmus, #/sterne,
-                         #/blues, #/detektiv, #/aufnahme, #/eigenes-lied[/<id>], #/lied-teilen/<id>, #/teilen/<daten>)
+src/main.ts              startet die Ansicht der Seite (<html data-route>, Parameter ggf. hinter #); leitet alte #/…-Adressen um
+src/site/                routes.ts (interne Routen „lied/<id>“, „akkord/C“ … → Pfade je Sprache), nav.ts (link()/go() im Browser),
+                         pages.ts (Vorrendern im Build mit vdom.ts: Titel, hreflang, JSON-LD, Sitemap), sites.ts (Instrument-
+                         Seiten = Subdomains), chord-names.ts, legal-data.ts (Impressum-Angaben)
+src/content/             Wissenssammlung (Artikel je Instrument, de/en/fr, nur Daten)
 src/views/*.ts           je Ansicht eine Funktion (root, param) → Aufräumfunktion
 src/views/player.ts      Karaoke: Transport auf der AudioContext-Uhr, Vorausplanung (25-ms-Takt, 150 ms Horizont),
                          Modus „Wartet auf mich“ hält an jedem Akkordwechsel (stopBeat) und hört per listen.ts zu

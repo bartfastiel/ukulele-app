@@ -17,14 +17,14 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: 'http://localhost:4173/',
+    baseURL: 'http://localhost:4173/ukulele/',
     trace: 'retain-on-failure',
     // die bestehenden Tests prüfen deutsche Texte; ohne Angabe wäre die Browser-Sprache Englisch
     locale: 'de-DE',
   },
   webServer: {
     command: 'node tools/serve.mjs dist 4173',
-    url: 'http://localhost:4173/',
+    url: 'http://localhost:4173/ukulele/',
     reuseExistingServer: !process.env.CI,
   },
   projects: [
