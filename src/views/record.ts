@@ -2,7 +2,7 @@ import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, type View } from '../ui/screen.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
-import { PLAN, parseFrets, type Take } from '../music/recording-plan.ts';
+import { PLAN, instructionText, parseFrets, type Take } from '../music/recording-plan.ts';
 import { audio } from '../audio/engine.ts';
 import { openMic } from '../audio/mic.ts';
 import { startRecording, type Recording } from '../audio/recorder.ts';
@@ -10,6 +10,7 @@ import { encodeWav, decodeWav } from '../audio/wav.ts';
 import { makeZip } from '../util/zip.ts';
 import { idbAll, idbClear, idbPut } from '../util/idb.ts';
 import type { Chord } from '../music/chords.ts';
+import { t, tp } from '../i18n.ts';
 
 /**
  * Aufnahmewerkzeug für Erwachsene: sammelt beschriftete Beispielaufnahmen (richtige Akkorde, typische Fehler,
@@ -58,18 +59,18 @@ export const record: View = (root) => {
 
   const renderSummary = () => {
     clear(summary);
-    summary.appendChild(h('h2', null, `${done.size} von ${PLAN.length} Aufnahmen`));
+    summary.appendChild(h('h2', null, t('{n} von {total} Aufnahmen', { n: done.size, total: PLAN.length })));
     summary.appendChild(
       h(
         'div',
         { class: 'rec-dots' },
-        ...PLAN.map((t, i) =>
+        ...PLAN.map((x, i) =>
           h(
             'button',
             {
               type: 'button',
-              class: `rec-dot${done.has(t.id) ? ' ok' : ''}${i === idx ? ' cur' : ''}`,
-              'aria-label': `Aufnahme ${i + 1}: ${t.chord || t.id}`,
+              class: `rec-dot${done.has(x.id) ? ' ok' : ''}${i === idx ? ' cur' : ''}`,
+              'aria-label': t('Aufnahme {n}: {name}', { n: i + 1, name: x.chord || x.id }),
               onclick: () => {
                 stopAll();
                 idx = i;
@@ -82,15 +83,15 @@ export const record: View = (root) => {
       ),
     );
     const extra = Array.from(done.values()).filter((s) => s.take.id.indexOf('eigene-') === 0).length;
-    if (extra) summary.appendChild(h('p', { class: 'small' }, `plus ${extra} eigene Aufnahme(n)`));
+    if (extra) summary.appendChild(h('p', { class: 'small' }, tp(extra, 'plus {n} eigene Aufnahme', 'plus {n} eigene Aufnahmen')));
     summary.appendChild(
       h(
         'div',
         { class: 'row' },
-        canShareFiles ? button(h('span', null, icon('next'), ' Teilen'), () => share(), 'btn-primary', done.size ? {} : { disabled: 'true' }) : null,
-        button(h('span', null, icon('check'), ' ZIP herunterladen'), () => download(), canShareFiles ? '' : 'btn-primary', done.size ? {} : { disabled: 'true' }),
-        button('Alles löschen', () => {
-          if (!window.confirm('Alle Aufnahmen auf diesem Gerät löschen?')) return;
+        canShareFiles ? button(h('span', null, icon('next'), ' ', t('Teilen')), () => share(), 'btn-primary', done.size ? {} : { disabled: 'true' }) : null,
+        button(h('span', null, icon('check'), ' ', t('ZIP herunterladen')), () => download(), canShareFiles ? '' : 'btn-primary', done.size ? {} : { disabled: 'true' }),
+        button(t('Alles löschen'), () => {
+          if (!window.confirm(t('Alle Aufnahmen auf diesem Gerät löschen?'))) return;
           void idbClear().then(() => {
             done.clear();
             idx = 0;
@@ -141,7 +142,7 @@ export const record: View = (root) => {
     a.click();
     document.body.removeChild(a);
     window.setTimeout(() => URL.revokeObjectURL(url), 10000);
-    shareMsg.textContent = `Gespeichert als „${z.name}“ im Download-Ordner des Geräts.`;
+    shareMsg.textContent = t('Gespeichert als „{name}“ im Download-Ordner des Geräts.', { name: z.name });
   };
 
   type ShareNav = { canShare?: (d: { files: File[] }) => boolean; share?: (d: { files: File[]; title?: string }) => Promise<void> };
@@ -153,7 +154,7 @@ export const record: View = (root) => {
     const z = zipFile();
     const file = new File([z.blob], z.name, { type: 'application/zip' });
     if (!nav.canShare!({ files: [file] })) {
-      shareMsg.textContent = 'Dieser Browser kann ZIP-Dateien nicht teilen – ich lade sie stattdessen herunter.';
+      shareMsg.textContent = t('Dieser Browser kann ZIP-Dateien nicht teilen – ich lade sie stattdessen herunter.');
       download();
       return;
     }
@@ -182,19 +183,19 @@ export const record: View = (root) => {
   const capture = (take: Take, note: () => string, status: HTMLElement, meter: HTMLElement, after: () => void) => {
     void ensureMic().then(async (ok) => {
       if (!ok) {
-        status.textContent = 'Ohne Mikrofon geht die Aufnahme nicht.';
+        status.textContent = t('Ohne Mikrofon geht die Aufnahme nicht.');
         return;
       }
       const mic = await openMic();
       let n = 3;
       const tick = () => {
         if (n > 0) {
-          status.textContent = `Gleich geht’s los … ${n}`;
+          status.textContent = t('Gleich geht’s los … {n}', { n });
           n--;
           timer = window.setTimeout(tick, 700);
           return;
         }
-        status.textContent = 'Aufnahme läuft – jetzt spielen!';
+        status.textContent = t('Aufnahme läuft – jetzt spielen!');
         status.className = 'feedback listening';
         const rec = startRecording(mic);
         recording = rec;
@@ -206,7 +207,7 @@ export const record: View = (root) => {
           meter.style.width = `${Math.min(100, Math.sqrt(lv.rms) * 220)}%`;
           meter.className = `meter-bar${lv.peak > 0.98 ? ' clip' : ''}`;
           const left = Math.max(0, SECONDS - (performance.now() - t0) / 1000);
-          status.textContent = `Aufnahme läuft – noch ${left.toFixed(1)} s`;
+          status.textContent = t('Aufnahme läuft – noch {s} s', { s: left.toFixed(1) });
           meterRaf = requestAnimationFrame(draw);
         };
         draw();
@@ -216,7 +217,7 @@ export const record: View = (root) => {
           recording = null;
           save(take, note(), samples, mic.sampleRate);
           status.className = 'feedback good';
-          status.textContent = clipped ? 'Gespeichert – aber übersteuert. Etwas weiter weg und nochmal?' : 'Gespeichert!';
+          status.textContent = clipped ? t('Gespeichert – aber übersteuert. Etwas weiter weg und nochmal?') : t('Gespeichert!');
           meter.style.width = '0%';
           after();
         }, SECONDS * 1000);
@@ -232,18 +233,18 @@ export const record: View = (root) => {
       renderCustom();
       return;
     }
-    const t = PLAN[idx];
-    const status = h('div', { class: 'feedback', 'aria-live': 'polite' }, done.has(t.id) ? 'Schon aufgenommen – du kannst sie wiederholen.' : 'Bereit.');
+    const take = PLAN[idx];
+    const status = h('div', { class: 'feedback', 'aria-live': 'polite' }, done.has(take.id) ? t('Schon aufgenommen – du kannst sie wiederholen.') : t('Bereit.'));
     const meter = h('div', { class: 'meter-bar' });
-    const diag = diagramFor(t);
+    const diag = diagramFor(take);
     const next = () => {
       stopAll();
       idx++;
       renderTake();
     };
-    const recBtn = button(h('span', null, icon('mic'), done.has(t.id) ? ' Nochmal aufnehmen' : ' Aufnehmen'), () => {
+    const recBtn = button(h('span', null, icon('mic'), ' ', done.has(take.id) ? t('Nochmal aufnehmen') : t('Aufnehmen')), () => {
       recBtn.disabled = true;
-      capture(t, () => '', status, meter, () => {
+      capture(take, () => '', status, meter, () => {
         recBtn.disabled = false;
         renderTake();
         // nach einem Moment automatisch zur nächsten Aufnahme, damit es zügig geht
@@ -256,12 +257,12 @@ export const record: View = (root) => {
         { class: 'rec-take' },
         h(
           'div',
-          { class: `card rec-card${t.correct ? '' : ' wrong'}` },
-          h('div', { class: 'card-label' }, `Aufnahme ${idx + 1} von ${PLAN.length}${t.correct ? '' : ' · absichtlich falsch'}`),
-          h('div', { class: 'chord-name' }, t.chord ? `${t.chord}${t.correct ? '' : ' (falsch)'}` : 'Geräusch'),
-          t.chord ? h('div', { class: 'say' }, `Bünde G-C-E-A: ${t.frets}`) : null,
+          { class: `card rec-card${take.correct ? '' : ' wrong'}` },
+          h('div', { class: 'card-label' }, t('Aufnahme {n} von {total}', { n: idx + 1, total: PLAN.length }) + (take.correct ? '' : ' · ' + t('absichtlich falsch'))),
+          h('div', { class: 'chord-name' }, take.chord ? take.chord + (take.correct ? '' : ' (' + t('falsch') + ')') : t('Geräusch')),
+          take.chord ? h('div', { class: 'say' }, t('Bünde G-C-E-A: {frets}', { frets: take.frets })) : null,
           diag ? h('div', { class: 'diagram-big' }, diag) : null,
-          h('p', { class: 'rec-instruction' }, t.instruction),
+          h('p', { class: 'rec-instruction' }, instructionText(take)),
         ),
         h(
           'div',
@@ -272,8 +273,8 @@ export const record: View = (root) => {
           h(
             'div',
             { class: 'row' },
-            done.has(t.id) ? button(h('span', null, icon('sound'), ' Anhören'), () => playBack(done.get(t.id)!)) : null,
-            button(h('span', null, icon('next'), ' Weiter'), next),
+            done.has(take.id) ? button(h('span', null, icon('sound'), ' ', t('Anhören')), () => playBack(done.get(take.id)!)) : null,
+            button(h('span', null, icon('next'), ' ', t('Weiter')), next),
           ),
         ),
       ),
@@ -281,20 +282,20 @@ export const record: View = (root) => {
   };
 
   const renderCustom = () => {
-    const chordIn = h('input', { class: 'rec-input', placeholder: 'z. B. C', 'aria-label': 'Akkord', maxlength: 6 }) as HTMLInputElement;
-    const fretsIn = h('input', { class: 'rec-input', placeholder: 'z. B. 0003 (x = gedämpft)', 'aria-label': 'Bünde G C E A', maxlength: 4 }) as HTMLInputElement;
-    const noteIn = h('input', { class: 'rec-input wide', placeholder: 'Was ist passiert? z. B. „wurde gelobt, obwohl F gegriffen war“', 'aria-label': 'Notiz' }) as HTMLInputElement;
+    const chordIn = h('input', { class: 'rec-input', placeholder: t('z. B. C'), 'aria-label': t('Akkord'), maxlength: 6 }) as HTMLInputElement;
+    const fretsIn = h('input', { class: 'rec-input', placeholder: t('z. B. 0003 (x = gedämpft)'), 'aria-label': t('Bünde G C E A'), maxlength: 4 }) as HTMLInputElement;
+    const noteIn = h('input', { class: 'rec-input wide', placeholder: t('Was ist passiert? z. B. „wurde gelobt, obwohl F gegriffen war“'), 'aria-label': t('Notiz') }) as HTMLInputElement;
     const correctIn = h('input', { type: 'checkbox', id: 'rec-correct' }) as HTMLInputElement;
-    const status = h('div', { class: 'feedback', 'aria-live': 'polite' }, 'Alle geplanten Aufnahmen sind durch. Hier kannst du eigene hinzufügen – z. B. Fälle, in denen die App falsch gelobt hat.');
+    const status = h('div', { class: 'feedback', 'aria-live': 'polite' }, t('Alle geplanten Aufnahmen sind durch. Hier kannst du eigene hinzufügen – z. B. Fälle, in denen die App falsch gelobt hat.'));
     const meter = h('div', { class: 'meter-bar' });
-    const recBtn = button(h('span', null, icon('mic'), ' Eigene Aufnahme'), () => {
+    const recBtn = button(h('span', null, icon('mic'), ' ', t('Eigene Aufnahme')), () => {
       const frets = fretsIn.value.trim().toLowerCase();
       if (!/^[0-9x]{4}$/.test(frets)) {
-        status.textContent = 'Bitte die Bünde als vier Zeichen eingeben (G C E A), z. B. 0003 oder 2010; x für gedämpft.';
+        status.textContent = t('Bitte die Bünde als vier Zeichen eingeben (G C E A), z. B. 0003 oder 2010; x für gedämpft.');
         return;
       }
       const chordName = chordIn.value.trim() || null;
-      const t: Take = {
+      const custom: Take = {
         id: `eigene-${Date.now().toString(36)}`,
         chord: chordName,
         frets,
@@ -303,7 +304,7 @@ export const record: View = (root) => {
         instruction: noteIn.value.trim(),
       };
       recBtn.disabled = true;
-      capture(t, () => noteIn.value.trim(), status, meter, () => {
+      capture(custom, () => noteIn.value.trim(), status, meter, () => {
         recBtn.disabled = false;
         renderSummary();
       });
@@ -312,11 +313,11 @@ export const record: View = (root) => {
       h(
         'div',
         { class: 'card rec-custom' },
-        h('h2', null, 'Eigene Aufnahme'),
-        h('label', null, 'Gewollter Akkord ', chordIn),
-        h('label', null, 'Wirklich gespielt (Bünde G C E A) ', fretsIn),
-        h('label', { class: 'check' }, correctIn, ' Das war richtig gegriffen'),
-        h('label', null, 'Notiz ', noteIn),
+        h('h2', null, t('Eigene Aufnahme')),
+        h('label', null, t('Gewollter Akkord'), ' ', chordIn),
+        h('label', null, t('Wirklich gespielt (Bünde G C E A)'), ' ', fretsIn),
+        h('label', { class: 'check' }, correctIn, ' ', t('Das war richtig gegriffen')),
+        h('label', null, t('Notiz'), ' ', noteIn),
         recBtn,
         h('div', { class: 'meter' }, meter),
         status,
@@ -326,12 +327,13 @@ export const record: View = (root) => {
 
   screen(
     root,
-    { title: 'Beispielaufnahmen', back: '#/sterne', theme: 'pearl' },
+    { title: t('Beispielaufnahmen'), back: '#/sterne', theme: 'pearl' },
     h(
       'p',
       { class: 'card rec-intro' },
-      'Für Erwachsene: je 5 Sekunden spielen, was angezeigt wird – auch absichtlich falsch. ',
-      'Bleibt auf dem Gerät, bis du es unten teilst oder herunterlädst.',
+      t('Für Erwachsene: je 5 Sekunden spielen, was angezeigt wird – auch absichtlich falsch.'),
+      ' ',
+      t('Bleibt auf dem Gerät, bis du es unten teilst oder herunterlädst.'),
     ),
     area,
     summary,
@@ -340,7 +342,7 @@ export const record: View = (root) => {
   void idbAll<Stored>()
     .then((list) => {
       list.forEach((s) => done.set(s.take.id, s));
-      const firstOpen = PLAN.findIndex((t) => !done.has(t.id));
+      const firstOpen = PLAN.findIndex((x) => !done.has(x.id));
       idx = firstOpen < 0 ? PLAN.length : firstOpen;
     })
     .catch(() => undefined)

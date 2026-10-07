@@ -1,8 +1,8 @@
 # Ukulele-Club – Hinweise für Claude
 
 Private Lern-App von Daniel für seinen Sohn (10, Realschul-Ukulelenklasse). Öffentlich als Open Source auf GitHub
-(`bartfastiel/ukulele-app`), live unter https://ukulele.wer-ist-daniel-schwarz.de. Antworten und UI-Texte auf
-Deutsch, Akkordnamen international (B statt H).
+(`bartfastiel/ukulele-app`), live unter https://ukulele.wer-ist-daniel-schwarz.de. Antworten auf Deutsch; die App ist
+dreisprachig (Deutsch = Original, Englisch, Französisch), Akkordnamen international (B statt H).
 
 ## Befehle
 
@@ -12,7 +12,7 @@ npm run typecheck  # tsc --noEmit (TypeScript 7)
 npm test           # Unit-Tests: node --test mit Type-Stripping (tests/unit/*.test.ts)
 npm run build      # dist/ via tools/build.mjs (esbuild, Inhalts-Hash, Service Worker)
 npm run e2e        # Build + Playwright (tests/e2e), Server: tools/serve.mjs auf :4173
-node tools/shots.mjs <ordner>   # Bildschirmfotos aller Ansichten (iPad/WebKit, Handy hoch/quer)
+node tools/shots.mjs <ordner> [de|en|fr]   # Bildschirmfotos aller Ansichten (iPad/WebKit, Handy hoch/quer)
 node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) durch die Akkorderkennung spielen
 ```
 
@@ -26,6 +26,11 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
   unsichere Mikrofon-Erkennung darf nie blockieren („Geschafft“ immer sichtbar), alles auch ohne Mikrofon nutzbar.
 - **Lieder nur gemeinfrei oder eigene** (Text UND Melodie; Urheber mit Lebensdaten und Textquelle in `origin`).
   Text wörtlich aus gemeinfreier Quelle, nie aus dem Gedächtnis. Melodien nur, wenn sicher bekannt, innerhalb C4–A5.
+- **Texte immer über `t()`** aus `src/i18n.ts` (`t('Takt {n} von 12', { n })`, Mehrzahl `tp()`, Tabellen auf Modulebene mit
+  `tk()` markieren und beim Anzeigen `t()`). Der deutsche Text ist der Schlüssel; jede neue Zeichenkette braucht einen
+  Eintrag in `src/i18n/en.ts` und `fr.ts` (Unit-Test `i18n.test.ts` prüft Vollständigkeit und Platzhalter). Kindgerecht,
+  im Französischen „tu“. Liedtitel und -texte bleiben im Original; Akkordsymbole und Saitennamen (G C E A) überall als
+  Buchstaben, ausgeschriebene Einzeltöne im Französischen als Do, Ré, Mi (`noteText()`). E2E-Tests laufen mit `de-DE`.
 - Code-Kommentare nur, wo der Grund nicht aus dem Code hervorgeht.
 - Arbeit per Branch + Pull Request; CI (`ci.yml`) muss grün sein; `deploy.yml` deployt `main` und Vorschauen.
   Keine Secrets ins Repo.
@@ -60,6 +65,7 @@ src/music/own-songs.ts   Eigene Lieder (Prüfung, ids, als Song) und Teilen-Kodi
 src/music/library.ts     mitgelieferte + eigene Lieder (allSongs, findSong)
 src/util/deflate.ts, qr.ts  eigenes DEFLATE (packen/entpacken) und QR-Encoder (Byte-Modus, L/M, Maskenwahl)
 src/views/own-song.ts, share.ts  Eingabe/Bearbeiten, Teilen (QR + Link), geschicktes Lied hinzufügen
+src/i18n.ts, src/i18n/   Sprache (Einstellung oder Gerät), t()/tp()/tk(), Wörterbücher en.ts/fr.ts
 src/store.ts             localStorage (Sterne, Übungstage, Einstellungen, eigene Lieder), storage.persist(), Export-Code
 src/styles.css           Design-Tokens, Mahagoni-Knöpfe, Layouts: Handy hoch (≤600px), Handy quer (Höhe ≤560px), ≥900px
 ```

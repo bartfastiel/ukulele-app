@@ -1,5 +1,6 @@
 import { tabPosition } from './notes.ts';
 import { ROOTS, parseChordName } from './chords.ts';
+import { tk } from '../i18n.ts';
 
 /**
  * 12-Takt-Blues: I7 I7 I7 I7 | IV7 IV7 I7 I7 | V7 IV7 I7 V7. In C ist er auf der Ukulele (hohes G) besonders bequem:
@@ -47,26 +48,26 @@ const pattern = (intervals: number[]) => (chord: string) =>
 export const LEVELS: Level[] = [
   {
     id: 'grundton',
-    title: '1 · Grundton',
-    text: 'Spiel in jedem Takt viermal den Grundton – den Ton, nach dem der Akkord heißt. Wo er liegt, zeigt der goldene Punkt auf dem Hals.',
+    title: tk('1 · Grundton'),
+    text: tk('Spiel in jedem Takt viermal den Grundton – den Ton, nach dem der Akkord heißt. Wo er liegt, zeigt der goldene Punkt auf dem Hals.'),
     notes: pattern([0, 0, 0, 0]),
   },
   {
     id: 'quinte',
-    title: '2 · Grundton und Quinte',
-    text: 'Zweimal Grundton, zweimal Quinte. Die Quinte ist fünf Töne über dem Grundton und klingt wie ein starker Partner.',
+    title: tk('2 · Grundton und Quinte'),
+    text: tk('Zweimal Grundton, zweimal Quinte. Die Quinte ist fünf Töne über dem Grundton und klingt wie ein starker Partner.'),
     notes: pattern([0, 0, 7, 7]),
   },
   {
     id: 'boogie',
-    title: '3 · Boogie-Riff',
-    text: 'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In C sind das alles leere Saiten: C, E, G, A!',
+    title: tk('3 · Boogie-Riff'),
+    text: tk('Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In C sind das alles leere Saiten: C, E, G, A!'),
     notes: pattern([0, 4, 7, 9]),
   },
   {
     id: 'frei',
-    title: '4 · Frei spielen',
-    text: 'Jetzt bist du dran: Alle Punkte auf dem Hals gehören zur Blues-Tonleiter und passen immer. Die goldenen passen besonders gut zum Akkord gerade. Probier kurze Melodien, wiederhole sie, mach Pausen!',
+    title: tk('4 · Frei spielen'),
+    text: tk('Jetzt bist du dran: Alle Punkte auf dem Hals gehören zur Blues-Tonleiter und passen immer. Die goldenen passen besonders gut zum Akkord gerade. Probier kurze Melodien, wiederhole sie, mach Pausen!'),
     notes: null,
   },
 ];

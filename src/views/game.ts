@@ -6,17 +6,22 @@ import { CHORDS, chord } from '../music/chords.ts';
 import { successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, markPracticed } from '../store.ts';
+import { t } from '../i18n.ts';
 
 const PRESETS = [
-  { label: 'C und Am', chords: ['C', 'Am'] },
-  { label: 'C und F', chords: ['C', 'F'] },
-  { label: 'C und G7', chords: ['C', 'G7'] },
-  { label: 'F und C7', chords: ['F', 'C7'] },
-  { label: 'C · Am · F · G7', chords: ['C', 'Am', 'F', 'G7'] },
-  { label: 'C · F · G7', chords: ['C', 'F', 'G7'] },
+  { chords: ['C', 'Am'] },
+  { chords: ['C', 'F'] },
+  { chords: ['C', 'G7'] },
+  { chords: ['F', 'C7'] },
+  { chords: ['C', 'Am', 'F', 'G7'] },
+  { chords: ['C', 'F', 'G7'] },
 ];
 
 const SECONDS = 60;
+
+function presetLabel(chords: string[]): string {
+  return chords.length === 2 ? t('{a} und {b}', { a: chords[0], b: chords[1] }) : chords.join(' · ');
+}
 
 export const game: View = (root) => {
   let selected = PRESETS[0].chords;
@@ -42,13 +47,13 @@ export const game: View = (root) => {
       h(
         'div',
         { class: 'card game-setup' },
-        h('h2', null, 'Welche Akkorde?'),
+        h('h2', null, t('Welche Akkorde?')),
         h(
           'div',
           { class: 'preset-grid' },
           ...PRESETS.map((p) => {
             const b = button(
-              h('span', null, h('span', null, p.label), best[p.chords.join('-')] ? h('span', { class: 'best' }, ` Rekord: ${best[p.chords.join('-')]}`) : null),
+              h('span', null, h('span', null, presetLabel(p.chords)), best[p.chords.join('-')] ? h('span', { class: 'best' }, ' ', t('Rekord: {n}', { n: best[p.chords.join('-')] })) : null),
               () => {
                 selected = p.chords;
                 Array.prototype.forEach.call(b.parentNode!.children, (c: Element) => c.setAttribute('aria-pressed', 'false'));
@@ -60,8 +65,8 @@ export const game: View = (root) => {
             return b;
           }),
         ),
-        h('p', null, `Spiel den Akkord, der erscheint – ich höre zu und zähle mit. Du hast ${SECONDS} Sekunden. Bei zwei Akkorden wechselst du immer hin und her.`),
-        button(h('span', null, icon('play'), ' Start'), () => void play(), 'btn-primary btn-play'),
+        h('p', null, t('Spiel den Akkord, der erscheint – ich höre zu und zähle mit. Du hast {n} Sekunden. Bei zwei Akkorden wechselst du immer hin und her.', { n: SECONDS })),
+        button(h('span', null, icon('play'), ' ', t('Start')), () => void play(), 'btn-primary btn-play'),
       ),
     );
   };
@@ -88,7 +93,7 @@ export const game: View = (root) => {
     const scoreEl = h('div', { class: 'score', 'aria-live': 'polite' }, '0');
     const timeEl = h('div', { class: 'time' }, String(SECONDS));
     const ring = h('div', { class: 'time-ring' }, timeEl);
-    const msg = h('div', { class: 'feedback' }, mic ? 'Los! Ich höre zu …' : 'Tippe auf „Geschafft“, wenn du den Akkord gespielt hast.');
+    const msg = h('div', { class: 'feedback' }, mic ? t('Los! Ich höre zu …') : t('Tippe auf „Geschafft“, wenn du den Akkord gespielt hast.'));
     const hit = (heard: boolean) => {
       score++;
       scoreEl.textContent = String(score);
@@ -104,14 +109,14 @@ export const game: View = (root) => {
       h(
         'div',
         { class: 'game-run' },
-        h('div', { class: 'card game-target' }, h('div', { class: 'card-label' }, 'Spiel'), name, diag),
+        h('div', { class: 'card game-target' }, h('div', { class: 'card-label' }, t('Spiel')), name, diag),
         h(
           'div',
           { class: 'game-side' },
-          h('div', { class: 'card stats' }, h('div', null, h('div', { class: 'card-label' }, 'Punkte'), scoreEl), ring),
+          h('div', { class: 'card stats' }, h('div', null, h('div', { class: 'card-label' }, t('Punkte')), scoreEl), ring),
           msg,
-          button(h('span', null, icon('check'), ' Geschafft'), () => hit(false), mic ? '' : 'btn-primary'),
-          button('Aufhören', setup, ''),
+          button(h('span', null, icon('check'), ' ', t('Geschafft')), () => hit(false), mic ? '' : 'btn-primary'),
+          button(t('Aufhören'), setup, ''),
         ),
       ),
     );
@@ -134,16 +139,16 @@ export const game: View = (root) => {
         h(
           'div',
           { class: 'card result' },
-          h('div', { class: 'wait-title' }, score > before ? 'Neuer Rekord!' : 'Zeit um!'),
+          h('div', { class: 'wait-title' }, score > before ? t('Neuer Rekord!') : t('Zeit um!')),
           h('div', { class: 'score huge' }, String(score)),
-          h('p', null, score > before ? `Vorher: ${before}` : `Dein Rekord: ${before}`),
-          h('div', { class: 'row' }, button('Nochmal', () => void play(), 'btn-primary'), button('Andere Akkorde', setup)),
+          h('p', null, score > before ? t('Vorher: {n}', { n: before }) : t('Dein Rekord: {n}', { n: before })),
+          h('div', { class: 'row' }, button(t('Nochmal'), () => void play(), 'btn-primary'), button(t('Andere Akkorde'), setup)),
         ),
       );
     }, 250);
   };
 
-  screen(root, { title: 'Akkord-Spiel', theme: 'cherry' }, area);
+  screen(root, { title: t('Akkord-Spiel'), theme: 'cherry' }, area);
   setup();
   return stop;
 };

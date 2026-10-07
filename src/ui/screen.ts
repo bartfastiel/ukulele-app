@@ -2,6 +2,7 @@ import { h, clear } from './dom.ts';
 import { icon } from './icons.ts';
 import { openMic, micState } from '../audio/mic.ts';
 import { audio } from '../audio/engine.ts';
+import { t, tk } from '../i18n.ts';
 
 export type Cleanup = (() => void) | void;
 export type View = (root: HTMLElement, param: string) => Cleanup;
@@ -17,7 +18,7 @@ export function screen(root: HTMLElement, opts: { title: string; back?: string; 
       { class: 'topbar' },
       h(
         'a',
-        { class: 'btn btn-round', href: back, 'aria-label': back === '#/' ? 'Zur Startseite' : 'Zurück' },
+        { class: 'btn btn-round', href: back, 'aria-label': back === '#/' ? t('Zur Startseite') : t('Zurück') },
         icon(back === '#/' ? 'home' : 'back'),
       ),
       h('h1', null, opts.title),
@@ -94,13 +95,13 @@ export function ensureMic(): Promise<boolean> {
   return new Promise((resolve) => {
     const d = dialog(
       h('div', { class: 'dialog-icon' }, icon('mic', 'icon big')),
-      h('h2', null, 'Darf ich zuhören?'),
-      h('p', null, 'Damit ich hören kann, ob dein Akkord stimmt, brauche ich das Mikrofon. Es wird nichts aufgenommen und nichts verschickt.'),
+      h('h2', null, t('Darf ich zuhören?')),
+      h('p', null, t('Damit ich hören kann, ob dein Akkord stimmt, brauche ich das Mikrofon. Es wird nichts aufgenommen und nichts verschickt.')),
       h(
         'div',
         { class: 'row' },
         button(
-          'Ja, hör zu!',
+          t('Ja, hör zu!'),
           () => {
             d.close();
             try {
@@ -112,7 +113,7 @@ export function ensureMic(): Promise<boolean> {
           },
           'btn-primary',
         ),
-        button('Ohne Mikrofon', () => {
+        button(t('Ohne Mikrofon'), () => {
           d.close();
           resolve(false);
         }),
@@ -124,17 +125,17 @@ export function ensureMic(): Promise<boolean> {
 function showDenied(): Promise<boolean> {
   return new Promise((resolve) => {
     const d = dialog(
-      h('h2', null, 'Ich kann nichts hören'),
-      h('p', null, 'Das Mikrofon ist gesperrt. Frag einen Erwachsenen:'),
+      h('h2', null, t('Ich kann nichts hören')),
+      h('p', null, t('Das Mikrofon ist gesperrt. Frag einen Erwachsenen:')),
       h(
         'ul',
         { class: 'help' },
-        h('li', null, 'iPad: Einstellungen › Safari › Mikrofon › „Erlauben“, dann die Seite neu laden.'),
-        h('li', null, 'Android/Chrome: auf das Schloss neben der Adresse tippen › Mikrofon › Zulassen.'),
+        h('li', null, t('iPad: Einstellungen › Safari › Mikrofon › „Erlauben“, dann die Seite neu laden.')),
+        h('li', null, t('Android/Chrome: auf das Schloss neben der Adresse tippen › Mikrofon › Zulassen.')),
       ),
-      h('p', null, 'Du kannst trotzdem weiterüben – dann tippst du selbst auf „Geschafft“.'),
+      h('p', null, t('Du kannst trotzdem weiterüben – dann tippst du selbst auf „Geschafft“.')),
       button(
-        'Ohne Mikrofon weiter',
+        t('Ohne Mikrofon weiter'),
         () => {
           d.close();
           resolve(false);
@@ -146,11 +147,11 @@ function showDenied(): Promise<boolean> {
 }
 
 /** Lob in Abwechslung, damit es nicht abgenutzt klingt. */
-const PRAISE = ['Super!', 'Klasse!', 'Genau so!', 'Stark!', 'Wow!', 'Spitze!', 'Perfekt!', 'Yeah!'];
+const PRAISE = [tk('Super!'), tk('Klasse!'), tk('Genau so!'), tk('Stark!'), tk('Wow!'), tk('Spitze!'), tk('Perfekt!'), tk('Yeah!')];
 let praiseIdx = 0;
 export function praise(): string {
   praiseIdx = (praiseIdx + 1 + Math.floor(Math.random() * 3)) % PRAISE.length;
-  return PRAISE[praiseIdx];
+  return t(PRAISE[praiseIdx]);
 }
 
 /** Bildschirm wach halten, solange gespielt wird (Safari ab 16.4, Chrome; ältere Geräte ignorieren es). */

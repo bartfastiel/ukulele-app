@@ -1,3 +1,4 @@
+import { tk } from '../i18n.ts';
 import { CHORDS } from './chords.ts';
 import { NOTE_NAMES, STRINGS, freqToMidi, pitchClass } from './notes.ts';
 import type { Peak } from '../audio/chord-detect.ts';
@@ -129,26 +130,26 @@ export interface Quality {
 
 /** Nach Häufigkeit sortiert: bei mehreren passenden Namen steht der gebräuchlichste vorn. */
 export const QUALITIES: Quality[] = [
-  { suffix: '', name: 'Dur', intervals: [0, 4, 7] },
-  { suffix: 'm', name: 'Moll', intervals: [0, 3, 7] },
-  { suffix: '7', name: 'Sept (Dominantsept)', intervals: [0, 4, 7, 10] },
-  { suffix: 'm7', name: 'Moll-Sept', intervals: [0, 3, 7, 10] },
-  { suffix: 'maj7', name: 'Major-Sept (große Septime)', intervals: [0, 4, 7, 11] },
-  { suffix: '6', name: 'Sext', intervals: [0, 4, 7, 9] },
-  { suffix: 'm6', name: 'Moll-Sext', intervals: [0, 3, 7, 9] },
-  { suffix: 'sus4', name: 'sus4 (Quarte statt Terz)', intervals: [0, 5, 7] },
-  { suffix: 'sus2', name: 'sus2 (Sekunde statt Terz)', intervals: [0, 2, 7] },
-  { suffix: '7sus4', name: 'Sept mit Quarte', intervals: [0, 5, 7, 10] },
-  { suffix: 'add9', name: 'Dur mit None', intervals: [0, 2, 4, 7] },
-  { suffix: 'dim', name: 'vermindert', intervals: [0, 3, 6] },
-  { suffix: 'dim7', name: 'vermindert-Sept', intervals: [0, 3, 6, 9] },
-  { suffix: 'm7b5', name: 'halbvermindert', intervals: [0, 3, 6, 10] },
-  { suffix: 'aug', name: 'übermäßig', intervals: [0, 4, 8] },
-  { suffix: 'mmaj7', name: 'Moll mit großer Septime', intervals: [0, 3, 7, 11] },
-  { suffix: '7', name: 'Sept (ohne Quinte)', intervals: [0, 4, 10] },
-  { suffix: 'm7', name: 'Moll-Sept (ohne Quinte)', intervals: [0, 3, 10] },
-  { suffix: 'maj7', name: 'Major-Sept (ohne Quinte)', intervals: [0, 4, 11] },
-  { suffix: '5', name: 'Quinte (Powerchord)', intervals: [0, 7] },
+  { suffix: '', name: tk('Dur'), intervals: [0, 4, 7] },
+  { suffix: 'm', name: tk('Moll'), intervals: [0, 3, 7] },
+  { suffix: '7', name: tk('Sept (Dominantsept)'), intervals: [0, 4, 7, 10] },
+  { suffix: 'm7', name: tk('Moll-Sept'), intervals: [0, 3, 7, 10] },
+  { suffix: 'maj7', name: tk('Major-Sept (große Septime)'), intervals: [0, 4, 7, 11] },
+  { suffix: '6', name: tk('Sext'), intervals: [0, 4, 7, 9] },
+  { suffix: 'm6', name: tk('Moll-Sext'), intervals: [0, 3, 7, 9] },
+  { suffix: 'sus4', name: tk('sus4 (Quarte statt Terz)'), intervals: [0, 5, 7] },
+  { suffix: 'sus2', name: tk('sus2 (Sekunde statt Terz)'), intervals: [0, 2, 7] },
+  { suffix: '7sus4', name: tk('Sept mit Quarte'), intervals: [0, 5, 7, 10] },
+  { suffix: 'add9', name: tk('Dur mit None'), intervals: [0, 2, 4, 7] },
+  { suffix: 'dim', name: tk('vermindert'), intervals: [0, 3, 6] },
+  { suffix: 'dim7', name: tk('vermindert-Sept'), intervals: [0, 3, 6, 9] },
+  { suffix: 'm7b5', name: tk('halbvermindert'), intervals: [0, 3, 6, 10] },
+  { suffix: 'aug', name: tk('übermäßig'), intervals: [0, 4, 8] },
+  { suffix: 'mmaj7', name: tk('Moll mit großer Septime'), intervals: [0, 3, 7, 11] },
+  { suffix: '7', name: tk('Sept (ohne Quinte)'), intervals: [0, 4, 10] },
+  { suffix: 'm7', name: tk('Moll-Sept (ohne Quinte)'), intervals: [0, 3, 10] },
+  { suffix: 'maj7', name: tk('Major-Sept (ohne Quinte)'), intervals: [0, 4, 11] },
+  { suffix: '5', name: tk('Quinte (Powerchord)'), intervals: [0, 7] },
 ];
 
 export interface ChordName {

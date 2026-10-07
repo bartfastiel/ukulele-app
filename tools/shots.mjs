@@ -1,8 +1,11 @@
 // Bildschirmfotos aller Ansichten in typischen Geräteformaten (Sichtprüfung des Designs).
+// node tools/shots.mjs <ordner> [de|en|fr] – die Sprache kommt über die Browser-Sprache (Standard: de).
 import { chromium, webkit } from '@playwright/test';
 
 const base = process.env.BASE || 'http://localhost:4173/';
 const out = process.argv[2] || 'shots';
+const lang = process.argv[3] || 'de';
+const locale = { de: 'de-DE', en: 'en-US', fr: 'fr-FR' }[lang] || lang;
 const views = ['', 'lieder', 'lied/alle-voegel', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied', 'eigenes-lied/mein-sonnenlied', 'lied/mein-sonnenlied', 'lied-teilen/mein-sonnenlied'];
 const devices = [
   { name: 'ipad', width: 1024, height: 768, engine: webkit },
@@ -12,7 +15,7 @@ const devices = [
 const errors = [];
 for (const d of devices) {
   const browser = await d.engine.launch();
-  const page = await browser.newPage({ viewport: { width: d.width, height: d.height }, deviceScaleFactor: 1 });
+  const page = await browser.newPage({ viewport: { width: d.width, height: d.height }, deviceScaleFactor: 1, locale });
   page.on('pageerror', (e) => errors.push(`${d.name}: ${e.message}`));
   // eigenes Beispiel-Lied (eigener Text) für Bearbeiten, Spielen und Teilen
   await page.goto(base);
@@ -24,7 +27,7 @@ for (const d of devices) {
   for (const v of views) {
     await page.goto(`${base}#/${v}`);
     await page.waitForTimeout(250);
-    await page.screenshot({ path: `${out}/${d.name}-${v.replace(/\//g, '_') || 'home'}.png` });
+    await page.screenshot({ path: `${out}/${lang}-${d.name}-${v.replace(/\//g, '_') || 'home'}.png` });
   }
   await browser.close();
 }

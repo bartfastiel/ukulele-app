@@ -1,5 +1,6 @@
 import { s } from './dom.ts';
 import { STRINGS } from '../music/notes.ts';
+import { t } from '../i18n.ts';
 
 export interface Mark {
   string: number;
@@ -23,7 +24,7 @@ export function fretboard(marks: Mark[], frets = 5): SVGElement {
   const order = [3, 2, 1, 0];
   const yOf = (string: number) => top + order.indexOf(string) * gap;
   const xOf = (fret: number) => (fret === 0 ? x0 - 24 : x0 + fw * (fret - 0.5));
-  const svg = s('svg', { viewBox: `0 0 ${width} ${height}`, class: 'fretboard', role: 'img', 'aria-label': 'Griffbrett' });
+  const svg = s('svg', { viewBox: `0 0 ${width} ${height}`, class: 'fretboard', role: 'img', 'aria-label': t('Griffbrett') });
   svg.appendChild(s('rect', { x: x0, y: top - 12, width: fw * frets + 6, height: gap * 3 + 24, rx: 4, class: 'fb-wood' }));
   [3, 5].forEach((f) => {
     if (f <= frets) svg.appendChild(s('circle', { cx: x0 + fw * (f - 0.5), cy: top + gap * 1.5, r: 5, class: 'fb-dot' }));

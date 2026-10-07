@@ -1,6 +1,7 @@
 import { installWood } from './ui/wood.ts';
 import { closeMic } from './audio/mic.ts';
 import { load } from './store.ts';
+import { initLang, onLangChange, t, tk } from './i18n.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
 import { songs } from './views/songs.ts';
@@ -35,25 +36,25 @@ const ROUTES: Record<string, View> = {
 };
 
 const TITLES: Record<string, string> = {
-  lieder: 'Lieder',
-  lied: 'Lied',
-  akkorde: 'Akkorde',
-  akkord: 'Akkord',
-  spiel: 'Akkord-Spiel',
-  stimmen: 'Stimmen',
-  rhythmus: 'Rhythmus',
-  sterne: 'Meine Sterne',
-  aufnahme: 'Aufnahmen',
-  detektiv: 'Akkord-Detektiv',
-  blues: 'Blues',
-  'eigenes-lied': 'Eigenes Lied',
-  'lied-teilen': 'Lied teilen',
-  teilen: 'Geschicktes Lied',
+  lieder: tk('Lieder'),
+  lied: tk('Lied'),
+  akkorde: tk('Akkorde'),
+  akkord: tk('Akkord'),
+  spiel: tk('Akkord-Spiel'),
+  stimmen: tk('Stimmen'),
+  rhythmus: tk('Rhythmus'),
+  sterne: tk('Meine Sterne'),
+  aufnahme: tk('Aufnahmen'),
+  detektiv: tk('Akkord-Detektiv'),
+  blues: tk('Blues'),
+  'eigenes-lied': tk('Eigenes Lied'),
+  'lied-teilen': tk('Lied teilen'),
+  teilen: tk('Geschicktes Lied'),
 };
 
 let cleanup: Cleanup = undefined;
 
-function route(): void {
+function route(keepScroll = false): void {
   // ohne Array-Destrukturierung: esbuild kann sie für Safari 12 nicht umschreiben
   const parts = location.hash.replace(/^#/, '').split('/');
   const name = parts[1] || '';
@@ -64,7 +65,8 @@ function route(): void {
   closeMic();
   const root = document.getElementById('app')!;
   cleanup = view(root, param);
-  document.title = TITLES[name] ? `${TITLES[name]} · Ukulele-Club` : 'Ukulele-Club';
+  document.title = TITLES[name] ? `${t(TITLES[name])} · Ukulele-Club` : 'Ukulele-Club';
+  if (keepScroll) return;
   window.scrollTo(0, 0);
   const focus = root.querySelector('h1');
   if (focus && name) {
@@ -74,8 +76,11 @@ function route(): void {
 }
 
 installWood();
+initLang(load().settings.lang);
+// Sprachwechsel: aktuelle Ansicht neu zeichnen, ohne neu zu laden
+onLangChange(() => route(true));
 if (load().settings.calm) document.documentElement.classList.add('calm');
-window.addEventListener('hashchange', route);
+window.addEventListener('hashchange', () => route());
 route();
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
