@@ -7,18 +7,25 @@ export type Block =
   | { p: L10n }
   | { ul: L10n[] }
   | { ol: L10n[] }
-  | { tip: L10n }
-  | { chord: string }
-  | { tool: ToolId };
+  | { tip: L10n } // hervorgehobener Tipp-Kasten
+  | { chord: string } // Griffbild dieses Akkords für das Instrument der Seite (z. B. 'C', 'Am', 'G7')
+  | { tool: ToolId }; // großer Knopf zum Werkzeug der App
 export type ToolId = 'stimmen' | 'rhythmus' | 'spiel' | 'blues' | 'detektiv' | 'akkorde' | 'lieder' | 'eigenes-lied';
-export type Category = 'erste-schritte' | 'technik' | 'akkorde' | 'rhythmus' | 'theorie' | 'instrument' | 'eltern-lehrkraefte';
+export type Category =
+  | 'erste-schritte'
+  | 'technik'
+  | 'akkorde'
+  | 'rhythmus'
+  | 'theorie'
+  | 'instrument'
+  | 'eltern-lehrkraefte';
 export interface Article {
-  id: string;
-  slug: L10n;
-  instruments: InstrumentId[];
+  id: string; // stabil, a-z0-9-
+  slug: L10n; // URL-Teil je Sprache, a-z0-9-, sprechend (SEO)
+  instruments: InstrumentId[]; // auf welchen Instrument-Seiten der Artikel erscheint
   category: Category;
-  title: L10n;
-  description: L10n;
+  title: L10n; // H1/Seitentitel, enthält das Suchwort natürlich
+  description: L10n; // Meta-Beschreibung, 120–155 Zeichen
   blocks: Block[];
-  related?: string[];
+  related?: string[]; // ids verwandter Artikel
 }
