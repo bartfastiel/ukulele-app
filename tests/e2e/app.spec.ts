@@ -372,8 +372,15 @@ test('Impressum: Anschrift erscheint nur als Grafik aus Kacheln, nie als Text', 
   test.skip((await spot.count()) === 0, 'ohne Impressumsangaben gebaut');
   await expect(page.locator('.secret-art').first()).toHaveAttribute('aria-label', 'Anschrift als Bild');
   await expect.poll(() => page.locator('.secret-art canvas').count()).toBeGreaterThan(20);
-  const text = await page.evaluate(() => document.documentElement.outerHTML + document.body.innerText);
-  for (const part of ['Beispielweg', '12345', 'example.org', '@']) expect(text.indexOf(part), part).toBeLessThan(0);
+  const html = await page.evaluate(() => document.documentElement.outerHTML);
+  for (const part of ['Beispielweg', 'Beispielstadt', 'beispiel.invalid']) expect(html.indexOf(part), part).toBeLessThan(0);
+  // der Köder steht im HTML, ist aber unsichtbar und wird nicht vorgelesen
+  const decoy = page.locator('.decoy').first();
+  await expect(decoy).toHaveAttribute('aria-hidden', 'true');
+  expect(await decoy.evaluate((el) => getComputedStyle(el).color)).toBe('rgba(0, 0, 0, 0)');
+  expect(await decoy.evaluate((el) => getComputedStyle(el).userSelect || getComputedStyle(el).webkitUserSelect)).toBe('none');
+  const box = await decoy.boundingBox();
+  expect(box && box.width * box.height).toBeLessThanOrEqual(1);
   await expect(page.locator('[data-kind="mail"] .secret-art')).toHaveAttribute('aria-label', 'E-Mail-Adresse als Bild');
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
 });

@@ -487,8 +487,10 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
   // nur verpackt im HTML; im Browser setzt src/ui/secret-text.ts die Angaben als Grafik zusammen
   const legal = env().legal;
   const secret = (text: string, kind: string) => h('span', { class: 'secret', 'data-secret': scramble(text), 'data-kind': kind }, t('Wird geladen …'));
-  const contact = legal && legal.email ? h('p', null, t('E-Mail:'), ' ', secret(legal.email, 'mail')) : null;
-  const address = legal && legal.address ? h('p', null, secret(legal.address, 'address')) : null;
+  // Köder für Adress-Sammler: eindeutig erfundene Angaben (reservierte Beispiel-Domain), unsichtbar, nicht vorgelesen
+  const decoy = () => h('span', { class: 'decoy', 'aria-hidden': 'true' }, 'Max Mustermann, Musterstraße 1, 12345 Musterstadt, kontakt@example.org');
+  const contact = legal && legal.email ? h('p', null, t('E-Mail:'), ' ', secret(legal.email, 'mail'), decoy()) : null;
+  const address = legal && legal.address ? h('p', null, decoy(), secret(legal.address, 'address')) : null;
   if (kind === 'impressum')
     return staticScreen(
       t('Impressum'),

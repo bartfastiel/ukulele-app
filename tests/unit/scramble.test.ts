@@ -23,12 +23,14 @@ test('Impressum: Angaben nur verpackt im HTML, Seite nicht indexiert', () => {
     preview: false,
     assets: { js: 'a.js', css: 'a.css' },
     sites: ['ukulele'],
-    legal: { address: ADDRESS, email: 'post@example.org' },
+    legal: { address: ADDRESS, email: 'post@beispiel.invalid' },
   });
   for (const file of ['impressum/index.html', 'en/imprint/index.html', 'datenschutz/index.html']) {
     const html = pages.filter((p) => p.file === file)[0].html;
     assert.ok(html.indexOf('data-secret="') >= 0, `${file}: keine verpackten Angaben`);
-    for (const part of ['Müllerstraße', '80331', 'example.org"', 'post@']) assert.ok(html.indexOf(part) < 0, `${file} enthält ${part}`);
+    for (const part of ['Müllerstraße', '80331', 'beispiel.invalid', 'post@']) assert.ok(html.indexOf(part) < 0, `${file} enthält ${part}`);
+    // der Köder ist da, aber für Screenreader verborgen
+    assert.ok(/<span class="decoy" aria-hidden="true">Max Mustermann, Musterstraße 1, 12345 Musterstadt, kontakt@example\.org<\/span>/.test(html), `${file}: Köder fehlt`);
     assert.ok(html.indexOf('<meta name="robots" content="noindex">') >= 0, `${file} ohne noindex`);
   }
   for (const p of pages) if (p.file.indexOf('impressum') < 0 && p.file.indexOf('datenschutz') < 0 && p.file.indexOf('imprint') < 0 && p.file.indexOf('privacy') < 0 && p.file.indexOf('mentions') < 0 && p.file.indexOf('confidentialite') < 0) assert.ok(p.html.indexOf('data-secret') < 0, `${p.file} enthält Impressumsangaben`);

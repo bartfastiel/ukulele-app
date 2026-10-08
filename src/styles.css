@@ -2471,3 +2471,15 @@ html[data-instrument='banjo'] .card {
   margin: 4px 0 0;
   font-size: 0.85em;
 }
+
+/* Köder im Impressum: im HTML lesbar, auf der Seite unsichtbar und nicht markierbar */
+.decoy {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
