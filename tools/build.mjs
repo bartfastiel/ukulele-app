@@ -8,6 +8,7 @@
 //               Vorschau „/<pfad>/pr-<nr>/{site}/“)
 //   PUBLIC_URL  öffentliche Adresse je Seite für canonical/hreflang/Sitemap (Standard https://{site}.wer-ist-daniel-schwarz.de/)
 //   PREVIEW=1   nichts indexieren (Vorschauen, lokale Builds)
+//   LEGAL_ADDRESS, LEGAL_EMAIL  Impressumsangaben (GitHub-Secrets, nie im Repo; Zeilen der Anschrift mit „|“ getrennt)
 import { build, context } from 'esbuild';
 import { createHash } from 'node:crypto';
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -50,7 +51,9 @@ async function renderAll(assets) {
   const { SITES } = await import('../src/site/sites.ts');
   const out = {};
   for (const id of SITE_IDS) {
-    const pages = renderSite(id, { url, publicUrl, preview: PREVIEW, assets, sites: SITE_IDS });
+    const lines = (process.env.LEGAL_ADDRESS || '').split('|').map((x) => x.trim()).filter(Boolean);
+    const legal = { address: lines.join('\n'), email: (process.env.LEGAL_EMAIL || '').trim() };
+    const pages = renderSite(id, { url, publicUrl, preview: PREVIEW, assets, sites: SITE_IDS, legal });
     out[id] = { pages, sitemap: sitemap(pages), def: SITES.filter((s) => s.id === id)[0] };
   }
   return out;
