@@ -340,7 +340,7 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
   specs.push({
     route: 'lieder',
     title: t('Lieder für {instrument} mit Akkorden und Text', { instrument: inst }),
-    description: t('{n} gemeinfreie Lieder für {instrument}: Kinderlieder, Lagerfeuer, Weihnachten und mehr – mit Akkorden, Text und Melodie zum Mitspielen.', { n: SONGS.length, instrument: inst }),
+    description: t('{n} Lieder für {instrument}: Kinderlieder, Lagerfeuer, Weihnachten und mehr – mit Akkorden, Text und Melodie zum Mitspielen.', { n: SONGS.length, instrument: inst }),
     view: songs,
     extra: () => songsIntroCard(siteDef, l),
     crumb: t('Lieder'),
@@ -479,7 +479,7 @@ function songsIntroCard(siteDef: SiteDef, l: Lang): Node {
     'section',
     { class: 'card seo-card' },
     h('h2', null, t('Lieder für {instrument} mit Akkorden und Text', { instrument: siteDef.name[l] })),
-    h('p', null, t('Alle Lieder sind gemeinfrei oder selbst geschrieben: Kinderlieder, Volkslieder, Weihnachtslieder und englische Songs, mit Akkorden über dem Text und vielen Melodien als Tabulatur. Beim Akkordwechsel wartet die Begleitung auf dich.')),
+    h('p', null, t('Kinderlieder, Volkslieder, Weihnachtslieder und englische Songs, mit Akkorden über dem Text und vielen Melodien als Tabulatur. Beim Akkordwechsel wartet die Begleitung auf dich.')),
     h(
       'ul',
       { class: 'wissen-list' },
@@ -623,8 +623,6 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
         h('h2', null, t('Ein privates Projekt')),
         p(t('Diese Seite ist ein privates, nicht-kommerzielles Projekt: kostenlos, ohne Werbung, ohne Abo, ohne Gewinnabsicht. Der Quelltext ist offen (MIT-Lizenz).')),
         h('p', null, h('a', { href: 'https://github.com/bartfastiel/ukulele-app' }, t('Quelltext auf GitHub'))),
-        h('h2', null, t('Lieder und Rechte')),
-        p(t('Alle mitgelieferten Lieder sind gemeinfrei oder selbst geschrieben; die Herkunft steht bei jedem Lied. Wenn du meinst, dass trotzdem etwas nicht hierher gehört, schreib bitte – es wird sofort geprüft und notfalls entfernt.')),
       ),
     );
   if (kind === 'datenschutz')

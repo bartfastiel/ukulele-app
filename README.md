@@ -51,8 +51,8 @@ Sprache des Geräts. Liedtitel und Liedtexte bleiben in ihrer Originalsprache; A
 und eigene Lieder. Ein Teil hat eine ausnotierte Melodie (Karaoke mit Melodie und Tabulatur), die übrigen sind
 „Akkorde + Text“ – die Melodie kennt man, die App führt durch die Akkordwechsel.
 
-Alle Lieder sind gemeinfrei (Text **und** Melodie: Urheber vor 1956 gestorben oder nachweislich traditionell) oder
-eigene. Bei jedem Lied stehen Urheber mit Lebensdaten und die gemeinfreie Textquelle (z. B. volksliederarchiv.de,
+Aufgenommen werden nur Lieder, deren Text **und** Melodie von vor 1956 gestorbenen Urhebern stammen oder nachweislich
+traditionell sind, oder eigene. Bei jedem Lied stehen Urheber mit Lebensdaten und die gemeinfreie Textquelle (z. B. volksliederarchiv.de,
 Erstdrucke über Wikipedia, Camp-Fire Choruses 1916, The Shanty Book 1921). Bewusst ausgeschlossen sind u. a. jüngere
 Textfassungen (z. B. „Im Märzen der Bauer“ nach Hensel 1923, frei erst ab 2027), Lieder mit geschützter Melodie
 („Hoch auf dem gelben Wagen“) und Lieder mit rassistischen Originalstrophen.

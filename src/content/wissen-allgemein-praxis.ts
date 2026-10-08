@@ -318,16 +318,16 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
       fr: 'Chansons faciles pour débutants – avec un, deux ou trois accords',
     },
     description: {
-      de: 'Einfache Lieder für Anfänger und Kinder, sortiert nach Anzahl der Akkorde: vom Ein-Akkord-Lied bis zu vier Akkorden. Alle gemeinfrei und direkt spielbar.',
-      en: 'Easy songs for beginners and kids, sorted by number of chords: from one-chord songs up to four chords. All in the public domain and ready to play.',
-      fr: 'Des chansons faciles pour débutants et enfants, classées par nombre d’accords, d’un seul à quatre. Toutes libres de droits et prêtes à jouer.',
+      de: 'Einfache Lieder für Anfänger und Kinder, sortiert nach Anzahl der Akkorde: vom Ein-Akkord-Lied bis zu vier Akkorden. Alle direkt spielbar.',
+      en: 'Easy songs for beginners and kids, sorted by number of chords: from one-chord songs up to four chords. All ready to play.',
+      fr: 'Des chansons faciles pour débutants et enfants, classées par nombre d’accords, d’un seul à quatre. Toutes prêtes à jouer.',
     },
     blocks: [
       {
         p: {
-          de: 'Das Schönste am Lernen ist, wenn aus ein paar Griffen ein echtes Lied wird. Dafür brauchst du gar nicht viele Akkorde. Hier findest du Lieder, sortiert danach, wie viele Akkorde vorkommen. Alle sind gemeinfrei und in der App mit Text und Akkordwechseln zum Mitspielen da.',
-          en: 'The best part of learning is when a few chords turn into a real song. You don’t need many chords for that. Here are songs sorted by how many chords they use. They are all in the public domain and in the app with lyrics and chord changes to play along.',
-          fr: 'Le plus chouette, c’est quand quelques accords deviennent une vraie chanson. Et il n’en faut pas beaucoup ! Voici des chansons classées selon le nombre d’accords. Toutes sont libres de droits et dans l’appli, avec paroles et changements d’accords pour jouer avec.',
+          de: 'Das Schönste am Lernen ist, wenn aus ein paar Griffen ein echtes Lied wird. Dafür brauchst du gar nicht viele Akkorde. Hier findest du Lieder, sortiert danach, wie viele Akkorde vorkommen. Alle sind in der App mit Text und Akkordwechseln zum Mitspielen da.',
+          en: 'The best part of learning is when a few chords turn into a real song. You don’t need many chords for that. Here are songs sorted by how many chords they use. They are all in the app with lyrics and chord changes to play along.',
+          fr: 'Le plus chouette, c’est quand quelques accords deviennent une vraie chanson. Et il n’en faut pas beaucoup ! Voici des chansons classées selon le nombre d’accords. Toutes sont dans l’appli, avec paroles et changements d’accords pour jouer avec.',
         },
       },
       { h2: { de: 'Ein Akkord: sofort loslegen', en: 'One chord: start right away', fr: 'Un seul accord : on commence tout de suite' } },
@@ -602,9 +602,9 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
             fr: '**Sans compte :** pas d’inscription, pas de gestion de classe, aucune donnée d’élève. Il suffit d’ouvrir la page.',
           },
           {
-            de: '**Gemeinfreie Lieder:** Alle mitgelieferten Lieder sind gemeinfrei (Text und Melodie) und mit Quelle versehen – unproblematisch für den Unterricht.',
-            en: '**Public-domain songs:** every included song is in the public domain (lyrics and melody) and comes with its source – no issues for classroom use.',
-            fr: '**Chansons libres de droits :** toutes les chansons fournies sont dans le domaine public (paroles et mélodie), avec leur source – sans souci pour la classe.',
+            de: '**Lieder mit Quelle:** Bei jedem mitgelieferten Lied stehen Herkunft und Textquelle.',
+            en: '**Songs with sources:** every included song comes with its origin and the source of its lyrics.',
+            fr: '**Chansons avec source :** chaque chanson fournie indique son origine et la source des paroles.',
           },
           {
             de: '**Eigene Lieder teilen:** Lehrkräfte können ein Lied mit Akkorden eingeben und per Link oder QR-Code an die Klasse weitergeben. Der Inhalt steckt im Link selbst, nichts wird hochgeladen. Bitte nur eigene oder freie Lieder teilen.',
