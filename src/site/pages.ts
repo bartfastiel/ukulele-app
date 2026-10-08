@@ -354,8 +354,8 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
 function legalSpecs(siteDef: SiteDef, l: Lang): Spec[] {
   const brand = siteDef.brand[l];
   return [
-    { route: 'ueber', title: t('Über den {brand}', { brand }), description: t('Wer hinter der App steht und warum sie kostenlos ist: ein privates Projekt, ohne Werbung, ohne Abo, Open Source.'), body: () => legalPage('ueber', siteDef, l) },
-    { route: 'impressum', noindex: true, title: t('Impressum'), description: t('Impressum und Kontakt: ein privates, nicht-kommerzielles Projekt – kostenlos, ohne Werbung und ohne Abo.'), body: () => legalPage('impressum', siteDef, l) },
+    { route: 'ueber', title: t('Über den {brand}', { brand }), description: t('Wer hinter der App steht und warum sie kostenlos ist: ein privates, persönliches Projekt, ohne Werbung, ohne Abo, Open Source.'), body: () => legalPage('ueber', siteDef, l) },
+    { route: 'impressum', noindex: true, title: t('Impressum'), description: t('Impressum und Kontakt: ein privates, persönliches, nicht-kommerzielles Projekt – kostenlos, ohne Werbung und ohne Abo.'), body: () => legalPage('impressum', siteDef, l) },
     { route: 'datenschutz', noindex: true, title: t('Datenschutz'), description: t('Datenschutz: keine Konten, keine Cookies, kein Tracking – Fortschritt und Mikrofon bleiben auf deinem Gerät.'), body: () => legalPage('datenschutz', siteDef, l) },
   ];
 }
@@ -500,8 +500,8 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
         h('p', null, LEGAL_NAME),
         address || p(t('Die Anschrift wird gerade eingetragen.')),
         contact,
-        h('h2', null, t('Ein privates Projekt')),
-        p(t('Diese Seite ist ein privates, nicht-kommerzielles Projekt: kostenlos, ohne Werbung, ohne Abo, ohne Gewinnabsicht. Der Quelltext ist offen (MIT-Lizenz).')),
+        h('h2', null, t('Ein privates, persönliches Projekt')),
+        p(t('Diese Seite ist ein privates, persönliches, nicht-kommerzielles Projekt: kostenlos, ohne Werbung, ohne Abo, ohne Gewinnabsicht. Der Quelltext ist offen (MIT-Lizenz).')),
         h('p', null, h('a', { href: 'https://github.com/bartfastiel/ukulele-app' }, t('Quelltext auf GitHub'))),
         h('h2', null, t('Lieder und Rechte')),
         p(t('Alle mitgelieferten Lieder sind gemeinfrei oder selbst geschrieben; die Herkunft steht bei jedem Lied. Wenn du meinst, dass trotzdem etwas nicht hierher gehört, schreib bitte – es wird sofort geprüft und notfalls entfernt.')),
@@ -538,7 +538,7 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
     h(
       'section',
       { class: 'card article' },
-      p(t('Diese App ist entstanden, damit Kinder in Instrumentalklassen zu Hause gern üben – ohne Abo-Fallen, ohne Werbung und ohne Konto. Sie ist ein privates Projekt, kostenlos und Open Source.')),
+      p(t('Diese App ist entstanden, damit Kinder in Instrumentalklassen zu Hause gern üben – ohne Abo-Fallen, ohne Werbung und ohne Konto. Sie ist ein privates, persönliches Projekt, kostenlos und Open Source.')),
       h('h2', null, t('Was sie kann')),
       h(
         'ul',
