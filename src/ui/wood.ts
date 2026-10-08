@@ -10,7 +10,7 @@
  */
 import { instrument } from '../music/instrument.ts';
 
-type RGB = [number, number, number];
+export type RGB = [number, number, number];
 
 function lattice(px: number, py: number, seed: number): (x: number, y: number) => number {
   const vals = new Float32Array(px * py);
@@ -99,13 +99,13 @@ function flamedMaple(seed: number): Grain {
   };
 }
 
-interface Material {
+export interface Material {
   grain: (seed: number) => Grain;
   dark: RGB;
   light: RGB;
 }
 
-const MATERIALS: Record<string, { body: Material; button: Material }> = {
+export const MATERIALS: Record<string, { body: Material; button: Material }> = {
   ukulele: {
     body: { grain: mahogany, dark: [58, 20, 9], light: [122, 48, 22] },
     button: { grain: mahogany, dark: [92, 32, 14], light: [168, 72, 34] },
