@@ -174,10 +174,10 @@ test('Blues in G: Akkorde, Erklärung und Vorgabe wandern mit', async ({ page })
 test('Startseite: Blues und Akkord-Detektiv sind erreichbar', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('link', { name: /Akkord-Detektiv/ }).click();
-  await expect(page.getByRole('heading', { name: 'Akkord-Detektiv' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Akkord-Detektiv', exact: true })).toBeVisible();
   await page.goto('./');
   await page.getByRole('link', { name: /^Blues/ }).click();
-  await expect(page.getByRole('heading', { name: 'Blues' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Blues', exact: true })).toBeVisible();
 });
 
 test('Stille Nacht im 6/8-Takt: Einzähler, dann wandert die Silbe über das Melisma hinweg', async ({ page }) => {

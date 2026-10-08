@@ -28,4 +28,6 @@ export interface Article {
   description: L10n; // Meta-Beschreibung, 120–155 Zeichen
   blocks: Block[];
   related?: string[]; // ids verwandter Artikel
+  published?: string; // JJJJ-MM-TT, sonst der Start der Wissenssammlung
+  updated?: string; // JJJJ-MM-TT der letzten inhaltlichen Überarbeitung
 }

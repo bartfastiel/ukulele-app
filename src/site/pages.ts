@@ -32,6 +32,15 @@ import { detective } from '../views/detective.ts';
 import { blues } from '../views/blues.ts';
 import { ownSongEditor } from '../views/own-song.ts';
 import { receiveSong, shareSong } from '../views/share.ts';
+import { CATEGORIES } from '../music/song.ts';
+import { OG_HEIGHT, OG_WIDTH } from './og-image.ts';
+
+/** Vorschaubild je Instrument-Seite, erzeugt von tools/build.mjs (src/site/og-image.ts). */
+export const OG_IMAGE = 'og-image.png';
+/** Seit wann es die Wissensartikel gibt (datePublished), solange ein Artikel kein eigenes Datum trägt. */
+const ARTICLES_PUBLISHED = '2026-10-07';
+/** Längere Titel schneiden Suchmaschinen ab; bis hierhin wird der Markenname angehängt. */
+const TITLE_MAX = 65;
 
 export interface BuildEnv {
   /** Adresse der Seite, wie im Build verlinkt (Produktion https://ukulele.…/, Vorschau /vorschau-…/pr-1/ukulele/). */
@@ -72,6 +81,10 @@ interface Spec {
   jsonld?: () => object[];
   /** Nur auf diesen Sprachen (z. B. Wissensartikel mit Slug je Sprache) – sonst alle. */
   ogType?: string;
+  /** Letztes Glied der Brotkrümel (sonst der Titel). */
+  crumb?: string;
+  /** Gleicher Inhalt auf mehreren Instrument-Seiten: Diese Seite gilt als Original (canonical, Sitemap). */
+  canonicalSite?: SiteId;
 }
 
 const VIEW_NAMES: Record<string, View> = {
@@ -235,6 +248,63 @@ function songsWith(name: string): Song[] {
   return SONGS.filter((s) => s.chords.indexOf(name) >= 0);
 }
 
+function articlesOn(siteDef: SiteDef): Article[] {
+  return ARTICLES.filter((a) => a.instruments.indexOf(siteDef.instrument as 'ukulele') >= 0);
+}
+
+/** Artikel, die ein Griffbild oder Werkzeug zeigen oder darauf verlinken (für Querverweise). */
+function articlesAbout(kind: 'chord' | 'tool', value: string, siteDef: SiteDef): Article[] {
+  const link = new RegExp(`\\]\\(${kind}:${value.replace(/[#]/g, '\\$&')}\\)`);
+  const mentions = (b: Block) => {
+    const x = b as Record<string, unknown>;
+    if (x[kind] !== undefined) return String(x[kind]) === value;
+    return JSON.stringify(b).search(link) >= 0;
+  };
+  return articlesOn(siteDef).filter((a) => a.blocks.some(mentions));
+}
+
+function articleLinks(title: string, list: Article[], l: Lang): Node | null {
+  if (!list.length) return null;
+  return h('nav', { 'aria-label': title }, h('h2', null, title), h('ul', { class: 'wissen-list' }, ...list.map((a) => h('li', null, h('a', { href: rel(`wissen/${a.id}`, l) }, a.title[l])))));
+}
+
+/** Gleiche Artikel auf mehreren Instrument-Seiten: Original ist die erste Seite (Reihenfolge wie SITES). */
+function primarySite(a: Article): SiteId {
+  const hit = SITES.filter((s) => s.instrument && a.instruments.indexOf(s.instrument) >= 0 && env().sites.indexOf(s.id) >= 0)[0];
+  return hit ? hit.id : 'ukulele';
+}
+
+// Instrumentnamen stehen ohne Artikel in den Texten; wo die Sprache einen verlangt, wird er hier ergänzt.
+const GRAMMAR: Record<Lang, [RegExp, string][]> = {
+  de: [
+    [/\bauf (Ukulele|Gitarre)\b/g, 'auf der $1'],
+    [/\bauf Banjo\b/g, 'auf dem Banjo'],
+    [/\brund um (Ukulele|Gitarre)\b/g, 'rund um die $1'],
+    [/\brund um Banjo\b/g, 'rund ums Banjo'],
+  ],
+  en: [],
+  fr: [
+    [/\b([Ll])e guitare\b/g, '$1a guitare'],
+    [/\bau guitare\b/g, 'à la guitare'],
+    [/\bdu guitare\b/g, 'de la guitare'],
+    [/\b([MmTtSs])on guitare\b/g, '$1a guitare'],
+  ],
+};
+
+function grammar(text: string, l: Lang): string {
+  let out = text;
+  for (const rule of GRAMMAR[l]) out = out.replace(rule[0], rule[1]);
+  return out;
+}
+
+/** Erster Buchstabe groß (englische Titel beginnen sonst mit „ukulele chords“), Marke anhängen, solange es passt. */
+function pageTitle(title: string, brand: string): string {
+  const t1 = title.charAt(0).toUpperCase() + title.slice(1);
+  if (t1.indexOf(brand) >= 0) return t1;
+  const full = `${t1} | ${brand}`;
+  return full.length <= TITLE_MAX ? full : t1;
+}
+
 /** Inhaltsseite im Stil der App: Kopfzeile mit Zurück-Knopf, darunter cremefarbene Karten. */
 function staticScreen(title: string, back: string, ...content: (Node | null)[]): Node[] {
   const root = document.createElement('div');
@@ -261,8 +331,8 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
   }
   specs.push({
     route: '',
-    title: t('{brand} – {instrument} lernen, kostenlos', { brand, instrument: inst }),
-    description: t('Kostenlos {instrument} lernen: Lieder zum Mitspielen, Akkorde mit Griffbildern, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.', { instrument: inst }),
+    title: t('{instrument} lernen kostenlos: Lieder und Akkorde', { instrument: inst }),
+    description: t('Kostenlos {instrument} lernen, für Kinder und Einsteiger: Lieder zum Mitspielen, Akkorde mit Griffbildern, Stimmgerät und Rhythmus. Ohne Abo, ohne Werbung.', { instrument: inst }),
     view: home,
     extra: () => aboutCard(siteDef, l),
     jsonld: () => [webSite(siteDef, l), webApp(siteDef, l)],
@@ -272,11 +342,14 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
     title: t('Lieder für {instrument} mit Akkorden und Text', { instrument: inst }),
     description: t('{n} gemeinfreie Lieder für {instrument}: Kinderlieder, Lagerfeuer, Weihnachten und mehr – mit Akkorden, Text und Melodie zum Mitspielen.', { n: SONGS.length, instrument: inst }),
     view: songs,
+    extra: () => songsIntroCard(siteDef, l),
+    crumb: t('Lieder'),
   });
   for (const s of SONGS) {
+    const long = t('{title} – Akkorde und Text für {instrument}', { title: s.title, instrument: inst });
     specs.push({
       route: `lied/${s.id}`,
-      title: t('{title} – Akkorde und Text für {instrument}', { title: s.title, instrument: inst }),
+      title: long.length <= TITLE_MAX ? long : t('{title} – Akkorde für {instrument}', { title: s.title, instrument: inst }),
       description: t('{title}: Akkorde ({chords}) und Text zum Mitspielen für {instrument} – mit Begleitung, die auf dich wartet.', {
         title: s.title,
         chords: s.chords.join(', '),
@@ -286,6 +359,7 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
       extra: () => songCard(s, l),
       jsonld: () => [songLd(s, siteDef, l)],
       ogType: 'music.song',
+      crumb: s.title,
     });
   }
   specs.push({ route: 'lied/eigen', title: t('Eigenes Lied'), description: t('Dein eigenes Lied, gespeichert nur auf diesem Gerät.'), view: player, hashParam: true, noindex: true, body: () => staticScreen(t('Eigenes Lied'), rel('lieder', l)) });
@@ -295,9 +369,11 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
     description: t('Alle wichtigen Akkorde für {instrument} mit Griffbild, Fingersatz und Prüf-Funktion übers Mikrofon – kostenlos und ohne Anmeldung.', { instrument: inst }),
     view: chords,
     extra: () => chordIndexCard(l),
+    crumb: t('Akkorde'),
   });
   for (const name of chordPageNames()) {
-    const long = chordLongName(name, l);
+    // „Fis-Sept mit Quarte (7sus4)“: die Klammer wiederholt nur den Akkordnamen, der ohnehin davor steht
+    const long = chordLongName(name, l).replace(/ \([^)]*\)$/, '');
     specs.push({
       route: `akkord/${encodeURIComponent(name)}`,
       title: t('{chord} ({long}) – Akkord für {instrument}', { chord: name, long, instrument: inst }),
@@ -307,18 +383,28 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
         instrument: inst,
       }),
       view: chordDetail,
-      extra: () => chordCard(name, l),
+      extra: () => chordCard(name, siteDef, l),
+      crumb: name,
     });
   }
   const tools: [string, string, string][] = [
     ['stimmen', t('{instrument} stimmen – Stimmgerät online', { instrument: inst }), t('Kostenloses Stimmgerät für {instrument} im Browser: Saite anzupfen, die Anzeige zeigt zu hoch oder zu tief – mit Tipps, wenn es hakt.', { instrument: inst })],
     ['rhythmus', t('Schlagmuster und Metronom für {instrument}', { instrument: inst }), t('Schlagmuster für {instrument} lernen: runter, rauf, Pausen – mit Metronom, Taktarten und Tempo zum Antippen.', { instrument: inst })],
-    ['spiel', t('Akkord-Spiel für {instrument}', { instrument: inst }), t('Wie viele Akkorde schaffst du in einer Minute? Das Mikrofon hört zu und zählt mit – ein Spiel für {instrument}.', { instrument: inst })],
-    ['detektiv', t('Akkord-Detektiv: Welcher Akkord ist das?', {}), t('Spiel einen Akkord oder Ton auf {instrument} – der Detektiv sagt dir, wie er heißt und wo er auf dem Hals liegt.', { instrument: inst })],
+    ['spiel', t('Akkord-Spiel für {instrument} – Akkordwechsel üben', { instrument: inst }), t('Wie viele Akkorde schaffst du in einer Minute? Das Mikrofon hört zu und zählt mit – ein Spiel für {instrument}.', { instrument: inst })],
+    ['detektiv', t('Akkord-Detektiv für {instrument}: Welcher Akkord ist das?', { instrument: inst }), t('Spiel einen Akkord oder Ton auf {instrument} – der Detektiv sagt dir, wie er heißt und wo er auf dem Hals liegt.', { instrument: inst })],
     ['blues', t('12-Takt-Blues zum Mitspielen für {instrument}', { instrument: inst }), t('Blues mit Band in jeder Tonart: erst Grundtöne, dann Riffs, dann frei spielen – auf {instrument}, mit Tabulatur.', { instrument: inst })],
     ['sterne', t('Meine Sterne', {}), t('Deine Sterne, Abzeichen und Übungstage – gespeichert nur auf diesem Gerät.', {})],
   ];
-  for (const tool of tools) specs.push({ route: tool[0], title: tool[1], description: tool[2], view: VIEW_NAMES[tool[0]], extra: () => toolCard(tool[2]) });
+  for (const tool of tools)
+    specs.push({
+      route: tool[0],
+      title: tool[1],
+      description: tool[2],
+      view: VIEW_NAMES[tool[0]],
+      extra: () => toolCard(tool[1], tool[2], tool[0], siteDef, l),
+      // persönlicher Fortschritt, nichts für Suchmaschinen
+      noindex: tool[0] === 'sterne',
+    });
   specs.push({ route: 'aufnahme', title: t('Beispielaufnahmen'), description: t('Beispielaufnahmen für die Akkorderkennung.'), view: record, noindex: true });
   specs.push({
     route: 'eigenes-lied',
@@ -335,6 +421,7 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
     title: t('Wissen rund um {instrument} – Tipps zum Lernen', { instrument: inst }),
     description: t('Stimmen, Akkorde, Rhythmus, Üben mit Kindern: kurze, verständliche Artikel rund um {instrument} – mit Übungen zum Mitmachen.', { instrument: inst }),
     body: () => wissenIndex(articles, siteDef, l),
+    crumb: t('Wissen'),
   });
   for (const a of articles)
     specs.push({
@@ -344,6 +431,8 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
       body: () => articlePage(a, siteDef, l),
       jsonld: () => [articleLd(a, siteDef, l)],
       ogType: 'article',
+      crumb: a.title[l],
+      canonicalSite: primarySite(a),
     });
   return specs.concat(legalSpecs(siteDef, l));
 }
@@ -374,8 +463,30 @@ function aboutCard(siteDef: SiteDef, l: Lang): Node {
   );
 }
 
-function toolCard(text: string): Node {
-  return h('section', { class: 'card seo-card' }, h('p', null, text));
+function toolCard(title: string, text: string, tool: string, siteDef: SiteDef, l: Lang): Node {
+  return h(
+    'section',
+    { class: 'card seo-card' },
+    h('h2', null, title),
+    h('p', null, text),
+    articleLinks(t('Mehr dazu'), articlesAbout('tool', tool, siteDef).slice(0, 4), l),
+  );
+}
+
+function songsIntroCard(siteDef: SiteDef, l: Lang): Node {
+  const easy = articlesOn(siteDef).filter((a) => a.id === 'lieder-fuer-anfaenger')[0];
+  return h(
+    'section',
+    { class: 'card seo-card' },
+    h('h2', null, t('Lieder für {instrument} mit Akkorden und Text', { instrument: siteDef.name[l] })),
+    h('p', null, t('Alle Lieder sind gemeinfrei oder selbst geschrieben: Kinderlieder, Volkslieder, Weihnachtslieder und englische Songs, mit Akkorden über dem Text und vielen Melodien als Tabulatur. Beim Akkordwechsel wartet die Begleitung auf dich.')),
+    h(
+      'ul',
+      { class: 'wissen-list' },
+      easy ? h('li', null, h('a', { href: rel(`wissen/${easy.id}`, l) }, easy.title[l])) : null,
+      h('li', null, h('a', { href: rel('akkorde', l) }, t('Akkorde für {instrument} – Griffbilder zum Lernen', { instrument: siteDef.name[l] }))),
+    ),
+  );
 }
 
 function songCard(s: Song, l: Lang): Node {
@@ -386,6 +497,20 @@ function songCard(s: Song, l: Lang): Node {
     h('p', null, s.origin),
     h('p', null, t('Akkorde:'), ' ', ...s.chords.map((c, i) => h('span', null, i ? ', ' : '', h('a', { href: rel(`akkord/${encodeURIComponent(canonicalChord(c))}`, l) }, c)))),
     h('p', null, t('{meter}er-Takt, {bpm} Schläge pro Minute.', { meter: s.meter, bpm: s.bpm })),
+    moreSongs(s, l),
+  );
+}
+
+/** Weitere Lieder derselben Gruppe (Querverweise für Leser und Suchmaschinen). */
+function moreSongs(s: Song, l: Lang): Node | null {
+  const cat = CATEGORIES.filter((c) => c.id === s.category)[0];
+  const others = SONGS.filter((x) => x.category === s.category && x.id !== s.id).slice(0, 8);
+  if (!cat || !others.length) return null;
+  return h(
+    'nav',
+    { 'aria-label': t(cat.title) },
+    h('h2', null, t('Mehr Lieder: {category}', { category: t(cat.title) })),
+    h('ul', { class: 'wissen-list' }, ...others.map((x) => h('li', null, h('a', { href: rel(`lied/${x.id}`, l) }, x.title)))),
   );
 }
 
@@ -408,13 +533,14 @@ function chordIndexCard(l: Lang): Node {
   );
 }
 
-function chordCard(name: string, l: Lang): Node {
+function chordCard(name: string, siteDef: SiteDef, l: Lang): Node {
   const with_ = songsWith(name).slice(0, 12);
   return h(
     'section',
     { class: 'card seo-card' },
     h('h2', null, chordLongName(name, l)),
     with_.length ? h('p', null, t('Lieder mit {chord}:', { chord: name }), ' ', ...with_.map((s, i) => h('span', null, i ? ', ' : '', h('a', { href: rel(`lied/${s.id}`, l) }, s.title)))) : null,
+    articleLinks(t('Mehr dazu'), articlesAbout('chord', name, siteDef).slice(0, 4), l),
   );
 }
 
@@ -560,6 +686,8 @@ function webApp(siteDef: SiteDef, l: Lang): object {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: siteDef.brand[l],
+    description: t('Lieder zum Mitspielen, die auf dich warten, Akkorde mit Prüf-Funktion übers Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.'),
+    image: env().publicUrl(siteDef.id) + OG_IMAGE,
     url: env().publicUrl(siteDef.id) + pathOf('', l),
     applicationCategory: 'EducationalApplication',
     operatingSystem: 'Any',
@@ -584,11 +712,30 @@ function articleLd(a: Article, siteDef: SiteDef, l: Lang): object {
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
+    datePublished: a.published || ARTICLES_PUBLISHED,
+    dateModified: a.updated || a.published || ARTICLES_PUBLISHED,
+    image: env().publicUrl(primarySite(a)) + OG_IMAGE,
+    mainEntityOfPage: env().publicUrl(primarySite(a)) + pathOf(`wissen/${a.id}`, l),
     headline: a.title[l],
     description: a.description[l],
     inLanguage: l,
     url: env().publicUrl(siteDef.id) + pathOf(`wissen/${a.id}`, l),
     author: { '@type': 'Person', name: LEGAL.name },
+  };
+}
+
+/** Brotkrümel: Startseite › Bereich › Seite (nur für Unterseiten). */
+function breadcrumbLd(spec: Spec, siteDef: SiteDef, l: Lang, canonicalBase: string): object | null {
+  if (!spec.route) return null;
+  const name = spec.route.split('/')[0];
+  const parent: Record<string, [string, string]> = { lied: ['lieder', t('Lieder')], akkord: ['akkorde', t('Akkorde')], wissen: ['wissen', t('Wissen')] };
+  const items: [string, string][] = [['', siteDef.brand[l]]];
+  if (parent[name] && spec.route.indexOf('/') > 0) items.push(parent[name]);
+  items.push([spec.route, spec.crumb || spec.title]);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: x[1], item: canonicalBase + pathOf(x[0], l) })),
   };
 }
 
@@ -639,6 +786,8 @@ function localHref(publicHref: string, siteDef: SiteDef): string {
   return publicHref.indexOf(pub) === 0 ? env().url(siteDef.id) + publicHref.slice(pub.length) : publicHref;
 }
 
+const OG_LOCALE: Record<Lang, string> = { de: 'de_DE', en: 'en_US', fr: 'fr_FR' };
+
 function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
   const e = env();
   const de = document.documentElement as unknown as { setAttribute: (k: string, v: string) => void };
@@ -657,12 +806,18 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
     });
   if (!body || !body.length) body = spec.body ? spec.body() : staticScreen(spec.title, rel('', l));
   const extra = spec.extra ? spec.extra() : null;
-  const canonical = alternates[l]!;
+  // gleicher Artikel auf mehreren Instrument-Seiten: nur das Original kommt in Sitemap und Suchindex
+  const original = spec.canonicalSite && e.sites.indexOf(spec.canonicalSite) >= 0 ? spec.canonicalSite : siteDef.id;
+  const isOriginal = original === siteDef.id;
+  const canonical = e.publicUrl(original) + pathOf(spec.route, l);
+  const title = grammar(spec.title, l);
+  const description = grammar(spec.description, l);
+  const image = e.publicUrl(siteDef.id) + OG_IMAGE;
   const head: string[] = [
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
-    `<title>${esc(spec.title)}</title>`,
-    `<meta name="description" content="${escAttr(spec.description)}">`,
+    `<title>${esc(pageTitle(title, siteDef.brand[l]))}</title>`,
+    `<meta name="description" content="${escAttr(description)}">`,
     '<meta name="theme-color" content="#3d160a">',
     '<meta name="apple-mobile-web-app-capable" content="yes">',
     '<meta name="mobile-web-app-capable" content="yes">',
@@ -670,38 +825,46 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
     '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">',
   ];
   if (e.preview || !indexable) head.push('<meta name="robots" content="noindex">');
-  if (indexable) {
-    head.push(`<link rel="canonical" href="${escAttr(canonical)}">`);
+  if (indexable) head.push(`<link rel="canonical" href="${escAttr(canonical)}">`);
+  if (indexable && isOriginal) {
     for (const x of LANGS) head.push(`<link rel="alternate" hreflang="${x.id}" href="${escAttr(localHref(alternates[x.id]!, siteDef))}">`);
     head.push(`<link rel="alternate" hreflang="x-default" href="${escAttr(localHref(alternates.de!, siteDef))}">`);
   }
   head.push(
-    `<meta property="og:title" content="${escAttr(spec.title)}">`,
-    `<meta property="og:description" content="${escAttr(spec.description)}">`,
+    `<meta property="og:title" content="${escAttr(title)}">`,
+    `<meta property="og:description" content="${escAttr(description)}">`,
     `<meta property="og:type" content="${spec.ogType || 'website'}">`,
     `<meta property="og:url" content="${escAttr(canonical)}">`,
-    `<meta property="og:image" content="${escAttr(e.publicUrl(siteDef.id))}icon-512.png">`,
-    `<meta property="og:locale" content="${l === 'de' ? 'de_DE' : l === 'fr' ? 'fr_FR' : 'en_US'}">`,
+    `<meta property="og:image" content="${escAttr(image)}">`,
+    '<meta property="og:image:type" content="image/png">',
+    `<meta property="og:image:width" content="${OG_WIDTH}">`,
+    `<meta property="og:image:height" content="${OG_HEIGHT}">`,
+    `<meta property="og:image:alt" content="${escAttr(t('Holz, Saiten und ein Griffbild – {brand}', { brand: siteDef.brand[l] }))}">`,
+    `<meta property="og:locale" content="${OG_LOCALE[l]}">`,
+    ...LANGS.filter((x) => x.id !== l).map((x) => `<meta property="og:locale:alternate" content="${OG_LOCALE[x.id]}">`),
     `<meta property="og:site_name" content="${escAttr(siteDef.brand[l])}">`,
+    '<meta name="twitter:card" content="summary_large_image">',
     `<link rel="manifest" href="${currentBase}manifest.webmanifest">`,
     `<link rel="icon" href="${currentBase}icon.svg" type="image/svg+xml">`,
     `<link rel="apple-touch-icon" href="${currentBase}icon-180.png">`,
     `<link rel="stylesheet" href="${currentBase}${e.assets.css}">`,
   );
-  if (indexable && spec.jsonld) for (const j of spec.jsonld()) head.push(`<script type="application/ld+json">${JSON.stringify(j).replace(/</g, '\\u003c')}</script>`);
+  const ld = indexable && isOriginal ? (spec.jsonld ? spec.jsonld() : []).concat(breadcrumbLd(spec, siteDef, l, e.publicUrl(siteDef.id)) || []) : [];
+  for (const j of ld) head.push(`<script type="application/ld+json">${grammar(JSON.stringify(j), l).replace(/</g, '\\u003c')}</script>`);
   const attrs: string[] = [`lang="${l}"`, `data-base="${escAttr(currentBase)}"`, `data-brand="${escAttr(siteDef.brand[l])}"`, `data-site="${siteDef.id}"`];
   if (siteDef.instrument) attrs.push(`data-instrument="${siteDef.instrument}"`);
   if (spec.view) attrs.push(`data-route="${escAttr(spec.route)}"`);
   if (spec.hashParam) attrs.push('data-hash-param');
   const html =
     `<!doctype html>\n<html ${attrs.join(' ')}>\n<head>\n${head.join('\n')}\n</head>\n<body>\n` +
-    `<div id="app">${body.map(serialize).join('')}</div>\n` +
-    (extra ? `<div class="page-extra">${serialize(extra)}</div>\n` : '') +
+    `<div id="app">${grammar(body.map(serialize).join(''), l)}</div>\n` +
+    (extra ? `<div class="page-extra">${grammar(serialize(extra), l)}</div>\n` : '') +
     serialize(footer(siteDef, l, indexable ? alternates : {})) +
     '\n<div id="live" class="sr-only" aria-live="polite"></div>\n' +
     `<script src="${currentBase}${e.assets.js}" defer></script>\n</body>\n</html>\n`;
   const path = pathOf(spec.route, l).replace(/#.*$/, '');
-  return { file: path + 'index.html', html, alternates: indexable ? alternates : {}, url: indexable ? canonical : undefined };
+  const listed = indexable && isOriginal;
+  return { file: path + 'index.html', html, alternates: listed ? alternates : {}, url: listed ? canonical : undefined };
 }
 
 /** Alle Seiten einer Instrument-Seite (bzw. der Startseite) in allen Sprachen. */
@@ -729,6 +892,7 @@ export function sitemap(pages: Page[]): string {
       (p) =>
         `<url><loc>${esc(p.url!)}</loc>` +
         (Object.keys(p.alternates) as Lang[]).map((a) => `<xhtml:link rel="alternate" hreflang="${a}" href="${esc(p.alternates[a]!)}"/>`).join('') +
+        (p.alternates.de ? `<xhtml:link rel="alternate" hreflang="x-default" href="${esc(p.alternates.de)}"/>` : '') +
         '</url>',
     );
   return (
