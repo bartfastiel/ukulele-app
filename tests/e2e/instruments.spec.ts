@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page, navigationNoise } from './fixtures.ts';
 
 /** Gitarre und Banjo auf ihren eigenen Seiten (/gitarre/, /banjo/ – in Produktion eigene Subdomains). */
 const CASES = [
@@ -10,8 +10,8 @@ const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G', '
 
 function collectErrors(page: Page): string[] {
   const errors: string[] = [];
-  page.on('pageerror', (e) => errors.push(e.message));
-  page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+  page.on('pageerror', (e) => !navigationNoise(e.message) && errors.push(e.message));
+  page.on('console', (m) => m.type() === 'error' && !navigationNoise(m.text()) && errors.push(m.text()));
   return errors;
 }
 

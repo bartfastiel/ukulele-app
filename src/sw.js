@@ -1,5 +1,5 @@
 // Service Worker je Instrument-Seite: Skript, Stil und die wichtigsten Seiten offline. Gehashte Dateien cache-first,
-// Seiten network-first (besuchte Seiten bleiben offline verfügbar).
+// Seiten network-first (besuchte Seiten bleiben offline verfügbar). Den Holz-Cache (src/ui/wood.ts) lässt er stehen.
 const CACHE = 'saiten-club-__VERSION__';
 const FILES = __FILES__;
 
@@ -16,7 +16,7 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k.indexOf('saiten-club-') === 0).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });

@@ -1,5 +1,6 @@
 import { s } from './dom.ts';
 import { STRINGS } from '../music/notes.ts';
+import { instrument } from '../music/instrument.ts';
 
 /** Eigene, schlichte Symbole statt Emojis: sehen auf jedem Betriebssystem gleich aus. */
 const PATHS: Record<string, string> = {
@@ -45,8 +46,106 @@ export function icon(name: keyof typeof PATHS | string, cls = 'icon'): SVGElemen
   );
 }
 
-/** Schallloch mit Rosette und Saiten – Schmuck der Startseite, kein Bedienelement. */
+/** Erkennungszeichen oben auf der Startseite: Schallloch (Ukulele, Gitarre) bzw. Trommelfell (Banjo). */
 export function soundHole(): SVGElement {
+  const id = instrument().id;
+  if (id === 'banjo') return banjoHead();
+  if (id === 'gitarre') return guitarRosette();
+  return ukuleleHole();
+}
+
+function strings(g: SVGElement, x0: number, x1: number, y0: number, y1: number): void {
+  const n = STRINGS.length;
+  for (let i = 0; i < n; i++) {
+    const x = x0 + (i * (x1 - x0)) / (n - 1);
+    const k = (i * 3) / (n - 1);
+    g.appendChild(s('rect', { x: x - 1.2 - k * 0.2, y: y0, width: 2.4 + k * 0.4, height: y1 - y0, fill: 'url(#str)', opacity: 0.95 }));
+  }
+}
+
+function stringGradient(): SVGElement {
+  return s(
+    'linearGradient',
+    { id: 'str', x1: 0, x2: 1 },
+    s('stop', { offset: 0, 'stop-color': '#d9d0bf' }),
+    s('stop', { offset: 0.5, 'stop-color': '#fffaf0' }),
+    s('stop', { offset: 1, 'stop-color': '#cfc5b2' }),
+  );
+}
+
+/** Klassische Gitarren-Rosette: Mosaikring zwischen schwarz-elfenbeinfarbenen Zierlinien. */
+function guitarRosette(): SVGElement {
+  const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
+  g.appendChild(
+    s(
+      'defs',
+      null,
+      s('radialGradient', { id: 'hole' }, s('stop', { offset: 0, 'stop-color': '#0b0604' }), s('stop', { offset: 1, 'stop-color': '#24150a' })),
+      stringGradient(),
+    ),
+  );
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 94, fill: '#d6b06a' }));
+  const ring = (r: number, w: number, color: string) => g.appendChild(s('circle', { cx: 100, cy: 100, r, fill: 'none', stroke: color, 'stroke-width': w }));
+  ring(90, 2.5, '#15100e');
+  ring(87, 2, '#f6eedb');
+  ring(84.5, 2, '#15100e');
+  const segs = 72;
+  for (let i = 0; i < segs; i++) {
+    const a0 = (i / segs) * Math.PI * 2;
+    const a1 = ((i + 1) / segs) * Math.PI * 2;
+    const p = (r: number, a: number) => `${100 + r * Math.cos(a)},${100 + r * Math.sin(a)}`;
+    for (let band = 0; band < 2; band++) {
+      const r0 = 72 + band * 6;
+      const r1 = r0 + 6;
+      g.appendChild(
+        s('path', {
+          d: `M${p(r0, a0)} L${p(r1, a0)} A${r1},${r1} 0 0 1 ${p(r1, a1)} L${p(r0, a1)} A${r0},${r0} 0 0 0 ${p(r0, a0)}z`,
+          fill: (i + band) % 2 === 0 ? '#5a2f1a' : i % 4 < 2 ? '#2f5e3a' : '#f1e2bf',
+        }),
+      );
+    }
+  }
+  ring(71, 2, '#15100e');
+  ring(68.5, 2, '#f6eedb');
+  ring(66, 2, '#15100e');
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 64, fill: 'url(#hole)' }));
+  strings(g, 58, 142, 0, 200);
+  return g;
+}
+
+/** Banjo: mattes Trommelfell mit verchromtem Spannreif, Haken und Steg. */
+function banjoHead(): SVGElement {
+  const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
+  g.appendChild(
+    s(
+      'defs',
+      null,
+      s(
+        'linearGradient',
+        { id: 'chrome', x1: 0, y1: 0, x2: 1, y2: 1 },
+        s('stop', { offset: 0, 'stop-color': '#fbfdff' }),
+        s('stop', { offset: 0.45, 'stop-color': '#9aa4ac' }),
+        s('stop', { offset: 0.55, 'stop-color': '#e9eef2' }),
+        s('stop', { offset: 1, 'stop-color': '#5d666e' }),
+      ),
+      s('radialGradient', { id: 'head', cx: 0.4, cy: 0.35 }, s('stop', { offset: 0, 'stop-color': '#ffffff' }), s('stop', { offset: 1, 'stop-color': '#e3dccd' })),
+      stringGradient(),
+    ),
+  );
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    g.appendChild(
+      s('rect', { x: 96, y: 2, width: 8, height: 20, rx: 3, fill: 'url(#chrome)', transform: `rotate(${(a * 180) / Math.PI} 100 100)` }),
+    );
+  }
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 86, fill: 'url(#chrome)' }));
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 78, fill: 'url(#head)' }));
+  g.appendChild(s('rect', { x: 64, y: 122, width: 72, height: 7, rx: 2, fill: '#c9a46a', stroke: '#6b4a22', 'stroke-width': 1.5 }));
+  strings(g, 74, 126, 0, 126);
+  return g;
+}
+
+function ukuleleHole(): SVGElement {
   const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
   g.appendChild(
     s(
