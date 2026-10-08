@@ -97,7 +97,7 @@ for (const l of LANGS.slice(1)) {
     await expect(page.locator('.now-card .card-label')).toHaveText(l.id === 'en' ? 'Now' : 'Maintenant');
 
     await page.goto(`${l.prefix}#/stimmen`);
-    await expect(page.getByRole('heading', { name: l.tuner })).toBeVisible();
+    await expect(page.getByRole('heading', { name: l.tuner, exact: true })).toBeVisible();
     await expect(page.locator('.tuner .feedback').first()).toContainText(l.id === 'en' ? 'Tap “Listen”' : 'Touche « Écouter »');
 
     await page.reload();
@@ -105,7 +105,7 @@ for (const l of LANGS.slice(1)) {
 
     // zurück auf Deutsch über die Fußzeile: dieselbe Seite auf Deutsch
     await page.locator('.footer-langs').getByRole('link', { name: 'Deutsch' }).click();
-    await expect(page.getByRole('heading', { name: 'Stimmen' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Stimmen', exact: true })).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('lang', 'de');
   });
 }

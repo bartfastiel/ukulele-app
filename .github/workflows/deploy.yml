@@ -91,7 +91,7 @@ jobs:
           .github/scripts/upload-dir.sh dist/banjo "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-banjo"
       - name: Live-Prüfung
         run: |
-          curl -fsS --retry 5 --retry-delay 5 "https://$UKULELE_HOST/" | grep -q '<title>Ukulele-Club'
+          curl -fsS --retry 5 --retry-delay 5 "https://$UKULELE_HOST/" | grep -q 'data-instrument="ukulele"'
           echo "Live: https://$UKULELE_HOST/"
 
   preview:
@@ -129,7 +129,7 @@ jobs:
         run: .github/scripts/upload-dir.sh dist "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/$UKULELE_PREVIEW_PATH/pr-$PULL_REQUEST_NUMBER"
       - name: Live-Prüfung
         run: |
-          curl -fsS --retry 3 --retry-delay 5 "$URL" | grep -q '<title>Ukulele-Club'
+          curl -fsS --retry 3 --retry-delay 5 "$URL" | grep -q 'data-instrument="ukulele"'
           echo "Live: $URL"
       - name: Kommentar im Pull Request
         env:

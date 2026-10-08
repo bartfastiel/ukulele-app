@@ -26,6 +26,7 @@ declare module 'node:path' {
 }
 declare module 'node:zlib' {
   export function crc32(data: Uint8Array): number;
+  export function deflateSync(data: Uint8Array, opts?: { level?: number }): Uint8Array;
   export function deflateRawSync(data: Uint8Array, opts?: { level?: number }): Uint8Array;
   export function inflateRawSync(data: Uint8Array): Uint8Array;
 }

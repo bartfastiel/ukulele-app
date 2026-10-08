@@ -1,7 +1,8 @@
 // Baut dist/<seite>/ je Instrument-Seite (ukulele, gitarre, banjo) und die Startseite: ein gemeinsames, gehashtes
-// Skript und Stylesheet, je Adresse und Sprache eine vorgerenderte HTML-Seite, Sitemap, robots.txt, Manifest und
-// Service Worker. `--serve` baut bei jeder Änderung neu und liefert dist/ auf http://localhost:5173 aus
-// (Seiten unter /ukulele/, /gitarre/, …; vorgerendertes HTML nur beim Start, das Skript bei jeder Änderung).
+// Skript und Stylesheet, je Adresse und Sprache eine vorgerenderte HTML-Seite, Sitemap, robots.txt, Manifest,
+// Vorschaubild (og-image.png) und Service Worker. `--serve` baut bei jeder Änderung neu und liefert dist/ auf
+// http://localhost:5173 aus (Seiten unter /ukulele/, /gitarre/, …; vorgerendertes HTML nur beim Start, das Skript bei
+// jeder Änderung).
 //
 // Umgebung:
 //   SITE_URL    Adresse je Seite im Build, {site} wird ersetzt (Standard „/{site}/“; Produktion „https://{site}.<domain>/“,
@@ -46,6 +47,16 @@ function write(file, content) {
 
 let rendered = null;
 
+// Vorschaubilder ändern sich nur mit dem Code von og-image.ts; im Watch-Modus einmal rechnen genügt
+const ogImages = {};
+async function ogImage(instrument) {
+  if (!ogImages[instrument]) {
+    const { ogImagePng } = await import('../src/site/og-image.ts');
+    ogImages[instrument] = ogImagePng(instrument);
+  }
+  return ogImages[instrument];
+}
+
 async function renderAll(assets) {
   const { renderSite, sitemap } = await import('../src/site/pages.ts');
   const { SITES } = await import('../src/site/sites.ts');
@@ -85,6 +96,7 @@ async function emit(result) {
     manifest.short_name = r.def.name.de;
     write(join(dir, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2));
     write(join(dir, 'sitemap.xml'), r.sitemap);
+    write(join(dir, 'og-image.png'), await ogImage(r.def.instrument || 'ukulele'));
     write(
       join(dir, 'robots.txt'),
       PREVIEW ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\n\nSitemap: ${publicUrl(id)}sitemap.xml\n`,
