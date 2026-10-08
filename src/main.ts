@@ -4,6 +4,7 @@ import { load } from './store.ts';
 import { isLang, setLang, t, tk } from './i18n.ts';
 import { base, brand, link } from './site/nav.ts';
 import { offerLanguage } from './ui/lang-switch.ts';
+import { renderSecrets } from './ui/secret-text.ts';
 import { initInstrument } from './music/instrument.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
@@ -96,6 +97,7 @@ if (!redirectOldHash()) {
   setLang(isLang(html.lang) ? html.lang : 'de');
   if (load().settings.calm) html.classList.add('calm');
   mount();
+  renderSecrets();
   if (html.hasAttribute('data-hash-param')) window.addEventListener('hashchange', () => mount());
   offerLanguage(load().settings.lang);
 }

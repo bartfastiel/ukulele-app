@@ -364,3 +364,23 @@ test('kaputter Teilen-Link: freundliche Meldung statt Fehler', async ({ page }) 
   await page.goto('#/teilen/1abc');
   await expect(page.getByRole('heading', { name: 'Dieser Link klappt leider nicht' })).toBeVisible();
 });
+
+test('Impressum: Anschrift erscheint nur als Grafik aus Kacheln, nie als Text', async ({ page }) => {
+  await page.goto('impressum/');
+  const spot = page.locator('[data-secret]').first();
+  // nur wenn der Build Testangaben bekommen hat (CI: LEGAL_ADDRESS/LEGAL_EMAIL), sonst steht dort ein Hinweis
+  test.skip((await spot.count()) === 0, 'ohne Impressumsangaben gebaut');
+  await expect(page.locator('.secret-art').first()).toHaveAttribute('aria-label', 'Anschrift als Bild');
+  await expect.poll(() => page.locator('.secret-art canvas').count()).toBeGreaterThan(20);
+  const html = await page.evaluate(() => document.documentElement.outerHTML);
+  for (const part of ['Beispielweg', 'Beispielstadt', 'beispiel.invalid']) expect(html.indexOf(part), part).toBeLessThan(0);
+  // der Köder steht im HTML, ist aber unsichtbar und wird nicht vorgelesen
+  const decoy = page.locator('.decoy').first();
+  await expect(decoy).toHaveAttribute('aria-hidden', 'true');
+  expect(await decoy.evaluate((el) => getComputedStyle(el).color)).toBe('rgba(0, 0, 0, 0)');
+  expect(await decoy.evaluate((el) => getComputedStyle(el).userSelect || getComputedStyle(el).webkitUserSelect)).toBe('none');
+  const box = await decoy.boundingBox();
+  expect(box && box.width * box.height).toBeLessThanOrEqual(1);
+  await expect(page.locator('[data-kind="mail"] .secret-art')).toHaveAttribute('aria-label', 'E-Mail-Adresse als Bild');
+  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+});

@@ -12,7 +12,8 @@ import { SONGS } from '../music/songs.ts';
 import type { Song } from '../music/song.ts';
 import { ROOTS, chord } from '../music/chords.ts';
 import { ARTICLES } from '../content/wissen.ts';
-import { LEGAL } from './legal-data.ts';
+import { LEGAL_NAME, type LegalContact } from './legal-data.ts';
+import { scramble } from './scramble.ts';
 import { setInstrument } from '../music/instrument.ts';
 import type { Article, Block, L10n } from '../content/types.ts';
 import { h } from '../ui/dom.ts';
@@ -53,6 +54,8 @@ export interface BuildEnv {
   assets: { js: string; css: string };
   /** Instrument-Seiten, die es (schon) gibt – nur auf diese wird verlinkt. */
   sites: SiteId[];
+  /** Anschrift und E-Mail fürs Impressum (aus Secrets, nie im Repo); leer = Hinweis. */
+  legal?: LegalContact;
 }
 
 export interface Page {
@@ -440,9 +443,9 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
 function legalSpecs(siteDef: SiteDef, l: Lang): Spec[] {
   const brand = siteDef.brand[l];
   return [
-    { route: 'ueber', title: t('Über den {brand}', { brand }), description: t('Wer hinter der App steht und warum sie kostenlos ist: ein privates Projekt, ohne Werbung, ohne Abo, Open Source.'), body: () => legalPage('ueber', siteDef, l) },
-    { route: 'impressum', title: t('Impressum'), description: t('Impressum und Kontakt: ein privates, nicht-kommerzielles Projekt – kostenlos, ohne Werbung und ohne Abo.'), body: () => legalPage('impressum', siteDef, l) },
-    { route: 'datenschutz', title: t('Datenschutz'), description: t('Datenschutz: keine Konten, keine Cookies, kein Tracking – Fortschritt und Mikrofon bleiben auf deinem Gerät.'), body: () => legalPage('datenschutz', siteDef, l) },
+    { route: 'ueber', title: t('Über den {brand}', { brand }), description: t('Wer hinter der App steht und warum sie kostenlos ist: ein privates, persönliches Projekt, ohne Werbung, ohne Abo, Open Source.'), body: () => legalPage('ueber', siteDef, l) },
+    { route: 'impressum', noindex: true, title: t('Impressum'), description: t('Impressum und Kontakt: ein privates, persönliches, nicht-kommerzielles Projekt – kostenlos, ohne Werbung und ohne Abo.'), body: () => legalPage('impressum', siteDef, l) },
+    { route: 'datenschutz', noindex: true, title: t('Datenschutz'), description: t('Datenschutz: keine Konten, keine Cookies, kein Tracking – Fortschritt und Mikrofon bleiben auf deinem Gerät.'), body: () => legalPage('datenschutz', siteDef, l) },
   ];
 }
 
@@ -607,8 +610,13 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
 
 function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef, l: Lang): Node[] {
   const p = (text: string) => h('p', null, text);
-  const contact = LEGAL.email ? h('p', null, t('E-Mail:'), ' ', h('a', { href: `mailto:${LEGAL.email}` }, LEGAL.email)) : null;
-  const address = LEGAL.address.length ? h('p', null, ...LEGAL.address.map((line, i) => h('span', null, i ? h('br') : null, line))) : null;
+  // nur verpackt im HTML; im Browser setzt src/ui/secret-text.ts die Angaben als Grafik zusammen
+  const legal = env().legal;
+  const secret = (text: string, kind: string) => h('span', { class: 'secret', 'data-secret': scramble(text), 'data-kind': kind }, t('Wird geladen …'));
+  // Köder für Adress-Sammler: eindeutig erfundene Angaben (reservierte Beispiel-Domain), unsichtbar, nicht vorgelesen
+  const decoy = () => h('span', { class: 'decoy', 'aria-hidden': 'true' }, 'Max Mustermann, Musterstraße 1, 12345 Musterstadt, kontakt@example.org');
+  const contact = legal && legal.email ? h('p', null, t('E-Mail:'), ' ', secret(legal.email, 'mail'), decoy()) : null;
+  const address = legal && legal.address ? h('p', null, decoy(), secret(legal.address, 'address')) : null;
   if (kind === 'impressum')
     return staticScreen(
       t('Impressum'),
@@ -617,11 +625,11 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
         'section',
         { class: 'card article' },
         h('h2', null, t('Angaben nach § 18 Abs. 1 Medienstaatsvertrag')),
-        h('p', null, LEGAL.name),
+        h('p', null, LEGAL_NAME),
         address || p(t('Die Anschrift wird gerade eingetragen.')),
         contact,
-        h('h2', null, t('Ein privates Projekt')),
-        p(t('Diese Seite ist ein privates, nicht-kommerzielles Projekt: kostenlos, ohne Werbung, ohne Abo, ohne Gewinnabsicht. Der Quelltext ist offen (MIT-Lizenz).')),
+        h('h2', null, t('Ein privates, persönliches Projekt')),
+        p(t('Diese Seite ist ein privates, persönliches, nicht-kommerzielles Projekt: kostenlos, ohne Werbung, ohne Abo, ohne Gewinnabsicht. Der Quelltext ist offen (MIT-Lizenz).')),
         h('p', null, h('a', { href: 'https://github.com/bartfastiel/ukulele-app' }, t('Quelltext auf GitHub'))),
       ),
     );
@@ -635,7 +643,7 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
         h('h2', null, t('Kurz gesagt')),
         p(t('Keine Konten, keine Cookies, keine Werbung, kein Tracking. Dein Fortschritt (Sterne, Einstellungen, eigene Lieder) wird nur im Speicher deines Browsers abgelegt und verlässt dein Gerät nicht.')),
         h('h2', null, t('Verantwortlich')),
-        h('p', null, LEGAL.name),
+        h('p', null, LEGAL_NAME),
         address,
         contact,
         h('h2', null, t('Beim Aufruf der Seite')),
@@ -656,7 +664,7 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
     h(
       'section',
       { class: 'card article' },
-      p(t('Diese App ist entstanden, damit Kinder in Instrumentalklassen zu Hause gern üben – ohne Abo-Fallen, ohne Werbung und ohne Konto. Sie ist ein privates Projekt, kostenlos und Open Source.')),
+      p(t('Diese App ist entstanden, damit Kinder in Instrumentalklassen zu Hause gern üben – ohne Abo-Fallen, ohne Werbung und ohne Konto. Sie ist ein privates, persönliches Projekt, kostenlos und Open Source.')),
       h('h2', null, t('Was sie kann')),
       h(
         'ul',
@@ -718,7 +726,7 @@ function articleLd(a: Article, siteDef: SiteDef, l: Lang): object {
     description: a.description[l],
     inLanguage: l,
     url: env().publicUrl(siteDef.id) + pathOf(`wissen/${a.id}`, l),
-    author: { '@type': 'Person', name: LEGAL.name },
+    author: { '@type': 'Person', name: LEGAL_NAME },
   };
 }
 

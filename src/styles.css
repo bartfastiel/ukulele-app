@@ -2449,3 +2449,31 @@ html[data-instrument='banjo'] .card {
     0 5px 0 4px #2e1806,
     0 9px 16px 4px rgba(0, 0, 0, 0.45);
 }
+
+/* Impressum: Angaben als Grafik aus Kacheln (src/ui/secret-text.ts) */
+.secret {
+  display: inline-block;
+  vertical-align: -0.55em;
+}
+
+.secret-art {
+  position: relative;
+  display: block;
+}
+
+.secret-art canvas {
+  position: absolute;
+  display: block;
+}
+
+/* Köder im Impressum: im HTML lesbar, auf der Seite unsichtbar und nicht markierbar */
+.decoy {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}

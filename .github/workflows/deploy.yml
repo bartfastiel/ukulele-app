@@ -7,7 +7,7 @@
 #               (dist/start, die Instrumentenwahl, kommt erst mit einer eigenen Domain dazu)
 #   Vorschau    https://ukulele.wer-ist-daniel-schwarz.de/<UKULELE_PREVIEW_PATH>/pr-<nr>/<seite>/  ← dist/ je Pull Request
 #
-# Secrets: DEPLOY_HOST, DEPLOY_USER (Standard root), DEPLOY_SSH_KEY. Variablen: UKULELE_PREVIEW_PATH, UKULELE_HOST (optional).
+# Secrets: DEPLOY_HOST, DEPLOY_USER (Standard root), DEPLOY_SSH_KEY, LEGAL_ADDRESS/LEGAL_EMAIL (Impressum, nur verpackt in der Seite). Variablen: UKULELE_PREVIEW_PATH, UKULELE_HOST (optional).
 # Forks bekommen keine Secrets – die Deployments werden dann sauber übersprungen.
 name: Deploy
 
@@ -80,6 +80,8 @@ jobs:
         env:
           SITE_URL: https://{site}.wer-ist-daniel-schwarz.de/
           PUBLIC_URL: https://{site}.wer-ist-daniel-schwarz.de/
+          LEGAL_ADDRESS: ${{ secrets.LEGAL_ADDRESS }}
+          LEGAL_EMAIL: ${{ secrets.LEGAL_EMAIL }}
       - name: SSH-Schlüssel
         run: .github/scripts/ssh-setup.sh
       - name: Hochladen
@@ -119,6 +121,8 @@ jobs:
           SITE_URL: ${{ needs.prerequisites.outputs.preview_base }}/pr-${{ github.event.pull_request.number }}/{site}/
           PUBLIC_URL: https://{site}.wer-ist-daniel-schwarz.de/
           PREVIEW: '1'
+          LEGAL_ADDRESS: ${{ secrets.LEGAL_ADDRESS }}
+          LEGAL_EMAIL: ${{ secrets.LEGAL_EMAIL }}
       - name: SSH-Schlüssel
         run: .github/scripts/ssh-setup.sh
       - name: Hochladen
