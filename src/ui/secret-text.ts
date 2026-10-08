@@ -13,7 +13,15 @@ function draw(lines: string[], color: string, font: string, size: number): HTMLC
   const ratio = Math.min(3, window.devicePixelRatio || 1);
   const lineH = Math.round(size * 1.4);
   const probe = document.createElement('canvas').getContext('2d')!;
-  probe.font = `${size}px ${font}`;
+  // WebKit liefert die Schriftliste ohne Anführungszeichen; für die Zeichenfläche jeden Namen mit Leerzeichen quoten
+  const family = font
+    .split(',')
+    .map((f) => f.trim().replace(/^["']|["']$/g, ''))
+    .filter((f) => f && f !== 'system-ui')
+    .map((f) => (/\s/.test(f) ? `"${f}"` : f))
+    .join(', ');
+  probe.font = `${size}px ${family || 'sans-serif'}`;
+  if (probe.font.indexOf(`${size}px`) < 0) probe.font = `${size}px sans-serif`;
   const width = Math.ceil(Math.max(...lines.map((l) => probe.measureText(l).width))) + 4;
   const canvas = document.createElement('canvas');
   canvas.width = width * ratio;

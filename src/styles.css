@@ -2453,7 +2453,7 @@ html[data-instrument='banjo'] .card {
 /* Impressum: Angaben als Grafik aus Kacheln (src/ui/secret-text.ts) */
 .secret {
   display: inline-block;
-  vertical-align: top;
+  vertical-align: -0.55em;
 }
 
 .secret-art {
@@ -2464,12 +2464,6 @@ html[data-instrument='banjo'] .card {
 .secret-art canvas {
   position: absolute;
   display: block;
-}
-
-.secret-reveal {
-  min-height: 48px;
-  margin: 4px 0 0;
-  font-size: 0.85em;
 }
 
 /* Köder im Impressum: im HTML lesbar, auf der Seite unsichtbar und nicht markierbar */
