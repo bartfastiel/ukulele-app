@@ -2449,3 +2449,25 @@ html[data-instrument='banjo'] .card {
     0 5px 0 4px #2e1806,
     0 9px 16px 4px rgba(0, 0, 0, 0.45);
 }
+
+/* Impressum: Angaben als Grafik aus Kacheln (src/ui/secret-text.ts) */
+.secret {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.secret-art {
+  position: relative;
+  display: block;
+}
+
+.secret-art canvas {
+  position: absolute;
+  display: block;
+}
+
+.secret-reveal {
+  min-height: 48px;
+  margin: 4px 0 0;
+  font-size: 0.85em;
+}

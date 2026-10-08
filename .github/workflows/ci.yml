@@ -52,6 +52,9 @@ jobs:
       - run: npm run e2e
         env:
           CI: true
+          # erfundene Testangaben (example.org ist reserviert): prüft, dass das Impressum sie nur als Grafik zeigt
+          LEGAL_ADDRESS: Beispielweg 1|12345 Beispielstadt
+          LEGAL_EMAIL: post@example.org
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

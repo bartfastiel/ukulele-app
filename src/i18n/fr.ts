@@ -652,4 +652,7 @@ export const FR: Record<string, string> = {
   '{a} oder {b}': '{a} ou {b}',
   'Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: {strings}.':
     'Touche une corde pour entendre sa note. De haut en bas : {strings}.',
+  "E-Mail-Adresse als Bild": "Adresse e-mail en image",
+  "Anschrift als Bild": "Adresse postale en image",
+  "Wird geladen …": "Chargement …",
 };
