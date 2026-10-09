@@ -1788,6 +1788,41 @@ summary:focus-visible {
   fill: #fff;
 }
 
+.fb-break {
+  fill: none;
+  stroke: #f3e6c4;
+  stroke-width: 3;
+}
+
+.fb-bend {
+  fill: none;
+  stroke: #ff5a7a;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.blues-shift-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.blues-shift {
+  min-width: 64px;
+  font-size: 1.3em;
+}
+
+.blues-shift:disabled {
+  opacity: 0.35;
+}
+
+.blues-shift-label {
+  font-weight: 900;
+  color: var(--ink);
+}
+
 .blues-info {
   font-weight: 700;
 }

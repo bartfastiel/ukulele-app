@@ -160,6 +160,11 @@ export const FR: Record<string, string> = {
   '{n} Zeile hat keinen eigenen Akkord – sie wird beim Akkord davor mitgesungen.': '{n} ligne n’a pas d’accord à elle – elle se chante avec l’accord d’avant.',
   '{n} Zeilen haben keinen eigenen Akkord – sie werden beim Akkord davor mitgesungen.': '{n} lignes n’ont pas d’accord à elles – elles se chantent avec l’accord d’avant.',
   // src/views/blues.ts
+  "Sehr langsam": "Très lent",
+  "Richtung Kopf": "Vers la tête",
+  "Richtung Korpus": "Vers la caisse",
+  "Bund {a}–{b}": "Cases {a} à {b}",
+  "Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur, am schönsten über dem {i}-Akkord. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.": "Tirer ↑ : la note avec la flèche ({note}), tu peux la monter un tout petit peu – pousse la corde sur le côté avec le doigt qui appuie, jusqu’à ce qu’elle sonne un peu plus haut. C’est la « blue note » entre mineur et majeur, la plus belle sur l’accord de {i}. La note {b5} est une note de passage : touche-la brièvement, puis continue.",
   'Langsam': 'Lent',
   'Mittel': 'Moyen',
   'Schnell': 'Rapide',

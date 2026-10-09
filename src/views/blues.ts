@@ -2,24 +2,27 @@ import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { fretboard, type Mark } from '../ui/fretboard.ts';
-import { BLUES_SCALE, LEVELS, SWING, bluesBars, chordTones, levelText, organVoicing, position, rootOf, scalePositions, type Level } from '../music/blues.ts';
+import { BLUES_SCALE, LEVELS, SWING, bendable, bluesBars, chordTones, levelText, levelWindow, organVoicing, place, rootOf, scalePositions, windowTop, type Level, type NeckWindow } from '../music/blues.ts';
 import { instrument } from '../music/instrument.ts';
 import { ROOTS } from '../music/chords.ts';
 import { audio, click, pluck } from '../audio/engine.ts';
 import { bass, hat, kick, organ, snare } from '../audio/band.ts';
 import { openMic, type Mic } from '../audio/mic.ts';
 import { detectPitch } from '../audio/pitch.ts';
-import { NOTE_NAMES, freqToMidi, pitchClass } from '../music/notes.ts';
+import { freqToMidi, midiToFreq, pitchClass } from '../music/notes.ts';
 import { markPracticed } from '../store.ts';
 import { noteText, t, tk, tp } from '../i18n.ts';
 
 const TEMPOS = [
+  { label: tk('Sehr langsam'), bpm: 55 },
   { label: tk('Langsam'), bpm: 70 },
   { label: tk('Mittel'), bpm: 85 },
   { label: tk('Schnell'), bpm: 100 },
 ];
 
 const WALK = [0, 4, 7, 9, 10, 9, 7, 4];
+/** Beim freien Spiel mehr vom Hals zeigen als bei den Vorgaben. */
+const FREE_FRETS = 5;
 
 export const blues: View = (root) => {
   const setup = instrument().blues;
@@ -40,9 +43,20 @@ export const blues: View = (root) => {
   let hitBeat = -1;
   let played: { midi: number; at: number } | null = null;
   let releaseWake: (() => void) | null = null;
+  let from = 1;
+  const win = (): NeckWindow => (level.notes ? levelWindow(from) : { from: Math.min(from, instrument().frets - FREE_FRETS + 1), frets: FREE_FRETS });
 
   const grid = h('div', { class: 'blues-grid', 'aria-label': t('12 Takte') });
-  const neck = h('div', { class: 'card blues-neck' });
+  const neck = h('div', { class: 'blues-neck-view' });
+  const shiftLabel = h('span', { class: 'blues-shift-label' });
+  const shift = (d: number) => {
+    const w = win();
+    from = Math.max(1, Math.min(instrument().frets - w.frets + 1, w.from + d));
+    drawNeck(running ? beatNow() : 0);
+  };
+  const towardHead = button('◀', () => shift(-1), 'btn-seg blues-shift', { 'aria-label': t('Richtung Kopf') });
+  const towardBody = button('▶', () => shift(1), 'btn-seg blues-shift', { 'aria-label': t('Richtung Korpus') });
+  const neckCard = h('div', { class: 'card blues-neck' }, neck, h('div', { class: 'blues-shift-row' }, towardHead, shiftLabel, towardBody));
   const info = h('p', { class: 'card blues-info' });
   const counter = h('div', { class: 'feedback', 'aria-live': 'polite' }, t('Tippe auf „Start“ – die Band zählt ein.'));
   const playBtn = button('', () => (running ? stop() : go()), 'btn-primary btn-play');
@@ -64,6 +78,10 @@ export const blues: View = (root) => {
 
   const drawNeck = (beat: number) => {
     clear(neck);
+    const w = win();
+    towardHead.disabled = w.from <= 1;
+    towardBody.disabled = w.from + w.frets > instrument().frets;
+    shiftLabel.textContent = t('Bund {a}–{b}', { a: w.from, b: w.from + w.frets - 1 });
     const bar = ((Math.floor(beat / 4) % 12) + 12) % 12;
     const chord = BARS[bar];
     const marks: Mark[] = [];
@@ -71,20 +89,26 @@ export const blues: View = (root) => {
       const now = targetAt(Math.max(0, beat));
       const next = targetAt(Math.max(0, beat) + 1);
       if (next !== null && next !== now) {
-        const p = position(next);
+        const p = place(next, w);
         marks.push({ string: p.string, fret: p.fret, kind: 'next', label: String(p.fret) });
       }
       if (now !== null) {
-        const p = position(now);
+        const p = place(now, w);
         marks.push({ string: p.string, fret: p.fret, kind: 'now', label: String(p.fret) });
       }
     } else {
       const tones = chordTones(chord);
-      for (const p of scalePositions(key, setup.frets))
-        marks.push({ string: p.string, fret: p.fret, kind: tones.indexOf(p.midi % 12) >= 0 ? 'chord' : 'scale', label: noteText(NOTE_NAMES[p.midi % 12]) });
+      for (const p of scalePositions(key, w))
+        marks.push({
+          string: p.string,
+          fret: p.fret,
+          kind: tones.indexOf(p.midi % 12) >= 0 ? 'chord' : 'scale',
+          label: noteText(ROOTS[p.midi % 12]),
+          bend: bendable(p.midi, p.fret, key),
+        });
     }
     if (played && audio().currentTime - played.at < 0.6) {
-      const p = position(played.midi);
+      const p = place(played.midi, w);
       marks.push({ string: p.string, fret: p.fret, kind: 'played' });
     }
     neck.appendChild(
@@ -92,10 +116,10 @@ export const blues: View = (root) => {
         'div',
         { class: 'blues-now' },
         h('span', { class: 'chord-name' }, chord),
-        level.notes && beat >= 0 && targetAt(beat) !== null ? h('span', { class: 'blues-target' }, t('Spiel {note}', { note: noteText(NOTE_NAMES[pitchClass(targetAt(beat)!)]) })) : null,
+        level.notes && beat >= 0 && targetAt(beat) !== null ? h('span', { class: 'blues-target' }, t('Spiel {note}', { note: noteText(ROOTS[pitchClass(targetAt(beat)!)]) })) : null,
       ),
     );
-    neck.appendChild(fretboard(marks, setup.frets));
+    neck.appendChild(fretboard(marks, w.frets, w.from));
   };
 
   const schedule = () => {
@@ -118,10 +142,10 @@ export const blues: View = (root) => {
           const off = k ? SWING : 0;
           bass(rootOf(chord).bass + WALK[step], t + off * spb(), (k ? 1 - SWING : SWING) * spb());
         }
-        if (inBar === 1 || inBar === 3) organ(organVoicing(chord), t + SWING * spb(), spb() * 0.45);
+        if (inBar === 1 || inBar === 3) organ(organVoicing(chord, windowTop(win())), t + SWING * spb(), spb() * 0.45);
         if (guide && level.notes) {
           const target = targetAt(b);
-          if (target !== null) pluck(target, t, 0.35);
+          if (target !== null) pluck(place(target, win()).midi, t, 0.35);
         }
       }
       scheduled++;
@@ -146,7 +170,9 @@ export const blues: View = (root) => {
     micTimer = window.setInterval(() => {
       if (!running) return;
       mic.timeData(buf);
-      const p = detectPitch(buf, mic.sampleRate, setup.pitch.minHz, setup.pitch.maxHz);
+      // weiter oben am Hals klingen die Töne höher; die Orgel weicht dann aus (organVoicing)
+      const maxHz = Math.max(setup.pitch.maxHz, midiToFreq(windowTop(win()) + 1));
+      const p = detectPitch(buf, mic.sampleRate, setup.pitch.minHz, maxHz);
       if (!p || p.clarity < 0.9) return;
       const midi = Math.round(freqToMidi(p.freq));
       played = { midi, at: audio().currentTime };
@@ -216,9 +242,15 @@ export const blues: View = (root) => {
       }),
     );
 
+  const bendInfo = h('p', { class: 'card small' });
   const setLevel = (l: Level) => {
     level = l;
     info.textContent = t(levelText(l));
+    bendInfo.style.display = l.notes ? 'none' : '';
+    bendInfo.textContent = t(
+      'Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur, am schönsten über dem {i}-Akkord. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.',
+      { note: noteText(ROOTS[(key + 3) % 12]), i: ROOTS[key], b5: noteText(ROOTS[(key + 6) % 12]) },
+    );
     drawNeck(running ? beatNow() : 0);
   };
 
@@ -251,8 +283,9 @@ export const blues: View = (root) => {
   screen(
     root,
     { title: t('Blues'), theme: 'teal' },
-    h('div', { class: 'blues-top' }, grid, neck),
+    h('div', { class: 'blues-top' }, grid, neckCard),
     info,
+    bendInfo,
     h(
       'div',
       { class: 'controls' },
@@ -264,6 +297,7 @@ export const blues: View = (root) => {
         key = i;
         BARS = bluesBars(key);
         explain.textContent = explainText();
+        setLevel(level);
         drawGrid(running ? Math.floor(Math.max(0, beatNow()) / 4) % 12 : -1);
         drawNeck(running ? beatNow() : 0);
       }),

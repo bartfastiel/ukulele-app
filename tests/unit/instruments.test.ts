@@ -10,7 +10,7 @@ import { evaluateRecording, spectrum } from '../../src/audio/offline.ts';
 import { renderPluck, renderStrum } from '../../src/audio/pluck.ts';
 import { cents, detectPitch } from '../../src/audio/pitch.ts';
 import { identifyFingering, libraryName, nameChord } from '../../src/music/identify.ts';
-import { bluesBars, LEVELS, organVoicing, position, rootOf, scalePositions } from '../../src/music/blues.ts';
+import { BLUES_SCALE, bendable, bluesBars, inWindow, LEVELS, levelWindow, organVoicing, place, position, rootOf, scalePositions, windowTop } from '../../src/music/blues.ts';
 import { parseFrets, plan } from '../../src/music/recording-plan.ts';
 import type { Chord } from '../../src/music/grip.ts';
 
@@ -304,6 +304,41 @@ test('Blues: Vorgabe-Töne in bequemer Lage, Grundtöne passen, Orgel außerhalb
     }
     // in der ★-Tonart liegt der Grundton auf einer leeren Saite
     assert.equal(position(rootOf(bluesBars(b.easyKey)[0]).uke).fret, 0, id);
+  });
+});
+
+test('Blues weiter oben am Hals: Vorgabe im Ausschnitt, ganze Tonleiter sichtbar, Orgel über dem Spielbereich', () => {
+  each(['ukulele', ...OTHERS], (id) => {
+    const b = instrument().blues;
+    for (const free of [false, true])
+      for (let from = 1; from + 4 <= instrument().frets; from++) {
+        const w = free ? { from, frets: 5 } : levelWindow(from);
+        const top = windowTop(w);
+        for (let key = 0; key < 12; key++) {
+          const bars = bluesBars(key);
+          const seen = scalePositions(key, w).map((p) => (p.midi - key + 120) % 12);
+          if (free) for (const iv of BLUES_SCALE) assert.ok(seen.indexOf(iv) >= 0, `${id} Bund ${from}+${w.frets} in ${bars[0]}: Stufe ${iv} fehlt`);
+          for (const p of scalePositions(key, w)) assert.ok(inWindow(p.fret, w));
+          for (const level of LEVELS) {
+            if (!level.notes || free) continue;
+            for (const chordName of bars)
+              for (const n of level.notes(chordName)) {
+                const p = place(n.midi, w);
+                assert.equal(pitchClass(p.midi), pitchClass(n.midi));
+                assert.equal(stringMidi(p.string, p.fret), p.midi);
+                assert.ok(inWindow(p.fret, w), `${id} ${level.id} ${chordName} Bund ${from}: ${n.midi} → Bund ${p.fret}`);
+              }
+          }
+          if (b.organ > b.low) for (const chordName of bars) for (const m of organVoicing(chordName, top)) assert.ok(m > top + 1, `${id}: Orgel ${m} im Spielbereich`);
+        }
+      }
+    // am Sattel bleibt alles wie bisher
+    const home = levelWindow(1);
+    assert.deepEqual(home, { from: 1, frets: b.frets });
+    for (const n of LEVELS[0].notes!(bluesBars(b.easyKey)[0])) assert.deepEqual(place(n.midi, home), { ...position(n.midi), midi: n.midi });
+    // die Blue Note (kleine Terz) lässt sich nur gegriffen ziehen
+    assert.equal(bendable(stringMidi(1, 3), 3, (stringMidi(1, 3) - 3 + 12) % 12), true);
+    assert.equal(bendable(STRINGS[1].midi, 0, (STRINGS[1].midi - 3 + 12) % 12), false);
   });
 });
 
