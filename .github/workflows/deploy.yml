@@ -4,6 +4,7 @@
 #   Produktion  https://ukulele.wer-ist-daniel-schwarz.de/  ← dist/ukulele  (Server: app/)
 #               https://gitarre.wer-ist-daniel-schwarz.de/  ← dist/gitarre  (Server: app-gitarre/)
 #               https://banjo.wer-ist-daniel-schwarz.de/    ← dist/banjo    (Server: app-banjo/)
+#               https://bariton.wer-ist-daniel-schwarz.de/  ← dist/bariton  (Server: app-bariton/)
 #               (dist/start, die Instrumentenwahl, kommt erst mit einer eigenen Domain dazu)
 #   Vorschau    https://ukulele.wer-ist-daniel-schwarz.de/<UKULELE_PREVIEW_PATH>/pr-<nr>/<seite>/  ← dist/ je Pull Request
 #
@@ -89,6 +90,7 @@ jobs:
           .github/scripts/upload-dir.sh dist/ukulele "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app"
           .github/scripts/upload-dir.sh dist/gitarre "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-gitarre"
           .github/scripts/upload-dir.sh dist/banjo "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-banjo"
+          .github/scripts/upload-dir.sh dist/bariton "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-bariton"
       - name: Live-Prüfung
         run: |
           curl -fsS --retry 5 --retry-delay 5 "https://$UKULELE_HOST/" | grep -q 'data-instrument="ukulele"'

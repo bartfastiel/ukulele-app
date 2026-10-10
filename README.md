@@ -37,8 +37,9 @@ ohne Tracking. Alles bleibt auf dem Gerät.
 Ohne Mikrofon funktioniert alles weiter – dann bestätigt das Kind selbst.
 
 **Instrumente:** Ukulele (G C E A, hohes G) ist der Standard. Dieselbe App kann auch **Gitarre** (E A D G B e) und
-**5-saitiges Banjo** in Open G (g D G B D, die kurze g-Saite beginnt am 5. Bund) – zum Ausprobieren mit
-`?instrument=gitarre` bzw. `?instrument=banjo` in der Adresse (vorgerenderte Seiten setzen `data-instrument` am
+**5-saitiges Banjo** in Open G (g D G B D, die kurze g-Saite beginnt am 5. Bund) und **Bariton-Ukulele** (D G B E,
+wie die vier hohen Gitarrensaiten) – zum Ausprobieren mit `?instrument=gitarre`, `?instrument=banjo` bzw.
+`?instrument=bariton` in der Adresse (vorgerenderte Seiten setzen `data-instrument` am
 `<html>`).
 
 **Sprachen:** Deutsch, English, Français – Auswahl unten auf der Startseite (und unter „Meine Sterne“), sonst nach der
@@ -98,17 +99,18 @@ werden sofort entfernt. (Keine Rechtsberatung.)
 `src/music/instrument.ts` beschreibt ein Instrument; die Daten stehen in `src/music/instruments/*.ts`:
 
 - **Saiten** in Spielreihenfolge (Name, MIDI-Ton, ggf. Startbund wie die kurze Banjo-Saite), Bundzahl, Perlmutt-Punkte.
-- **Griff-Bibliothek** mit Fingersatz (Ukulele 18, Gitarre 23 offene und Barré-Griffe, Banjo 16), dazu eine Tabelle
-  üblicher Griffe für alle zwölf Tonarten (Ukulele: Dur/Moll/Sept; Gitarre: E- und A-Barréform für Dur, Moll, 7, m7,
-  maj7) und ein Grifffinder für alles andere (nur Akkordtöne, Spanne ≤ 3 Bünde, höchstens vier Finger mit Barré,
+- **Griff-Bibliothek** mit Fingersatz (Ukulele 18, Gitarre 23 offene und Barré-Griffe, Banjo 16, Bariton-Ukulele 22
+  – die Gitarrengriffe auf den vier hohen Saiten), dazu eine Tabelle üblicher Griffe für alle zwölf Tonarten (Ukulele
+  und Bariton-Ukulele: Dur/Moll/Sept, auf der Bariton-Ukulele dieselben Formen eine Quarte tiefer; Gitarre: E- und
+  A-Barréform für Dur, Moll, 7, m7, maj7) und ein Grifffinder für alles andere (nur Akkordtöne, Spanne ≤ 3 Bünde, höchstens vier Finger mit Barré,
   Gitarre: nur Bass-Saiten weglassen, Grundton im Bass; Banjo: die kurze Saite klingt leer mit, wenn G zum Akkord
   gehört, sonst bleibt sie still).
-- **Erkennung:** Frequenzfenster (Ukulele 240–1100 Hz, Gitarre ab 75 Hz, Banjo ab 130 Hz), wie viele Obertöne als
-  erklärt gelten (Ukulele 3, Gitarre 8, Banjo 5), Stimmgerät-Bereich. Die Ukulele-Werte sind unverändert.
+- **Erkennung:** Frequenzfenster (Ukulele 240–1100 Hz, Gitarre ab 75 Hz, Banjo und Bariton-Ukulele ab 130 Hz), wie
+  viele Obertöne als erklärt gelten (Ukulele 3, Gitarre 8, Banjo und Bariton-Ukulele 5), Stimmgerät-Bereich. Die Ukulele-Werte sind unverändert.
 - **Klang:** Karplus-Strong mit Helligkeit, Ausklingen und Zupfstelle je Instrument (Gitarre tiefer und länger,
-  Banjo hell und kurz).
-- **Melodie:** Gitarre spielt und zeigt Melodien eine Oktave tiefer (erste Lage), das Banjo wählt je Lied die Oktave.
-- **Blues** (bequeme Tonart ★: Ukulele C, Gitarre E, Banjo G), **Akkord-Spiel**, **Rhythmus** (Banjo zusätzlich mit
+  Banjo hell und kurz, Bariton-Ukulele wärmer als die Ukulele).
+- **Melodie:** Gitarre spielt und zeigt Melodien eine Oktave tiefer (erste Lage), Banjo und Bariton-Ukulele wählen je Lied die Oktave.
+- **Blues** (bequeme Tonart ★: Ukulele C, Gitarre E, Banjo und Bariton-Ukulele G), **Akkord-Spiel**, **Rhythmus** (Banjo zusätzlich mit
   Roll: Daumen – Zeige – Mittel), **Aufnahmeplan** und **Kapodaster-Hinweis** (Gitarre: „Kapo 3, greif wie A“).
 
 `STRINGS` und `CHORDS` folgen dem aktuellen Instrument (`setInstrument()`); die Unit-Tests prüfen je Instrument
@@ -135,7 +137,7 @@ Echte Beispielaufnahmen gibt es bisher nur von der Ukulele.
   (`src/site/og-image.ts`, PNG über `node:zlib`).
   Persönliches (eigene und geteilte Lieder) steht in der Adresse hinter `#` und erreicht nie den Server. Frühere
   `#/…`-Adressen werden weitergeleitet.
-- **Instrumente als Subdomains:** `ukulele.`, `gitarre.`, `banjo.` – derselbe Code, das Instrument steht in der Seite
+- **Instrumente als Subdomains:** `ukulele.`, `gitarre.`, `banjo.`, `bariton.` – derselbe Code, das Instrument steht in der Seite
   (`data-instrument`). Eine Startseite ohne Subdomain (nur Instrumentenwahl) kommt mit einer eigenen Domain dazu.
 - **Kompatibilität:** gebaut für Safari 12 (alte iPads), Chrome 70, Firefox 68. Ohne Web Audio läuft die App stumm
   weiter. PWA mit Service Worker – nach dem ersten Besuch offline nutzbar, auf dem Home-Bildschirm installierbar.
@@ -144,7 +146,7 @@ Echte Beispielaufnahmen gibt es bisher nur von der Ukulele.
 
 ```sh
 npm install
-npm run dev        # baut bei jeder Änderung neu, http://localhost:5173/ukulele/ (auch /gitarre/, /banjo/, /start/)
+npm run dev        # baut bei jeder Änderung neu, http://localhost:5173/ukulele/ (auch /gitarre/, /banjo/, /bariton/, /start/)
 npm run check      # Typen, Unit-Tests, Build
 npm run e2e        # Build + Playwright (Desktop, iPad/WebKit, Handy hoch/quer, Mikrofon-Simulation)
 ```
@@ -185,7 +187,7 @@ Die Auswertung spielt jede Aufnahme durch denselben Lauscher wie die App (Spektr
 ## Deployment
 
 Jeder Push auf `main` baut `dist/<instrument>/` und legt es per SSH auf den Server von wer-ist-daniel-schwarz.de
-(`/mnt/frag-daniel/ukulele/app`, `app-gitarre`, `app-banjo` → https://ukulele.wer-ist-daniel-schwarz.de/ usw.), jeder Pull
+(`/mnt/frag-daniel/ukulele/app`, `app-gitarre`, `app-banjo`, `app-bariton` → https://ukulele.wer-ist-daniel-schwarz.de/ usw.), jeder Pull
 Request bekommt eine Vorschau mit allen Instrumenten (`…/pr-<nr>/ukulele/`, `…/gitarre/`, …). Der Build liest
 `SITE_URL` (Adresse je Seite, `{site}` wird ersetzt), `PUBLIC_URL` (für canonical/hreflang/Sitemap) und `PREVIEW=1`
 (nicht indexieren). Caddy-Konfiguration und
