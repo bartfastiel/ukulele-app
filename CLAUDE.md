@@ -1,7 +1,7 @@
 # Ukulele-Club – Hinweise für Claude
 
 Private Lern-App von Daniel für seinen Sohn (10, Realschul-Ukulelenklasse). Öffentlich als Open Source auf GitHub
-(`bartfastiel/ukulele-app`), live unter https://ukulele.wer-ist-daniel-schwarz.de. Antworten auf Deutsch; die App ist
+(`bartfastiel/ukulele-app`), live unter https://openstring.de/ (je Instrument ein Pfad). Antworten auf Deutsch; die App ist
 dreisprachig (Deutsch = Original, Englisch, Französisch), Akkordnamen international (B statt H).
 
 ## Befehle

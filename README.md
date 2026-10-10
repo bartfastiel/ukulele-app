@@ -4,7 +4,8 @@ Kostenlose Lern-App für Ukulele im Browser – gebaut für Kinder in der Ukulel
 haben wollen. Läuft auf iPad (auch älteren), Android-Handys (hoch und quer) und am PC, ohne Konto, ohne Werbung,
 ohne Tracking. Alles bleibt auf dem Gerät.
 
-**Live:** https://ukulele.wer-ist-daniel-schwarz.de
+**Live:** https://openstring.de/ – Ukulele, Gitarre, Banjo, Bariton-Ukulele, Mandoline und E-Bass
+(https://openstring.de/ukulele/, https://openstring.de/gitarre/ …)
 
 ## Was die App kann
 
@@ -198,8 +199,9 @@ Die Auswertung spielt jede Aufnahme durch denselben Lauscher wie die App (Spektr
 
 ## Deployment
 
-Jeder Push auf `main` baut `dist/<instrument>/` und legt es per SSH auf den Server von wer-ist-daniel-schwarz.de
-(`/mnt/frag-daniel/ukulele/app`, `app-gitarre`, `app-banjo`, `app-bariton`, `app-mandoline` → https://ukulele.wer-ist-daniel-schwarz.de/ usw.), jeder Pull
+Jeder Push auf `main` baut die ganze Domain (Startseite an der Wurzel, je Instrument ein Ordner) und legt sie per SSH auf
+den Server (`SITE_DOMAIN` → https://openstring.de/). Die alten Subdomains (ukulele./gitarre./banjo.wer-ist-daniel-schwarz.de)
+bekommen Umzugsseiten, die Fortschritt und eigene Lieder mitnehmen (`MOVE_TO`). Jeder Pull
 Request bekommt eine Vorschau mit allen Instrumenten (`…/pr-<nr>/ukulele/`, `…/gitarre/`, …). Der Build liest
 `SITE_URL` (Adresse je Seite, `{site}` wird ersetzt), `PUBLIC_URL` (für canonical/hreflang/Sitemap) und `PREVIEW=1`
 (nicht indexieren). Caddy-Konfiguration und

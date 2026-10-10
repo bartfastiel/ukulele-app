@@ -31,7 +31,8 @@ export function movedPage(target: string, instrument: string): string {
     '<title>Umgezogen · Moved · Déménagé</title>\n' +
     `<link rel="canonical" href="${esc(target)}">\n` +
     `<script>${script}</script>\n` +
-    `<meta http-equiv="refresh" content="3;url=${esc(target)}">\n` +
+    // nur ohne Skript: ein sofortiges Refresh könnte sonst die Weiterleitung mit den Daten überholen
+    `<noscript><meta http-equiv="refresh" content="0;url=${esc(target)}"></noscript>\n` +
     '</head>\n<body>\n' +
     `<p><a href="${esc(target)}">Weiter · Continue · Continuer</a></p>\n` +
     '</body>\n</html>\n'
