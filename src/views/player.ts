@@ -1,7 +1,7 @@
 import { h, clear, announce, reducedMotion } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, praise, keepAwake, type View } from '../ui/screen.ts';
-import { chordDiagram } from '../ui/chord-diagram.ts';
+import { playableChord } from '../ui/chord-play.ts';
 import { findSong } from '../music/library.ts';
 import { isOwnId } from '../music/own-songs.ts';
 import { chordChanges, eventAt, type Song } from '../music/song.ts';
@@ -232,14 +232,14 @@ class Player {
       { class: 'card-inner' },
       h('div', { class: 'card-label' }, t('Jetzt')),
       h('div', { class: 'chord-name' }, name),
-      chordDiagram(chord(name), { lefty: this.settings.lefty }),
+      playableChord(chord(name), { lefty: this.settings.lefty }),
     );
     const next = this.changes.find((c) => c > Math.max(0, idx));
     const nextInner = h('div', { class: 'card-inner' }, h('div', { class: 'card-label' }, t('Gleich')));
     if (next !== undefined) {
       const nn = this.song.events[next].chord;
       nextInner.appendChild(h('div', { class: 'chord-name' }, nn));
-      nextInner.appendChild(chordDiagram(chord(nn), { lefty: this.settings.lefty, labels: false }));
+      nextInner.appendChild(playableChord(chord(nn), { lefty: this.settings.lefty, labels: false }));
       nextInner.appendChild(h('div', { class: 'beat-dots', 'aria-hidden': 'true' }));
     } else nextInner.appendChild(h('div', { class: 'chord-name end' }, t('Ende')));
 
@@ -473,7 +473,7 @@ class Player {
             if (this.hintStreak.count === 4) {
               hint.textContent = diagnose(chord(name), v.weakString, v.weakKind);
               const svg = this.nowCard.querySelector('.card-inner:not(.leaving) svg');
-              if (svg) svg.replaceWith(chordDiagram(chord(name), { lefty: this.settings.lefty, highlight: v.weakString }));
+              if (svg) svg.replaceWith(playableChord(chord(name), { lefty: this.settings.lefty, highlight: v.weakString }));
             }
           },
         }).then(handle, () => {

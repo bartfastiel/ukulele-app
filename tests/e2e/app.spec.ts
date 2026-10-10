@@ -100,7 +100,7 @@ test('Akkord-Seite: Anhören und Griffbeschreibung', async ({ page }) => {
 
 test('Linkshänder spiegelt die Griffbilder', async ({ page }) => {
   await page.goto('#/sterne');
-  await page.getByRole('button', { name: 'Linkshänder' }).click();
+  await page.getByRole('button', { name: 'Linkshänder', exact: true }).click();
   await page.goto('#/akkord/C');
   const labels = await page.locator('.diagram-big .string-label').evaluateAll((els) =>
     els.sort((a, b) => Number(a.getAttribute('x')) - Number(b.getAttribute('x'))).map((e) => e.textContent),
@@ -108,40 +108,113 @@ test('Linkshänder spiegelt die Griffbilder', async ({ page }) => {
   expect(labels).toEqual(['A', 'E', 'C', 'G']);
 });
 
-test('Linkshänder: Schalter auf der Akkord-Seite, bleibt nach Neuladen, spiegelt auch den Blues-Hals', async ({ page }) => {
+test('Linkshänder: für Rechtshänder unsichtbar, Abzeichen zeigt den Modus, gilt für alle Instrumente', async ({ page }) => {
   const order = () =>
     page.locator('.diagram-big .string-label').evaluateAll((els) =>
       els.map((e) => ({ x: e.getBoundingClientRect().left, t: e.textContent })).sort((a, b) => a.x - b.x).map((e) => e.t),
     );
   await page.goto('#/akkord/C');
   expect(await order()).toEqual(['G', 'C', 'E', 'A']);
-  const toggle = page.getByRole('button', { name: 'Linkshänder' });
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  // Rechtshänder: kein Schalter am Griffbild, kein Abzeichen – nur ein kleiner Link in der Fußzeile
+  await expect(page.locator('main').getByRole('button', { name: /Linkshänder/ })).toHaveCount(0);
+  await expect(page.locator('.lefty-badge')).toHaveCount(0);
+  await page.locator('.site-footer').getByRole('link', { name: 'Für Linkshänder' }).click();
+  const setting = page.getByRole('button', { name: 'Linkshänder', exact: true });
+  await expect(setting).toBeInViewport();
+  await expect(setting).toHaveAttribute('aria-pressed', 'false');
+  await setting.click();
+  await expect(setting).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.topbar .lefty-badge')).toBeVisible();
+
+  await page.goto('#/akkord/C');
+  await expect(page.locator('.topbar .lefty-badge')).toHaveCount(1);
   expect(await order()).toEqual(['A', 'E', 'C', 'G']);
+  // gespiegelt spielt die angetippte Saite trotzdem richtig: A-Saite, 3. Bund
+  const a = page.locator('.diagram-big .string[data-string="3"]');
+  await a.scrollIntoViewIfNeeded();
+  const box = (await a.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page.locator('.diagram-big svg')).toHaveAttribute('data-played', '3:3');
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Linkshänder' })).toHaveAttribute('aria-pressed', 'true');
   expect(await order()).toEqual(['A', 'E', 'C', 'G']);
 
   // Blues: Sattel rechts, Saitennamen lesbar am rechten Rand
   await page.goto('#/blues');
   const neck = page.locator('.fretboard');
   await expect(neck).toHaveClass(/lefty/);
-  const box = (await neck.boundingBox())!;
+  const nb = (await neck.boundingBox())!;
   const nut = (await page.locator('.fretboard .fb-nut').boundingBox())!;
-  expect(nut.x).toBeGreaterThan(box.x + box.width / 2);
+  expect(nut.x).toBeGreaterThan(nb.x + nb.width / 2);
   const label = (await page.locator('.fretboard .fb-label').first().boundingBox())!;
-  expect(label.x).toBeGreaterThan(box.x + box.width / 2);
+  expect(label.x).toBeGreaterThan(nb.x + nb.width / 2);
 
   // Wissensartikel: vorgerendert für Rechtshänder, nach dem Laden gespiegelt
   await page.goto('/ukulele/wissen/ukulele-erste-akkorde/');
+  await expect(page.locator('.topbar .lefty-badge')).toBeVisible();
   // C: nur die A-Saite ist gegriffen – im gespiegelten Bild links außen
   const tile = page.locator('.article-chord').first();
   await expect(tile.locator('.chord-name')).toHaveText('C');
   const svg = (await tile.locator('svg').boundingBox())!;
   const finger = (await tile.locator('svg .finger').first().boundingBox())!;
   expect(finger.x + finger.width / 2).toBeLessThan(svg.x + svg.width / 2);
+
+  // dieselbe Wahl gilt auf der Gitarren-Seite; das Abzeichen schaltet überall zurück
+  await page.goto('/gitarre/#/akkord/C');
+  await expect(page.locator('.topbar .lefty-badge')).toBeVisible();
+  expect(await order()).toEqual(['e', 'B', 'G', 'D', 'A', 'E']);
+  await page.getByRole('button', { name: 'Linkshänder-Ansicht ausschalten' }).click();
+  await expect(page.locator('.lefty-badge')).toHaveCount(0);
+  expect(await order()).toEqual(['E', 'A', 'D', 'G', 'B', 'e']);
+  await page.goto('/ukulele/#/akkord/C');
+  await expect(page.locator('.lefty-badge')).toHaveCount(0);
+  expect(await order()).toEqual(['G', 'C', 'E', 'A']);
+});
+
+test('Griffbild klingt: Saite antippen spielt ihren Ton, Wischen schlägt den Akkord an', async ({ page }) => {
+  await page.goto('#/akkord/C');
+  const svg = page.locator('.diagram-big svg.playable');
+  await svg.scrollIntoViewIfNeeded();
+  await expect(svg).toHaveAttribute('role', 'img');
+  const line = async (i: number) => (await page.locator(`.diagram-big .string[data-string="${i}"]`).boundingBox())!;
+  // A-Saite: im C-Griff 3. Bund; G-Saite: leer
+  const a = await line(3);
+  const g = await line(0);
+  await page.mouse.click(a.x + a.width / 2, a.y + a.height * 0.7);
+  await expect(svg).toHaveAttribute('data-played', '3:3');
+  await expect(svg).toHaveAttribute('data-plays', '1');
+  await page.mouse.click(g.x + g.width / 2, g.y + g.height / 2);
+  await expect(svg).toHaveAttribute('data-played', '0:0');
+  await expect(svg).toHaveAttribute('data-plays', '2');
+  // von links nach rechts über alle Saiten: jede klingt einmal, zuletzt die A-Saite
+  const y = g.y + g.height / 2;
+  await page.mouse.move(g.x - 6, y);
+  await page.mouse.down();
+  await page.mouse.move(a.x + 14, y, { steps: 12 });
+  await page.mouse.up();
+  await expect(svg).toHaveAttribute('data-plays', '6');
+  await expect(svg).toHaveAttribute('data-played', '3:3');
+  // und zurück: Aufschlag endet auf der G-Saite
+  await page.mouse.move(a.x + 14, y);
+  await page.mouse.down();
+  await page.mouse.move(g.x - 6, y, { steps: 12 });
+  await page.mouse.up();
+  await expect(svg).toHaveAttribute('data-plays', '10');
+  await expect(svg).toHaveAttribute('data-played', '0:0');
+});
+
+test('Griffbilder in Links bleiben Links, sonst klingen sie überall', async ({ page }) => {
+  await page.goto('#/akkorde');
+  await expect(page.locator('.chord-tile svg.playable')).toHaveCount(0);
+  await page.locator('.chord-tile', { hasText: 'G7' }).first().locator('svg').click();
+  await expect(page.getByRole('heading', { name: 'Akkord G7' })).toBeVisible();
+  await expect(page.locator('.diagram-big svg.playable')).toHaveCount(1);
+  await page.goto('#/lied/alle-meine-entchen');
+  await expect(page.locator('.now-card svg.playable')).toHaveCount(1);
+  await page.goto('/ukulele/wissen/ukulele-erste-akkorde/');
+  await expect(page.locator('.article-chord svg.playable').first()).toBeVisible();
+  // der Akkordname führt weiter zur Akkord-Seite
+  await page.locator('.article-chord .chord-name').first().click();
+  await expect(page.getByRole('heading', { name: 'Akkord C' })).toBeVisible();
 });
 
 test('Rhythmus startet und stoppt', async ({ page }) => {

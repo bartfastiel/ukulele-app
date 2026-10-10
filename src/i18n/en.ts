@@ -715,4 +715,7 @@ export const EN: Record<string, string> = {
   "12-saitige Gitarre": "12-string guitar",
   "Jede Saite hat eine Partnerin: Bei E, A, D und G klingt sie eine Oktave höher, bei B und e genau gleich. Stimm erst die dicke Saite, dann ihre Partnerin – das Stimmgerät erkennt beide.": "Every string has a partner: for E, A, D and G it sounds an octave higher, for B and e exactly the same. Tune the thick string first, then its partner – the tuner recognises both.",
   "Oktavsaite": "octave string",
+  "Linkshänder-Ansicht ausschalten": "Turn off left-handed view",
+  "Für Linkshänder": "For left-handers",
+  "Tipp eine Saite an oder wisch über alle.": "Tap a string or swipe across them all.",
 };

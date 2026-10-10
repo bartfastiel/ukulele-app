@@ -1,7 +1,7 @@
 import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, type View } from '../ui/screen.ts';
-import { chordDiagram } from '../ui/chord-diagram.ts';
+import { playableChord } from '../ui/chord-play.ts';
 import { plan, instructionText, parseFrets, type Take } from '../music/recording-plan.ts';
 import { instrument } from '../music/instrument.ts';
 import { CHORDS } from '../music/chords.ts';
@@ -37,7 +37,7 @@ function diagramFor(t: Take): SVGElement | null {
   if (!t.chord) return null;
   const frets = parseFrets(t.frets);
   const ch: Chord = { name: t.chord, frets, fingers: frets.map(() => 0), say: '', level: 0 };
-  return chordDiagram(ch, { lefty: load().settings.lefty });
+  return playableChord(ch, { lefty: load().settings.lefty });
 }
 
 function fileName(index: number, s: Stored): string {

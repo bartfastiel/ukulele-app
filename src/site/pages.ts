@@ -225,11 +225,12 @@ function renderBlocks(blocks: Block[], siteDef: SiteDef, l: Lang): Node[] {
     else if (x.ol) out.push(h('ol', null, ...(x.ol as L10n[]).map((li) => h('li', null, ...inline(li[l], siteDef, l)))));
     else if (x.chord) {
       const name = canonicalChord(String(x.chord));
+      // der Name führt zur Akkord-Seite; das Griffbild klingt nach dem Laden beim Antippen (src/main.ts)
       out.push(
         h(
-          'a',
-          { class: 'article-chord btn', href: rel(`akkord/${encodeURIComponent(name)}`, l) },
-          h('span', { class: 'chord-name' }, name),
+          'span',
+          { class: 'article-chord' },
+          h('a', { class: 'chord-name', href: rel(`akkord/${encodeURIComponent(name)}`, l) }, name),
           chordDiagram(chord(name), { labels: false }),
         ),
       );
@@ -782,6 +783,7 @@ function footer(siteDef: SiteDef, l: Lang, alternates: Partial<Record<Lang, stri
       h('a', { href: rel('impressum', l) }, t('Impressum')),
       h('a', { href: rel('datenschutz', l) }, t('Datenschutz')),
     ),
+    links.length ? h('p', { class: 'small footer-lefty' }, h('a', { href: rel('sterne', l) + '#einstellungen' }, t('Für Linkshänder'))) : null,
     h('p', { class: 'small' }, t('Kostenlos, ohne Werbung, ohne Konto – Open Source.')),
   );
 }
