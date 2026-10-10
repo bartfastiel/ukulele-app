@@ -1,6 +1,6 @@
 import { h, clear } from './dom.ts';
 import { icon } from './icons.ts';
-import { openMic, micState } from '../audio/mic.ts';
+import { micError, micState, openMic } from '../audio/mic.ts';
 import { audio } from '../audio/engine.ts';
 import { t, tk } from '../i18n.ts';
 import { link } from '../site/nav.ts';
@@ -126,17 +126,29 @@ export function ensureMic(): Promise<boolean> {
 }
 
 function showDenied(): Promise<boolean> {
+  const failed = micState() === 'failed';
   return new Promise((resolve) => {
     const d = dialog(
       h('h2', null, t('Ich kann nichts hören')),
-      h('p', null, t('Das Mikrofon ist gesperrt. Frag einen Erwachsenen:')),
-      h(
-        'ul',
-        { class: 'help' },
-        h('li', null, t('iPad: Einstellungen › Safari › Mikrofon › „Erlauben“, dann die Seite neu laden.')),
-        h('li', null, t('Android/Chrome: auf das Schloss neben der Adresse tippen › Mikrofon › Zulassen.')),
-      ),
+      h('p', null, failed ? t('Das Mikrofon startet gerade nicht. Frag einen Erwachsenen:') : t('Das Mikrofon ist gesperrt. Frag einen Erwachsenen:')),
+      failed
+        ? h(
+            'ul',
+            { class: 'help' },
+            h('li', null, t('Andere Apps schließen, die das Mikrofon benutzen (Anruf, Video, Sprachaufnahme), dann die Seite neu laden.')),
+            h('li', null, t('Hilft das nicht: das Gerät einmal neu starten.')),
+          )
+        : h(
+            'ul',
+            { class: 'help' },
+            h('li', null, t('iPad/iPhone: in Safari links neben der Adresse auf „aA“ tippen › Website-Einstellungen › Mikrofon › „Erlauben“.')),
+            h('li', null, t('Außerdem: Einstellungen › Apps › Safari › Mikrofon › „Erlauben“ (bei älteren Geräten: Einstellungen › Safari).')),
+            h('li', null, t('Ist Bildschirmzeit an: Einstellungen › Bildschirmzeit › Beschränkungen › Mikrofon › „Änderungen erlauben“.')),
+            h('li', null, t('Android/Chrome: auf das Schloss neben der Adresse tippen › Mikrofon › Zulassen.')),
+            h('li', null, t('Danach die Seite neu laden.')),
+          ),
       h('p', null, t('Du kannst trotzdem weiterüben – dann tippst du selbst auf „Geschafft“.')),
+      h('p', { class: 'small mic-error' }, micError() ? t('Technischer Hinweis: {code}', { code: micError() }) : ''),
       button(
         t('Ohne Mikrofon weiter'),
         () => {

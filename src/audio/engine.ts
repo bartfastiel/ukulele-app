@@ -43,9 +43,11 @@ export function audio(): Ctx {
     master.connect(ctx.destination);
     // Safari ab 16.4: „playback“ spielt auch bei eingeschaltetem Lautlos-Schalter.
     const nav = navigator as unknown as AudioSessionNav;
-    if (nav.audioSession) nav.audioSession.type = 'playback';
+    // solange kein Mikrofon offen ist (src/audio/mic.ts schaltet vorher auf „play-and-record“)
+    if (nav.audioSession && nav.audioSession.type !== 'play-and-record') nav.audioSession.type = 'playback';
   }
-  if (ctx.state === 'suspended') void ctx.resume();
+  // iOS kennt außer „suspended“ auch „interrupted“ (Anruf, Wechsel des Audio-Modus)
+  if (ctx.state !== 'running' && ctx.state !== 'closed') void ctx.resume().catch(() => undefined);
   return ctx;
 }
 
