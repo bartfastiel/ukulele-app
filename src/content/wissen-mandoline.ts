@@ -35,7 +35,7 @@ export const MANDOLINE_ARTICLES: Article[] = [
       },
       {
         p: {
-          de: 'Von Saitenpaar zu Saitenpaar liegen immer genau **fünf Töne** (eine Quinte) dazwischen – genau wie bei der Geige. Die G- und die D-Saiten sind dicker und mit Draht umsponnen, die A- und E-Saiten sind glatt und dünn.',
+          de: 'Von Saitenpaar zu Saitenpaar ist es immer genau eine **Quinte** – fünf Tonstufen, zum Beispiel G–A–B–C–D –, genau wie bei der Geige. Die G- und die D-Saiten sind dicker und mit Draht umsponnen, die A- und E-Saiten sind glatt und dünn.',
           en: 'From one pair to the next there is always exactly a **fifth** – just like on a violin. The G and D strings are thicker and wound with wire; the A and E strings are plain and thin.',
           fr: 'D’une paire à l’autre, il y a toujours exactement une **quinte** – comme sur un violon. Les cordes G et D sont plus épaisses et filées ; les cordes A et E sont lisses et fines.',
         },
@@ -49,9 +49,9 @@ export const MANDOLINE_ARTICLES: Article[] = [
             fr: 'Ouvre l’[accordeur](tool:stimmen) et autorise le micro.',
           },
           {
-            de: 'Leg einen Finger der linken Hand ganz leicht auf **eine** Saite des Paares, damit sie nicht klingt. Zupf die andere Saite an.',
+            de: 'Leg einen Finger der Greifhand ganz leicht auf **eine** Saite des Paares, damit sie nicht klingt. Zupf die andere Saite an.',
             en: 'Rest one finger of your fretting hand lightly on **one** string of the pair so it doesn’t ring. Pluck the other string.',
-            fr: 'Pose très légèrement un doigt de la main gauche sur **une** corde de la paire pour qu’elle ne sonne pas. Pince l’autre corde.',
+            fr: 'Pose très légèrement un doigt de la main qui appuie sur **une** corde de la paire pour qu’elle ne sonne pas. Pince l’autre corde.',
           },
           {
             de: 'Ist der Ton zu tief, drehst du den Wirbel so, dass die Saite straffer wird. Ist er zu hoch, lockerst du sie ein wenig. Dreh in kleinen Schritten.',
@@ -125,9 +125,9 @@ export const MANDOLINE_ARTICLES: Article[] = [
       { h2: { de: 'Doppelsaiten greifen', en: 'Fretting double strings', fr: 'Appuyer sur les cordes doubles' } },
       {
         p: {
-          de: 'Jeder Finger drückt immer **beide Saiten eines Paares** zugleich. Setz die Fingerkuppe mittig auf das Paar, dicht hinter das Bundstäbchen. Die Bünde der Mandoline liegen eng beieinander – deshalb hat auf ihr jeder Finger seinen eigenen Bund: Zeigefinger im 1. oder 2., Mittelfinger im 2. oder 3., Ringfinger im 3. bis 5. Bund.',
-          en: 'Each finger always presses **both strings of a pair** at once. Place your fingertip in the middle of the pair, just behind the fret. The frets on a mandolin are close together – so each finger gets its own fret: index finger on the 1st or 2nd, middle finger on the 2nd or 3rd, ring finger on the 3rd to 5th fret.',
-          fr: 'Chaque doigt appuie toujours sur **les deux cordes d’une paire** à la fois. Pose le bout du doigt au milieu de la paire, juste derrière la frette. Les cases de la mandoline sont serrées – chaque doigt a donc sa propre case : l’index sur la 1re ou la 2e, le majeur sur la 2e ou la 3e, l’annulaire de la 3e à la 5e case.',
+          de: 'Jeder Finger drückt immer **beide Saiten eines Paares** zugleich. Setz die Fingerkuppe mittig auf das Paar, dicht hinter das Bundstäbchen. Die Bünde liegen eng beieinander, deshalb rücken die Finger dicht zusammen – bei den ersten Akkorden meist so: Zeigefinger im 1. oder 2. Bund, Mittelfinger im 2. oder 3., Ringfinger im 3. oder 4., kleiner Finger im 4. oder 5.',
+          en: 'Each finger always presses **both strings of a pair** at once. Place your fingertip in the middle of the pair, just behind the fret. The frets are close together, so your fingers sit close too – for the first chords usually like this: index finger on fret 1 or 2, middle finger on 2 or 3, ring finger on 3 or 4, little finger on 4 or 5.',
+          fr: 'Chaque doigt appuie toujours sur **les deux cordes d’une paire** à la fois. Pose le bout du doigt au milieu de la paire, juste derrière la frette. Les cases sont serrées, alors les doigts se rapprochent – pour les premiers accords, en général : index case 1 ou 2, majeur case 2 ou 3, annulaire case 3 ou 4, auriculaire case 4 ou 5.',
         },
       },
       { h2: { de: '1. G-Dur', en: '1. G major', fr: '1. Sol majeur' } },
@@ -279,7 +279,7 @@ export const MANDOLINE_ARTICLES: Article[] = [
     title: {
       de: 'Mandoline und Geige: gleiche Stimmung, andere Spielweise',
       en: 'Mandolin and Violin: Same Tuning, Different Playing',
-      fr: 'Mandoline et violon : même accord, jeu différent',
+      fr: 'Mandoline et violon : même accordage, jeu différent',
     },
     description: {
       de: 'Mandoline und Geige sind beide in G D A E gestimmt. Was gleich ist, was anders – und warum Geigenmelodien sich auf der Mandoline so leicht spielen lassen.',

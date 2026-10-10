@@ -138,6 +138,8 @@ export interface Tuning {
   open?: number;
   /** Bequemste Blues-Tonart in dieser Stimmung. */
   bluesKey?: number;
+  /** Übliche Griffe, die der Grifffinder so nicht wählt: Bünde je Saite wie in der Bibliothek („xx5455“). */
+  grips?: Record<string, string>;
   /** false: Die Griffe bleiben gleich (tiefes G) – dann kein Hinweis oben auf jeder Seite. */
   banner?: boolean;
 }

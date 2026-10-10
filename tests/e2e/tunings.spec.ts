@@ -58,6 +58,14 @@ test('Ukulele: tiefes G ändert nur das Stimmgerät, kein Hinweis; die Stimmung 
   await expect(page.locator('#tuning-banner')).toHaveCount(0);
 });
 
+test('Banjo: die kurze 5. Saite steht im Hinweis klein', async ({ page }) => {
+  await page.goto('../banjo/#/stimmen');
+  await page.getByText('Andere Stimmung …').click();
+  await expect(page.locator('[data-tuning="normal"]')).toContainText('g D G B D');
+  await page.locator('[data-tuning="open-d"]').click();
+  await expect(page.locator('#tuning-banner')).toContainText('f# D F# A D');
+});
+
 test('Bariton-Ukulele hat keine anderen Stimmungen', async ({ page }) => {
   await page.goto('../bariton/#/stimmen');
   await expect(page.locator('.btn-string')).toHaveCount(4);

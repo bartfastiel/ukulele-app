@@ -65,7 +65,8 @@ src/music/instrument.ts  Instrument-Modell: Ukulele (Standard), Gitarre, Banjo �
                          Daten je Instrument in src/music/instruments/*.ts; STRINGS/CHORDS folgen dem Instrument.
                          Andere Stimmungen (`tunings`, `setTuning()`): abgeleitetes Instrument mit neuen Saiten, Griffe
                          rechnet chords.ts neu (offene Stimmung: Dur als Barré, sonst gewohnter Griff mit gleichen Tönen
-                         oder Grifffinder); Auswahl/Hinweis in src/ui/tuning.ts, gilt erst nach dem Laden im Browser
+                         oder Grifffinder; übliche Griffe, die der Finder nicht trifft, stehen in `grips` der Stimmung);
+                         Auswahl/Hinweis in src/ui/tuning.ts, gilt erst nach dem Laden im Browser
 src/music/               notes.ts, chords.ts (Griffe, Tabellen, Grifffinder), song.ts (Notation + Parser, ChordPro-Parser, Kategorien),
                          songs.ts (Lieder mit Melodie), songs-chordpro/-kinder/-english.ts (Akkorde + Text)
 src/audio/offline.ts     Nachbau von AnalyserNode + Lauscher für Tests und tools/eval-recordings.ts

@@ -122,10 +122,10 @@ test('Banjo: Rhythmus hat ein Zupfmuster mit Daumen, Zeige- und Mittelfinger', a
 });
 
 test('Startseite an der Wurzel: das zuletzt gespielte Instrument steht vorn', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('../');
   await expect(page.locator('.tile-badge')).toHaveCount(0);
-  await page.goto('/gitarre/');
-  await page.goto('/');
+  await page.goto('../gitarre/');
+  await page.goto('../');
   await expect(page.locator('.tiles .tile').first()).toHaveClass(/tile-gitarre/);
   await expect(page.locator('.tile-gitarre .tile-badge')).toHaveText('Zuletzt gespielt');
 });

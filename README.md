@@ -103,7 +103,7 @@ werden sofort entfernt. (Keine Rechtsberatung.)
   – die Gitarrengriffe auf den vier hohen Saiten, Mandoline 18 offene Griffe), dazu eine Tabelle üblicher Griffe für alle
   zwölf Tonarten (Ukulele und Bariton-Ukulele: Dur/Moll/Sept, auf der Bariton-Ukulele dieselben Formen eine Quarte
   tiefer; Gitarre: E- und A-Barréform für Dur, Moll, 7, m7, maj7; Mandoline: Dur/Moll/Sept aus den beweglichen
-  G-, C-, E- und A-Formen ohne leere Saiten, die „Chop Chords“) und ein Grifffinder für alles andere (nur Akkordtöne, Spanne ≤ 3 Bünde, höchstens vier Finger mit Barré,
+  G-, C-, E- und A-Formen ohne leere Saiten, bewegliche geschlossene Griffe – auch als Chop-Akkorde brauchbar) und ein Grifffinder für alles andere (nur Akkordtöne, Spanne ≤ 3 Bünde, höchstens vier Finger mit Barré,
   Gitarre: nur Bass-Saiten weglassen, Grundton im Bass; Banjo: die kurze Saite klingt leer mit, wenn G zum Akkord
   gehört, sonst bleibt sie still).
 - **Erkennung:** Frequenzfenster (Ukulele 240–1100 Hz, Gitarre ab 75 Hz, Banjo und Bariton-Ukulele ab 130 Hz,
