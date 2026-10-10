@@ -142,6 +142,8 @@ export interface Tuning {
   grips?: Record<string, string>;
   /** false: Die Griffe bleiben gleich (tiefes G) – dann kein Hinweis oben auf jeder Seite. */
   banner?: boolean;
+  /** Wissensartikel (id), der die Stimmung erklärt; er und die Seite mit den Griffen verlinken einander. */
+  article?: string;
 }
 
 export const INSTRUMENTS: Instrument[] = [UKULELE, GITARRE, BANJO, BARITON, MANDOLINE];
