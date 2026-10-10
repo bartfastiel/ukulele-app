@@ -4,7 +4,6 @@
 #   Produktion  https://ukulele.wer-ist-daniel-schwarz.de/  ← dist/ukulele  (Server: app/)
 #               https://gitarre.wer-ist-daniel-schwarz.de/  ← dist/gitarre  (Server: app-gitarre/)
 #               https://banjo.wer-ist-daniel-schwarz.de/    ← dist/banjo    (Server: app-banjo/)
-#               https://bariton.wer-ist-daniel-schwarz.de/  ← dist/bariton  (Server: app-bariton/)
 #   Testadresse https://openstring.wer-ist-daniel-schwarz.de/ (Instrumentenwahl), …/ukulele/, …  ← dist/  (Server: openstring/)
 #               genau wie später die eigene Domain, aber nicht indexiert (PREVIEW)
 #   Eigene Domain (Variable SITE_DOMAIN gesetzt, z. B. openstring.de):
@@ -91,6 +90,8 @@ jobs:
         env:
           SITE_URL: https://{site}.wer-ist-daniel-schwarz.de/
           PUBLIC_URL: https://{site}.wer-ist-daniel-schwarz.de/
+          # nur diese Instrumente gibt es als Subdomain; alle übrigen nur auf der Testadresse bzw. der eigenen Domain
+          LINKED_SITES: ukulele,gitarre,banjo
           LEGAL_ADDRESS: ${{ secrets.LEGAL_ADDRESS }}
           LEGAL_EMAIL: ${{ secrets.LEGAL_EMAIL }}
         run: |
@@ -98,7 +99,6 @@ jobs:
           .github/scripts/upload-dir.sh dist/ukulele "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app"
           .github/scripts/upload-dir.sh dist/gitarre "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-gitarre"
           .github/scripts/upload-dir.sh dist/banjo "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-banjo"
-          .github/scripts/upload-dir.sh dist/bariton "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-bariton"
           curl -fsS --retry 5 --retry-delay 5 "https://$UKULELE_HOST/" | grep -q 'data-instrument="ukulele"'
           echo "Live: https://$UKULELE_HOST/"
       - name: Open String (Testadresse, wie später die eigene Domain)
@@ -129,7 +129,6 @@ jobs:
           .github/scripts/upload-dir.sh dist/ukulele "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app"
           .github/scripts/upload-dir.sh dist/gitarre "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-gitarre"
           .github/scripts/upload-dir.sh dist/banjo "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-banjo"
-          .github/scripts/upload-dir.sh dist/bariton "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-bariton"
 
   preview:
     name: Vorschau
