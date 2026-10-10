@@ -715,4 +715,38 @@ export const EN: Record<string, string> = {
   "12-saitige Gitarre": "12-string guitar",
   "Jede Saite hat eine Partnerin: Bei E, A, D und G klingt sie eine Oktave höher, bei B und e genau gleich. Stimm erst die dicke Saite, dann ihre Partnerin – das Stimmgerät erkennt beide.": "Every string has a partner: for E, A, D and G it sounds an octave higher, for B and e exactly the same. Tune the thick string first, then its partner – the tuner recognises both.",
   "Oktavsaite": "octave string",
+  // src/site/relatives.ts
+  'Du spielst Bariton-Ukulele? Dort greifst du {chord} anders': 'Playing a baritone ukulele? {chord} is fingered differently there',
+  'Du spielst Bariton-Ukulele? Die wird tiefer gestimmt: D G B E': 'Playing a baritone ukulele? It’s tuned lower: D G B E',
+  'Sopran-, Konzert- oder Tenor-Ukulele? Dort greifst du {chord} anders': 'Soprano, concert or tenor ukulele? {chord} is fingered differently there',
+  'Sopran-, Konzert- oder Tenor-Ukulele? Die wird höher gestimmt: G C E A': 'Soprano, concert or tenor ukulele? It’s tuned higher: G C E A',
+  'Gitarre? {chord} hat auf den vier hohen Saiten dieselbe Form': 'Guitar? {chord} has the same shape on the four high strings',
+  'Bariton-Ukulele? {chord} hat dieselbe Form wie auf den vier hohen Gitarrensaiten': 'Baritone ukulele? {chord} has the same shape as on the four high guitar strings',
+  'E-Bass? Gestimmt wie die vier tiefen Gitarrensaiten, nur eine Oktave tiefer': 'Bass guitar? Tuned like the four low guitar strings, just an octave lower',
+  'Gitarre? Ihre vier tiefen Saiten klingen wie der Bass, eine Oktave höher': 'Guitar? Its four low strings sound like the bass, an octave higher',
+  // Powerchords
+  'Powerchords': 'Power chords',
+  'Alle Powerchords': 'All power chords',
+  'Alle Powerchords auf einen Blick': 'All power chords at a glance',
+  'Powerchords für E-Gitarre: E5, A5, D5 …': 'Power chords for electric guitar: E5, A5, D5 …',
+  'Powerchords für {instrument}: E5, A5, D5 und alle anderen': 'Power chords for {instrument}: E5, A5, D5 and all the others',
+  'Powerchords für {instrument} mit Griffbild: nur Grundton und Quinte, mit zwei oder drei Fingern und verschiebbar – E5, A5, D5, G5, C5 und alle anderen Tonarten.':
+    'Power chords for {instrument} with chord charts: just root and fifth, two or three fingers and movable – E5, A5, D5, G5, C5 and every other key.',
+  'Ein Powerchord hat nur zwei Töne: den Grundton und die Quinte, oft dazu den Grundton eine Oktave höher. Er ist weder Dur noch Moll und klingt mit E-Gitarre und Verzerrung besonders kräftig.':
+    'A power chord has only two notes: the root and the fifth, often with the root an octave higher as well. It’s neither major nor minor and sounds especially strong on an electric guitar with distortion.',
+  'Die Form lässt sich verschieben: Zeigefinger auf der tiefen E- oder A-Saite, Ring- und kleiner Finger zwei Bünde höher auf den nächsten beiden Saiten. Schlag nur diese drei Saiten an, die anderen dämpfst du leicht ab.':
+    'The shape is movable: index finger on the low E or A string, ring and little finger two frets higher on the next two strings. Only strum those three strings and lightly mute the others.',
+  // Griffe in anderen Stimmungen
+  'Akkorde in {tuning}': 'Chords in {tuning}',
+  'Akkorde in {tuning} – alle Griffbilder': 'Chords in {tuning} – all chord charts',
+  'Akkorde in {tuning} – Griffbilder für {instrument}': 'Chords in {tuning} – chord charts for {instrument}',
+  'Griffbilder für {instrument} in {tuning} ({notes}): {chords} und mehr – passend zu dieser Stimmung berechnet, mit Tipps zum Umstimmen.':
+    'Chord charts for {instrument} in {tuning} ({notes}): {chords} and more – worked out for this tuning, with tips for retuning.',
+  'Griffe in anderen Stimmungen': 'Chords in other tunings',
+  'Die Saiten sind auf {notes} gestimmt.': 'The strings are tuned to {notes}.',
+  'Die wichtigsten Griffe': 'The most important chords',
+  'In der App einstellen': 'Setting it up in the app',
+  'Im Stimmgerät unter „Andere Stimmung …“ wählst du {tuning}. Dann zeigen Stimmgerät, Griffbilder, Lieder und Blues diese Stimmung, bis du zur Normalstimmung zurückkehrst.':
+    'In the tuner, choose {tuning} under “Other tuning …”. The tuner, chord charts, songs and blues then follow this tuning until you go back to standard tuning.',
+  'Griffe dazu': 'Matching chords',
 };

@@ -7,14 +7,15 @@ import { installDom, serialize, esc, escAttr } from './vdom.ts';
 import { LANGS, setLang, t, type Lang } from '../i18n.ts';
 import { SITES, type SiteDef, type SiteId } from './sites.ts';
 import { routePath, canonicalChord } from './routes.ts';
-import { chordLongName, PAGE_QUALITIES } from './chord-names.ts';
+import { chordLongName, PAGE_QUALITIES, POWER_ORDER } from './chord-names.ts';
 import { SONGS } from '../music/songs.ts';
 import type { Song } from '../music/song.ts';
-import { ROOTS, chord } from '../music/chords.ts';
+import { CHORDS, ROOTS, chord } from '../music/chords.ts';
 import { ARTICLES } from '../content/wissen.ts';
 import { LEGAL_NAME, type LegalContact } from './legal-data.ts';
 import { scramble } from './scramble.ts';
-import { setInstrument } from '../music/instrument.ts';
+import { baseInstrument, instrument, setInstrument, setTuning, type Tuning } from '../music/instrument.ts';
+import { tuningNotes } from '../ui/tuning.ts';
 import type { Article, Block, L10n } from '../content/types.ts';
 import { h } from '../ui/dom.ts';
 import { icon, soundHole } from '../ui/icons.ts';
@@ -244,6 +245,37 @@ function renderBlocks(blocks: Block[], siteDef: SiteDef, l: Lang): Node[] {
 function chordPageNames(): string[] {
   const out: string[] = [];
   for (const q of PAGE_QUALITIES) for (const r of ROOTS) out.push(r + q);
+  return out.concat(powerChordNames());
+}
+
+/** Powerchords haben nur dort Seiten, wo das Instrument eigene Griffe dafür hat (Gitarre). */
+function powerChordNames(): string[] {
+  return instrument().shapes['5'] ? POWER_ORDER.map((r) => ROOTS[r] + '5') : [];
+}
+
+/** Wissensartikel über Powerchords; er und die Übersicht verlinken einander. */
+const POWER_ARTICLE = 'e-gitarre-powerchords';
+
+/** Andere Stimmungen mit eigener Griff-Seite: nur solche, bei denen sich die Griffe ändern (nicht tiefes G). */
+function tuningPages(): Tuning[] {
+  return (baseInstrument().tunings || []).filter((x) => x.banner !== false);
+}
+
+/** Griffbilder der Bibliothek in einer anderen Stimmung – berechnet wie in der App, danach wieder Normalstimmung. */
+function chordsInTuning(id: string): { name: string; node: Node }[] {
+  setTuning(id);
+  try {
+    return CHORDS.filter((c) => c.level <= 3).map((c) => ({ name: c.name, node: chordDiagram(c) as unknown as Node }));
+  } finally {
+    setTuning('');
+  }
+}
+
+/** Seiten, die zu einem Wissensartikel gehören (Griffe der Stimmung, Powerchord-Übersicht). */
+function pagesForArticle(a: Article): [string, string][] {
+  const out: [string, string][] = [];
+  for (const tu of tuningPages()) if (tu.article === a.id) out.push([`stimmung/${tu.id}`, t('Akkorde in {tuning} – alle Griffbilder', { tuning: t(tu.name) })]);
+  if (a.id === POWER_ARTICLE && powerChordNames().length) out.push(['powerchords', t('Alle Powerchords auf einen Blick')]);
   return out;
 }
 
@@ -291,6 +323,8 @@ const GRAMMAR: Record<Lang, [RegExp, string][]> = {
     [/\bau guitare\b/g, 'à la guitare'],
     [/\bdu guitare\b/g, 'de la guitare'],
     [/\b([MmTtSs])on guitare\b/g, '$1a guitare'],
+    // „Accords en {tuning}“ mit der Ukulele-Stimmung „Accordage en D“
+    [/\ben Accordage en ([A-G])\b/g, 'avec l’accordage en $1'],
   ],
 };
 
@@ -390,6 +424,14 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
       crumb: name,
     });
   }
+  if (powerChordNames().length)
+    specs.push({
+      route: 'powerchords',
+      title: t('Powerchords für {instrument}: E5, A5, D5 und alle anderen', { instrument: inst }),
+      description: t('Powerchords für {instrument} mit Griffbild: nur Grundton und Quinte, mit zwei oder drei Fingern und verschiebbar – E5, A5, D5, G5, C5 und alle anderen Tonarten.', { instrument: inst }),
+      body: () => powerChordPage(siteDef, l),
+      crumb: t('Powerchords'),
+    });
   const tools: [string, string, string][] = [
     ['stimmen', t('{instrument} stimmen – Stimmgerät online', { instrument: inst }), t('Kostenloses Stimmgerät für {instrument} im Browser: Saite anzupfen, die Anzeige zeigt zu hoch oder zu tief – mit Tipps, wenn es hakt.', { instrument: inst })],
     ['rhythmus', t('Schlagmuster und Metronom für {instrument}', { instrument: inst }), t('Schlagmuster für {instrument} lernen: runter, rauf, Pausen – mit Metronom, Taktarten und Tempo zum Antippen.', { instrument: inst })],
@@ -408,6 +450,22 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
       // persönlicher Fortschritt, nichts für Suchmaschinen
       noindex: tool[0] === 'sterne',
     });
+  for (const tu of tuningPages()) {
+    const name = t(tu.name);
+    const list = chordsInTuning(tu.id).map((c) => c.name);
+    specs.push({
+      route: `stimmung/${tu.id}`,
+      title: t('Akkorde in {tuning} – Griffbilder für {instrument}', { tuning: name, instrument: inst }),
+      description: t('Griffbilder für {instrument} in {tuning} ({notes}): {chords} und mehr – passend zu dieser Stimmung berechnet, mit Tipps zum Umstimmen.', {
+        instrument: inst,
+        tuning: name,
+        notes: tuningNotes(tu.names),
+        chords: list.slice(0, 6).join(', '),
+      }),
+      body: () => tuningPage(tu, siteDef, l),
+      crumb: name,
+    });
+  }
   specs.push({ route: 'aufnahme', title: t('Beispielaufnahmen'), description: t('Beispielaufnahmen für die Akkorderkennung.'), view: record, noindex: true });
   specs.push({
     route: 'eigenes-lied',
@@ -467,12 +525,88 @@ function aboutCard(siteDef: SiteDef, l: Lang): Node {
 }
 
 function toolCard(title: string, text: string, tool: string, siteDef: SiteDef, l: Lang): Node {
+  const tunings = tool === 'stimmen' ? tuningPages() : [];
   return h(
     'section',
     { class: 'card seo-card' },
     h('h2', null, title),
     h('p', null, text),
     articleLinks(t('Mehr dazu'), articlesAbout('tool', tool, siteDef).slice(0, 4), l),
+    tunings.length
+      ? h(
+          'nav',
+          { 'aria-label': t('Griffe in anderen Stimmungen') },
+          h('h2', null, t('Griffe in anderen Stimmungen')),
+          h('ul', { class: 'wissen-list' }, ...tunings.map((tu) => h('li', null, h('a', { href: rel(`stimmung/${tu.id}`, l) }, t(tu.name)), ' – ', tuningNotes(tu.names)))),
+        )
+      : null,
+  );
+}
+
+/** Kachel mit Griffbild; als Link nur, wenn die Akkordseite genau diesen Griff zeigt (nicht bei anderen Stimmungen). */
+function chordTile(name: string, diagram: Node, href: string | null): Node {
+  const content = [h('span', { class: 'chord-name' }, name), diagram];
+  return href ? h('a', { class: 'article-chord btn', href }, ...content) : h('div', { class: 'article-chord' }, ...content);
+}
+
+function powerChordPage(siteDef: SiteDef, l: Lang): Node[] {
+  const article = articlesOn(siteDef).filter((a) => a.id === POWER_ARTICLE)[0];
+  const drop = tuningPages().filter((x) => x.id === 'drop-d')[0];
+  return staticScreen(
+    t('Powerchords'),
+    rel('akkorde', l),
+    h(
+      'article',
+      { class: 'card article' },
+      h('p', null, t('Ein Powerchord hat nur zwei Töne: den Grundton und die Quinte, oft dazu den Grundton eine Oktave höher. Er ist weder Dur noch Moll und klingt mit E-Gitarre und Verzerrung besonders kräftig.')),
+      h('p', null, t('Die Form lässt sich verschieben: Zeigefinger auf der tiefen E- oder A-Saite, Ring- und kleiner Finger zwei Bünde höher auf den nächsten beiden Saiten. Schlag nur diese drei Saiten an, die anderen dämpfst du leicht ab.')),
+      h('h2', null, t('Alle Powerchords')),
+      h('div', null, ...powerChordNames().map((name) => chordTile(name, chordDiagram(chord(name), { labels: false }), rel(`akkord/${encodeURIComponent(name)}`, l)))),
+    ),
+    h(
+      'section',
+      { class: 'card wissen-cat' },
+      h('h2', null, t('Passt dazu')),
+      h(
+        'ul',
+        { class: 'wissen-list' },
+        article ? h('li', null, h('a', { href: rel(`wissen/${article.id}`, l) }, article.title[l])) : null,
+        drop ? h('li', null, h('a', { href: rel(`stimmung/${drop.id}`, l) }, t('Akkorde in {tuning} – alle Griffbilder', { tuning: t(drop.name) }))) : null,
+        h('li', null, h('a', { href: rel('blues', l) }, t('Blues spielen'))),
+      ),
+    ),
+  );
+}
+
+function tuningPage(tu: Tuning, siteDef: SiteDef, l: Lang): Node[] {
+  const name = t(tu.name);
+  const article = tu.article ? articlesOn(siteDef).filter((a) => a.id === tu.article)[0] : undefined;
+  const others = tuningPages().filter((x) => x.id !== tu.id);
+  return staticScreen(
+    t('Akkorde in {tuning}', { tuning: name }),
+    rel('stimmen', l),
+    h(
+      'article',
+      { class: 'card article' },
+      h('p', null, h('strong', null, name), ': ', t('Die Saiten sind auf {notes} gestimmt.', { notes: tuningNotes(tu.names) }), ' ', t(tu.why)),
+      h('h2', null, t('Die wichtigsten Griffe')),
+      h('div', null, ...chordsInTuning(tu.id).map((c) => chordTile(c.name, c.node, null))),
+      h('h2', null, t('In der App einstellen')),
+      h('p', null, t('Im Stimmgerät unter „Andere Stimmung …“ wählst du {tuning}. Dann zeigen Stimmgerät, Griffbilder, Lieder und Blues diese Stimmung, bis du zur Normalstimmung zurückkehrst.', { tuning: name })),
+      h('a', { class: 'btn btn-primary article-tool', href: rel('stimmen', l) }, icon('tuner'), ' ', t('Zum Stimmgerät')),
+    ),
+    h(
+      'section',
+      { class: 'card wissen-cat' },
+      h('h2', null, t('Passt dazu')),
+      h(
+        'ul',
+        { class: 'wissen-list' },
+        article ? h('li', null, h('a', { href: rel(`wissen/${article.id}`, l) }, article.title[l])) : null,
+        ...others.map((x) => h('li', null, h('a', { href: rel(`stimmung/${x.id}`, l) }, t('Akkorde in {tuning} – alle Griffbilder', { tuning: t(x.name) })))),
+        h('li', null, h('a', { href: rel('akkorde', l) }, t('Akkorde für {instrument} – Griffbilder zum Lernen', { instrument: siteDef.name[l] }))),
+      ),
+    ),
   );
 }
 
@@ -533,6 +667,14 @@ function chordIndexCard(l: Lang): Node {
         h('p', { class: 'chord-index' }, ...ROOTS.map((r) => h('a', { class: 'btn btn-chip', href: rel(`akkord/${encodeURIComponent(r + q)}`, l) }, r + q))),
       ),
     ),
+    powerChordNames().length
+      ? h(
+          'nav',
+          { 'aria-label': t('Powerchords') },
+          h('h2', null, h('a', { href: rel('powerchords', l) }, t('Powerchords'))),
+          h('p', { class: 'chord-index' }, ...powerChordNames().map((n) => h('a', { class: 'btn btn-chip', href: rel(`akkord/${encodeURIComponent(n)}`, l) }, n))),
+        )
+      : null,
   );
 }
 
@@ -575,10 +717,14 @@ function wissenIndex(articles: Article[], siteDef: SiteDef, l: Lang): Node[] {
 
 function articlePage(a: Article, siteDef: SiteDef, l: Lang): Node[] {
   const related = (a.related || []).map((id) => ARTICLES.filter((x) => x.id === id)[0]).filter((x) => x && x.instruments.indexOf(siteDef.instrument as 'ukulele') >= 0);
+  const pages = pagesForArticle(a);
   return staticScreen(
     a.title[l],
     rel('wissen', l),
     h('article', { class: 'card article' }, ...renderBlocks(a.blocks, siteDef, l)),
+    pages.length
+      ? h('section', { class: 'card wissen-cat' }, h('h2', null, t('Griffe dazu')), h('ul', { class: 'wissen-list' }, ...pages.map((x) => h('li', null, h('a', { href: rel(x[0], l) }, x[1])))))
+      : null,
     related.length
       ? h('section', { class: 'card wissen-cat' }, h('h2', null, t('Passt dazu')), h('ul', { class: 'wissen-list' }, ...related.map((r) => h('li', null, h('a', { href: rel(`wissen/${r.id}`, l) }, r.title[l])))))
       : null,
@@ -734,9 +880,15 @@ function articleLd(a: Article, siteDef: SiteDef, l: Lang): object {
 function breadcrumbLd(spec: Spec, siteDef: SiteDef, l: Lang, canonicalBase: string): object | null {
   if (!spec.route) return null;
   const name = spec.route.split('/')[0];
-  const parent: Record<string, [string, string]> = { lied: ['lieder', t('Lieder')], akkord: ['akkorde', t('Akkorde')], wissen: ['wissen', t('Wissen')] };
+  const parent: Record<string, [string, string]> = {
+    lied: ['lieder', t('Lieder')],
+    akkord: ['akkorde', t('Akkorde')],
+    wissen: ['wissen', t('Wissen')],
+    stimmung: ['stimmen', t('Stimmgerät')],
+    powerchords: ['akkorde', t('Akkorde')],
+  };
   const items: [string, string][] = [['', siteDef.brand[l]]];
-  if (parent[name] && spec.route.indexOf('/') > 0) items.push(parent[name]);
+  if (parent[name] && (spec.route.indexOf('/') > 0 || name === 'powerchords')) items.push(parent[name]);
   items.push([spec.route, spec.crumb || spec.title]);
   return {
     '@context': 'https://schema.org',
@@ -799,6 +951,10 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
   const de = document.documentElement as unknown as { setAttribute: (k: string, v: string) => void };
   de.setAttribute('data-base', currentBase);
   de.setAttribute('data-brand', siteDef.brand[l]);
+  de.setAttribute('data-site', siteDef.id);
+  // Adressen der anderen Instrument-Seiten, für Hinweise auf verwandte Instrumente (src/site/relatives.ts)
+  const siteUrls = e.sites.filter((s) => s !== siteDef.id && s !== 'start').map((s) => `${s}=${e.url(s)}`).join(' ');
+  de.setAttribute('data-sites', siteUrls);
   const indexable = !spec.noindex && !spec.hashParam;
   const alternates: Partial<Record<Lang, string>> = {};
   for (const x of LANGS) alternates[x.id] = e.publicUrl(siteDef.id) + pathOf(spec.route, x.id);
@@ -860,7 +1016,7 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
   const ld = indexable && isOriginal ? (spec.jsonld ? spec.jsonld() : []).concat(breadcrumbLd(spec, siteDef, l, e.publicUrl(siteDef.id)) || []) : [];
   for (const j of ld) head.push(`<script type="application/ld+json">${grammar(JSON.stringify(j), l).replace(/</g, '\\u003c')}</script>`);
   const attrs: string[] = [`lang="${l}"`, `data-base="${escAttr(currentBase)}"`, `data-brand="${escAttr(siteDef.brand[l])}"`, `data-site="${siteDef.id}"`];
-  if (siteDef.instrument) attrs.push(`data-instrument="${siteDef.instrument}"`);
+  if (siteDef.instrument) attrs.push(`data-instrument="${siteDef.instrument}"`, `data-sites="${escAttr(siteUrls)}"`);
   if (spec.view) attrs.push(`data-route="${escAttr(spec.route)}"`);
   if (spec.hashParam) attrs.push('data-hash-param');
   const html =
