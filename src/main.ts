@@ -110,7 +110,7 @@ function offerLastInstrument(): void {
   const badge = document.createElement('span');
   badge.className = 'tile-badge';
   badge.textContent = t('Zuletzt gespielt');
-  tile.appendChild(badge);
+  (tile.querySelector('.tile-text') || tile).appendChild(badge);
 }
 
 const isStart = html.getAttribute('data-site') === 'start';
