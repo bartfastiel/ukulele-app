@@ -4,13 +4,15 @@
  * wie die App sie zeichnet; im Browser übernimmt dann das gemeinsame Skript. Läuft nur in Node (tools/build.mjs).
  */
 import { installDom, serialize, esc, escAttr } from './vdom.ts';
-import { LANGS, setLang, t, type Lang } from '../i18n.ts';
-import { SITES, type SiteDef, type SiteId } from './sites.ts';
+import { LANGS, setLang, t, tk, type Lang } from '../i18n.ts';
+import { SITES, site, type SiteDef, type SiteId } from './sites.ts';
 import { routePath, canonicalChord } from './routes.ts';
 import { chordLongName, PAGE_QUALITIES, POWER_ORDER } from './chord-names.ts';
 import { SONGS } from '../music/songs.ts';
 import type { Song } from '../music/song.ts';
-import { CHORDS, ROOTS, chord } from '../music/chords.ts';
+import { CHORDS, QUALITY_INTERVALS, ROOTS, chord } from '../music/chords.ts';
+import { ROMAN, intervalName, majorKeysWith, spellChord } from '../music/chord-theory.ts';
+import { STRINGS, stringMidi } from '../music/notes.ts';
 import { ARTICLES } from '../content/wissen.ts';
 import { LEGAL_NAME, type LegalContact } from './legal-data.ts';
 import { scramble } from './scramble.ts';
@@ -410,7 +412,7 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
             instrument: inst,
           }),
       view: player,
-      extra: () => songCard(s, l),
+      extra: () => h('div', null, lyricsCard(s), songCard(s, l)),
       jsonld: () => [songLd(s, siteDef, l)],
       ogType: 'music.song',
       crumb: s.title,
@@ -549,7 +551,7 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
 function legalSpecs(siteDef: SiteDef, l: Lang): Spec[] {
   const brand = siteDef.brand[l];
   return [
-    { route: 'ueber', title: t('Über den {brand}', { brand }), description: t('Wer hinter der App steht und warum sie kostenlos ist: ein privates, persönliches Projekt, ohne Werbung, ohne Abo, Open Source.'), body: () => legalPage('ueber', siteDef, l) },
+    { route: 'ueber', title: t('Über den {brand}', { brand }), description: t('Wer hinter {brand} steht und warum die App kostenlos ist: ein privates, persönliches Projekt, ohne Werbung, ohne Abo, Open Source.', { brand }), body: () => legalPage('ueber', siteDef, l) },
     { route: 'impressum', noindex: true, title: t('Impressum'), description: t('Impressum und Kontakt: ein privates, persönliches, nicht-kommerzielles Projekt – kostenlos, ohne Werbung und ohne Abo.'), body: () => legalPage('impressum', siteDef, l) },
     { route: 'datenschutz', noindex: true, title: t('Datenschutz'), description: t('Datenschutz: keine Konten, keine Cookies, kein Tracking – Fortschritt und Mikrofon bleiben auf deinem Gerät.'), body: () => legalPage('datenschutz', siteDef, l) },
   ];
@@ -711,6 +713,41 @@ function songRoots(s: Song): string[] {
   return out;
 }
 
+/**
+ * Liedtext als Zeilen mit Akkorden davor: Die Karaoke-Ansicht zerlegt ihn in Silben mit Tabulatur dazwischen, so ist er
+ * auch zum Mitlesen, Ausdrucken und für Suchmaschinen als Text da.
+ */
+function lyricLines(s: Song): { chord: string; text: string }[][] {
+  const lines: { chord: string; text: string }[][] = [];
+  let join = false;
+  for (const e of s.events) {
+    if (e.hold) continue;
+    if (!lines[e.line]) {
+      lines[e.line] = [];
+      join = false;
+    }
+    const line = lines[e.line];
+    const syllable = e.syllable === '_' ? '' : e.syllable;
+    const last = line[line.length - 1];
+    if (last && syllable && !join && last.text && !/\s$/.test(last.text)) last.text += ' ';
+    if (e.chordChange || !last) line.push({ chord: e.chordChange ? e.chord : '', text: syllable });
+    else last.text += syllable;
+    if (syllable) join = e.joinNext;
+  }
+  return lines.filter((x) => x && x.some((p) => p.text.trim()));
+}
+
+function lyricsCard(s: Song): Node | null {
+  const lines = lyricLines(s);
+  if (!lines.length) return null;
+  return h(
+    'section',
+    { class: 'card seo-card song-text' },
+    h('h2', null, t('Text mit Akkorden')),
+    ...lines.map((line) => h('p', null, ...line.map((p) => h('span', null, p.chord ? h('b', null, p.chord, ' ') : null, p.text)))),
+  );
+}
+
 function songCard(s: Song, l: Lang): Node {
   return h(
     'section',
@@ -791,12 +828,70 @@ function noteCard(name: string, siteDef: SiteDef, l: Lang): Node {
   );
 }
 
+/** Wie die Akkordart klingt und wofür man sie braucht (Text der Akkordseiten). */
+const CHORD_CHARACTER: Record<string, string> = {
+  '': tk('Ein Dur-Akkord klingt hell, fest und fröhlich. Mit drei Dur-Akkorden kannst du schon sehr viele Lieder begleiten.'),
+  m: tk('Ein Moll-Akkord klingt weicher und oft ein wenig traurig. Vom Dur-Akkord unterscheidet er sich nur in einem Ton: Die Terz liegt einen Halbton tiefer.'),
+  '7': tk('Ein Septakkord klingt, als wolle er weitergehen: Meist folgt der Akkord eine Quinte tiefer, etwa nach G7 das C. Im Blues sind oft alle drei Akkorde Septakkorde.'),
+  m7: tk('Ein Moll-Septakkord klingt weich und ein bisschen jazzig. Oft kannst du ihn statt des einfachen Moll-Akkords spielen.'),
+  maj7: tk('Ein Akkord mit großer Septime klingt träumerisch und weich. Er kann statt des einfachen Dur-Akkords stehen, gern am Anfang oder Ende eines Liedes.'),
+  '6': tk('Ein Sextakkord klingt hell und ein wenig altmodisch, nach Swing oder Hawaii. Er kann statt des Dur-Akkords stehen.'),
+  m6: tk('Ein Moll-Sextakkord klingt geheimnisvoll, ein bisschen nach Krimi. Er kann statt des Moll-Akkords stehen.'),
+  sus2: tk('Bei sus2 ersetzt die Sekunde die Terz. Der Akkord ist weder Dur noch Moll und klingt offen und schwebend.'),
+  sus4: tk('Bei sus4 ersetzt die Quarte die Terz. Das klingt gespannt – meist folgt danach der Dur-Akkord mit demselben Grundton.'),
+  '7sus4': tk('Der 7sus4-Akkord ist ein Septakkord mit Quarte statt Terz. Er klingt gespannt und führt oft zum Septakkord mit demselben Grundton.'),
+  add9: tk('Beim add9-Akkord kommt zum Dur-Akkord die None dazu. Er klingt hell und glitzernd.'),
+  dim: tk('Ein verminderter Akkord besteht aus zwei kleinen Terzen übereinander. Er klingt spannungsvoll und wird meist nur kurz als Übergang gespielt.'),
+  dim7: tk('Der verminderte Septakkord besteht nur aus kleinen Terzen. Darum klingt er gleich, wenn du ihn um drei Bünde verschiebst – praktisch als Übergang.'),
+  m7b5: tk('Der halbverminderte Akkord klingt düster und gespannt. In Moll-Liedern steht er oft vor dem Septakkord, der zurück zum Grundakkord führt.'),
+  aug: tk('Ein übermäßiger Akkord besteht aus zwei großen Terzen übereinander. Er klingt unruhig und schiebt die Musik weiter; um vier Bünde verschoben klingt er gleich.'),
+  '5': tk('Ein Powerchord hat nur zwei Töne: den Grundton und die Quinte, oft dazu den Grundton eine Oktave höher. Er ist weder Dur noch Moll und klingt mit E-Gitarre und Verzerrung besonders kräftig.'),
+};
+
+/** „Grundton“ ist auch Überschrift (Root, Fondamentale); mitten im Satz klein, Deutsch bleibt groß. */
+function lowerAbroad(text: string, l: Lang): string {
+  return l === 'de' ? text : text.charAt(0).toLowerCase() + text.slice(1);
+}
+
+/** Töne, Klang und Tonarten des Akkords – eigener Text je Akkord und Instrument statt nur Griffbild. */
+function chordTheory(name: string, l: Lang): Node[] {
+  const p = parseChordName(name);
+  if (!p) return [];
+  const intervals = QUALITY_INTERVALS[p.quality] || [];
+  const spelled = spellChord(p.root, p.quality);
+  const out: Node[] = [
+    h('p', null, t('{chord} besteht aus diesen Tönen: {notes}.', {
+      chord: name,
+      notes: intervals.map((iv, i) => `${noteText(spelled[i])} (${lowerAbroad(t(intervalName(iv, p.quality)), l)})`).join(', '),
+    })),
+  ];
+  const ch = chord(name);
+  const sounding: string[] = [];
+  const strings: string[] = [];
+  ch.frets.forEach((f, i) => {
+    if (f < 0) return;
+    const k = intervals.indexOf((((stringMidi(i, f) - p.root) % 12) + 12) % 12);
+    sounding.push(k >= 0 ? noteText(spelled[k]) : '?');
+    strings.push(STRINGS[i].name);
+  });
+  if (sounding.length && sounding.indexOf('?') < 0)
+    out.push(h('p', null, t('So klingen die Saiten bei diesem Griff, von der {first}- bis zur {last}-Saite: {notes}.', { first: strings[0], last: strings[strings.length - 1], notes: sounding.join(', ') })));
+  if (CHORD_CHARACTER[p.quality]) out.push(h('p', null, t(CHORD_CHARACTER[p.quality])));
+  const keys = majorKeysWith(p.root, p.quality);
+  if (keys.length)
+    out.push(
+      h('p', null, t('{chord} gehört zu diesen Dur-Tonarten:', { chord: name }), ' ', keys.map((k) => t('{key} (Stufe {degree})', { key: chordLongName(ROOTS[k.key], l), degree: ROMAN[k.degree] })).join(', '), '.'),
+    );
+  return out;
+}
+
 function chordCard(name: string, siteDef: SiteDef, l: Lang): Node {
   const with_ = songsWith(name).slice(0, 12);
   return h(
     'section',
     { class: 'card seo-card' },
     h('h2', null, chordLongName(name, l)),
+    ...chordTheory(name, l),
     with_.length ? h('p', null, t('Lieder mit {chord}:', { chord: name }), ' ', ...with_.map((s, i) => h('span', null, i ? ', ' : '', h('a', { href: rel(`lied/${s.id}`, l) }, s.title)))) : null,
     articleLinks(t('Mehr dazu'), articlesAbout('chord', name, siteDef).slice(0, 4), l),
   );
@@ -863,9 +958,27 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
         ),
       ),
       h('section', { class: 'card seo-card' }, h('p', null, t('Lieder zum Mitspielen, die auf dich warten, Akkorde mit Prüf-Funktion übers Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.'))),
+      h(
+        'section',
+        { class: 'card seo-card' },
+        h('h2', null, t('Welches Instrument passt zu mir?')),
+        ...SITES.filter((s) => s.instrument && INSTRUMENT_PITCH[s.id] && env().sites.indexOf(s.id) >= 0).map((s) =>
+          h('p', null, h('a', { href: env().url(s.id) + (l === 'de' ? '' : l + '/') }, h('strong', null, s.brand[l])), ': ', t(INSTRUMENT_PITCH[s.id])),
+        ),
+      ),
     ),
   ];
 }
+
+/** Kurzporträt je Instrument für die Startseite: Wer neu anfängt, sucht oft erst nach dem passenden Instrument. */
+const INSTRUMENT_PITCH: Record<string, string> = {
+  ukulele: tk('Vier Nylonsaiten, klein und leicht. Die ersten Akkorde greifst du mit einem oder zwei Fingern – ideal für Kinder und zum Einstieg.'),
+  gitarre: tk('Sechs Saiten, das Instrument für Lagerfeuer, Pop und Rock. Sie ist größer und anfangs schwerer zu greifen, dafür klingt sie voll.'),
+  banjo: tk('Fünf Saiten und ein heller, perlender Klang aus Bluegrass und Folk. In der offenen G-Stimmung klingt es schon ohne Griff nach einem Akkord.'),
+  bariton: tk('Größer und tiefer als die Ukulele und gestimmt wie die oberen vier Saiten einer Gitarre – ein guter Weg zwischen beiden.'),
+  mandoline: tk('Vier Saitenpaare, gestimmt wie die Geige. Sie klingt hell und eignet sich für Melodien, Folk und Bluegrass.'),
+  bass: tk('Vier dicke Saiten und meist ein Ton nach dem anderen. Der Bass trägt die Band – mit den Grundtönen spielst du schnell mit.'),
+};
 
 function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef, l: Lang): Node[] {
   const p = (text: string) => h('p', null, text);
@@ -943,7 +1056,15 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
 // ---------- strukturierte Daten ----------
 
 function webSite(siteDef: SiteDef, l: Lang): object {
-  return { '@context': 'https://schema.org', '@type': 'WebSite', name: siteDef.brand[l], url: env().publicUrl(siteDef.id) + pathOf('', l), inLanguage: l };
+  const out: Record<string, unknown> = { '@context': 'https://schema.org', '@type': 'WebSite', name: siteDef.brand[l], url: env().publicUrl(siteDef.id) + pathOf('', l), inLanguage: l };
+  // mit eigener Startseite gehören alle Instrumente zur Marke „Open String“ (Logo und Name für die Suche)
+  if (env().sites.indexOf('start') >= 0) {
+    const start = site('start');
+    const url = env().publicUrl('start');
+    out.publisher = { '@type': 'Organization', name: start.brand[l], url, logo: url + 'icon-512.png' };
+    if (siteDef.id !== 'start') out.isPartOf = { '@type': 'WebSite', name: start.brand[l], url };
+  }
+  return out;
 }
 
 function webApp(siteDef: SiteDef, l: Lang): object {

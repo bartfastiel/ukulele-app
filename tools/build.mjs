@@ -117,6 +117,8 @@ async function emit(result) {
     cpSync(join(root, 'public'), dir, { recursive: true });
     const icons = await appIcon(id);
     for (const name of Object.keys(icons.files)) write(join(dir, name), icons.files[name]);
+    // Browser und Suchmaschinen fragen an der Wurzel ohne Verweis nach /favicon.ico: dasselbe Symbol, als PNG im ICO
+    if (dir === dist) write(join(dir, 'favicon.ico'), ico(Buffer.from(icons.files['icon-192.png']), 192));
     if (MOVE_TO) {
       count += emitMoved(id, dir, r);
       continue;
@@ -128,6 +130,9 @@ async function emit(result) {
     const manifest = JSON.parse(readFileSync(join(root, 'public/manifest.webmanifest'), 'utf8'));
     manifest.name = r.def.brand.de;
     manifest.short_name = r.def.name.de;
+    const home = r.pages.filter((p) => p.file === 'index.html')[0];
+    const description = /<meta name="description" content="([^"]*)"/.exec(home.html);
+    if (description) manifest.description = description[1].replace(/&amp;/g, '&');
     manifest.background_color = icons.color;
     write(join(dir, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2));
     // an der Wurzel heißt sitemap.xml der Index über alle Instrumente
@@ -178,9 +183,26 @@ function emitMoved(id, dir, r) {
   const target = MOVE_TO.replace('{site}', id);
   for (const p of r.pages) write(join(dir, p.file), movedPage(target + p.file.replace(/index\.html$/, ''), r.def.instrument || id));
   write(join(dir, '404.html'), movedPage(target, r.def.instrument || id));
-  write(join(dir, 'robots.txt'), 'User-agent: *\nAllow: /\n');
+  // Die alten Adressen bleiben in der Sitemap, damit Suchmaschinen sie bald wieder abrufen und den Umzug sehen.
+  const old = r.pages.filter((p) => p.url).map((p) => `<url><loc>${p.url}</loc></url>`);
+  write(join(dir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${old.join('\n')}\n</urlset>\n`);
+  write(join(dir, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${publicUrl(id)}sitemap.xml\n`);
   write(join(dir, 'sw.js'), readFileSync(join(root, 'src/sw-gone.js'), 'utf8'));
   return r.pages.length;
+}
+
+/** ICO-Datei mit einem einzigen eingebetteten PNG (erlaubt seit Windows Vista, von allen Browsern gelesen). */
+function ico(png, size) {
+  const head = Buffer.alloc(22);
+  head.writeUInt16LE(1, 2);
+  head.writeUInt16LE(1, 4);
+  head.writeUInt8(size, 6);
+  head.writeUInt8(size, 7);
+  head.writeUInt16LE(1, 10);
+  head.writeUInt16LE(32, 12);
+  head.writeUInt32LE(png.length, 14);
+  head.writeUInt32LE(22, 18);
+  return Buffer.concat([head, png]);
 }
 
 function robots(site) {

@@ -2381,6 +2381,14 @@ summary:focus-visible {
   line-height: 1.55;
 }
 
+.song-text p {
+  margin: 0.25em 0;
+}
+
+.song-text b {
+  color: var(--cherry);
+}
+
 .seo-card a,
 .article a,
 .wissen-list a,
