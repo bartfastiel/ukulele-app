@@ -29,6 +29,26 @@ export function rootOf(chord: string): { uke: number; bass: number } {
 /** Blues-Tonleiter (relativ zum Grundton der Tonart): Moll-Pentatonik plus „blue note“. */
 export const BLUES_SCALE = [0, 3, 5, 6, 7, 10];
 
+const LETTERS = 'CDEFGAB';
+const NATURAL = [0, 2, 4, 5, 7, 9, 11];
+/** Tonstufe (in Buchstaben ab dem Grundton) je Abstand: kleine und große Terz heißen beide „Terz“ usw. */
+const STEPS = [0, 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6];
+
+/**
+ * Tonname passend zur Tonart: in E ist die große Terz G# (nicht Ab), in C die kleine Terz Eb (nicht D#). Wo das
+ * ungewohnte Namen ergäbe (Cb, Fb, E#, B#, Doppelvorzeichen), der übliche Name.
+ */
+export function spell(pc: number, key: number): string {
+  const p = ((pc % 12) + 12) % 12;
+  const letter = (LETTERS.indexOf(ROOTS[key].charAt(0)) + STEPS[(p - key + 12) % 12]) % 7;
+  const diff = ((p - NATURAL[letter] + 18) % 12) - 6;
+  const name = LETTERS.charAt(letter) + (diff === 1 ? '#' : diff === -1 ? 'b' : diff === 0 ? '' : '?');
+  return /\?|Cb|Fb|E#|B#/.test(name) ? ROOTS[p] : name;
+}
+
+/** Töne aus Dur, die man in den Blues mischt (große Sekunde, große Terz, große Sexte): Dur-Pentatonik. */
+export const MAJOR_ADD = [2, 4, 9];
+
 export interface LevelNote {
   /** Schlag im Takt (0–3). */
   beat: number;
@@ -75,6 +95,12 @@ export const LEVELS: Level[] = [
     id: 'frei',
     title: tk('4 · Frei spielen'),
     text: tk('Jetzt bist du dran: Alle Punkte auf dem Hals gehören zur Blues-Tonleiter und passen immer. Die goldenen passen besonders gut zum Akkord gerade. Probier kurze Melodien, wiederhole sie, mach Pausen!'),
+    notes: null,
+  },
+  {
+    id: 'mischen',
+    title: tk('5 · Dur und Moll mischen'),
+    text: tk('Wie Stufe 4, dazu kommen blasse Punkte: Töne aus Dur. Über dem {i}-Akkord klingt seine große Terz {iii} wunderbar – rutsch gern von {b3} aus hinein. Über {iv} ist {iii} ausgeblendet, dort reibt er sich mit dem Akkord.'),
     notes: null,
   },
 ];
@@ -150,6 +176,53 @@ export function scalePositions(key: number, w: NeckWindow | number = 3): { strin
  */
 export function bendable(midi: number, fret: number, key: number): boolean {
   return fret > 0 && (midi - key + 120) % 12 === 3;
+}
+
+export interface FreeNote {
+  string: number;
+  fret: number;
+  midi: number;
+  /** chord = Akkordton (golden), scale = passt */
+  kind: 'chord' | 'scale';
+  /** weniger naheliegend: blasser zeigen */
+  weak: boolean;
+  bend: boolean;
+}
+
+/**
+ * Passt der Ton beim freien Spiel? Blues-Tonleiter immer; beim Mischen auch die Dur-Töne – außer der großen Terz der
+ * Tonart über dem IV-Akkord, die reibt sich mit dessen Septime (in C: E gegen Eb über F7).
+ */
+export function fitsFree(midi: number, key: number, chord: string, mixed: boolean): boolean {
+  const rel = (midi - key + 120) % 12;
+  if (BLUES_SCALE.indexOf(rel) >= 0) return true;
+  if (!mixed || MAJOR_ADD.indexOf(rel) < 0) return false;
+  return !(rel === 4 && rootOf(chord).uke % 12 === (key + 5) % 12);
+}
+
+/** Punkte für das freie Spiel im Ausschnitt, zum gerade klingenden Akkord. */
+export function freeNotes(key: number, chord: string, w: NeckWindow, mixed: boolean): FreeNote[] {
+  const tones = chordTones(chord);
+  // Ziehen zur großen Terz klingt nur über dem Grundakkord; über IV7 ist der Ton schon Akkordton, über V7 reibt er
+  const onTonic = rootOf(chord).uke % 12 === key;
+  const out: FreeNote[] = [];
+  STRINGS.forEach((_, s) => {
+    for (let f = 0; f < w.from + w.frets; f++) {
+      if (!inWindow(f, w) || !playableFret(s, f)) continue;
+      const m = stringMidi(s, f);
+      if (!fitsFree(m, key, chord, mixed)) continue;
+      const isChord = tones.indexOf(m % 12) >= 0;
+      out.push({
+        string: s,
+        fret: f,
+        midi: m,
+        kind: isChord ? 'chord' : 'scale',
+        weak: !isChord && BLUES_SCALE.indexOf((m - key + 120) % 12) < 0,
+        bend: onTonic && bendable(m, f, key),
+      });
+    }
+  });
+  return out;
 }
 
 export function position(midi: number): { string: number; fret: number } {

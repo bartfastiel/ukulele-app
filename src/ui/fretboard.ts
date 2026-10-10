@@ -10,6 +10,8 @@ export interface Mark {
   label?: string;
   /** Ton zum Hochziehen (Blue Note): kleiner Pfeil nach oben */
   bend?: boolean;
+  /** weniger naheliegender Ton: blasser */
+  weak?: boolean;
 }
 
 /**
@@ -93,9 +95,10 @@ export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap): SVGEle
       const cx = xOf(m.fret);
       const cy = yOf(m.string);
       const r = m.kind === 'now' ? 12 : m.kind === 'scale' ? 7 : 10;
-      svg.appendChild(s('circle', { cx, cy, r, class: `fb-mark ${m.kind}` }));
+      const weak = m.weak ? ' weak' : '';
+      svg.appendChild(s('circle', { cx, cy, r, class: `fb-mark ${m.kind}${weak}` }));
       if (m.label)
-        svg.appendChild(s('text', { x: cx, y: cy + 4.5, 'text-anchor': 'middle', class: `fb-mark-label ${m.kind}` }, m.label));
+        svg.appendChild(s('text', { x: cx, y: cy + 4.5, 'text-anchor': 'middle', class: `fb-mark-label ${m.kind}${weak}` }, m.label));
       if (m.bend) {
         svg.appendChild(s('path', { d: `M${cx + r + 1} ${cy + 4} l5 -12 l5 12 m-5 -12 v16`, class: 'fb-bend' }));
         if (tap) {

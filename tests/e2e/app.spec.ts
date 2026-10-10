@@ -195,6 +195,9 @@ test('Blues: Hals verschieben, frei spielen mit fünf Bünden und Ziehton', asyn
   await expect(page.locator('.fb-mark.played')).toHaveCount(1);
   await page.locator('.fb-hit-bend').first().click();
   await expect(page.locator('.fb-mark.played')).toHaveCount(1);
+  await page.getByRole('button', { name: '5 · Dur und Moll mischen' }).click();
+  await expect(page.locator('.fb-mark.weak').first()).toBeVisible();
+  await expect(page.getByText(/große Terz E/)).toBeVisible();
   await page.getByRole('button', { name: 'Sehr langsam' }).click();
   await expect(page.getByRole('button', { name: 'Sehr langsam' })).toHaveAttribute('aria-pressed', 'true');
 });

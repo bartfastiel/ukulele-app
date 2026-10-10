@@ -10,7 +10,7 @@ import { evaluateRecording, spectrum } from '../../src/audio/offline.ts';
 import { renderPluck, renderStrum } from '../../src/audio/pluck.ts';
 import { cents, detectPitch } from '../../src/audio/pitch.ts';
 import { identifyFingering, libraryName, nameChord } from '../../src/music/identify.ts';
-import { BLUES_SCALE, bendable, bluesBars, inWindow, LEVELS, levelWindow, organVoicing, place, position, rootOf, scalePositions, windowTop } from '../../src/music/blues.ts';
+import { BLUES_SCALE, bendable, bluesBars, fitsFree, freeNotes, spell, inWindow, LEVELS, levelWindow, organVoicing, place, position, rootOf, scalePositions, windowTop } from '../../src/music/blues.ts';
 import { parseFrets, plan } from '../../src/music/recording-plan.ts';
 import type { Chord } from '../../src/music/grip.ts';
 
@@ -340,6 +340,39 @@ test('Blues weiter oben am Hals: Vorgabe im Ausschnitt, ganze Tonleiter sichtbar
     assert.equal(bendable(stringMidi(1, 3), 3, (stringMidi(1, 3) - 3 + 12) % 12), true);
     assert.equal(bendable(STRINGS[1].midi, 0, (STRINGS[1].midi - 3 + 12) % 12), false);
   });
+});
+
+test('Dur und Moll mischen: Dur-Töne blass, große Terz golden über I, ausgeblendet über IV; Ziehen nur über I', () => {
+  const w = { from: 1, frets: 5 };
+  const pcs = (chord: string, mixed: boolean) => freeNotes(0, chord, w, mixed);
+  const find = (list: ReturnType<typeof pcs>, pc: number) => list.filter((n) => n.midi % 12 === pc);
+  // E (große Terz in C)
+  assert.ok(find(pcs('C7', true), 4).every((n) => n.kind === 'chord' && !n.weak));
+  assert.equal(find(pcs('F7', true), 4).length, 0);
+  assert.ok(find(pcs('G7', true), 4).every((n) => n.weak));
+  // A ist über F7 Akkordton, sonst blass; D blass
+  assert.ok(find(pcs('F7', true), 9).every((n) => n.kind === 'chord' && !n.weak));
+  assert.ok(find(pcs('C7', true), 9).every((n) => n.weak));
+  assert.ok(find(pcs('C7', true), 2).length > 0);
+  // ohne Mischen keine Dur-Töne
+  for (const pc of [2, 4, 9]) assert.equal(find(pcs('C7', false), pc).filter((n) => n.kind !== 'chord').length, 0);
+  // Ziehpfeil nur über dem Grundakkord
+  assert.ok(pcs('C7', false).some((n) => n.bend));
+  assert.ok(!pcs('F7', false).some((n) => n.bend) && !pcs('G7', false).some((n) => n.bend));
+  assert.equal(fitsFree(64, 0, 'F7', true), false);
+  assert.equal(fitsFree(64, 0, 'C7', true), true);
+  assert.equal(fitsFree(64, 0, 'C7', false), false);
+});
+
+test('Tonnamen passend zur Tonart', () => {
+  const scale = (key: number) => [0, 3, 4, 5, 6, 7, 10].map((i) => spell(key + i, key)).join(' ');
+  assert.equal(scale(0), 'C Eb E F Gb G Bb');
+  assert.equal(scale(4), 'E G G# A Bb B D');
+  assert.equal(scale(9), 'A C C# D Eb E G');
+  assert.equal(scale(7), 'G Bb B C Db D F');
+  // ungewohnte Namen werden vermieden
+  assert.equal(spell(11, 8), 'B');
+  for (let key = 0; key < 12; key++) for (let pc = 0; pc < 12; pc++) assert.match(spell(pc, key), /^[A-G][#b]?$/);
 });
 
 test('Aufnahmeplan je Instrument: eindeutig, ein Zeichen je Saite, synthetisch richtig bewertet', () => {

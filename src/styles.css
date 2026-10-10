@@ -1772,6 +1772,11 @@ summary:focus-visible {
   fill: #5fb3a3;
 }
 
+.fb-mark.weak,
+.fb-mark-label.weak {
+  opacity: 0.4;
+}
+
 .fb-mark.played {
   fill: none;
   stroke: #ff5a7a;

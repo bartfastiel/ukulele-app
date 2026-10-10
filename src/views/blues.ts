@@ -2,7 +2,7 @@ import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { fretboard, type Mark } from '../ui/fretboard.ts';
-import { BLUES_SCALE, LEVELS, SWING, bendable, bluesBars, chordTones, levelText, levelWindow, organVoicing, place, rootOf, scalePositions, windowTop, type Level, type NeckWindow } from '../music/blues.ts';
+import { LEVELS, SWING, bluesBars, fitsFree, freeNotes, spell, levelText, levelWindow, organVoicing, place, rootOf, windowTop, type Level, type NeckWindow } from '../music/blues.ts';
 import { instrument } from '../music/instrument.ts';
 import { ROOTS } from '../music/chords.ts';
 import { audio, click, pluck } from '../audio/engine.ts';
@@ -98,17 +98,8 @@ export const blues: View = (root) => {
         marks.push({ string: p.string, fret: p.fret, kind: 'now', label: String(p.fret) });
       }
     } else {
-      const tones = chordTones(chord);
-      // Ziehen zur großen Terz klingt nur über dem Grundakkord; über IV7 ist der Ton schon Akkordton, über V7 reibt er
-      const onTonic = rootOf(chord).uke % 12 === key;
-      for (const p of scalePositions(key, w))
-        marks.push({
-          string: p.string,
-          fret: p.fret,
-          kind: tones.indexOf(p.midi % 12) >= 0 ? 'chord' : 'scale',
-          label: noteText(ROOTS[p.midi % 12]),
-          bend: onTonic && bendable(p.midi, p.fret, key),
-        });
+      for (const p of freeNotes(key, chord, w, level.id === 'mischen'))
+        marks.push({ string: p.string, fret: p.fret, kind: p.kind, label: noteText(spell(p.midi, key)), bend: p.bend, weak: p.weak });
     }
     if (played && audio().currentTime - played.at < 0.6) {
       const p = played.string !== undefined ? { string: played.string, fret: played.fret! } : place(played.midi, w);
@@ -119,7 +110,7 @@ export const blues: View = (root) => {
         'div',
         { class: 'blues-now' },
         h('span', { class: 'chord-name' }, chord),
-        level.notes && beat >= 0 && targetAt(beat) !== null ? h('span', { class: 'blues-target' }, t('Spiel {note}', { note: noteText(ROOTS[pitchClass(targetAt(beat)!)]) })) : null,
+        level.notes && beat >= 0 && targetAt(beat) !== null ? h('span', { class: 'blues-target' }, t('Spiel {note}', { note: noteText(spell(targetAt(beat)!, key)) })) : null,
       ),
     );
     neck.appendChild(fretboard(marks, w.frets, w.from, tapNote));
@@ -196,7 +187,7 @@ export const blues: View = (root) => {
           hits++;
           counter.textContent = t('Treffer: {n}', { n: hits });
         }
-      } else if (BLUES_SCALE.indexOf((pitchClass(midi) - key + 12) % 12) >= 0 && hitBeat !== Math.floor(beat)) {
+      } else if (fitsFree(midi, key, BARS[Math.floor(beat / 4) % 12], level.id === 'mischen') && hitBeat !== Math.floor(beat)) {
         hitBeat = Math.floor(beat);
         hits++;
         counter.textContent = tp(hits, '{n} Blues-Ton – klingt gut!', '{n} Blues-Töne – klingt gut!');
@@ -265,11 +256,16 @@ export const blues: View = (root) => {
   const bendInfo = h('p', { class: 'card small' });
   const setLevel = (l: Level) => {
     level = l;
-    info.textContent = t(levelText(l));
+    info.textContent = t(levelText(l), {
+      i: ROOTS[key],
+      iv: ROOTS[(key + 5) % 12],
+      iii: noteText(spell(key + 4, key)),
+      b3: noteText(spell(key + 3, key)),
+    });
     bendInfo.style.display = l.notes ? 'none' : '';
     bendInfo.textContent = t(
       'Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur. Der Pfeil erscheint nur, wenn der {i}-Akkord klingt – nur dort passt das Ziehen. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.',
-      { note: noteText(ROOTS[(key + 3) % 12]), i: ROOTS[key], b5: noteText(ROOTS[(key + 6) % 12]) },
+      { note: noteText(spell(key + 3, key)), i: ROOTS[key], b5: noteText(spell(key + 6, key)) },
     );
     drawNeck(running ? beatNow() : 0);
   };
