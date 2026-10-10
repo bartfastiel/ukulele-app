@@ -1806,9 +1806,25 @@ summary:focus-visible {
   fill: #fff;
 }
 
+.fretboard {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 .fb-hit {
   fill: transparent;
   cursor: pointer;
+}
+
+.fb-hit.down {
+  fill: rgba(255, 243, 214, 0.28);
+}
+
+.blues-gestures {
+  margin: 6px 0 0;
+  text-align: center;
 }
 
 .fb-mark,

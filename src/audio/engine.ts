@@ -101,6 +101,101 @@ export function pluck(midi: number, when = 0, gain = 0.6, bend = 0): void {
   play(pluckBuffer(midi), when, gain, bend);
 }
 
+/** Ein gegriffener Ton, der klingt, solange der Finger liegt, und sich dabei verändern lässt. */
+export interface Voice {
+  /** Tonhöhe relativ zum Anschlag in Halbtönen (Ziehen, Rutschen); `glide` = Zeitkonstante in s. */
+  pitch(semis: number, glide?: number): void;
+  /** Vibrato: Schwingungen pro Sekunde und Tiefe in Cent (0 = aus). */
+  vibrato(rate: number, cents: number): void;
+  /** Finger weg: kurz Angetipptes klingt aus wie gezupft, lange Gehaltenes wird gedämpft. */
+  release(): void;
+}
+
+const SILENT_VOICE: Voice = { pitch: () => undefined, vibrato: () => undefined, release: () => undefined };
+/** Wah (0 = zu, dunkel … 1 = offen, hell; null = aus) gilt für alle klingenden und neuen Töne. */
+let wahLevel: number | null = null;
+const live: { filter: BiquadFilterNode }[] = [];
+
+function wahTarget(f: BiquadFilterNode, at: number): void {
+  if (wahLevel === null) {
+    f.frequency.setTargetAtTime(18000, at, 0.02);
+    f.Q.setTargetAtTime(0.7, at, 0.02);
+  } else {
+    // ein Tiefpass mit Resonanz, der zwischen 450 Hz und 3,2 kHz wandert – wie ein Wah-Pedal
+    f.frequency.setTargetAtTime(450 * Math.pow(3200 / 450, wahLevel), at, 0.03);
+    f.Q.setTargetAtTime(6, at, 0.03);
+  }
+}
+
+export function setWah(level: number | null): void {
+  wahLevel = level === null ? null : Math.max(0, Math.min(1, level));
+  if (silent || !ctx) return;
+  for (const v of live) wahTarget(v.filter, ctx.currentTime);
+}
+
+/** Ton anschlagen und halten; `bend` zieht ihn kurz nach dem Anschlag selbst um so viele Halbtöne hoch. */
+export function hold(midi: number, gain = 0.6, bend = 0): Voice {
+  if (!hasAudio()) return SILENT_VOICE;
+  const c = audio();
+  const t0 = c.currentTime;
+  const src = c.createBufferSource();
+  src.buffer = pluckBuffer(midi);
+  const filter = c.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 18000;
+  wahTarget(filter, t0);
+  const g = c.createGain();
+  g.gain.value = gain;
+  const lfo = c.createOscillator();
+  lfo.frequency.value = 5;
+  const depth = c.createGain();
+  depth.gain.value = 0;
+  lfo.connect(depth);
+  depth.connect(src.playbackRate);
+  src.connect(filter);
+  filter.connect(g);
+  g.connect(master!);
+  if (bend) {
+    src.playbackRate.setValueAtTime(1, t0 + 0.07);
+    src.playbackRate.linearRampToValueAtTime(Math.pow(2, bend / 12), t0 + 0.32);
+  }
+  src.start(t0);
+  lfo.start(t0);
+  const entry = { filter };
+  live.push(entry);
+  let ended = false;
+  const end = (at: number | null) => {
+    if (ended) return;
+    ended = true;
+    if (at !== null) src.stop(at);
+    lfo.stop(at === null ? c.currentTime : at);
+    const i = live.indexOf(entry);
+    if (i >= 0) live.splice(i, 1);
+  };
+  // ausgeklungen, obwohl der Finger noch liegt
+  src.onended = () => end(null);
+  return {
+    pitch(semis, glide = 0.03) {
+      if (ended) return;
+      src.playbackRate.cancelScheduledValues(c.currentTime);
+      src.playbackRate.setTargetAtTime(Math.pow(2, semis / 12), c.currentTime, glide);
+    },
+    vibrato(rate, cents) {
+      if (ended) return;
+      lfo.frequency.setTargetAtTime(Math.max(1, rate), c.currentTime, 0.05);
+      depth.gain.setTargetAtTime(Math.pow(2, cents / 1200) - 1, c.currentTime, cents ? 0.06 : 0.26);
+    },
+    release() {
+      if (ended) return;
+      const now = c.currentTime;
+      // kurz getippt: wie gezupft weiterklingen lassen; gehalten: Finger hebt ab, die Saite wird gedämpft
+      const tau = now - t0 < 0.18 ? 0.35 : 0.07;
+      g.gain.setTargetAtTime(0, now, tau);
+      end(now + tau * 8);
+    },
+  };
+}
+
 /** Akkord anschlagen; abwärts von der oberen Saite (Ukulele G) zur unteren (A), aufwärts umgekehrt. */
 export function strum(name: string, when = 0, gain = 0.35, up = false): void {
   const midis = chordMidis(chordByName(name));

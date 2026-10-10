@@ -1,6 +1,7 @@
 import { s } from './dom.ts';
 import { STRINGS } from '../music/notes.ts';
 import { t } from '../i18n.ts';
+import { attachPlay, type NeckGeometry, type Play } from './fret-gesture.ts';
 
 export interface Mark {
   string: number;
@@ -14,25 +15,13 @@ export interface Mark {
   weak?: boolean;
 }
 
-/** Antippen einer Stelle: Saite, Bund und ob der Ziehpfeil getroffen wurde. */
-export type Tap = (string: number, fret: number, bend: boolean) => void;
-
-/** Sofort beim Berühren auslösen (ohne Verzögerung des Klicks); Maus als Rückfall. */
-function onPress(el: Element, f: () => void): void {
-  el.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    f();
-  });
-  el.addEventListener('mousedown', f);
-}
-
 /**
  * Hals waagrecht wie eine Tabulatur: oben die höchste Saite (Ukulele A), unten die erste in Spielreihenfolge
  * (Ukulele G), links der Sattel, Bünde from … from+frets-1. Leere Saiten (Bund 0) stehen links vor dem Sattel – weiter
  * oben am Hals vor einem Bruch statt des Sattels. Die kurze Banjo-Saite ist bis zu ihrem Wirbel am 5. Bund nur angedeutet.
  * Für Linkshänder ist das Bild waagrecht gespiegelt (Sattel rechts); Schrift bleibt lesbar.
  */
-export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap, lefty = false): SVGElement {
+export function fretboard(marks: Mark[], frets = 5, from = 1, play?: Play, lefty = false): SVGElement {
   const n = STRINGS.length;
   const x0 = 70;
   const fw = 64;
@@ -47,6 +36,7 @@ export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap, lefty =
   const xOf = (fret: number) => (fret === 0 ? x0 - 24 : x0 + fw * (fret - from + 0.5));
   const svg = s('svg', { viewBox: `0 0 ${width} ${height}`, class: lefty ? 'fretboard lefty' : 'fretboard', role: 'img', 'aria-label': t('Griffbrett') });
   // gezeichnet wird immer rechtshändig; für Linkshänder spiegelt eine Gruppe alles, Schrift wird zurückgespiegelt
+  const geo: NeckGeometry = { svg: svg as SVGSVGElement, width, fret: fw, gap, lefty };
   const g = lefty ? svg.appendChild(s('g', { transform: `matrix(-1 0 0 1 ${width} 0)` })) : svg;
   const text = (attrs: Record<string, string | number>, content: string) => {
     if (lefty) {
@@ -79,7 +69,7 @@ export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap, lefty =
     g.appendChild(text({ x: 4, y: y + 5, class: 'fb-label', 'data-string': i }, STRINGS[i].name));
   }
   for (let f = from; f < from + frets; f++) g.appendChild(text({ x: xOf(f), y: height - 3, class: 'fb-num', 'text-anchor': 'middle' }, String(f)));
-  if (tap) {
+  if (play) {
     // jede Stelle im Ausschnitt ist antippbar, auch leere Saiten
     for (let i = 0; i < n; i++)
       for (let f = 0; f < from + frets; f++) {
@@ -93,7 +83,7 @@ export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap, lefty =
           'data-string': String(i),
           'data-fret': String(f),
         });
-        onPress(cell, () => tap(i, f, false));
+        attachPlay(cell, geo, () => ({ string: i, fret: f, arrow: false }), play);
         g.appendChild(cell);
       }
   }
@@ -106,14 +96,14 @@ export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap, lefty =
       const cy = yOf(m.string);
       const r = m.kind === 'now' ? 12 : m.kind === 'scale' ? 7 : 10;
       const weak = m.weak ? ' weak' : '';
-      g.appendChild(s('circle', { cx, cy, r, class: `fb-mark ${m.kind}${weak}` }));
+      g.appendChild(s('circle', { cx, cy, r, class: `fb-mark ${m.kind}${weak}`, 'data-string': m.string, 'data-fret': m.fret }));
       if (m.label)
         g.appendChild(text({ x: cx, y: cy + 4.5, 'text-anchor': 'middle', class: `fb-mark-label ${m.kind}${weak}` }, m.label));
       if (m.bend) {
         g.appendChild(s('path', { d: `M${cx + r + 1} ${cy + 4} l5 -12 l5 12 m-5 -12 v16`, class: 'fb-bend' }));
-        if (tap) {
+        if (play) {
           const hit = s('rect', { x: cx + r - 2, y: cy - gap / 2 - 4, width: 18, height: gap + 4, class: 'fb-hit fb-hit-bend' });
-          onPress(hit, () => tap(m.string, m.fret, true));
+          attachPlay(hit, geo, () => ({ string: m.string, fret: m.fret, arrow: true }), play);
           g.appendChild(hit);
         }
       }
