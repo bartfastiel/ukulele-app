@@ -6,6 +6,8 @@ import { base, brand, link } from './site/nav.ts';
 import { offerLanguage } from './ui/lang-switch.ts';
 import { renderSecrets } from './ui/secret-text.ts';
 import { initInstrument } from './music/instrument.ts';
+import { chord } from './music/chords.ts';
+import { chordDiagram } from './ui/chord-diagram.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
 import { songs } from './views/songs.ts';
@@ -83,6 +85,18 @@ function mount(): void {
   }
 }
 
+/** Griffbilder in Wissensartikeln sind für Rechtshänder vorgerendert; nach dem Laden gilt die Einstellung. */
+function mirrorArticleChords(): void {
+  if (!load().settings.lefty) return;
+  const tiles = document.querySelectorAll('.article-chord');
+  for (let i = 0; i < tiles.length; i++) {
+    const name = tiles[i].querySelector('.chord-name');
+    const old = tiles[i].querySelector('svg');
+    if (!name || !old || !old.parentNode) continue;
+    old.parentNode.replaceChild(chordDiagram(chord(name.textContent || ''), { lefty: true, labels: false }), old);
+  }
+}
+
 // zuerst das Instrument: Holz und Farben hängen davon ab
 initInstrument();
 installWood();
@@ -121,6 +135,7 @@ if (!redirectOldHash()) {
   setLang(isLang(html.lang) ? html.lang : 'de');
   if (load().settings.calm) html.classList.add('calm');
   mount();
+  mirrorArticleChords();
   renderSecrets();
   if (html.hasAttribute('data-hash-param')) window.addEventListener('hashchange', () => mount());
   offerLanguage(load().settings.lang);

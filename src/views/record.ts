@@ -15,6 +15,7 @@ import { idbAll, idbClear, idbPut } from '../util/idb.ts';
 import type { Chord } from '../music/chords.ts';
 import { t, tp } from '../i18n.ts';
 import { link } from '../site/nav.ts';
+import { load } from '../store.ts';
 
 /**
  * Aufnahmewerkzeug für Erwachsene: sammelt beschriftete Beispielaufnahmen (richtige Akkorde, typische Fehler,
@@ -36,7 +37,7 @@ function diagramFor(t: Take): SVGElement | null {
   if (!t.chord) return null;
   const frets = parseFrets(t.frets);
   const ch: Chord = { name: t.chord, frets, fingers: frets.map(() => 0), say: '', level: 0 };
-  return chordDiagram(ch);
+  return chordDiagram(ch, { lefty: load().settings.lefty });
 }
 
 function fileName(index: number, s: Stored): string {

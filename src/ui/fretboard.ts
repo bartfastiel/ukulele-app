@@ -14,11 +14,6 @@ export interface Mark {
   weak?: boolean;
 }
 
-/**
- * Hals waagrecht wie eine Tabulatur: oben die höchste Saite (Ukulele A), unten die erste in Spielreihenfolge
- * (Ukulele G), links der Sattel, Bünde from … from+frets-1. Leere Saiten (Bund 0) stehen links vor dem Sattel – weiter
- * oben am Hals vor einem Bruch statt des Sattels. Die kurze Banjo-Saite ist bis zu ihrem Wirbel am 5. Bund nur angedeutet.
- */
 /** Antippen einer Stelle: Saite, Bund und ob der Ziehpfeil getroffen wurde. */
 export type Tap = (string: number, fret: number, bend: boolean) => void;
 
@@ -31,7 +26,13 @@ function onPress(el: Element, f: () => void): void {
   el.addEventListener('mousedown', f);
 }
 
-export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap): SVGElement {
+/**
+ * Hals waagrecht wie eine Tabulatur: oben die höchste Saite (Ukulele A), unten die erste in Spielreihenfolge
+ * (Ukulele G), links der Sattel, Bünde from … from+frets-1. Leere Saiten (Bund 0) stehen links vor dem Sattel – weiter
+ * oben am Hals vor einem Bruch statt des Sattels. Die kurze Banjo-Saite ist bis zu ihrem Wirbel am 5. Bund nur angedeutet.
+ * Für Linkshänder ist das Bild waagrecht gespiegelt (Sattel rechts); Schrift bleibt lesbar.
+ */
+export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap, lefty = false): SVGElement {
   const n = STRINGS.length;
   const x0 = 70;
   const fw = 64;
@@ -44,31 +45,40 @@ export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap): SVGEle
   for (let i = n - 1; i >= 0; i--) order.push(i);
   const yOf = (string: number) => top + order.indexOf(string) * gap;
   const xOf = (fret: number) => (fret === 0 ? x0 - 24 : x0 + fw * (fret - from + 0.5));
-  const svg = s('svg', { viewBox: `0 0 ${width} ${height}`, class: 'fretboard', role: 'img', 'aria-label': t('Griffbrett') });
-  svg.appendChild(s('rect', { x: x0, y: top - 12, width: fw * frets + 6, height: span + 24, rx: 4, class: 'fb-wood' }));
+  const svg = s('svg', { viewBox: `0 0 ${width} ${height}`, class: lefty ? 'fretboard lefty' : 'fretboard', role: 'img', 'aria-label': t('Griffbrett') });
+  // gezeichnet wird immer rechtshändig; für Linkshänder spiegelt eine Gruppe alles, Schrift wird zurückgespiegelt
+  const g = lefty ? svg.appendChild(s('g', { transform: `matrix(-1 0 0 1 ${width} 0)` })) : svg;
+  const text = (attrs: Record<string, string | number>, content: string) => {
+    if (lefty) {
+      attrs.transform = `matrix(-1 0 0 1 ${2 * Number(attrs.x)} 0)`;
+      if (!attrs['text-anchor']) attrs['text-anchor'] = 'end';
+    }
+    return s('text', attrs, content);
+  };
+  g.appendChild(s('rect', { x: x0, y: top - 12, width: fw * frets + 6, height: span + 24, rx: 4, class: 'fb-wood' }));
   [3, 5, 7, 9, 12, 15, 17, 19, 21].forEach((f) => {
     if (f < from || f >= from + frets) return;
     const ys = f === 12 ? [top + span / 2 - gap, top + span / 2 + gap] : [top + span / 2];
-    ys.forEach((cy) => svg.appendChild(s('circle', { cx: xOf(f), cy, r: 5, class: 'fb-dot' })));
+    ys.forEach((cy) => g.appendChild(s('circle', { cx: xOf(f), cy, r: 5, class: 'fb-dot' })));
   });
-  if (from === 1) svg.appendChild(s('rect', { x: x0 - 4, y: top - 12, width: 6, height: span + 24, class: 'fb-nut' }));
+  if (from === 1) g.appendChild(s('rect', { x: x0 - 4, y: top - 12, width: 6, height: span + 24, class: 'fb-nut' }));
   else
-    svg.appendChild(
+    g.appendChild(
       s('path', { d: `M${x0 - 3} ${top - 14} l6 ${(span + 28) / 4} l-6 ${(span + 28) / 4} l6 ${(span + 28) / 4} l-6 ${(span + 28) / 4}`, class: 'fb-break' }),
     );
-  for (let f = 1; f <= frets; f++) svg.appendChild(s('rect', { x: x0 + fw * f - 1, y: top - 12, width: 2.5, height: span + 24, class: 'fb-fret' }));
+  for (let f = 1; f <= frets; f++) g.appendChild(s('rect', { x: x0 + fw * f - 1, y: top - 12, width: 2.5, height: span + 24, class: 'fb-fret' }));
   for (let i = 0; i < n; i++) {
     const y = yOf(i);
     const start = STRINGS[i].start || 0;
     const end = x0 + fw * frets + 6;
     if (start) {
       const peg = Math.max(x0 - 40, Math.min(end, x0 + fw * (start - from + 1)));
-      svg.appendChild(s('line', { x1: x0 - 40, y1: y, x2: peg, y2: y, class: 'fb-string short' }));
-      if (peg < end) svg.appendChild(s('line', { x1: peg, y1: y, x2: end, y2: y, class: 'fb-string' }));
-    } else svg.appendChild(s('line', { x1: x0 - 40, y1: y, x2: end, y2: y, class: 'fb-string' }));
-    svg.appendChild(s('text', { x: 4, y: y + 5, class: 'fb-label' }, STRINGS[i].name));
+      g.appendChild(s('line', { x1: x0 - 40, y1: y, x2: peg, y2: y, class: 'fb-string short' }));
+      if (peg < end) g.appendChild(s('line', { x1: peg, y1: y, x2: end, y2: y, class: 'fb-string' }));
+    } else g.appendChild(s('line', { x1: x0 - 40, y1: y, x2: end, y2: y, class: 'fb-string' }));
+    g.appendChild(text({ x: 4, y: y + 5, class: 'fb-label', 'data-string': i }, STRINGS[i].name));
   }
-  for (let f = from; f < from + frets; f++) svg.appendChild(s('text', { x: xOf(f), y: height - 3, class: 'fb-num', 'text-anchor': 'middle' }, String(f)));
+  for (let f = from; f < from + frets; f++) g.appendChild(text({ x: xOf(f), y: height - 3, class: 'fb-num', 'text-anchor': 'middle' }, String(f)));
   if (tap) {
     // jede Stelle im Ausschnitt ist antippbar, auch leere Saiten
     for (let i = 0; i < n; i++)
@@ -84,7 +94,7 @@ export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap): SVGEle
           'data-fret': String(f),
         });
         onPress(cell, () => tap(i, f, false));
-        svg.appendChild(cell);
+        g.appendChild(cell);
       }
   }
   const rank = { scale: 0, chord: 1, next: 2, played: 3, now: 4 };
@@ -96,17 +106,18 @@ export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap): SVGEle
       const cy = yOf(m.string);
       const r = m.kind === 'now' ? 12 : m.kind === 'scale' ? 7 : 10;
       const weak = m.weak ? ' weak' : '';
-      svg.appendChild(s('circle', { cx, cy, r, class: `fb-mark ${m.kind}${weak}` }));
+      g.appendChild(s('circle', { cx, cy, r, class: `fb-mark ${m.kind}${weak}` }));
       if (m.label)
-        svg.appendChild(s('text', { x: cx, y: cy + 4.5, 'text-anchor': 'middle', class: `fb-mark-label ${m.kind}${weak}` }, m.label));
+        g.appendChild(text({ x: cx, y: cy + 4.5, 'text-anchor': 'middle', class: `fb-mark-label ${m.kind}${weak}` }, m.label));
       if (m.bend) {
-        svg.appendChild(s('path', { d: `M${cx + r + 1} ${cy + 4} l5 -12 l5 12 m-5 -12 v16`, class: 'fb-bend' }));
+        g.appendChild(s('path', { d: `M${cx + r + 1} ${cy + 4} l5 -12 l5 12 m-5 -12 v16`, class: 'fb-bend' }));
         if (tap) {
           const hit = s('rect', { x: cx + r - 2, y: cy - gap / 2 - 4, width: 18, height: gap + 4, class: 'fb-hit fb-hit-bend' });
           onPress(hit, () => tap(m.string, m.fret, true));
-          svg.appendChild(hit);
+          g.appendChild(hit);
         }
       }
     });
   return svg;
 }
+
