@@ -63,3 +63,21 @@ test('Bariton-Ukulele hat keine anderen Stimmungen', async ({ page }) => {
   await expect(page.locator('.btn-string')).toHaveCount(4);
   await expect(page.getByText('Andere Stimmung …')).toHaveCount(0);
 });
+
+test('Gitarre: Klang und 12 Saiten wählen, ohne Hinweis oben; bleibt gespeichert', async ({ page }) => {
+  await page.goto('../gitarre/#/stimmen');
+  await expect(page.locator('[data-sound="e"]')).toBeHidden();
+  await page.getByText('Meine Gitarre …').click();
+  await expect(page.locator('[data-sound="nylon"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('[data-sound="e"]').click();
+  await expect(page.locator('[data-sound="e"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('[data-twelve]').click();
+  await expect(page.locator('[data-twelve]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.twelve-hint')).toContainText('Oktave');
+  await expect(page.locator('#tuning-banner')).toHaveCount(0);
+  await page.reload();
+  await expect(page.locator('[data-sound="e"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.twelve-hint')).toBeVisible();
+  await page.goto('../banjo/#/stimmen');
+  await expect(page.getByText('Meine Gitarre …')).toHaveCount(0);
+});

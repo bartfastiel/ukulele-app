@@ -86,6 +86,12 @@ export const GITARRE: Instrument = {
   cost: { barre: 2.5, muted: 0.4 },
   capo: true,
   synth: { brightness: 0.6, sustain: 1.6, seconds: 2.6, position: 0.22 },
+  sounds: [
+    { id: 'nylon', name: tk('Konzertgitarre (Nylon)'), synth: { brightness: 0.6, sustain: 1.6, seconds: 2.6, position: 0.22 } },
+    { id: 'stahl', name: tk('Westerngitarre (Stahl)'), synth: { brightness: 0.85, sustain: 2.2, seconds: 3, position: 0.14 } },
+    { id: 'e', name: tk('E-Gitarre'), synth: { brightness: 0.9, sustain: 3, seconds: 3.4, position: 0.12, drive: 3 } },
+  ],
+  twelve: true,
   blues: {
     low: 40,
     frets: 4,

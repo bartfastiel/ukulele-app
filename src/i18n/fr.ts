@@ -699,4 +699,13 @@ export const FR: Record<string, string> = {
   "So lernt man es, und so passen alle Griffe aus Heften und Kursen.": "C’est comme ça qu’on apprend, et tous les doigtés des livres et des cours correspondent.",
   // src/music/chords.ts: Barré beschreiben
   "Zeigefinger quer über die Saiten {from} bis {to} im {fret} Bund": "Index à plat sur les cordes {from} à {to}, {fret} case",
+  // Varianten: Klang und 12 Saiten (src/music/instruments/gitarre.ts, src/ui/tuning.ts, src/views/tuner.ts)
+  "Konzertgitarre (Nylon)": "Guitare classique (nylon)",
+  "Westerngitarre (Stahl)": "Guitare folk (acier)",
+  "E-Gitarre": "Guitare électrique",
+  "Meine Gitarre …": "Ma guitare …",
+  "Klang beim Vorspielen:": "Son des exemples :",
+  "12-saitige Gitarre": "Guitare 12 cordes",
+  "Jede Saite hat eine Partnerin: Bei E, A, D und G klingt sie eine Oktave höher, bei B und e genau gleich. Stimm erst die dicke Saite, dann ihre Partnerin – das Stimmgerät erkennt beide.": "Chaque corde a une partenaire : pour E, A, D et G, elle sonne une octave plus haut, pour B et e exactement pareil. Accorde d’abord la corde épaisse, puis sa partenaire – l’accordeur reconnaît les deux.",
+  "Oktavsaite": "corde à l’octave",
 };
