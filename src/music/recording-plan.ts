@@ -168,8 +168,9 @@ const plans: Record<string, Take[]> = {};
 /** Aufnahmeplan des aktuellen Instruments (Ukulele: PLAN). */
 export function plan(): Take[] {
   const inst = instrument();
-  if (inst.id === 'ukulele') return PLAN;
-  if (plans[inst.id]) return plans[inst.id];
+  if (inst.id === 'ukulele' && !inst.tuning) return PLAN;
+  const key = inst.id + (inst.tuning ? ':' + inst.tuning.id : '');
+  if (plans[key]) return plans[key];
   const names = inst.recordChords;
   const out: Take[] = [];
   names.forEach((c) => out.push(generic(c, chord(c).frets, 'strum')));
@@ -186,7 +187,7 @@ export function plan(): Take[] {
   const single = tk('Nur die {s}-Saite (oben) leer zupfen, mehrmals.');
   const frets = '0' + none.slice(1).replace(/-/g, 'x');
   out.push({ id: `${top.s}-saite-leer`, chord: null, frets, technique: 'noise', correct: false, instruction: german(single, top), parts: [single], params: top });
-  plans[inst.id] = out;
+  plans[key] = out;
   return out;
 }
 

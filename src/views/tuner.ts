@@ -9,6 +9,7 @@ import { save } from '../store.ts';
 import { TuningCoach, tipText } from '../audio/tuning-coach.ts';
 import { instrument } from '../music/instrument.ts';
 import { countWord, t } from '../i18n.ts';
+import { tuningChooser } from '../ui/tuning.ts';
 
 export const tuner: View = (root) => {
   let raf = 0;
@@ -154,6 +155,7 @@ export const tuner: View = (root) => {
         listen,
         h('p', { class: 'small' }, t('Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: {strings}.', { strings: names.join(' – ') })),
         h('div', { class: `string-row strings-${STRINGS.length}` }, ...stringBtns),
+        tuningChooser(),
       ),
     ),
   );

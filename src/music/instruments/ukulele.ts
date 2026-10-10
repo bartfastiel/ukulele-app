@@ -66,4 +66,22 @@ export const UKULELE: Instrument = {
   game: [['C', 'Am'], ['C', 'F'], ['C', 'G7'], ['F', 'C7'], ['C', 'Am', 'F', 'G7'], ['C', 'F', 'G7']],
   rhythmChords: ['C', 'Am', 'F', 'G7'],
   recordChords: ['C', 'Am', 'F', 'G7', 'C7', 'A7', 'G', 'Dm', 'Em', 'D7'],
+  tunings: [
+    {
+      id: 'tiefes-g',
+      name: tk('Tiefes G'),
+      why: tk('Die G-Saite eine Oktave tiefer: voller, tieferer Klang. Die Griffe bleiben genau gleich.'),
+      names: ['G', 'C', 'E', 'A'],
+      midi: [55, 60, 64, 69],
+      banner: false,
+    },
+    {
+      id: 'd',
+      name: tk('D-Stimmung'),
+      why: tk('Alle Saiten einen Ganzton höher (A D F# B): heller Klang wie bei alten Ukulelen. Gleiche Fingerform, anderer Akkordname.'),
+      names: ['A', 'D', 'F#', 'B'],
+      midi: [69, 62, 66, 71],
+      bluesKey: 2,
+    },
+  ],
 };

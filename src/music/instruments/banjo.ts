@@ -66,4 +66,31 @@ export const BANJO: Instrument = {
     explain: tk('Der Daumen zupft die G-Saite und die kurze g-Saite, der Zeigefinger die B-Saite, der Mittelfinger die hohe D-Saite. Die Buchstaben zeigen, welcher Finger dran ist.'),
   },
   recordChords: ['G', 'C', 'D', 'D7', 'Em', 'Am', 'G7', 'F', 'E7', 'A'],
+  tunings: [
+    {
+      id: 'double-c',
+      name: 'Double C',
+      why: tk('Die tiefe D-Saite und die B-Saite werden zu C: Lieder in C und alte Fiddle-Melodien gehen leicht von der Hand.'),
+      names: ['g', 'C', 'G', 'C', 'D'],
+      midi: [67, 48, 55, 60, 62],
+      bluesKey: 0,
+    },
+    {
+      id: 'g-modal',
+      name: 'G-Modal (Sawmill)',
+      why: tk('Die B-Saite einen Halbton höher auf C: klingt geheimnisvoll und alt, wie in den Bergen der Appalachen.'),
+      names: ['g', 'D', 'G', 'C', 'D'],
+      midi: [67, 50, 55, 60, 62],
+      bluesKey: 7,
+    },
+    {
+      id: 'open-d',
+      name: 'Open D',
+      why: tk('Alle Saiten leer klingen als D-Dur. Gut für Lieder in D, ohne viel umzugreifen.'),
+      names: ['f#', 'D', 'F#', 'A', 'D'],
+      midi: [66, 50, 54, 57, 62],
+      open: 2,
+      bluesKey: 2,
+    },
+  ],
 };
