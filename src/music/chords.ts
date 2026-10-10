@@ -70,6 +70,8 @@ export const QUALITY_INTERVALS: Record<string, number[]> = {
   dim7: [0, 3, 6, 9],
   m7b5: [0, 3, 6, 10],
   aug: [0, 4, 8],
+  // Powerchord: nur Grundton und Quinte (dazu oft der Grundton eine Oktave höher)
+  '5': [0, 7],
 };
 
 export function parseChordName(name: string): { root: number; quality: string } | null {
@@ -312,8 +314,50 @@ function makeChord(name: string): Chord | null {
   }
   const made = entry ? withFingers(name, entry) : null;
   if (made) return made;
-  const frets = findShape(p.root, QUALITY_INTERVALS[p.quality]);
+  const frets = findShape(p.root, QUALITY_INTERVALS[p.quality]) || (p.quality === '5' ? findPowerChord(p.root) : null);
   return frets ? withFingers(name, { frets }) : null;
+}
+
+/**
+ * Powerchord, wo der Grifffinder alle Saiten klingen lassen will (Ukulele, Banjo …) und das mit nur zwei Tönen nicht
+ * geht: Saiten von der Bass-Seite her weglassen, mindestens zwei klingen.
+ */
+function findPowerChord(root: number): number[] | null {
+  const pcs = [root, (root + 7) % 12];
+  const max = instrument().finder.maxFret;
+  let best: number[] | null = null;
+  let bestCost = Infinity;
+  const frets: number[] = [];
+  const visit = (i: number) => {
+    if (i === STRINGS.length) {
+      const sounding = frets.filter((f) => f >= 0);
+      const notes = frets.map((f, k) => (f >= 0 ? pitchClass(stringMidi(k, f)) : -1));
+      if (sounding.length < 2 || pcs.some((x) => notes.indexOf(x) < 0)) return;
+      const pressed = sounding.filter((f) => f > 0);
+      const span = pressed.length ? Math.max.apply(null, pressed) - Math.min.apply(null, pressed) : 0;
+      if (span > 3) return;
+      const cost = pressed.length + span * 1.5 + (STRINGS.length - sounding.length) * 0.8 + Math.max(0, Math.max.apply(null, frets) - 3) * 0.8;
+      if (cost < bestCost) {
+        bestCost = cost;
+        best = frets.slice();
+      }
+      return;
+    }
+    const s = STRINGS[i];
+    const options: number[] = [];
+    if (s.start) options.push(pcs.indexOf(pitchClass(s.midi)) >= 0 ? 0 : -1);
+    else {
+      // weglassen nur zusammenhängend von der Bass-Saite her
+      if (i === 0 || frets[i - 1] < 0) options.push(-1);
+      for (let f = 0; f <= max; f++) if (pcs.indexOf(pitchClass(stringMidi(i, f))) >= 0 && playableFret(i, f)) options.push(f);
+    }
+    for (const f of options) {
+      frets[i] = f;
+      visit(i + 1);
+    }
+  };
+  visit(0);
+  return best;
 }
 
 function withFingers(name: string, entry: Entry): Chord | null {

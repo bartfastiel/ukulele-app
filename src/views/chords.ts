@@ -11,7 +11,9 @@ import { markOwnSound } from '../audio/own-sound.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, markPracticed } from '../store.ts';
 import { lang, t, tk } from '../i18n.ts';
-import { chordLongName } from '../site/chord-names.ts';
+import { chordLongName, PAGE_QUALITIES, POWER_ORDER } from '../site/chord-names.ts';
+import { relativeHints } from '../site/relatives.ts';
+import { instrument } from '../music/instrument.ts';
 import { link, go } from '../site/nav.ts';
 
 const GROUPS = [
@@ -45,6 +47,8 @@ export const chords: View = (root) => {
         ),
       ),
     ),
+    // nur wo das Instrument eigene Powerchord-Griffe hat (Gitarre in Normalstimmung)
+    ...(instrument().shapes['5'] ? [h('p', { class: 'card relative-hint' }, h('a', { href: link('powerchords') }, t('Powerchords für E-Gitarre: E5, A5, D5 …'), ' ›'))] : []),
   );
 };
 
@@ -116,8 +120,11 @@ export const chordDetail: View = (root, param) => {
     'btn-primary',
   );
   const p = parseChordName(ch.name);
-  const family = p ? ['', 'm', '7', 'm7', 'maj7', 'sus4'].map((q) => ROOTS[p.root] + q) : [];
-  const others = family.concat(CHORDS.filter((c) => c.level <= 2 && family.indexOf(c.name) < 0).map((c) => c.name)).slice(0, 14);
+  const power = !!p && p.quality === '5';
+  // bei Powerchords die anderen Powerchords, sonst Verwandte und häufige Griffe
+  const family = !p ? [] : power ? POWER_ORDER.map((r) => ROOTS[r] + '5') : ['', 'm', '7', 'm7', 'maj7', 'sus4'].map((q) => ROOTS[p.root] + q);
+  const others = power ? family : family.concat(CHORDS.filter((c) => c.level <= 2 && family.indexOf(c.name) < 0).map((c) => c.name)).slice(0, 14);
+  const hints = p && PAGE_QUALITIES.indexOf(p.quality) >= 0 ? relativeHints(`akkord/${encodeURIComponent(ch.name)}`, ch.name) : [];
   screen(
     root,
     { title: t('Akkord {chord}', { chord: ch.name }), back: link('akkorde'), theme: 'teal' },
@@ -145,6 +152,8 @@ export const chordDetail: View = (root, param) => {
           { class: 'chip-row' },
           ...others.map((c) => h('a', { class: `btn btn-chip${c === ch.name ? ' active' : ''}`, href: link(`akkord/${encodeURIComponent(c)}`) }, c)),
         ),
+        power ? h('p', { class: 'card relative-hint' }, h('a', { href: link('powerchords') }, t('Alle Powerchords auf einen Blick'), ' ›')) : null,
+        ...hints,
       ),
     ),
   );

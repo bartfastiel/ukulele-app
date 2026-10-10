@@ -69,6 +69,7 @@ export const UKULELE: Instrument = {
   tunings: [
     {
       id: 'tiefes-g',
+      article: 'ukulele-d-stimmung-tiefes-g',
       name: tk('Tiefes G'),
       why: tk('Eine eigene, dickere G-Saite eine Oktave tiefer: voller, tieferer Klang. Die Griffe bleiben genau gleich.'),
       names: ['G', 'C', 'E', 'A'],
@@ -77,6 +78,7 @@ export const UKULELE: Instrument = {
     },
     {
       id: 'd',
+      article: 'ukulele-d-stimmung-tiefes-g',
       name: tk('D-Stimmung'),
       why: tk('Alle Saiten einen Ganzton höher gespannt (A D F# B): heller Klang wie bei alten Ukulelen – lieber mit einem Erwachsenen umstimmen. Gleiche Fingerform, anderer Akkordname.'),
       names: ['A', 'D', 'F#', 'B'],
