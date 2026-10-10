@@ -158,6 +158,9 @@ test('Blues: Einzählen, Takte laufen, Vorgabe auf dem Hals, freie Stufe zeigt d
   await page.getByRole('button', { name: '4 · Frei spielen' }).click();
   await expect(page.locator('.fb-mark.scale').first()).toBeVisible();
   await expect(page.locator('.fb-mark.chord').first()).toBeVisible();
+  // über F7 wird nicht gezogen
+  await expect(page.locator('.blues-now .chord-name')).toHaveText('F7');
+  await expect(page.locator('.fb-bend')).toHaveCount(0);
   await page.getByRole('button', { name: /Stopp/ }).click();
 });
 

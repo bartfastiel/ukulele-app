@@ -98,13 +98,15 @@ export const blues: View = (root) => {
       }
     } else {
       const tones = chordTones(chord);
+      // Ziehen zur großen Terz klingt nur über dem Grundakkord; über IV7 ist der Ton schon Akkordton, über V7 reibt er
+      const onTonic = rootOf(chord).uke % 12 === key;
       for (const p of scalePositions(key, w))
         marks.push({
           string: p.string,
           fret: p.fret,
           kind: tones.indexOf(p.midi % 12) >= 0 ? 'chord' : 'scale',
           label: noteText(ROOTS[p.midi % 12]),
-          bend: bendable(p.midi, p.fret, key),
+          bend: onTonic && bendable(p.midi, p.fret, key),
         });
     }
     if (played && audio().currentTime - played.at < 0.6) {
@@ -248,7 +250,7 @@ export const blues: View = (root) => {
     info.textContent = t(levelText(l));
     bendInfo.style.display = l.notes ? 'none' : '';
     bendInfo.textContent = t(
-      'Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur, am schönsten über dem {i}-Akkord. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.',
+      'Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur. Der Pfeil erscheint nur, wenn der {i}-Akkord klingt – nur dort passt das Ziehen. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.',
       { note: noteText(ROOTS[(key + 3) % 12]), i: ROOTS[key], b5: noteText(ROOTS[(key + 6) % 12]) },
     );
     drawNeck(running ? beatNow() : 0);

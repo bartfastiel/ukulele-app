@@ -164,7 +164,7 @@ export const FR: Record<string, string> = {
   "Richtung Kopf": "Vers la tête",
   "Richtung Korpus": "Vers la caisse",
   "Bund {a}–{b}": "Cases {a} à {b}",
-  "Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur, am schönsten über dem {i}-Akkord. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.": "Tirer ↑ : la note avec la flèche ({note}), tu peux la monter un tout petit peu – pousse la corde sur le côté avec le doigt qui appuie, jusqu’à ce qu’elle sonne un peu plus haut. C’est la « blue note » entre mineur et majeur, la plus belle sur l’accord de {i}. La note {b5} est une note de passage : touche-la brièvement, puis continue.",
+  "Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur. Der Pfeil erscheint nur, wenn der {i}-Akkord klingt – nur dort passt das Ziehen. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.": "Tirer ↑ : la note avec la flèche ({note}), tu peux la monter un tout petit peu – pousse la corde sur le côté avec le doigt qui appuie, jusqu’à ce qu’elle sonne un peu plus haut. C’est la « blue note » entre mineur et majeur. La flèche n’apparaît que pendant l’accord de {i} – c’est là que tirer sonne bien. La note {b5} est une note de passage : touche-la brièvement, puis continue.",
   'Langsam': 'Lent',
   'Mittel': 'Moyen',
   'Schnell': 'Rapide',

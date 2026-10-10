@@ -161,7 +161,7 @@ export const EN: Record<string, string> = {
   "Richtung Kopf": "Towards the headstock",
   "Richtung Korpus": "Towards the body",
   "Bund {a}–{b}": "Frets {a}–{b}",
-  "Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur, am schönsten über dem {i}-Akkord. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.": "Bend ↑: you can bend the note with the arrow ({note}) up a little – push the string sideways across the fretboard with your fretting finger until it sounds a bit higher. That is the “blue note” between minor and major, sweetest over the {i} chord. The note {b5} is a passing note: touch it briefly, then move on.",
+  "Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur. Der Pfeil erscheint nur, wenn der {i}-Akkord klingt – nur dort passt das Ziehen. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.": "Bend ↑: you can bend the note with the arrow ({note}) up a little – push the string sideways across the fretboard with your fretting finger until it sounds a bit higher. That is the “blue note” between minor and major. The arrow only appears while the {i} chord is playing – that is where bending fits. The note {b5} is a passing note: touch it briefly, then move on.",
   'Langsam': 'Slow',
   'Mittel': 'Medium',
   'Schnell': 'Fast',
