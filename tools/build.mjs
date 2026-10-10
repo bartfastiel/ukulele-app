@@ -1,5 +1,5 @@
 // Baut dist/<seite>/ je Instrument-Seite (ukulele, gitarre, banjo, bariton, mandoline) und die Startseite: ein gemeinsames, gehashtes
-// Skript und Stylesheet, je Adresse und Sprache eine vorgerenderte HTML-Seite, Sitemap, robots.txt, Manifest,
+// Skript und Stylesheet, je Adresse und Sprache eine vorgerenderte HTML-Seite, Sitemap, robots.txt, Manifest, App-Symbole,
 // Vorschaubild (og-image.png) und Service Worker. `--serve` baut bei jeder Änderung neu und liefert dist/ auf
 // http://localhost:5173 aus (Seiten unter /ukulele/, /gitarre/, …; vorgerendertes HTML nur beim Start, das Skript bei
 // jeder Änderung).
@@ -69,6 +69,18 @@ async function ogImage(instrument) {
   return ogImages[instrument];
 }
 
+// App-Symbole je Seite (src/site/app-icon.ts), ebenfalls nur einmal je Watch-Lauf
+const appIcons = {};
+async function appIcon(site) {
+  if (!appIcons[site]) {
+    const { ICON_SIZES, iconPng, iconSvg, iconColor } = await import('../src/site/app-icon.ts');
+    const files = { 'icon.svg': iconSvg(site) };
+    for (const size of ICON_SIZES) files[`icon-${size}.png`] = iconPng(site, size);
+    appIcons[site] = { files, color: iconColor(site) };
+  }
+  return appIcons[site];
+}
+
 async function renderAll(assets) {
   const { renderSite, sitemap } = await import('../src/site/pages.ts');
   const { SITES } = await import('../src/site/sites.ts');
@@ -100,6 +112,8 @@ async function emit(result) {
     const dir = dirOf(id);
     const r = rendered[id];
     cpSync(join(root, 'public'), dir, { recursive: true });
+    const icons = await appIcon(id);
+    for (const name of Object.keys(icons.files)) write(join(dir, name), icons.files[name]);
     if (MOVE_TO) {
       count += emitMoved(id, dir, r);
       continue;
@@ -111,6 +125,7 @@ async function emit(result) {
     const manifest = JSON.parse(readFileSync(join(root, 'public/manifest.webmanifest'), 'utf8'));
     manifest.name = r.def.brand.de;
     manifest.short_name = r.def.name.de;
+    manifest.background_color = icons.color;
     write(join(dir, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2));
     // an der Wurzel heißt sitemap.xml der Index über alle Instrumente
     const ownSitemap = id === 'start' && PATHS ? 'sitemap-start.xml' : 'sitemap.xml';

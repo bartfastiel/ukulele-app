@@ -4,6 +4,7 @@ import { renderSite, sitemap, type BuildEnv, type Page } from '../../src/site/pa
 import { chordSlug, routePath } from '../../src/site/routes.ts';
 import type { SiteId } from '../../src/site/sites.ts';
 import { ogImagePng, OG_HEIGHT, OG_WIDTH } from '../../src/site/og-image.ts';
+import { ICON_SIZES, iconColor, iconPng, iconSvg, renderIcon } from '../../src/site/app-icon.ts';
 
 const SITES: SiteId[] = ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'start'];
 const env: BuildEnv = {
@@ -185,4 +186,27 @@ test('Vorschaubild: PNG in 1200 × 630', () => {
     assert.equal(v.getUint32(20), OG_HEIGHT);
     assert.ok(png.length < 600 * 1024, `${id}: ${png.length} Bytes`);
   }
+});
+
+test('App-Symbole: je Seite ein eigenes, gültiges PNG in jeder Größe und ein SVG', () => {
+  const seen: Record<string, string> = {};
+  for (const id of SITES) {
+    for (const size of ICON_SIZES) {
+      const png = iconPng(id, size);
+      assert.deepEqual(Array.from(png.slice(0, 8)), [137, 80, 78, 71, 13, 10, 26, 10], `${id} ${size}`);
+      const v = new DataView(png.buffer, png.byteOffset);
+      assert.equal(v.getUint32(16), size);
+      assert.equal(v.getUint32(20), size);
+    }
+    const key = Array.from(renderIcon(id, 48)).join(',');
+    assert.ok(!seen[key], `${id} sieht aus wie ${seen[key]}`);
+    seen[key] = id;
+    const svg = iconSvg(id);
+    assert.match(svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 512 512">/);
+    assert.ok(svg.trim().endsWith('</svg>'));
+    assert.match(iconColor(id), /^#[0-9a-f]{6}$/);
+  }
+  const home = page('gitarre', 'index.html').html;
+  assert.ok(home.indexOf('<link rel="icon" href="/gitarre/icon.svg" type="image/svg+xml">') >= 0);
+  assert.ok(home.indexOf('<link rel="apple-touch-icon" href="/gitarre/icon-180.png">') >= 0);
 });

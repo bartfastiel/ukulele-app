@@ -14,14 +14,14 @@ export const OG_HEIGHT = 630;
 /** Akkord auf der Karte: drei Finger, alle im 1. bis 3. Bund. */
 const CARD_CHORD: Record<string, string> = { ukulele: 'G7', gitarre: 'C', banjo: 'C', bariton: 'D', mandoline: 'D7' };
 
-type Sdf = (x: number, y: number) => number;
-type Paint = RGB | ((x: number, y: number) => RGB);
+export type Sdf = (x: number, y: number) => number;
+export type Paint = RGB | ((x: number, y: number) => RGB);
 
-const clamp = (t: number) => (t < 0 ? 0 : t > 1 ? 1 : t);
-const hex = (s: string): RGB => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
-const mix = (a: RGB, b: RGB, t: number): RGB => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+export const clamp = (t: number) => (t < 0 ? 0 : t > 1 ? 1 : t);
+export const hex = (s: string): RGB => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
+export const mix = (a: RGB, b: RGB, t: number): RGB => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 
-class Canvas {
+export class Canvas {
   readonly w: number;
   readonly h: number;
   readonly px: Float32Array;
@@ -58,10 +58,10 @@ class Canvas {
 
 // ---------- Abstandsfunktionen (negativ = innen) ----------
 
-const circle = (cx: number, cy: number, r: number): Sdf => (x, y) => Math.hypot(x - cx, y - cy) - r;
-const ring = (cx: number, cy: number, r: number, w: number): Sdf => (x, y) => Math.abs(Math.hypot(x - cx, y - cy) - r) - w / 2;
+export const circle = (cx: number, cy: number, r: number): Sdf => (x, y) => Math.hypot(x - cx, y - cy) - r;
+export const ring = (cx: number, cy: number, r: number, w: number): Sdf => (x, y) => Math.abs(Math.hypot(x - cx, y - cy) - r) - w / 2;
 
-function roundRect(x0: number, y0: number, x1: number, y1: number, r: number): Sdf {
+export function roundRect(x0: number, y0: number, x1: number, y1: number, r: number): Sdf {
   const cx = (x0 + x1) / 2;
   const cy = (y0 + y1) / 2;
   const hw = (x1 - x0) / 2 - r;
@@ -73,7 +73,7 @@ function roundRect(x0: number, y0: number, x1: number, y1: number, r: number): S
   };
 }
 
-function segment(ax: number, ay: number, bx: number, by: number, w: number): Sdf {
+export function segment(ax: number, ay: number, bx: number, by: number, w: number): Sdf {
   const dx = bx - ax;
   const dy = by - ay;
   const len2 = dx * dx + dy * dy;
@@ -84,7 +84,7 @@ function segment(ax: number, ay: number, bx: number, by: number, w: number): Sdf
 }
 
 /** Ring aus `n` gleich langen Stücken (Anteil `on` gefüllt). */
-function dashedRing(cx: number, cy: number, r: number, w: number, n: number, on: number): Sdf {
+export function dashedRing(cx: number, cy: number, r: number, w: number, n: number, on: number): Sdf {
   const period = (Math.PI * 2 * r) / n;
   const dash = period * on;
   const base = ring(cx, cy, r, w);
@@ -123,7 +123,7 @@ function star(cx: number, cy: number, r: number): Sdf {
 }
 
 /** Kubische Bézierkurve als Strich der Breite w (aus kurzen Stücken). */
-function curve(p: number[], w: number): Sdf {
+export function curve(p: number[], w: number): Sdf {
   const pts: number[] = [];
   for (let i = 0; i <= 24; i++) {
     const t = i / 24;

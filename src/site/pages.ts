@@ -852,6 +852,8 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
     '<meta name="twitter:card" content="summary_large_image">',
     `<link rel="manifest" href="${currentBase}manifest.webmanifest">`,
     `<link rel="icon" href="${currentBase}icon.svg" type="image/svg+xml">`,
+    // ältere Browser zeigen kein SVG-Favicon
+    `<link rel="icon" href="${currentBase}icon-192.png" type="image/png" sizes="192x192">`,
     `<link rel="apple-touch-icon" href="${currentBase}icon-180.png">`,
     `<link rel="stylesheet" href="${currentBase}${e.assets.css}">`,
   );
