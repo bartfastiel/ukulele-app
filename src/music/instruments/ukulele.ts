@@ -70,7 +70,7 @@ export const UKULELE: Instrument = {
     {
       id: 'tiefes-g',
       name: tk('Tiefes G'),
-      why: tk('Die G-Saite eine Oktave tiefer: voller, tieferer Klang. Die Griffe bleiben genau gleich.'),
+      why: tk('Eine eigene, dickere G-Saite eine Oktave tiefer: voller, tieferer Klang. Die Griffe bleiben genau gleich.'),
       names: ['G', 'C', 'E', 'A'],
       midi: [55, 60, 64, 69],
       banner: false,
@@ -78,7 +78,7 @@ export const UKULELE: Instrument = {
     {
       id: 'd',
       name: tk('D-Stimmung'),
-      why: tk('Alle Saiten einen Ganzton höher (A D F# B): heller Klang wie bei alten Ukulelen. Gleiche Fingerform, anderer Akkordname.'),
+      why: tk('Alle Saiten einen Ganzton höher gespannt (A D F# B): heller Klang wie bei alten Ukulelen – lieber mit einem Erwachsenen umstimmen. Gleiche Fingerform, anderer Akkordname.'),
       names: ['A', 'D', 'F#', 'B'],
       midi: [69, 62, 66, 71],
       bluesKey: 2,

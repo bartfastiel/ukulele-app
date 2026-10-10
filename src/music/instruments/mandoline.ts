@@ -18,7 +18,8 @@ const OPEN = [55, 62, 69, 76];
 /**
  * Die beweglichen Formen der Mandoline sind ihre offenen Griffe, nur ohne leere Saiten: G-Form (Dur 0023, Moll 0013,
  * Sept 0021), C-Form (0230, 0133, 3230), E-Form (1220, 0220, 1020) und für Moll die A-Form (2230) – benannt nach dem
- * Akkord, den sie am Sattel ergeben. Mit allen vier Saiten gegriffen sind es die „Chop Chords“ der Bluegrass-Mandoline.
+ * Akkord, den sie am Sattel ergeben. Mit allen vier Saiten gegriffen sind es bewegliche geschlossene Griffe (auch als
+ * Chop-Akkorde brauchbar).
  * Je Grundton gewinnt die Form im tiefsten Bund.
  */
 const FORMS: Record<string, Form[]> = {
@@ -62,7 +63,8 @@ function chopTable(q: string): Instrument['shapes'][string] {
 /**
  * Mandoline: vier Saitenpaare (Chöre) in Quinten gestimmt wie die Geige, G3 D4 A4 E5. Beide Saiten eines Chors
  * klingen gleich und werden zusammen gegriffen – für Griffe, Erkennung und Stimmgerät zählt je Chor ein Ton.
- * Fingersatz in der ersten Lage: ein Finger je Bund.
+ * Fingersatz in der ersten Lage: Die Bünde liegen eng, die Finger rücken zusammen (Zeigefinger im 1. oder 2. Bund,
+ * Mittelfinger im 2. oder 3., Ringfinger im 3. oder 4., kleiner Finger im 4. oder 5.).
  */
 export const MANDOLINE: Instrument = {
   id: 'mandoline',

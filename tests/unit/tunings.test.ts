@@ -141,11 +141,61 @@ test('Open G, Open D, Open E: leer = Grundakkord, Dur als gerader Barré', () =>
 
 test('Drop D: gewohnte Griffe, die tiefe Saite zwei Bünde höher', () => {
   inTuning('gitarre', 'drop-d', () => {
-    assert.equal(grip('D'), 'x x 0 2 3 2');
     assert.equal(grip('C'), 'x 3 2 0 1 0');
-    assert.equal(grip('G'), '5 2 0 0 0 3');
     assert.equal(grip('E'), '2 2 2 1 0 0');
+    // G mit der tiefen Saite im 5. Bund wäre zu weit gespreizt (520003)
+    assert.equal(grip('G'), 'x x 0 0 0 3');
     assert.equal(chord('G').say, 'G-Dur');
+  });
+});
+
+test('Drop D: D-Akkorde mit allen sechs Saiten, die leeren Bass-Saiten klingen mit', () => {
+  inTuning('gitarre', 'drop-d', () => {
+    assert.equal(grip('D'), '0 0 0 2 3 2');
+    assert.equal(grip('Dm'), '0 0 0 2 3 1');
+    assert.equal(grip('D7'), '0 0 0 2 1 2');
+    assert.deepEqual(chord('D').fingers, [0, 0, 0, 1, 3, 2]);
+  });
+});
+
+test('Drop D: Griffe ohne tiefe E-Saite bleiben genau gleich', () => {
+  const base = INSTRUMENTS.filter((i) => i.id === 'gitarre')[0].chords.filter((c) => c.frets[0] < 0);
+  inTuning('gitarre', 'drop-d', () => {
+    assert.equal(grip('Bm'), 'x 2 4 4 3 2');
+    for (const c of base) {
+      const now = chord(c.name);
+      // nur stumme Bass-Saiten dürfen leer mitklingen (D, Dm, D7)
+      c.frets.forEach((f, i) => assert.ok(f >= 0 ? now.frets[i] === f : now.frets[i] <= 0, `${c.name}: ${now.frets.join(' ')}`));
+      if (now.frets[0] < 0) assert.deepEqual(now.fingers, c.fingers, c.name);
+    }
+  });
+});
+
+test('Andere Stimmungen: übliche, kompakte Griffe statt bloß tonal richtiger', () => {
+  const want: [string, string, string, string][] = [
+    ['gitarre', 'dadgad', 'G7', '0 2 0 0 2 3'],
+    ['gitarre', 'open-e', 'G7', 'x x 3 3 3 1'],
+    ['gitarre', 'open-d', 'Gm', 'x x 5 4 5 5'],
+    ['gitarre', 'open-e', 'Am', 'x x 5 4 5 5'],
+    ['gitarre', 'open-d', 'F#m', 'x x 4 3 4 4'],
+    ['gitarre', 'open-g', 'Bm', 'x x 4 4 3 4'],
+    ['banjo', 'g-modal', 'Em', '0 2 4 4 2'],
+    ['banjo', 'double-c', 'G7', '0 2 4 2 3'],
+  ];
+  for (const w of want) inTuning(w[0], w[1], () => assert.equal(grip(w[2]), w[3], `${w[0]}/${w[1]} ${w[2]}`));
+});
+
+test('Stimmungen: vorgegebene Griffe passen zum Namen und liegen gut in der Hand', () => {
+  eachTuning((inst, tu) => {
+    for (const name of Object.keys(activeTuning()!.grips || {})) {
+      const ch = chord(name);
+      assert.deepEqual(toneErrors(name, ch), [], `${inst}/${tu} ${name}`);
+      assert.deepEqual(playErrors(ch), [], `${inst}/${tu} ${name}`);
+      // Grundton oder Quinte im Bass
+      const p = parseChordName(name)!;
+      const bass = pitchClass(chordMidis(ch)[0]);
+      assert.ok(bass === p.root || bass === (p.root + 7) % 12 || inst === 'banjo', `${inst}/${tu} ${name}`);
+    }
   });
 });
 
