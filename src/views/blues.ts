@@ -5,11 +5,14 @@ import { fretboard, type Mark } from '../ui/fretboard.ts';
 import { LEVELS, SWING, bluesBars, fitsFree, freeNotes, spell, levelText, levelWindow, organVoicing, place, rootOf, windowTop, type Level, type NeckWindow } from '../music/blues.ts';
 import { instrument } from '../music/instrument.ts';
 import { ROOTS } from '../music/chords.ts';
-import { audio, click, pluck } from '../audio/engine.ts';
+import { audio, click, hold, pluck, setWah } from '../audio/engine.ts';
+import { hasMotion, watchTilt } from '../audio/motion.ts';
+import { fingerDown, type Play } from '../ui/fret-gesture.ts';
+import { VIBRATO_CENTS, VibratoDetector, bendSemis, slideFret, strikeGain } from '../ui/expression.ts';
 import { bass, hat, kick, organ, snare } from '../audio/band.ts';
 import { openMic, type Mic } from '../audio/mic.ts';
 import { detectPitch } from '../audio/pitch.ts';
-import { freqToMidi, midiToFreq, pitchClass, stringMidi } from '../music/notes.ts';
+import { freqToMidi, midiToFreq, pitchClass, playableFret, stringMidi } from '../music/notes.ts';
 import { load, markPracticed } from '../store.ts';
 import { noteText, t, tk, tp } from '../i18n.ts';
 
@@ -59,10 +62,12 @@ export const blues: View = (root) => {
   const lefty = load().settings.lefty;
   const towardHead = button(lefty ? '▶' : '◀', () => shift(-1), 'btn-seg blues-shift', { 'aria-label': t('Richtung Kopf') });
   const towardBody = button(lefty ? '◀' : '▶', () => shift(1), 'btn-seg blues-shift', { 'aria-label': t('Richtung Korpus') });
+  const gestures = h('p', { class: 'small blues-gestures' }, t('Halten: klingt weiter · quer schieben: ziehen · entlang gleiten: rutschen · hin und her wiegen: Vibrato'));
   const neckCard = h(
     'div',
     { class: 'card blues-neck' },
     neck,
+    gestures,
     h('div', { class: 'blues-shift-row' }, lefty ? towardBody : towardHead, shiftLabel, lefty ? towardHead : towardBody),
   );
   const info = h('p', { class: 'card blues-info' });
@@ -84,7 +89,14 @@ export const blues: View = (root) => {
     return n ? n.midi : null;
   };
 
+  let redrawLater = false;
   const drawNeck = (beat: number) => {
+    // liegt ein Finger auf dem Hals, bliebe er beim Neuzeichnen ohne Ton – danach nachholen
+    if (fingerDown()) {
+      redrawLater = true;
+      return;
+    }
+    redrawLater = false;
     clear(neck);
     const w = win();
     towardHead.disabled = w.from <= 1;
@@ -120,7 +132,7 @@ export const blues: View = (root) => {
         level.notes && beat >= 0 && targetAt(beat) !== null ? h('span', { class: 'blues-target' }, t('Spiel {note}', { note: noteText(spell(targetAt(beat)!, key)) })) : null,
       ),
     );
-    neck.appendChild(fretboard(marks, w.frets, w.from, tapNote, lefty));
+    neck.appendChild(fretboard(marks, w.frets, w.from, playNote, lefty));
   };
 
   const schedule = () => {
@@ -203,14 +215,50 @@ export const blues: View = (root) => {
     } else drawNeck(0);
   };
 
-  /** Ton auf dem Hals antippen: klingt wie das Instrument, auf dem Ziehpfeil gezogen (Viertelton hoch). */
-  const tapNote = (string: number, fret: number, bend: boolean) => {
-    const midi = stringMidi(string, fret);
-    pluck(midi, 0, 0.6, bend ? 0.5 : 0);
-    played = { midi, at: audio().currentTime, string, fret };
-    heard(midi);
-    window.clearTimeout(fade);
-    fade = window.setTimeout(() => !running && drawNeck(0), 650);
+  /**
+   * Ton auf dem Hals: Antippen zupft, Halten lässt klingen, Loslassen dämpft. Quer zur Saite schieben zieht den Ton
+   * hoch, entlang der Saite rutscht er in den Nachbarbund, Hin-und-her-Wiegen gibt Vibrato. Der Ziehpfeil zieht selbst
+   * um einen Viertelton. Ein starker Druck (wo das Gerät ihn misst) schlägt lauter an.
+   */
+  const playNote: Play = (p) => {
+    const w = win();
+    const midi = stringMidi(p.string, p.fret);
+    const auto = p.arrow ? 0.5 : 0;
+    const voice = hold(midi, strikeGain(p.pressure), auto);
+    if (wahCtl) wahCtl.rezero();
+    const vib = new VibratoDetector();
+    let fret = p.fret;
+    let semis = auto;
+    const sound = (f: number) => {
+      played = { midi: stringMidi(p.string, f), at: audio().currentTime, string: p.string, fret: f };
+      heard(stringMidi(p.string, f));
+    };
+    sound(fret);
+    return {
+      move(along, across, px, t) {
+        // leere Saiten lassen sich weder ziehen noch rutschen
+        if (p.fret > 0) {
+          const next = slideFret(p.fret, along, fret, Math.max(1, w.from), w.from + w.frets - 1);
+          if (next !== fret && playableFret(p.string, next)) {
+            fret = next;
+            sound(fret);
+          }
+          const target = fret - p.fret + Math.max(auto, bendSemis(across));
+          if (target !== semis) {
+            semis = target;
+            voice.pitch(semis, 0.03);
+          }
+        }
+        voice.vibrato(vib.rate, vib.update(px, t) * VIBRATO_CENTS);
+      },
+      end() {
+        voice.release();
+        if (fingerDown()) return;
+        if (redrawLater) drawNeck(running ? beatNow() : 0);
+        window.clearTimeout(fade);
+        fade = window.setTimeout(() => !running && !fingerDown() && drawNeck(0), 650);
+      },
+    };
   };
 
   const label = () => {
@@ -270,6 +318,7 @@ export const blues: View = (root) => {
       b3: noteText(spell(key + 3, key)),
     });
     bendInfo.style.display = l.notes ? 'none' : '';
+    gestures.style.display = l.notes ? 'none' : '';
     bendInfo.textContent = t(
       'Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur. Der Pfeil erscheint nur, wenn der {i}-Akkord klingt – nur dort passt das Ziehen. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.',
       { note: noteText(spell(key + 3, key)), i: ROOTS[key], b5: noteText(spell(key + 6, key)) },
@@ -280,6 +329,19 @@ export const blues: View = (root) => {
   const guideBtn = button(t('Ton vorspielen'), () => {
     guide = !guide;
     guideBtn.setAttribute('aria-pressed', String(guide));
+  }, 'btn-seg', { 'aria-pressed': 'false' });
+  let wahCtl: { stop: () => void; rezero: () => void } | null = null;
+  const wahBtn = button(t('Wah: Handy kippen'), () => {
+    if (wahCtl) {
+      wahCtl.stop();
+      wahCtl = null;
+      setWah(null);
+    } else {
+      setWah(0.5);
+      wahCtl = watchTilt((x) => setWah(x));
+      wahCtl.rezero();
+    }
+    wahBtn.setAttribute('aria-pressed', String(!!wahCtl));
   }, 'btn-seg', { 'aria-pressed': 'false' });
   const micBtn = button(h('span', null, icon('mic'), ' ', t('Ich höre zu')), () => {
     if (listening) return;
@@ -335,7 +397,7 @@ export const blues: View = (root) => {
         }
       }),
       h('h2', null, t('Hilfen')),
-      h('div', { class: 'seg seg-wrap' }, guideBtn, micBtn),
+      h('div', { class: 'seg seg-wrap' }, guideBtn, micBtn, hasMotion() ? wahBtn : null),
     ),
     counter,
     explain,
@@ -344,5 +406,7 @@ export const blues: View = (root) => {
     stop();
     window.clearInterval(micTimer);
     window.clearTimeout(fade);
+    if (wahCtl) wahCtl.stop();
+    setWah(null);
   };
 };

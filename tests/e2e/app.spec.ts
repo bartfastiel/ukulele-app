@@ -238,6 +238,25 @@ test('Blues: Hals verschieben, frei spielen mit fünf Bünden und Ziehton', asyn
   await expect(page.getByRole('button', { name: 'Sehr langsam' })).toHaveAttribute('aria-pressed', 'true');
 });
 
+test('Blues: Ton halten und mit dem Finger in den Nachbarbund rutschen', async ({ page }) => {
+  await page.goto('#/blues');
+  await page.getByRole('button', { name: '4 · Frei spielen' }).click();
+  for (let i = 0; i < 4; i++) await page.getByRole('button', { name: 'Richtung Korpus' }).click();
+  await expect(page.getByText(/quer schieben: ziehen/)).toBeVisible();
+  const cell = page.locator('.fb-hit[data-string="1"][data-fret="5"]');
+  const next = page.locator('.fb-hit[data-string="1"][data-fret="6"]');
+  await cell.scrollIntoViewIfNeeded();
+  const a = (await cell.boundingBox())!;
+  const b = (await next.boundingBox())!;
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+  await page.mouse.down();
+  await expect(page.locator('.fb-hit.down')).toHaveCount(1);
+  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 8 });
+  await page.mouse.up();
+  await expect(page.locator('.fb-hit.down')).toHaveCount(0);
+  await expect(page.locator('.fb-mark.played[data-string="1"][data-fret="6"]')).toHaveCount(1);
+});
+
 test('Startseite: Blues und Akkord-Detektiv sind erreichbar', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('link', { name: /Akkord-Detektiv/ }).click();

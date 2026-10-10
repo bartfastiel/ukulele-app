@@ -166,6 +166,8 @@ export const EN: Record<string, string> = {
   "5 · Dur und Moll mischen": "5 · Mix major and minor",
   "Wie Stufe 4, dazu kommen blasse Punkte: Töne aus Dur. Über dem {i}-Akkord klingt seine große Terz {iii} wunderbar – rutsch gern von {b3} aus hinein. Über {iv} ist {iii} ausgeblendet, dort reibt er sich mit dem Akkord.": "Like level 4, plus pale dots: notes from major. Over the {i} chord its major third {iii} sounds wonderful – slide into it from {b3}. Over {iv}, {iii} is hidden because it rubs against the chord.",
   "Zuletzt gespielt": "Last played",
+  "Wah: Handy kippen": "Wah: tilt your phone",
+  "Halten: klingt weiter · quer schieben: ziehen · entlang gleiten: rutschen · hin und her wiegen: Vibrato": "Hold: keeps ringing · push across: bend · glide along: slide · rock back and forth: vibrato",
   'Langsam': 'Slow',
   'Mittel': 'Medium',
   'Schnell': 'Fast',

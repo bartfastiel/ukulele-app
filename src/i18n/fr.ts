@@ -169,6 +169,8 @@ export const FR: Record<string, string> = {
   "5 · Dur und Moll mischen": "5 · Mélanger majeur et mineur",
   "Wie Stufe 4, dazu kommen blasse Punkte: Töne aus Dur. Über dem {i}-Akkord klingt seine große Terz {iii} wunderbar – rutsch gern von {b3} aus hinein. Über {iv} ist {iii} ausgeblendet, dort reibt er sich mit dem Akkord.": "Comme le niveau 4, avec en plus des points pâles : des notes du majeur. Sur l’accord de {i}, sa tierce majeure {iii} sonne à merveille – glisse-y depuis {b3}. Sur {iv}, {iii} est masqué, car il frotte avec l’accord.",
   "Zuletzt gespielt": "Joué récemment",
+  "Wah: Handy kippen": "Wah : incline ton téléphone",
+  "Halten: klingt weiter · quer schieben: ziehen · entlang gleiten: rutschen · hin und her wiegen: Vibrato": "Maintenir : la note continue · pousser en travers : tirer · glisser le long : slide · balancer : vibrato",
   'Langsam': 'Lent',
   'Mittel': 'Moyen',
   'Schnell': 'Rapide',
