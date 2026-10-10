@@ -1,6 +1,7 @@
 import { h } from './dom.ts';
 import { button } from './screen.ts';
-import { activeTuning, baseInstrument, instrument, setTuning } from '../music/instrument.ts';
+import { activeTuning, baseInstrument, instrument, setTuning, setVariant, soundId, twelveString } from '../music/instrument.ts';
+import { strum } from '../audio/engine.ts';
 import { load, save } from '../store.ts';
 import { t } from '../i18n.ts';
 
@@ -14,7 +15,9 @@ export function tuningNotes(names: string[]): string {
 
 /** Gespeicherte Stimmung anwenden (nach dem Laden im Browser; vorgerenderte Seiten zeigen die Normalstimmung). */
 export function applyStoredTuning(): void {
-  setTuning(load().settings.tuning);
+  const st = load().settings;
+  setTuning(st.tuning);
+  setVariant(st.sound, st.twelve);
   tuningBanner();
 }
 
@@ -84,6 +87,55 @@ export function tuningChooser(): HTMLElement | null {
         option('', t('Normalstimmung'), tuningNotes(inst.strings.map((x) => x.name)), t('So lernt man es, und so passen alle Griffe aus Heften und Kursen.')),
         ...list.map((x) => option(x.id, t(x.name), tuningNotes(x.names), t(x.why))),
       ),
+    ),
+  );
+}
+
+let variantChosen = false;
+
+function chooseVariant(sound: string, twelve: boolean): void {
+  variantChosen = true;
+  save((p) => {
+    p.settings.sound = sound;
+    p.settings.twelve = twelve;
+  });
+  setVariant(sound, twelve);
+  window.dispatchEvent(new Event(TUNING_EVENT));
+  strum('Em');
+}
+
+/** Klang (Nylon, Stahl, E-Gitarre) und 12 Saiten – dezent zugeklappt im Stimmgerät. */
+export function variantChooser(): HTMLElement | null {
+  const inst = baseInstrument();
+  const sounds = inst.sounds || [];
+  if (!sounds.length && !inst.twelve) return null;
+  const twelve = twelveString();
+  const current = soundId();
+  return h(
+    'details',
+    { class: 'tuning-choice variant-choice', open: variantChosen || current !== (sounds.length ? sounds[0].id : '') || twelve },
+    h('summary', { class: 'btn btn-seg' }, t('Meine Gitarre …')),
+    h(
+      'div',
+      { class: 'card' },
+      sounds.length ? h('p', { class: 'tuning-intro' }, t('Klang beim Vorspielen:')) : null,
+      h(
+        'div',
+        { class: 'seg seg-wrap' },
+        ...sounds.map((x) =>
+          button(t(x.name), () => chooseVariant(x.id, twelve), 'btn-seg', { 'aria-pressed': String(x.id === current), 'data-sound': x.id }),
+        ),
+      ),
+      inst.twelve
+        ? button(t('12-saitige Gitarre'), () => chooseVariant(current, !twelve), 'btn-seg', { 'aria-pressed': String(twelve), 'data-twelve': '' })
+        : null,
+      twelve
+        ? h(
+            'p',
+            { class: 'tuning-intro twelve-hint' },
+            t('Jede Saite hat eine Partnerin: Bei E, A, D und G klingt sie eine Oktave höher, bei B und e genau gleich. Stimm erst die dicke Saite, dann ihre Partnerin – das Stimmgerät erkennt beide.'),
+          )
+        : null,
     ),
   );
 }

@@ -1,8 +1,8 @@
-import { renderPluck } from './pluck.ts';
+import { overdrive, renderPluck } from './pluck.ts';
 import { midiToFreq } from '../music/notes.ts';
-import { chordMidis, chord as chordByName } from '../music/chords.ts';
+import { chord as chordByName } from '../music/chords.ts';
 import { stringMidi } from '../music/notes.ts';
-import { instrument, onInstrumentChange } from '../music/instrument.ts';
+import { onInstrumentChange, twelveString, voice } from '../music/instrument.ts';
 
 type Ctx = AudioContext;
 
@@ -68,8 +68,9 @@ function pluckBuffer(midi: number): AudioBuffer {
   let buf = plucks.get(midi);
   if (!buf) {
     const c = audio();
-    const tone = instrument().synth;
+    const tone = voice();
     const data = renderPluck(midiToFreq(midi), c.sampleRate, tone.seconds, tone.brightness, midi, tone.sustain, tone.position);
+    if (tone.drive) overdrive(data, tone.drive);
     buf = c.createBuffer(1, data.length, c.sampleRate);
     buf.getChannelData(0).set(data);
     plucks.set(midi, buf);
@@ -198,18 +199,28 @@ export function hold(midi: number, gain = 0.6, bend = 0): Voice {
 
 /** Akkord anschlagen; abwärts von der oberen Saite (Ukulele G) zur unteren (A), aufwärts umgekehrt. */
 export function strum(name: string, when = 0, gain = 0.35, up = false): void {
-  const midis = chordMidis(chordByName(name));
-  const order = up ? midis.slice().reverse() : midis;
+  const ch = chordByName(name);
+  const notes: { midi: number; string: number }[] = [];
+  ch.frets.forEach((f, i) => {
+    if (f >= 0) notes.push({ midi: stringMidi(i, f), string: i });
+  });
+  const order = up ? notes.slice().reverse() : notes;
   // sechs Saiten klingen zusammen lauter als vier
-  const level = gain * (up ? 0.75 : 1) * Math.sqrt(4 / Math.max(4, midis.length));
-  order.forEach((m, i) => pluck(m, when + i * 0.016, level));
+  const level = gain * (up ? 0.75 : 1) * Math.sqrt(4 / Math.max(4, notes.length));
+  order.forEach((n, i) => pluckCourse(n.midi, n.string, when + i * 0.016, level));
+}
+
+/** Eine Saite, bei der 12-saitigen Gitarre mit ihrer Partnerin (die vier tiefen eine Oktave höher). */
+export function pluckCourse(midi: number, string: number, when = 0, gain = 0.6): void {
+  pluck(midi, when, gain);
+  if (twelveString()) pluck(string < 4 ? midi + 12 : midi, when + 0.006, gain * (string < 4 ? 0.45 : 0.6));
 }
 
 /** Eine Saite des Griffs zupfen (Banjo-Roll); nicht angeschlagene Saiten bleiben still. */
 export function pluckString(name: string, string: number, when = 0, gain = 0.4): void {
   const f = chordByName(name).frets[string];
   if (f === undefined || f < 0) return;
-  pluck(stringMidi(string, f), when, gain);
+  pluckCourse(stringMidi(string, f), string, when, gain);
 }
 
 function makeClick(freq: number): AudioBuffer {

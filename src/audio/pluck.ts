@@ -42,6 +42,12 @@ export function renderPluck(freq: number, sampleRate: number, seconds = 1.6, bri
   return out;
 }
 
+/** Einfacher Verzerrer wie bei einem kleinen Gitarrenverstärker: weich begrenzen, dann wieder auf volle Lautstärke. */
+export function overdrive(data: Float32Array, drive: number): void {
+  const norm = Math.tanh(drive);
+  for (let i = 0; i < data.length; i++) data[i] = Math.tanh(drive * data[i]) / norm;
+}
+
 export interface Tone {
   brightness: number;
   sustain: number;

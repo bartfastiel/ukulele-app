@@ -45,6 +45,15 @@ export interface FinderSettings {
   bassRootCost: number;
 }
 
+/** Karplus-Strong: Helligkeit, Ausklingen (Faktor), Länge in s, Zupfstelle (Anteil der Saitenlänge), Verzerrung (E-Gitarre). */
+export interface Synth {
+  brightness: number;
+  sustain: number;
+  seconds: number;
+  position: number;
+  drive?: number;
+}
+
 export interface Instrument {
   id: InstrumentId;
   /** Name (tk) – „Ukulele“. */
@@ -78,8 +87,12 @@ export interface Instrument {
   cost: { barre: number; muted: number };
   /** Kapodaster-Hinweis im Player. */
   capo: boolean;
-  /** Karplus-Strong: Helligkeit, Ausklingen (Faktor), Länge in s, Zupfstelle (Anteil der Saitenlänge). */
-  synth: { brightness: number; sustain: number; seconds: number; position: number };
+  /** Klang der Saiten (Vorgabe). */
+  synth: Synth;
+  /** Klänge zur Wahl (Gitarre: Nylon, Stahl, E-Gitarre); der erste ist die Vorgabe und gleich `synth`. */
+  sounds?: { id: string; name: string; synth: Synth }[];
+  /** Gibt es das Instrument auch mit doppelten Saiten (12-saitige Gitarre)? */
+  twelve?: boolean;
   blues: {
     /** Tiefster Grundton der Vorgabe-Töne (MIDI); alles bleibt innerhalb einer Oktave darüber. */
     low: number;
@@ -146,9 +159,42 @@ export function setInstrument(id: string): Instrument {
   if (next !== current) {
     current = next;
     base = next;
+    sound = '';
+    twelve = false;
     listeners.forEach((f) => f());
   }
   return current;
+}
+
+/** Bis hierhin hört das Stimmgerät bei der 12-saitigen Gitarre (Oktavsaite der G-Saite: G4 ≈ 392 Hz). */
+export const TWELVE_MAX_HZ = 480;
+
+let sound = '';
+let twelve = false;
+
+/** Klang und 12 Saiten wählen (nur, wo das Instrument sie anbietet). */
+export function setVariant(soundId: string, twelveOn: boolean): void {
+  const s = (base.sounds || []).some((x) => x.id === soundId) ? soundId : '';
+  const tw = !!base.twelve && twelveOn;
+  if (s === sound && tw === twelve) return;
+  sound = s;
+  twelve = tw;
+  listeners.forEach((f) => f());
+}
+
+/** Gewählter Klang (Synthese) des Instruments. */
+export function voice(): Synth {
+  const s = (base.sounds || []).filter((x) => x.id === sound)[0];
+  return s ? s.synth : current.synth;
+}
+
+export function soundId(): string {
+  return sound || (base.sounds ? base.sounds[0].id : '');
+}
+
+/** 12-saitige Gitarre: jede Saite hat eine Partnerin – die vier tiefen eine Oktave höher, die beiden hohen gleich hoch. */
+export function twelveString(): boolean {
+  return twelve;
 }
 
 /** Das aktuelle Instrument in Normalstimmung. */

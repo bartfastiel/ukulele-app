@@ -24,6 +24,10 @@ export interface Progress {
     simplify: boolean;
     /** andere Stimmung des Instruments; '' = Normalstimmung */
     tuning: string;
+    /** Klang (Gitarre: nylon, stahl, e); '' = Vorgabe */
+    sound: string;
+    /** 12-saitige Gitarre */
+    twelve: boolean;
     /** gewählte Sprache; '' = Sprache des Geräts */
     lang: string;
   };
@@ -60,6 +64,8 @@ const DEFAULTS: Progress = {
     calm: false,
     simplify: false,
     tuning: '',
+    sound: '',
+    twelve: false,
     lang: '',
   },
 };

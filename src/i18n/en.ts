@@ -696,4 +696,13 @@ export const EN: Record<string, string> = {
   "So lernt man es, und so passen alle Griffe aus Heften und Kursen.": "This is how everyone learns, and all chord shapes from books and classes fit.",
   // src/music/chords.ts: Barré beschreiben
   "Zeigefinger quer über die Saiten {from} bis {to} im {fret} Bund": "Index finger across the strings {from} to {to}, {fret} fret",
+  // Varianten: Klang und 12 Saiten (src/music/instruments/gitarre.ts, src/ui/tuning.ts, src/views/tuner.ts)
+  "Konzertgitarre (Nylon)": "Classical guitar (nylon)",
+  "Westerngitarre (Stahl)": "Steel-string acoustic",
+  "E-Gitarre": "Electric guitar",
+  "Meine Gitarre …": "My guitar …",
+  "Klang beim Vorspielen:": "Sound when playing examples:",
+  "12-saitige Gitarre": "12-string guitar",
+  "Jede Saite hat eine Partnerin: Bei E, A, D und G klingt sie eine Oktave höher, bei B und e genau gleich. Stimm erst die dicke Saite, dann ihre Partnerin – das Stimmgerät erkennt beide.": "Every string has a partner: for E, A, D and G it sounds an octave higher, for B and e exactly the same. Tune the thick string first, then its partner – the tuner recognises both.",
+  "Oktavsaite": "octave string",
 };
