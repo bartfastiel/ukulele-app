@@ -118,3 +118,12 @@ test('Banjo: Rhythmus hat ein Zupfmuster mit Daumen, Zeige- und Mittelfinger', a
   await expect(page.locator('.arrow.on')).toHaveCount(1, { timeout: 3000 });
   await page.getByRole('button', { name: /Stopp/ }).click();
 });
+
+test('Startseite an der Wurzel: das zuletzt gespielte Instrument steht vorn', async ({ page }) => {
+  await page.goto('http://localhost:4173/');
+  await expect(page.locator('.tile-badge')).toHaveCount(0);
+  await page.goto('http://localhost:4173/gitarre/');
+  await page.goto('http://localhost:4173/');
+  await expect(page.locator('.tiles .tile').first()).toHaveClass(/tile-gitarre/);
+  await expect(page.locator('.tile-gitarre .tile-badge')).toHaveText('Zuletzt gespielt');
+});

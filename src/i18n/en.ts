@@ -164,6 +164,7 @@ export const EN: Record<string, string> = {
   "Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur. Der Pfeil erscheint nur, wenn der {i}-Akkord klingt – nur dort passt das Ziehen. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.": "Bend ↑: you can bend the note with the arrow ({note}) up a little – push the string sideways across the fretboard with your fretting finger until it sounds a bit higher. That is the “blue note” between minor and major. The arrow only appears while the {i} chord is playing – that is where bending fits. The note {b5} is a passing note: touch it briefly, then move on.",
   "5 · Dur und Moll mischen": "5 · Mix major and minor",
   "Wie Stufe 4, dazu kommen blasse Punkte: Töne aus Dur. Über dem {i}-Akkord klingt seine große Terz {iii} wunderbar – rutsch gern von {b3} aus hinein. Über {iv} ist {iii} ausgeblendet, dort reibt er sich mit dem Akkord.": "Like level 4, plus pale dots: notes from major. Over the {i} chord its major third {iii} sounds wonderful – slide into it from {b3}. Over {iv}, {iii} is hidden because it rubs against the chord.",
+  "Zuletzt gespielt": "Last played",
   'Langsam': 'Slow',
   'Mittel': 'Medium',
   'Schnell': 'Fast',

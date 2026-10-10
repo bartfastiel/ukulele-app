@@ -16,7 +16,8 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k.indexOf('saiten-club-') === 0).map((k) => caches.delete(k))))
+      // nur die eigenen alten Fassungen: unter einer gemeinsamen Domain liegen die anderen Instrumente nebenan
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k.indexOf('saiten-club-__SITE__-') === 0).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
