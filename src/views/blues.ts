@@ -7,6 +7,7 @@ import { instrument } from '../music/instrument.ts';
 import { ROOTS } from '../music/chords.ts';
 import { audio, click, hold, pluck, setWah } from '../audio/engine.ts';
 import { hasMotion, watchTilt } from '../audio/motion.ts';
+import { hearingOwnSound, holdOwnSound } from '../audio/own-sound.ts';
 import { fingerDown, type Play } from '../ui/fret-gesture.ts';
 import { VIBRATO_CENTS, VibratoDetector, bendSemis, slideFret, strikeGain } from '../ui/expression.ts';
 import { bass, hat, kick, organ, snare } from '../audio/band.ts';
@@ -181,7 +182,8 @@ export const blues: View = (root) => {
   const listen = (mic: Mic) => {
     const buf = new Float32Array(2048);
     micTimer = window.setInterval(() => {
-      if (!running) return;
+      // der eben angetippte Ton aus dem Lautsprecher ist kein Treffer
+      if (!running || hearingOwnSound()) return;
       mic.timeData(buf);
       // weiter oben am Hals klingen die Töne höher; die Orgel weicht dann aus (organVoicing)
       const maxHz = Math.max(setup.pitch.maxHz, midiToFreq(windowTop(win()) + 1));
@@ -225,6 +227,7 @@ export const blues: View = (root) => {
     const midi = stringMidi(p.string, p.fret);
     const auto = p.arrow ? 0.5 : 0;
     const voice = hold(midi, strikeGain(p.pressure), auto);
+    const own = holdOwnSound();
     if (wahCtl) wahCtl.rezero();
     const vib = new VibratoDetector();
     let fret = p.fret;
@@ -253,6 +256,7 @@ export const blues: View = (root) => {
       },
       end() {
         voice.release();
+        own();
         if (fingerDown()) return;
         if (redrawLater) drawNeck(running ? beatNow() : 0);
         window.clearTimeout(fade);

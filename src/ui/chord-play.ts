@@ -2,6 +2,7 @@ import { chordDiagram, diagramLayout, type DiagramOptions } from './chord-diagra
 import { attachPlay, type Play } from './fret-gesture.ts';
 import { VIBRATO_CENTS, VibratoDetector, slideFret, strikeGain } from './expression.ts';
 import { hold, pluckCourse } from '../audio/engine.ts';
+import { holdOwnSound } from '../audio/own-sound.ts';
 import { STRINGS } from '../music/notes.ts';
 import type { Chord } from '../music/chords.ts';
 
@@ -60,6 +61,7 @@ function makePlayable(svg: SVGElement, ch: Chord, opts: DiagramOptions, strings:
   };
 
   const play: Play = (p) => {
+    const own = holdOwnSound();
     const voice = p.fret >= 0 ? hold(midiOf(p.string, p.fret), strikeGain(p.pressure)) : null;
     if (p.fret >= 0) glow(svg, p.string, p.fret);
     const vib = new VibratoDetector();
@@ -104,6 +106,7 @@ function makePlayable(svg: SVGElement, ch: Chord, opts: DiagramOptions, strings:
       },
       end() {
         if (voice) voice.release(strummed);
+        own();
       },
     };
   };

@@ -3,6 +3,7 @@ import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { playableChord } from '../ui/chord-play.ts';
 import { openMic } from '../audio/mic.ts';
+import { hearingOwnSound } from '../audio/own-sound.ts';
 import { dbToLinear, holdSpectrum, instrumentPeaks } from '../audio/chord-detect.ts';
 import { identifyFingering, libraryName, nameChord, noteLabel, positions, singleNote, PREFER } from '../music/identify.ts';
 import { NOTE_NAMES, STRINGS, pitchClass } from '../music/notes.ts';
@@ -118,6 +119,11 @@ export const detective: View = (root) => {
         rms = Math.sqrt(rms / time.length);
         let key = '';
         let view: () => void = () => undefined;
+        if (hearingOwnSound()) {
+          // ein angetipptes Griffbild klingt: nicht deuten, aber auch nicht als Stille werten
+          recent.length = 0;
+          return;
+        }
         if (rms >= 0.006) {
           quietSince = 0;
           const peaks = instrumentPeaks(held, binHz);

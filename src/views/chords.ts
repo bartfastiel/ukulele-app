@@ -7,6 +7,7 @@ import { playableChord } from '../ui/chord-play.ts';
 import { CHORDS, ROOTS, chord, chordSay, describeChord, parseChordName } from '../music/chords.ts';
 import { canonicalChord } from '../site/routes.ts';
 import { strum, successSound } from '../audio/engine.ts';
+import { markOwnSound } from '../audio/own-sound.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, markPracticed } from '../store.ts';
 import { lang, t, tk } from '../i18n.ts';
@@ -131,7 +132,10 @@ export const chordDetail: View = (root, param) => {
         h(
           'div',
           { class: 'row' },
-          button(h('span', null, icon('sound'), ' ', t('Anhören')), () => strum(ch.name, 0, 0.45), ''),
+          button(h('span', null, icon('sound'), ' ', t('Anhören')), () => {
+            markOwnSound();
+            strum(ch.name, 0, 0.45);
+          }, ''),
           check,
         ),
         feedback,
