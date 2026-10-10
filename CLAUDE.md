@@ -47,7 +47,8 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
 src/main.ts              startet die Ansicht der Seite (<html data-route>, Parameter ggf. hinter #); leitet alte #/…-Adressen um
 src/site/                routes.ts (interne Routen „lied/<id>“, „akkord/C“ … → Pfade je Sprache), nav.ts (link()/go() im Browser),
                          pages.ts (Vorrendern im Build mit vdom.ts: Titel, hreflang, JSON-LD, Sitemap), sites.ts (Instrument-
-                         Seiten), chord-names.ts, legal-data.ts (Impressum-Angaben), move.ts (Umzug auf neue Domain)
+                         Seiten), chord-names.ts, legal-data.ts (Impressum-Angaben), move.ts (Umzug auf neue Domain),
+                         app-icon.ts (App-Symbole je Seite, SVG + PNG im Build), relatives.ts (Hinweise auf verwandte Instrumente)
                          Aufbau: eigene Domain mit Pfaden (/ukulele/ …, Startseite an der Wurzel) oder Subdomains; s. tools/build.mjs
 src/content/             Wissenssammlung (Artikel je Instrument, de/en/fr, nur Daten)
 src/views/*.ts           je Ansicht eine Funktion (root, param) → Aufräumfunktion
