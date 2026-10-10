@@ -1658,6 +1658,14 @@ summary:focus-visible {
   font-size: 1.15em;
 }
 
+.tile-badge {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75em;
+  font-weight: 800;
+  opacity: 0.85;
+}
+
 /* ---------- Blues ---------- */
 .blues-top {
   display: grid;

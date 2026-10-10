@@ -7,7 +7,7 @@ dreisprachig (Deutsch = Original, Englisch, Französisch), Akkordnamen internati
 ## Befehle
 
 ```sh
-npm run dev        # Watch-Build + Server auf http://localhost:5173/ukulele/ (auch /gitarre/, /banjo/, /start/)
+npm run dev        # Watch-Build + Server auf http://localhost:5173/ (Instrumentenwahl; /ukulele/, /gitarre/, /banjo/)
 npm run typecheck  # tsc --noEmit (TypeScript 7)
 npm test           # Unit-Tests: node --test mit Type-Stripping (tests/unit/*.test.ts)
 npm run build      # dist/ via tools/build.mjs (esbuild, Inhalts-Hash, Service Worker)
@@ -47,7 +47,8 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
 src/main.ts              startet die Ansicht der Seite (<html data-route>, Parameter ggf. hinter #); leitet alte #/…-Adressen um
 src/site/                routes.ts (interne Routen „lied/<id>“, „akkord/C“ … → Pfade je Sprache), nav.ts (link()/go() im Browser),
                          pages.ts (Vorrendern im Build mit vdom.ts: Titel, hreflang, JSON-LD, Sitemap), sites.ts (Instrument-
-                         Seiten = Subdomains), chord-names.ts, legal-data.ts (Impressum-Angaben)
+                         Seiten), chord-names.ts, legal-data.ts (Impressum-Angaben), move.ts (Umzug auf neue Domain)
+                         Aufbau: eigene Domain mit Pfaden (/ukulele/ …, Startseite an der Wurzel) oder Subdomains; s. tools/build.mjs
 src/content/             Wissenssammlung (Artikel je Instrument, de/en/fr, nur Daten)
 src/views/*.ts           je Ansicht eine Funktion (root, param) → Aufräumfunktion
 src/views/player.ts      Karaoke: Transport auf der AudioContext-Uhr, Vorausplanung (25-ms-Takt, 150 ms Horizont),
@@ -76,6 +77,6 @@ src/music/library.ts     mitgelieferte + eigene Lieder (allSongs, findSong)
 src/util/deflate.ts, qr.ts  eigenes DEFLATE (packen/entpacken) und QR-Encoder (Byte-Modus, L/M, Maskenwahl)
 src/views/own-song.ts, share.ts  Eingabe/Bearbeiten, Teilen (QR + Link), geschicktes Lied hinzufügen
 src/i18n.ts, src/i18n/   Sprache (Einstellung oder Gerät), t()/tp()/tk(), Wörterbücher en.ts/fr.ts
-src/store.ts             localStorage (Sterne, Übungstage, Einstellungen, eigene Lieder), storage.persist(), Export-Code
+src/store.ts             localStorage (Fortschritt je Instrument, eigene Lieder gemeinsam), storage.persist(), Export-Code, Umzug
 src/styles.css           Design-Tokens, Mahagoni-Knöpfe, Layouts: Handy hoch (≤600px), Handy quer (Höhe ≤560px), ≥900px
 ```

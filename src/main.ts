@@ -1,6 +1,6 @@
 import { installWood } from './ui/wood.ts';
 import { closeMic } from './audio/mic.ts';
-import { load } from './store.ts';
+import { lastInstrument, load, rememberInstrument, takeMoved } from './store.ts';
 import { isLang, setLang, t, tk } from './i18n.ts';
 import { base, brand, link } from './site/nav.ts';
 import { offerLanguage } from './ui/lang-switch.ts';
@@ -93,6 +93,30 @@ function redirectOldHash(): boolean {
   return true;
 }
 window.addEventListener('hashchange', redirectOldHash);
+
+/** Umzug von der alten Adresse: Daten aus dem „#“ übernehmen und die Adresse wieder sauber machen. */
+function takeOverMove(): void {
+  if (location.hash.indexOf('#umzug=') !== 0) return;
+  takeMoved(location.hash.slice(7));
+  history.replaceState(null, '', location.pathname + location.search);
+}
+
+/** Startseite: das zuletzt gespielte Instrument steht vorn. */
+function offerLastInstrument(): void {
+  const last = lastInstrument();
+  const tile = last ? document.querySelector('.tile-' + last) : null;
+  if (!tile || !tile.parentNode) return;
+  tile.parentNode.insertBefore(tile, tile.parentNode.firstChild);
+  const badge = document.createElement('span');
+  badge.className = 'tile-badge';
+  badge.textContent = t('Zuletzt gespielt');
+  tile.appendChild(badge);
+}
+
+const isStart = html.getAttribute('data-site') === 'start';
+takeOverMove();
+if (isStart) offerLastInstrument();
+else if (html.hasAttribute('data-instrument')) rememberInstrument();
 if (!redirectOldHash()) {
   setLang(isLang(html.lang) ? html.lang : 'de');
   if (load().settings.calm) html.classList.add('calm');
@@ -102,7 +126,8 @@ if (!redirectOldHash()) {
   offerLanguage(load().settings.lang);
 }
 
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
+// Die Startseite liegt an der Wurzel; ein Service Worker dort wäre für alle Instrumente zuständig
+if ('serviceWorker' in navigator && location.protocol === 'https:' && !isStart) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register(base() + 'sw.js', { scope: base() }).catch(() => undefined);
   });

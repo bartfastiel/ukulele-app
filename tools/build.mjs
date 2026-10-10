@@ -9,6 +9,12 @@
 //               Vorschau „/<pfad>/pr-<nr>/{site}/“)
 //   PUBLIC_URL  öffentliche Adresse je Seite für canonical/hreflang/Sitemap (Standard https://{site}.wer-ist-daniel-schwarz.de/)
 //   PREVIEW=1   nichts indexieren (Vorschauen, lokale Builds)
+//   MOVE_TO     Umzug: alte Instrument-Seiten werden zu Weiterleitungen auf diese Adresse ({site} wird ersetzt). Sie nehmen
+//               Sterne, Übungstage und eigene Lieder hinter dem „#“ mit (src/site/move.ts), der Service Worker räumt ab.
+//
+// Aufbau: Steht {site} als Pfad in SITE_URL („…/{site}/“), liegt die Startseite an der Wurzel und jedes Instrument in
+// seinem Unterordner (dist/ ist dann die ganze Domain). Als Subdomain („https://{site}.…“) gibt es dist/<seite>/ je
+// Instrument; die Startseite liegt in dist/start/.
 //   LEGAL_ADDRESS, LEGAL_EMAIL  Impressumsangaben (GitHub-Secrets, nie im Repo; Zeilen der Anschrift mit „|“ getrennt)
 import { build, context } from 'esbuild';
 import { createHash } from 'node:crypto';
@@ -25,6 +31,9 @@ const SITE_IDS = ['ukulele', 'gitarre', 'banjo', 'start'];
 const SITE_URL = process.env.SITE_URL || '/{site}/';
 const PUBLIC_URL = process.env.PUBLIC_URL || 'https://{site}.wer-ist-daniel-schwarz.de/';
 const PREVIEW = process.env.PREVIEW === '1' || !process.env.PUBLIC_URL;
+const MOVE_TO = process.env.MOVE_TO || '';
+const PATHS = SITE_URL.indexOf('/{site}/') >= 0;
+const BUILD_IDS = MOVE_TO ? SITE_IDS.filter((id) => id !== 'start') : SITE_IDS;
 
 const options = {
   entryPoints: { app: join(root, 'src/main.ts'), style: join(root, 'src/styles.css') },
@@ -37,8 +46,11 @@ const options = {
   logLevel: 'warning',
 };
 
-const url = (site) => SITE_URL.replace('{site}', site);
-const publicUrl = (site) => PUBLIC_URL.replace('{site}', site);
+// Startseite an der Wurzel: „/{site}/“ → „/“, „https://{site}.domain/“ → „https://domain/“
+const at = (template, site) => (site === 'start' ? template.replace(/\{site\}[./]/, '') : template.replace('{site}', site));
+const url = (site) => (site === 'start' && !PATHS ? SITE_URL.replace('{site}', site) : at(SITE_URL, site));
+const publicUrl = (site) => at(PUBLIC_URL, site);
+const dirOf = (site) => (site === 'start' && PATHS ? dist : join(dist, site));
 
 function write(file, content) {
   mkdirSync(dirname(file), { recursive: true });
@@ -61,7 +73,7 @@ async function renderAll(assets) {
   const { renderSite, sitemap } = await import('../src/site/pages.ts');
   const { SITES } = await import('../src/site/sites.ts');
   const out = {};
-  for (const id of SITE_IDS) {
+  for (const id of BUILD_IDS) {
     const lines = (process.env.LEGAL_ADDRESS || '').split('|').map((x) => x.trim()).filter(Boolean);
     const legal = { address: lines.join('\n'), email: (process.env.LEGAL_EMAIL || '').trim() };
     const pages = renderSite(id, { url, publicUrl, preview: PREVIEW, assets, sites: SITE_IDS, legal });
@@ -83,10 +95,15 @@ async function emit(result) {
   // Seiten nur einmal rendern, wenn die Namen der Bundles gleich bleiben (Watch-Modus)
   if (!rendered || rendered.js !== assets.js || rendered.css !== assets.css) rendered = { ...(await renderAll(assets)), js: assets.js, css: assets.css };
   let count = 0;
-  for (const id of SITE_IDS) {
-    const dir = join(dist, id);
+  const sitemaps = [];
+  for (const id of BUILD_IDS) {
+    const dir = dirOf(id);
     const r = rendered[id];
     cpSync(join(root, 'public'), dir, { recursive: true });
+    if (MOVE_TO) {
+      count += emitMoved(id, dir, r);
+      continue;
+    }
     write(join(dir, assets.js), files.js);
     write(join(dir, assets.css), files.css);
     for (const p of r.pages) write(join(dir, p.file), p.html);
@@ -95,14 +112,16 @@ async function emit(result) {
     manifest.name = r.def.brand.de;
     manifest.short_name = r.def.name.de;
     write(join(dir, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2));
-    write(join(dir, 'sitemap.xml'), r.sitemap);
+    // an der Wurzel heißt sitemap.xml der Index über alle Instrumente
+    const ownSitemap = id === 'start' && PATHS ? 'sitemap-start.xml' : 'sitemap.xml';
+    write(join(dir, ownSitemap), r.sitemap);
+    sitemaps.push(publicUrl(id) + ownSitemap);
     write(join(dir, 'og-image.png'), await ogImage(r.def.instrument || 'ukulele'));
-    write(
-      join(dir, 'robots.txt'),
-      PREVIEW ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\n\nSitemap: ${publicUrl(id)}sitemap.xml\n`,
-    );
+    if (!PATHS) write(join(dir, 'robots.txt'), robots(id));
     const notFound = r.pages.filter((p) => p.file === 'index.html')[0];
     write(join(dir, '404.html'), notFound.html.replace('<head>', '<head>\n<meta name="robots" content="noindex">'));
+    // Die Startseite an der Wurzel bekommt keinen Service Worker: sein Bereich umfasste sonst alle Instrumente.
+    if (id === 'start' && PATHS) continue;
     // Offline: Skript, Stil, Symbole und die Startseiten und Werkzeuge jeder Sprache vorab; alles andere beim Besuch
     const core = r.pages
       .map((p) => p.file)
@@ -110,14 +129,47 @@ async function emit(result) {
       .map((f) => f.replace(/index\.html$/, '') || './');
     const precache = ['./', ...core, assets.js, assets.css, 'manifest.webmanifest', 'icon.svg', 'icon-192.png'].filter((x, i, a) => a.indexOf(x) === i);
     const version = createHash('sha256').update(precache.join('|') + assets.js + assets.css + count).digest('hex').slice(0, 10);
-    const sw = readFileSync(join(root, 'src/sw.js'), 'utf8').replace('__VERSION__', `${id}-${version}`).replace('__FILES__', JSON.stringify(precache));
+    const sw = readFileSync(join(root, 'src/sw.js'), 'utf8')
+      .replace('__VERSION__', `${id}-${version}`)
+      .replace('__SITE__', id)
+      .replace('__FILES__', JSON.stringify(precache));
     write(join(dir, 'sw.js'), sw);
   }
-  // nur lokal: Übersicht der Seiten
-  write(join(dist, 'index.html'), `<!doctype html><meta charset="utf-8"><title>dist</title><ul>${SITE_IDS.map((s) => `<li><a href="${s}/">${s}</a>`).join('')}</ul>`);
+  if (PATHS && !MOVE_TO) {
+    write(
+      join(dist, 'sitemap.xml'),
+      '<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+        sitemaps.map((u) => `<sitemap><loc>${u}</loc></sitemap>`).join('\n') +
+        '\n</sitemapindex>\n',
+    );
+    write(join(dist, 'robots.txt'), robots('start'));
+  }
+  if (!PATHS)
+    // nur lokal: Übersicht der Seiten
+    write(join(dist, 'index.html'), `<!doctype html><meta charset="utf-8"><title>dist</title><ul>${SITE_IDS.map((s) => `<li><a href="${s}/">${s}</a>`).join('')}</ul>`);
   const size = result.outputFiles.reduce((s, f) => s + f.contents.length, 0);
-  console.log(`dist/ gebaut: ${SITE_IDS.join(', ')} – ${count} Seiten, ${assets.js}, ${assets.css} (${(size / 1024).toFixed(1)} KiB JS+CSS)`);
+  console.log(`dist/ gebaut${MOVE_TO ? ' (Umzug)' : ''}: ${BUILD_IDS.join(', ')} – ${count} Seiten, ${assets.js}, ${assets.css} (${(size / 1024).toFixed(1)} KiB JS+CSS)`);
 }
+
+/**
+ * Umzug: jede bisherige Seite leitet auf dieselbe Seite unter der neuen Adresse weiter (canonical dorthin, damit
+ * Suchmaschinen den Umzug verstehen) und nimmt dabei die gespeicherten Daten mit. Der Service Worker entfernt sich.
+ */
+function emitMoved(id, dir, r) {
+  const { movedPage } = movers;
+  const target = MOVE_TO.replace('{site}', id);
+  for (const p of r.pages) write(join(dir, p.file), movedPage(target + p.file.replace(/index\.html$/, ''), r.def.instrument || id));
+  write(join(dir, '404.html'), movedPage(target, r.def.instrument || id));
+  write(join(dir, 'robots.txt'), 'User-agent: *\nAllow: /\n');
+  write(join(dir, 'sw.js'), readFileSync(join(root, 'src/sw-gone.js'), 'utf8'));
+  return r.pages.length;
+}
+
+function robots(site) {
+  return PREVIEW ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\n\nSitemap: ${publicUrl(site)}sitemap.xml\n`;
+}
+
+const movers = MOVE_TO ? await import('../src/site/move.ts') : {};
 
 if (process.argv.includes('--serve')) {
   const ctx = await context({
