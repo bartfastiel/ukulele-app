@@ -38,8 +38,9 @@ Ohne Mikrofon funktioniert alles weiter – dann bestätigt das Kind selbst.
 
 **Instrumente:** Ukulele (G C E A, hohes G) ist der Standard. Dieselbe App kann auch **Gitarre** (E A D G B e) und
 **5-saitiges Banjo** in Open G (g D G B D, die kurze g-Saite beginnt am 5. Bund), **Bariton-Ukulele** (D G B E,
-wie die vier hohen Gitarrensaiten) und **Mandoline** (G D A E wie die Geige, vier Saitenpaare) – zum Ausprobieren mit
-`?instrument=gitarre`, `?instrument=banjo`, `?instrument=bariton` bzw. `?instrument=mandoline` in der Adresse
+wie die vier hohen Gitarrensaiten), **Mandoline** (G D A E wie die Geige, vier Saitenpaare) und **E-Bass** (E A D G,
+eine Oktave unter den tiefen Gitarrensaiten; spielt Grundtöne statt Akkorde) – zum Ausprobieren mit
+`?instrument=gitarre`, `?instrument=banjo`, `?instrument=bariton`, `?instrument=mandoline` bzw. `?instrument=bass` in der Adresse
 (vorgerenderte Seiten setzen `data-instrument` am `<html>`).
 
 **Sprachen:** Deutsch, English, Français – Auswahl unten auf der Startseite (und unter „Meine Sterne“), sonst nach der
@@ -113,8 +114,16 @@ werden sofort entfernt. (Keine Rechtsberatung.)
   Banjo hell und kurz, Bariton-Ukulele wärmer als die Ukulele, Mandoline hell mit leicht schwebenden Doppelsaiten).
 - **Melodie:** Gitarre spielt und zeigt Melodien eine Oktave tiefer (erste Lage), Banjo und Bariton-Ukulele wählen je Lied die Oktave,
   die Mandoline spielt sie in der gesungenen Lage (erste Lage).
-- **Blues** (bequeme Tonart ★: Ukulele C, Gitarre E, Banjo und Bariton-Ukulele G, Mandoline D), **Akkord-Spiel**, **Rhythmus** (Banjo zusätzlich mit
+- **Blues** (bequeme Tonart ★: Ukulele C, Gitarre E, Banjo und Bariton-Ukulele G, Mandoline D, E-Bass E), **Akkord-Spiel**, **Rhythmus** (Banjo zusätzlich mit
   Roll: Daumen – Zeige – Mittel), **Aufnahmeplan** und **Kapodaster-Hinweis** (Gitarre: „Kapo 3, greif wie A“).
+- **Einzeltöne statt Akkorde** (`notesOnly`, E-Bass): Zu jedem Akkord gehört sein Grundton, so tief wie möglich in der
+  ersten Lage, die Quinte eine Saite höher (`rootGrip` in `chords.ts`). Die Akkorde-Seite wird zu „Töne“ (`/toene/`,
+  zwölf Tonseiten), Akkord-Spiel und -Detektiv zu Ton-Spiel und Ton-Detektiv (YIN-Tonhöhe statt Spektralvergleich,
+  nur die Tonklasse zählt), im Lied stehen Grundton bzw. Grundton und Quinte (`src/music/bassline.ts`) samt
+  Tabulatur; die Begleitung spielt weiter die Akkorde (Nylon-Gitarre in der Mittellage). Rhythmus zeigt Basslinien,
+  der Blues hat Walking Bass (1-3-5-6 / 7-6-5-3) und die Band spielt ohne eigenen Bass. Das Stimmgerät rechnet tiefe
+  Töne auf halber Abtastrate (E1 ≈ 41 Hz passt so ins Fenster) und zählt auch die Oktave darüber, die Handy-Mikrofone
+  oft lauter hören. Keine Beispielaufnahmen.
 
 `STRINGS` und `CHORDS` folgen dem aktuellen Instrument (`setInstrument()`); die Unit-Tests prüfen je Instrument
 Stimmung, Tabulatur, alle Griffe aller Lieder in allen zwölf Tonarten sowie die Erkennung mit synthetischen Akkorden.
@@ -140,7 +149,7 @@ Echte Beispielaufnahmen gibt es bisher nur von der Ukulele.
   (`src/site/og-image.ts`, PNG über `node:zlib`).
   Persönliches (eigene und geteilte Lieder) steht in der Adresse hinter `#` und erreicht nie den Server. Frühere
   `#/…`-Adressen werden weitergeleitet.
-- **Instrumente als Subdomains:** `ukulele.`, `gitarre.`, `banjo.`, `bariton.`, `mandoline.` – derselbe Code, das Instrument steht in der Seite
+- **Instrumente als Subdomains:** `ukulele.`, `gitarre.`, `banjo.`, `bariton.`, `mandoline.` (E-Bass nur mit Pfad: `/bass/`) – derselbe Code, das Instrument steht in der Seite
   (`data-instrument`). Eine Startseite ohne Subdomain (nur Instrumentenwahl) kommt mit einer eigenen Domain dazu.
 - **Kompatibilität:** gebaut für Safari 12 (alte iPads), Chrome 70, Firefox 68. Ohne Web Audio läuft die App stumm
   weiter. PWA mit Service Worker – nach dem ersten Besuch offline nutzbar, auf dem Home-Bildschirm installierbar.
@@ -149,7 +158,7 @@ Echte Beispielaufnahmen gibt es bisher nur von der Ukulele.
 
 ```sh
 npm install
-npm run dev        # baut bei jeder Änderung neu, http://localhost:5173/ukulele/ (auch /gitarre/, /banjo/, /bariton/, /mandoline/, /start/)
+npm run dev        # baut bei jeder Änderung neu, http://localhost:5173/ukulele/ (auch /gitarre/, /banjo/, /bariton/, /mandoline/, /bass/, /start/)
 npm run check      # Typen, Unit-Tests, Build
 npm run e2e        # Build + Playwright (Desktop, iPad/WebKit, Handy hoch/quer, Mikrofon-Simulation)
 ```
