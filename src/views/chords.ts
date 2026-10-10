@@ -13,6 +13,8 @@ import { load, save, markPracticed } from '../store.ts';
 import { lang, t, tk } from '../i18n.ts';
 import { chordLongName } from '../site/chord-names.ts';
 import { link, go } from '../site/nav.ts';
+import { notesOnly } from '../music/instrument.ts';
+import { noteDetail, notesView } from './notes.ts';
 
 const GROUPS = [
   { title: tk('Die ersten Akkorde'), level: 1 },
@@ -21,7 +23,9 @@ const GROUPS = [
   { title: tk('Profi-Griffe'), level: 4 },
 ];
 
-export const chords: View = (root) => {
+export const chords: View = (root, param) => {
+  // E-Bass: Töne auf dem Hals statt Griffe
+  if (notesOnly()) return notesView(root, param);
   const p = load();
   screen(
     root,
@@ -49,6 +53,7 @@ export const chords: View = (root) => {
 };
 
 export const chordDetail: View = (root, param) => {
+  if (notesOnly()) return noteDetail(root, param);
   const name = decodeURIComponent(param);
   // Jeder benennbare Akkord hat eine Seite, nicht nur die Griffe der Bibliothek
   const ch = CHORDS.find((c) => c.name === name) || (parseChordName(name) ? chord(canonicalChord(name)) : null);

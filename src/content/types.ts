@@ -1,4 +1,4 @@
-export type InstrumentId = 'ukulele' | 'gitarre' | 'banjo' | 'bariton' | 'mandoline';
+export type InstrumentId = 'ukulele' | 'gitarre' | 'banjo' | 'bariton' | 'mandoline' | 'bass';
 export type Lang = 'de' | 'en' | 'fr';
 export type L10n = { de: string; en: string; fr: string };
 /** Inline-Auszeichnung in Texten: **fett**, [Text](chord:Am), [Text](tool:stimmen), [Text](wissen:<id>), [Text](lied:<id>) */

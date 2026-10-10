@@ -59,8 +59,8 @@ export interface Level {
   id: string;
   title: string;
   text: string;
-  /** Töne je Takt für die Vorgabe; null = freies Spiel. */
-  notes: ((chord: string) => LevelNote[]) | null;
+  /** Töne je Takt (Akkord, Takt 0–11) für die Vorgabe; null = freies Spiel. */
+  notes: ((chord: string, bar?: number) => LevelNote[]) | null;
 }
 
 /** Hält Melodietöne in der bequemen ersten Lage (Ukulele C4–C5). */
@@ -70,6 +70,15 @@ function inReach(midi: number): number {
 
 const pattern = (intervals: number[]) => (chord: string) =>
   intervals.map((iv, beat) => ({ beat, midi: inReach(rootOf(chord).uke + iv) }));
+
+/**
+ * Walking Bass (E-Bass): Grundton, Terz, Quinte, Sexte hinauf und im nächsten Takt Septime, Sexte, Quinte, Terz
+ * hinunter – das Boogie-Riff der Begleitband, in Vierteln.
+ */
+const WALK_UP = [0, 4, 7, 9];
+const WALK_DOWN = [10, 9, 7, 4];
+const walking = (chord: string, bar = 0) => pattern(bar % 2 ? WALK_DOWN : WALK_UP)(chord);
+const boogie = pattern([0, 4, 7, 9]);
 
 export const LEVELS: Level[] = [
   {
@@ -87,9 +96,9 @@ export const LEVELS: Level[] = [
   {
     id: 'boogie',
     title: tk('3 · Boogie-Riff'),
-    // Text je Instrument (Ukulele: „In C sind das alles leere Saiten“), siehe levelText()
+    // Text je Instrument (Ukulele: „In C sind das alles leere Saiten“), siehe levelText(); auf dem E-Bass Walking Bass
     text: '',
-    notes: pattern([0, 4, 7, 9]),
+    notes: (chord, bar) => (instrument().notesOnly ? walking(chord, bar) : boogie(chord)),
   },
   {
     id: 'frei',
@@ -104,6 +113,11 @@ export const LEVELS: Level[] = [
     notes: null,
   },
 ];
+
+/** Name einer Stufe; auf dem E-Bass wird das Boogie-Riff zum Walking Bass. */
+export function levelTitle(level: Level): string {
+  return level.id === 'boogie' && instrument().notesOnly ? tk('3 · Walking Bass') : level.title;
+}
 
 /** Erklärtext einer Stufe; das Boogie-Riff liegt je Instrument anders. */
 export function levelText(level: Level): string {

@@ -1,4 +1,4 @@
-// Baut dist/<seite>/ je Instrument-Seite (ukulele, gitarre, banjo, bariton, mandoline) und die Startseite: ein gemeinsames, gehashtes
+// Baut dist/<seite>/ je Instrument-Seite (ukulele, gitarre, banjo, bariton, mandoline, bass) und die Startseite: ein gemeinsames, gehashtes
 // Skript und Stylesheet, je Adresse und Sprache eine vorgerenderte HTML-Seite, Sitemap, robots.txt, Manifest,
 // Vorschaubild (og-image.png) und Service Worker. `--serve` baut bei jeder Änderung neu und liefert dist/ auf
 // http://localhost:5173 aus (Seiten unter /ukulele/, /gitarre/, …; vorgerendertes HTML nur beim Start, das Skript bei
@@ -27,7 +27,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const dist = join(root, 'dist');
 // Alte iPads (iOS 12) und ältere Android-Browser sollen die App noch ausführen können.
 const TARGET = ['es2017', 'safari12', 'chrome70', 'firefox68'];
-const SITE_IDS = ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'start'];
+const SITE_IDS = ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass', 'start'];
 const SITE_URL = process.env.SITE_URL || '/{site}/';
 const PUBLIC_URL = process.env.PUBLIC_URL || 'https://{site}.wer-ist-daniel-schwarz.de/';
 const PREVIEW = process.env.PREVIEW === '1' || !process.env.PUBLIC_URL;

@@ -48,10 +48,29 @@ export function overdrive(data: Float32Array, drive: number): void {
   for (let i = 0; i < data.length; i++) data[i] = Math.tanh(drive * data[i]) / norm;
 }
 
+/**
+ * Zweipoliger Tiefpass (zwei einfache Stufen hintereinander), danach wieder auf volle Lautstärke: Tiefe Saiten behalten
+ * im Karplus-Strong-Verfahren ihre Obertöne sehr lange und klängen sonst drahtig statt rund.
+ */
+export function lowpass(data: Float32Array, sampleRate: number, hz: number): void {
+  const a = 1 - Math.exp((-2 * Math.PI * hz) / sampleRate);
+  let y1 = 0;
+  let y2 = 0;
+  let peak = 0;
+  for (let i = 0; i < data.length; i++) {
+    y1 += a * (data[i] - y1);
+    y2 += a * (y1 - y2);
+    data[i] = y2;
+    peak = Math.max(peak, Math.abs(y2));
+  }
+  if (peak > 0) for (let i = 0; i < data.length; i++) data[i] /= peak;
+}
+
 export interface Tone {
   brightness: number;
   sustain: number;
   position: number;
+  lowpass?: number;
 }
 
 /** Mischt mehrere Saiten zu einem Anschlag (Strum) mit kleinem Versatz je Saite; ohne `tone` wie eine Ukulele. */
@@ -63,6 +82,7 @@ export function renderStrum(freqs: number[], sampleRate: number, seconds = 2, sp
     const note = tone
       ? renderPluck(f, sampleRate, seconds, tone.brightness, i + 1, tone.sustain, tone.position)
       : renderPluck(f, sampleRate, seconds, 0.55, i + 1);
+    if (tone && tone.lowpass) lowpass(note, sampleRate, tone.lowpass);
     for (let j = 0; j + offset < n; j++) out[j + offset] += note[j] * 0.3;
   });
   return out;

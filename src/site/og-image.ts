@@ -179,6 +179,29 @@ function hole(cx: number, cy: number, r: number): Paint {
 
 /** Schallloch (Ukulele, Gitarre, Bariton-Ukulele), Fell mit Spannreifen (Banjo) bzw. Decke mit F-Löchern (Mandoline). */
 function soundHole(c: Canvas, id: string, cx: number, cy: number): void {
+  if (id === 'bass') {
+    // E-Bass: kein Schallloch – Schlagbrett mit weiß-schwarz-weißer Kante und ein geteilter Tonabnehmer
+    const white = hex('#f2efe8');
+    const pick = (x: number, y: number) => Math.hypot(x - (cx - 420), y - (cy + 330)) - 430;
+    c.shape((x, y) => pick(x, y) - 10, [0, 0, c.w, c.h], BLACK);
+    c.shape((x, y) => pick(x, y) - 7, [0, 0, c.w, c.h], white);
+    c.shape((x, y) => pick(x, y) - 4, [0, 0, c.w, c.h], BLACK);
+    c.shape(pick, [0, 0, c.w, c.h], white);
+    const pole = hex('#9aa0a6');
+    const coil = hex('#151517');
+    const half = (x0: number, x1: number, y: number) => {
+      c.shape(roundRect(x0 + 6, y + 8, x1 + 6, y + 68, 18), [x0 - 10, y - 10, x1 + 30, y + 90], BLACK, 0.4, 6);
+      c.shape(roundRect(x0, y, x1, y + 60, 18), [x0 - 2, y - 2, x1 + 2, y + 62], coil);
+    };
+    half(cx - 140, cx + 6, cy - 70);
+    half(cx - 6, cx + 140, cy - 10);
+    for (let i = 0; i < 4; i++) {
+      const x = cx + (i - 1.5) * 66;
+      const y = i < 2 ? cy - 40 : cy + 20;
+      for (const d of [-12, 12]) c.shape(circle(x + d, y, 6), box(x + d, y, 6), pole);
+    }
+    return;
+  }
   if (id === 'mandoline') {
     c.shape(circle(cx, cy, 254), box(cx, cy, 254), BLACK);
     c.shape(circle(cx, cy, 249), box(cx, cy, 249), hex('#f4e9cc'));
@@ -249,10 +272,10 @@ function soundHole(c: Canvas, id: string, cx: number, cy: number): void {
 
 function strings(c: Canvas, id: string, cx: number): void {
   const n = instrument().strings.length;
-  const spacing = id === 'ukulele' || id === 'bariton' ? 66 : id === 'gitarre' ? 40 : id === 'mandoline' ? 50 : 44;
+  const spacing = id === 'ukulele' || id === 'bariton' || id === 'bass' ? 66 : id === 'gitarre' ? 40 : id === 'mandoline' ? 50 : 44;
   const nylon = hex('#fffaf0');
   const bronze = hex('#d2a556');
-  const steel = id === 'banjo' ? hex('#8d959c') : hex('#e4e8eb');
+  const steel = id === 'banjo' ? hex('#8d959c') : id === 'bass' ? hex('#c3c8cd') : hex('#e4e8eb');
   if (id === 'mandoline') {
     // Steg und vier Saitenpaare, die G- und D-Saiten umsponnen (Bronze)
     const span = (n - 1) * spacing + 60;
@@ -269,8 +292,8 @@ function strings(c: Canvas, id: string, cx: number): void {
   }
   for (let i = 0; i < n; i++) {
     const x = cx + (i - (n - 1) / 2) * spacing;
-    // Bariton-Ukulele: tiefe D- und G-Saite umsponnen, B und E aus Nylon
-    const w = id === 'ukulele' ? 6 + i : id === 'bariton' ? (i < 2 ? 9 - i : 6 + i) : id === 'gitarre' ? 7 - i : 4.4 - i * 0.3;
+    // Bariton-Ukulele: tiefe D- und G-Saite umsponnen, B und E aus Nylon; E-Bass: dicke Rundwickelsaiten
+    const w = id === 'ukulele' ? 6 + i : id === 'bariton' ? (i < 2 ? 9 - i : 6 + i) : id === 'bass' ? 13 - i * 1.8 : id === 'gitarre' ? 7 - i : 4.4 - i * 0.3;
     const col = id === 'ukulele' || (id === 'bariton' && i >= 2) ? nylon : id === 'gitarre' && i < 4 ? bronze : steel;
     c.shape(segment(x + 6, -20, x + 6, c.h + 20, w), [x - 20, 0, x + 30, c.h], BLACK, 0.35, 3);
     c.shape(segment(x, -20, x, c.h + 20, w), [x - 20, 0, x + 20, c.h], col);
@@ -291,7 +314,9 @@ function card(c: Canvas, id: string): void {
   c.shape(roundRect(x0 + 8, y0 + 14, x1 + 8, y1 + 14, 30), [x0 - 30, y0 - 20, x1 + 50, y1 + 60], BLACK, 0.5, 16);
   c.shape(roundRect(x0, y0, x1, y1, 30), [x0 - 2, y0 - 2, x1 + 2, y1 + 2], CREAM);
   const ch = chord(CARD_CHORD[id] || 'C');
-  const n = ch.frets.length;
+  // E-Bass: statt eines Griffs F als Grundton, seine Quinte C und die Oktave F – die erste Basslinie
+  const frets = id === 'bass' ? [1, 3, 3, -2] : ch.frets;
+  const n = frets.length;
   const spacing = n === 4 ? 84 : n === 5 ? 66 : 54;
   const cx = (x0 + x1) / 2;
   const top = 160;
@@ -305,11 +330,11 @@ function card(c: Canvas, id: string): void {
   for (let i = 0; i < n; i++) c.shape(segment(sx(i), top, sx(i), top + rows * row, 4), [sx(i) - 4, top - 4, sx(i) + 4, top + rows * row + 4], INK);
   c.shape(roundRect(left - 4, top - 7, right + 4, top + 7, 3), [left - 6, top - 9, right + 6, top + 9], INK);
   for (let i = 0; i < n; i++) {
-    const f = ch.frets[i];
+    const f = frets[i];
     const x = sx(i);
-    if (f > 0) c.shape(circle(x, top + (f - 0.5) * row, 25), box(x, top + (f - 0.5) * row, 25), TEAL);
+    if (f > 0) c.shape(circle(x, top + (f - 0.5) * row, 25), box(x, top + (f - 0.5) * row, 25), id === 'bass' && i ? GOLD : TEAL);
     else if (f === 0) c.shape(ring(x, top - 34, 12, 4), box(x, top - 34, 16), INK);
-    else {
+    else if (f === -1) {
       c.shape(segment(x - 11, top - 45, x + 11, top - 23, 4), box(x, top - 34, 16), INK);
       c.shape(segment(x - 11, top - 23, x + 11, top - 45, 4), box(x, top - 34, 16), INK);
     }

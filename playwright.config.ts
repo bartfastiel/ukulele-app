@@ -34,5 +34,6 @@ export default defineConfig({
     { name: 'phone-quer', use: { ...devices['Pixel 7 landscape'] }, testIgnore: /mic\./ },
     { name: 'mic-chord-c', use: { ...devices['Desktop Chrome'], ...fakeMic(audio.chordC) }, testMatch: /mic\.chord/ },
     { name: 'mic-string-e', use: { ...devices['Desktop Chrome'], ...fakeMic(audio.stringE) }, testMatch: /mic\.tuner/ },
+    { name: 'mic-bass-e', use: { ...devices['Desktop Chrome'], ...fakeMic(audio.bassE) }, testMatch: /mic\.bass/ },
   ],
 });

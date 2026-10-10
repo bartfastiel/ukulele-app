@@ -5,7 +5,7 @@ import { chordSlug, routePath } from '../../src/site/routes.ts';
 import type { SiteId } from '../../src/site/sites.ts';
 import { ogImagePng, OG_HEIGHT, OG_WIDTH } from '../../src/site/og-image.ts';
 
-const SITES: SiteId[] = ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'start'];
+const SITES: SiteId[] = ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass', 'start'];
 const env: BuildEnv = {
   url: (s) => `/${s}/`,
   publicUrl: (s) => `https://${s}.example.org/`,
@@ -96,9 +96,10 @@ test('Instrument-Seiten verlinken sich gegenseitig nur unauffällig in der Fußz
   assert.ok(foot.indexOf('href="/banjo/"') >= 0);
   assert.ok(foot.indexOf('href="/bariton/"') >= 0);
   assert.ok(foot.indexOf('href="/mandoline/"') >= 0);
+  assert.ok(foot.indexOf('href="/bass/"') >= 0);
   assert.ok(home.html.indexOf('data-instrument="ukulele"') >= 0);
   const start = rendered.start.filter((p) => p.file === 'index.html')[0];
-  for (const s of ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline']) assert.ok(start.html.indexOf(`href="/${s}/"`) >= 0, s);
+  for (const s of ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass']) assert.ok(start.html.indexOf(`href="/${s}/"`) >= 0, s);
 });
 
 const page = (site: string, file: string) => rendered[site].filter((p) => p.file === file)[0];
@@ -157,7 +158,7 @@ test('Sitemaps: x-default, jede Adresse nur einmal über alle Instrument-Seiten'
 test('Titel und Texte: Artikel vor Instrumentnamen, wo die Sprache einen braucht', () => {
   for (const s of SITES)
     for (const p of rendered[s]) {
-      const bad = /\b(le|au|du|mon|ton|son) guitare\b|\bauf (Ukulele|Gitarre|Banjo|Bariton-Ukulele|Mandoline)\b|\brund um (Ukulele|Gitarre|Banjo|Bariton-Ukulele|Mandoline)\b/i.exec(p.html);
+      const bad = /\b(le|au|du|mon|ton|son) (guitare|basse électrique)|\bauf (Ukulele|Gitarre|Banjo|Bariton-Ukulele|Mandoline|E-Bass)\b|\brund um (Ukulele|Gitarre|Banjo|Bariton-Ukulele|Mandoline|E-Bass)\b/i.exec(p.html);
       assert.equal(bad && bad[0], null, `${s}/${p.file}`);
     }
   assert.ok(page('gitarre', 'fr/index.html').html.indexOf('<title>Apprendre la guitare gratuitement') >= 0);
@@ -166,6 +167,26 @@ test('Titel und Texte: Artikel vor Instrumentnamen, wo die Sprache einen braucht
   assert.ok(page('bariton', 'akkorde/g/index.html').html.indexOf('auf der Bariton-Ukulele') >= 0);
   assert.ok(page('mandoline', 'wissen/index.html').html.indexOf('rund um die Mandoline') >= 0);
   assert.ok(page('mandoline', 'akkorde/g/index.html').html.indexOf('auf der Mandoline') >= 0);
+  assert.ok(page('bass', 'wissen/index.html').html.indexOf('rund um den E-Bass') >= 0);
+  assert.ok(page('bass', 'ton-detektiv/index.html').html.indexOf('auf dem E-Bass') >= 0);
+  assert.ok(page('bass', 'fr/index.html').html.indexOf('<title>Apprendre la basse électrique gratuitement') >= 0);
+});
+
+test('E-Bass: Töne statt Akkorde – eigene Pfade, nur zwölf Tonseiten, keine Akkord- und Aufnahmeseiten', () => {
+  const files = rendered.bass.map((p) => p.file);
+  const notes = files.filter((f) => /^toene\/[a-z-]+\/index\.html$/.test(f));
+  assert.equal(notes.length, 12);
+  for (const f of ['toene/index.html', 'toene/c-sharp/index.html', 'en/notes/b-flat/index.html', 'fr/notes/c/index.html', 'ton-spiel/index.html', 'en/note-detective/index.html'])
+    assert.ok(files.indexOf(f) >= 0, f);
+  assert.ok(!files.some((f) => /^(akkorde|aufnahmen|akkord-spiel|akkord-detektiv)\//.test(f)), 'Akkordseiten auf der Bass-Seite');
+  const song = page('bass', 'lieder/alle-meine-entchen/index.html').html;
+  // Akkordnamen bleiben, Links und Tabulatur führen zum Grundton
+  assert.ok(song.indexOf('href="/bass/toene/f/"') >= 0, 'Link auf den Grundton fehlt');
+  assert.ok(/class="bass-root">Grundton [CFG]</.test(song), 'Grundton im Lied fehlt');
+  assert.ok(/class="syl-tab s\d">[EADG]\d/.test(song), 'Bass-Tabulatur fehlt');
+  const c = page('bass', 'fr/notes/c/index.html').html;
+  assert.ok(c.indexOf('<title>Do sur la basse électrique') >= 0);
+  assert.ok(c.indexOf('class="fifth"') >= 0, 'Quinte im Griffbild fehlt');
 });
 
 test('Querverweise: Lied → weitere Lieder, Akkord → Wissen, Werkzeug → Wissen', () => {
@@ -177,7 +198,7 @@ test('Querverweise: Lied → weitere Lieder, Akkord → Wissen, Werkzeug → Wis
 });
 
 test('Vorschaubild: PNG in 1200 × 630', () => {
-  for (const id of ['banjo', 'bariton', 'mandoline']) {
+  for (const id of ['banjo', 'bariton', 'mandoline', 'bass']) {
     const png = ogImagePng(id);
     assert.deepEqual(Array.from(png.slice(0, 8)), [137, 80, 78, 71, 13, 10, 26, 10]);
     const v = new DataView(png.buffer, png.byteOffset);

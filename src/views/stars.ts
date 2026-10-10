@@ -8,6 +8,7 @@ import { STRINGS } from '../music/notes.ts';
 import { langSwitch } from '../ui/lang-switch.ts';
 import { link } from '../site/nav.ts';
 import { setLefty } from '../ui/lefty.ts';
+import { notesOnly } from '../music/instrument.ts';
 
 const WEEKDAYS = [tk('So'), tk('Mo'), tk('Di'), tk('Mi'), tk('Do'), tk('Fr'), tk('Sa')];
 
@@ -16,14 +17,19 @@ export const stars: View = (root) => {
   const SONGS = allSongs();
   const week = daysThisWeek();
   const practiced = week.filter(Boolean).length;
+  const bass = notesOnly();
   const badges = [
     { name: t('Gestimmt wie ein Profi'), ok: p.tunedStrings >= STRINGS.length, how: t('Alle {n} Saiten stimmen', { n: countWord(STRINGS.length) }) },
-    { name: t('Erster Akkord'), ok: p.chordsChecked.length >= 1, how: t('Einen Akkord mit „Prüf mich!“ schaffen') },
-    { name: t('Akkord-Sammler'), ok: p.chordsChecked.length >= 5, how: t('5 verschiedene Akkorde schaffen') },
+    bass
+      ? { name: t('Erster Ton'), ok: p.chordsChecked.length >= 1, how: t('Einen Ton mit „Prüf mich!“ schaffen') }
+      : { name: t('Erster Akkord'), ok: p.chordsChecked.length >= 1, how: t('Einen Akkord mit „Prüf mich!“ schaffen') },
+    bass
+      ? { name: t('Ton-Sammler'), ok: p.chordsChecked.length >= 5, how: t('5 verschiedene Töne schaffen') }
+      : { name: t('Akkord-Sammler'), ok: p.chordsChecked.length >= 5, how: t('5 verschiedene Akkorde schaffen') },
     { name: t('Erstes Lied'), ok: Object.keys(p.stars).length >= 1, how: t('Ein Lied bis zum Ende spielen') },
     { name: t('Liedermacher'), ok: Object.keys(p.stars).length >= 5, how: t('5 Lieder spielen') },
     { name: t('Durchstarter'), ok: Object.keys(p.stars).some((k) => p.stars[k] >= 3), how: t('Ein Lied im Original-Tempo') },
-    { name: t('Wechsel-Meister'), ok: Object.keys(p.bestHunt).some((k) => p.bestHunt[k] >= 20), how: t('20 Punkte im Akkord-Spiel') },
+    { name: t('Wechsel-Meister'), ok: Object.keys(p.bestHunt).some((k) => p.bestHunt[k] >= 20), how: bass ? t('20 Punkte im Ton-Spiel') : t('20 Punkte im Akkord-Spiel') },
     { name: t('Fleißig'), ok: practiced >= 4, how: t('An 4 Tagen in einer Woche üben') },
   ];
   const settingToggle = (label: string, key: 'lefty' | 'calm') => {
@@ -101,11 +107,8 @@ export const stars: View = (root) => {
       ),
       codeMsg,
     ),
-    h(
-      'a',
-      { class: 'btn', href: link('aufnahme') },
-      t('Für Erwachsene: Beispiel-Akkorde aufnehmen'),
-    ),
+    // Beispielaufnahmen gibt es nur für die Akkorderkennung
+    ...(bass ? [] : [h('a', { class: 'btn', href: link('aufnahme') }, t('Für Erwachsene: Beispiel-Akkorde aufnehmen'))]),
   );
   // vom Link „Für Linkshänder“ in der Fußzeile: die Seite entsteht erst jetzt, der Browser fand die Stelle noch nicht
   const target = location.hash === '#einstellungen' ? document.getElementById('einstellungen') : null;

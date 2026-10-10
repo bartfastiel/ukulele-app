@@ -2,7 +2,7 @@ import { h, clear } from '../ui/dom.ts';
 import { icon, soundHole } from '../ui/icons.ts';
 import { load, totalStars } from '../store.ts';
 import { t } from '../i18n.ts';
-import { instrument } from '../music/instrument.ts';
+import { instrument, notesOnly } from '../music/instrument.ts';
 import { langSwitch } from '../ui/lang-switch.ts';
 import { findSong } from '../music/library.ts';
 import type { View } from '../ui/screen.ts';
@@ -48,19 +48,33 @@ export const home: View = (root) => {
             h('span', { class: 'hint-go' }, t('Zum Stimmgerät'), ' ›'),
           )
         : null,
-      h(
-        'nav',
-        { class: 'tiles', 'aria-label': t('Bereiche') },
-        last ? tile(link(`lied/${last.id}`), 'play', t('Weiterspielen'), last.title, 'tile-wide theme-pearl') : null,
-        tile(link('lieder'), 'songs', t('Lieder spielen'), t('Karaoke zum Mitspielen'), 'tile-big theme-brass'),
-        tile(link('blues'), 'blues', t('Blues'), t('Mit der Band jammen'), 'theme-teal'),
-        tile(link('akkorde'), 'chords', t('Akkorde'), t('Griffe lernen und prüfen'), 'theme-teal'),
-        tile(link('detektiv'), 'detective', t('Akkord-Detektiv'), t('Spiel was – ich sag, was es ist'), 'theme-cherry'),
-        tile(link('spiel'), 'game', t('Akkord-Spiel'), t('Wie viele schaffst du?'), 'theme-cherry'),
-        tile(link('stimmen'), 'tuner', t('Stimmen'), t('Stimmgerät'), 'theme-pearl'),
-        tile(link('rhythmus'), 'rhythm', t('Rhythmus'), t('Metronom & Schlagmuster'), 'theme-pearl'),
-        tile(link('wissen'), 'text', t('Tipps & Wissen'), t('Stimmen, Akkorde, Üben – kurz erklärt'), 'theme-teal'),
-      ),
+      notesOnly()
+        ? h(
+            'nav',
+            { class: 'tiles', 'aria-label': t('Bereiche') },
+            last ? tile(link(`lied/${last.id}`), 'play', t('Weiterspielen'), last.title, 'tile-wide theme-pearl') : null,
+            tile(link('lieder'), 'songs', t('Lieder spielen'), t('Basstöne zum Mitspielen'), 'tile-big theme-brass'),
+            tile(link('blues'), 'blues', t('Blues'), t('Walking Bass mit der Band'), 'theme-teal'),
+            tile(link('akkorde'), 'chords', t('Töne'), t('Wo liegt welcher Ton?'), 'theme-teal'),
+            tile(link('detektiv'), 'detective', t('Ton-Detektiv'), t('Spiel was – ich sag, was es ist'), 'theme-cherry'),
+            tile(link('spiel'), 'game', t('Ton-Spiel'), t('Wie viele schaffst du?'), 'theme-cherry'),
+            tile(link('stimmen'), 'tuner', t('Stimmen'), t('Stimmgerät'), 'theme-pearl'),
+            tile(link('rhythmus'), 'rhythm', t('Rhythmus'), t('Metronom & Basslinien'), 'theme-pearl'),
+            tile(link('wissen'), 'text', t('Tipps & Wissen'), t('Stimmen, Töne, Üben – kurz erklärt'), 'theme-teal'),
+          )
+        : h(
+            'nav',
+            { class: 'tiles', 'aria-label': t('Bereiche') },
+            last ? tile(link(`lied/${last.id}`), 'play', t('Weiterspielen'), last.title, 'tile-wide theme-pearl') : null,
+            tile(link('lieder'), 'songs', t('Lieder spielen'), t('Karaoke zum Mitspielen'), 'tile-big theme-brass'),
+            tile(link('blues'), 'blues', t('Blues'), t('Mit der Band jammen'), 'theme-teal'),
+            tile(link('akkorde'), 'chords', t('Akkorde'), t('Griffe lernen und prüfen'), 'theme-teal'),
+            tile(link('detektiv'), 'detective', t('Akkord-Detektiv'), t('Spiel was – ich sag, was es ist'), 'theme-cherry'),
+            tile(link('spiel'), 'game', t('Akkord-Spiel'), t('Wie viele schaffst du?'), 'theme-cherry'),
+            tile(link('stimmen'), 'tuner', t('Stimmen'), t('Stimmgerät'), 'theme-pearl'),
+            tile(link('rhythmus'), 'rhythm', t('Rhythmus'), t('Metronom & Schlagmuster'), 'theme-pearl'),
+            tile(link('wissen'), 'text', t('Tipps & Wissen'), t('Stimmen, Akkorde, Üben – kurz erklärt'), 'theme-teal'),
+          ),
       langSwitch(),
     ),
   );

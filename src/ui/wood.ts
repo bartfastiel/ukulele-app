@@ -10,6 +10,8 @@
  *   Bariton  dunkles, geriegeltes Koa (Korpus), Knöpfe aus hellerem Koa, Einfassung elfenbein mit Abalone-Streifen
  *   Mandoline  Fichtendecke im Sunburst (Mitte bernsteinfarben, Rand fast schwarz – der Verlauf liegt in styles.css),
  *            Knöpfe aus kirschrot gebeiztem, geflammtem Ahorn, Einfassung mehrfach elfenbein-schwarz mit Schildpatt
+ *   E-Bass   schwarz gebeizte Esche mit grau durchscheinenden Jahresringen (Korpus), Knöpfe aus Esche unter
+ *            Bernsteinlack, Einfassung wie die Kante eines Schlagbretts: weiß-schwarz-weiß
  */
 import { instrument } from '../music/instrument.ts';
 
@@ -120,6 +122,26 @@ function koa(seed: number): Grain {
   };
 }
 
+function ash(seed: number): Grain {
+  const warp = lattice(3, 5, 81 + seed);
+  const width = lattice(4, 12, 83 + seed);
+  const pores = lattice(40, 150, 89 + seed);
+  return (u, v) => {
+    const w = warp(u * 3, v * 5);
+    // Fladerschnitt: Jahresringe als flache, ineinander liegende Bögen („Kathedralen“) längs der Faser
+    const arch = Math.cos(u * TAU + w * 1.6) * (0.5 + w * 0.5);
+    const ring = (v * 9 + arch + w * 0.8) % 1;
+    const r = ring < 0 ? ring + 1 : ring;
+    // Frühholz: ein breites, grob poriges Band – bei Esche das kräftige Erkennungszeichen
+    const band = 0.3 + width(u * 4, v * 12) * 0.15;
+    const early = r < band ? Math.pow(Math.sin((r / band) * Math.PI), 0.7) : 0;
+    // Poren: kurze Striche längs der Faser, im Frühholz dicht und offen
+    const p = pores(u * 40, v * 150);
+    const open = early * (0.4 + 0.6 * clamp((p - 0.35) * 3));
+    return clamp(0.7 - open * 0.55 + (p - 0.5) * 0.12 - r * 0.1);
+  };
+}
+
 export interface Material {
   grain: (seed: number) => Grain;
   dark: RGB;
@@ -149,6 +171,11 @@ export const MATERIALS: Record<string, { body: Material; button: Material }> = {
   mandoline: {
     body: { grain: spruce, dark: [66, 30, 8], light: [170, 100, 30] },
     button: { grain: flamedMaple, dark: [72, 16, 10], light: [184, 70, 32] },
+  },
+  bass: {
+    // schwarz gebeizte Esche, die Jahresringe schimmern grau durch; Knöpfe aus Esche unter Bernsteinlack
+    body: { grain: ash, dark: [8, 8, 10], light: [86, 84, 80] },
+    button: { grain: ash, dark: [54, 30, 12], light: [172, 120, 58] },
   },
 };
 

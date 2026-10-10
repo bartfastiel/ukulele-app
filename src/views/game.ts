@@ -6,17 +6,21 @@ import { CHORDS, chord } from '../music/chords.ts';
 import { successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, markPracticed } from '../store.ts';
-import { t } from '../i18n.ts';
-import { instrument } from '../music/instrument.ts';
+import { noteText, t } from '../i18n.ts';
+import { instrument, notesOnly } from '../music/instrument.ts';
 
 const SECONDS = 60;
 
+/** E-Bass: Töne statt Akkorde, ausgeschrieben (im Französischen Do, Ré, Mi …). */
+const shown = (name: string) => (notesOnly() ? noteText(name) : name);
+
 function presetLabel(chords: string[]): string {
-  return chords.length === 2 ? t('{a} und {b}', { a: chords[0], b: chords[1] }) : chords.join(' · ');
+  return chords.length === 2 ? t('{a} und {b}', { a: shown(chords[0]), b: shown(chords[1]) }) : chords.map(shown).join(' · ');
 }
 
 export const game: View = (root) => {
   const PRESETS = instrument().game.map((chords) => ({ chords }));
+  const bass = notesOnly();
   let selected = PRESETS[0].chords;
   let listener: ChordListener | null = null;
   let timer = 0;
@@ -40,7 +44,7 @@ export const game: View = (root) => {
       h(
         'div',
         { class: 'card game-setup' },
-        h('h2', null, t('Welche Akkorde?')),
+        h('h2', null, bass ? t('Welche Töne?') : t('Welche Akkorde?')),
         h(
           'div',
           { class: 'preset-grid' },
@@ -58,7 +62,13 @@ export const game: View = (root) => {
             return b;
           }),
         ),
-        h('p', null, t('Spiel den Akkord, der erscheint – ich höre zu und zähle mit. Du hast {n} Sekunden. Bei zwei Akkorden wechselst du immer hin und her.', { n: SECONDS })),
+        h(
+          'p',
+          null,
+          bass
+            ? t('Spiel den Ton, der erscheint – ich höre zu und zähle mit. Du hast {n} Sekunden. Bei zwei Tönen wechselst du immer hin und her.', { n: SECONDS })
+            : t('Spiel den Akkord, der erscheint – ich höre zu und zähle mit. Du hast {n} Sekunden. Bei zwei Akkorden wechselst du immer hin und her.', { n: SECONDS }),
+        ),
         button(h('span', null, icon('play'), ' ', t('Start')), () => void play(), 'btn-primary btn-play'),
       ),
     );
@@ -81,22 +91,22 @@ export const game: View = (root) => {
       while (next === current) next = selected[Math.floor(Math.random() * selected.length)];
       return next;
     };
-    const name = h('div', { class: 'chord-name huge' }, current);
+    const name = h('div', { class: 'chord-name huge' }, shown(current));
     const diag = h('div', { class: 'diagram-big' }, playableChord(chord(current), { lefty }));
     const scoreEl = h('div', { class: 'score', 'aria-live': 'polite' }, '0');
     const timeEl = h('div', { class: 'time' }, String(SECONDS));
     const ring = h('div', { class: 'time-ring' }, timeEl);
-    const msg = h('div', { class: 'feedback' }, mic ? t('Los! Ich höre zu …') : t('Tippe auf „Geschafft“, wenn du den Akkord gespielt hast.'));
+    const msg = h('div', { class: 'feedback' }, mic ? t('Los! Ich höre zu …') : bass ? t('Tippe auf „Geschafft“, wenn du den Ton gespielt hast.') : t('Tippe auf „Geschafft“, wenn du den Akkord gespielt hast.'));
     const hit = (heard: boolean) => {
       score++;
       scoreEl.textContent = String(score);
       if (heard) successSound();
       msg.textContent = praise();
       current = pick();
-      name.textContent = current;
+      name.textContent = shown(current);
       diag.replaceChild(playableChord(chord(current), { lefty }), diag.firstChild!);
       listener?.setExpected(current);
-      announce(`${current}`);
+      announce(shown(current));
     };
     area.appendChild(
       h(
@@ -135,13 +145,13 @@ export const game: View = (root) => {
           h('div', { class: 'wait-title' }, score > before ? t('Neuer Rekord!') : t('Zeit um!')),
           h('div', { class: 'score huge' }, String(score)),
           h('p', null, score > before ? t('Vorher: {n}', { n: before }) : t('Dein Rekord: {n}', { n: before })),
-          h('div', { class: 'row' }, button(t('Nochmal'), () => void play(), 'btn-primary'), button(t('Andere Akkorde'), setup)),
+          h('div', { class: 'row' }, button(t('Nochmal'), () => void play(), 'btn-primary'), button(bass ? t('Andere Töne') : t('Andere Akkorde'), setup)),
         ),
       );
     }, 250);
   };
 
-  screen(root, { title: t('Akkord-Spiel'), theme: 'cherry' }, area);
+  screen(root, { title: bass ? t('Ton-Spiel') : t('Akkord-Spiel'), theme: 'cherry' }, area);
   setup();
   return stop;
 };

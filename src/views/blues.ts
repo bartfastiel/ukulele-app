@@ -2,7 +2,7 @@ import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { fretboard, type Mark } from '../ui/fretboard.ts';
-import { LEVELS, SWING, bluesBars, fitsFree, freeNotes, spell, levelText, levelWindow, organVoicing, place, rootOf, windowTop, type Level, type NeckWindow } from '../music/blues.ts';
+import { LEVELS, SWING, bluesBars, fitsFree, freeNotes, spell, levelText, levelTitle, levelWindow, organVoicing, place, rootOf, windowTop, type Level, type NeckWindow } from '../music/blues.ts';
 import { instrument } from '../music/instrument.ts';
 import { ROOTS } from '../music/chords.ts';
 import { audio, click, hold, pluck, setWah } from '../audio/engine.ts';
@@ -12,7 +12,7 @@ import { fingerDown, type Play } from '../ui/fret-gesture.ts';
 import { VIBRATO_CENTS, VibratoDetector, bendSemis, slideFret, strikeGain } from '../ui/expression.ts';
 import { bass, hat, kick, organ, snare } from '../audio/band.ts';
 import { openMic, type Mic } from '../audio/mic.ts';
-import { detectPitch } from '../audio/pitch.ts';
+import { detectPitchIn } from '../audio/pitch.ts';
 import { freqToMidi, midiToFreq, pitchClass, playableFret, stringMidi } from '../music/notes.ts';
 import { load, markPracticed } from '../store.ts';
 import { noteText, t, tk, tp } from '../i18n.ts';
@@ -30,6 +30,7 @@ const FREE_FRETS = 5;
 
 export const blues: View = (root) => {
   const setup = instrument().blues;
+  const ownBass = !!instrument().notesOnly;
   let level: Level = LEVELS[0];
   let key = setup.easyKey;
   let BARS = bluesBars(key);
@@ -86,7 +87,7 @@ export const blues: View = (root) => {
   const targetAt = (beat: number) => {
     if (!level.notes || beat < 0) return null;
     const bar = Math.floor(beat / 4) % 12;
-    const n = level.notes(BARS[bar])[Math.floor(beat) % 4];
+    const n = level.notes(BARS[bar], bar)[Math.floor(beat) % 4];
     return n ? n.midi : null;
   };
 
@@ -149,13 +150,15 @@ export const blues: View = (root) => {
         const inBar = b % 4;
         hat(t);
         hat(t + SWING * spb(), 0.05);
-        if (inBar === 0 || inBar === 2) kick(t);
+        // E-Bass: Die Band spielt ohne eigenen Bass – den spielt das Kind; die Bassdrum leiser, damit man es hört
+        if (inBar === 0 || inBar === 2) kick(t, ownBass ? 0.45 : 0.8);
         else snare(t);
-        for (let k = 0; k < 2; k++) {
-          const step = inBar * 2 + k;
-          const off = k ? SWING : 0;
-          bass(rootOf(chord).bass + WALK[step], t + off * spb(), (k ? 1 - SWING : SWING) * spb());
-        }
+        if (!ownBass)
+          for (let k = 0; k < 2; k++) {
+            const step = inBar * 2 + k;
+            const off = k ? SWING : 0;
+            bass(rootOf(chord).bass + WALK[step], t + off * spb(), (k ? 1 - SWING : SWING) * spb());
+          }
         if (inBar === 1 || inBar === 3) organ(organVoicing(chord, windowTop(win())), t + SWING * spb(), spb() * 0.45);
         if (guide && level.notes) {
           const target = targetAt(b);
@@ -180,14 +183,15 @@ export const blues: View = (root) => {
   };
 
   const listen = (mic: Mic) => {
-    const buf = new Float32Array(2048);
+    // tiefe Töne (E-Bass ab 41 Hz) brauchen ein längeres Fenster
+    const buf = new Float32Array(ownBass ? 4096 : 2048);
     micTimer = window.setInterval(() => {
       // der eben angetippte Ton aus dem Lautsprecher ist kein Treffer
       if (!running || hearingOwnSound()) return;
       mic.timeData(buf);
       // weiter oben am Hals klingen die Töne höher; die Orgel weicht dann aus (organVoicing)
       const maxHz = Math.max(setup.pitch.maxHz, midiToFreq(windowTop(win()) + 1));
-      const p = detectPitch(buf, mic.sampleRate, setup.pitch.minHz, maxHz);
+      const p = detectPitchIn(buf, mic.sampleRate, setup.pitch.minHz, maxHz);
       if (!p || p.clarity < 0.9) return;
       const midi = Math.round(freqToMidi(p.freq));
       played = { midi, at: audio().currentTime };
@@ -380,7 +384,7 @@ export const blues: View = (root) => {
       { class: 'controls' },
       playBtn,
       h('h2', null, t('Stufe')),
-      seg(t('Stufe'), LEVELS, (l) => t(l.title), (l) => l === level, setLevel),
+      seg(t('Stufe'), LEVELS, (l) => t(levelTitle(l)), (l) => l === level, setLevel),
       h('h2', null, t('Tonart')),
       seg(t('Tonart'), ROOTS.map((_, i) => i), (i) => (i === setup.easyKey ? `${ROOTS[i]} ★` : ROOTS[i]), (i) => i === key, (i) => {
         key = i;
