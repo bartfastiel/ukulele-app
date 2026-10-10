@@ -1772,6 +1772,11 @@ summary:focus-visible {
   fill: #5fb3a3;
 }
 
+.fb-mark.weak,
+.fb-mark-label.weak {
+  opacity: 0.4;
+}
+
 .fb-mark.played {
   fill: none;
   stroke: #ff5a7a;
@@ -1786,6 +1791,52 @@ summary:focus-visible {
 .fb-mark-label.scale {
   font-size: 8px;
   fill: #fff;
+}
+
+.fb-hit {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.fb-mark,
+.fb-mark-label,
+.fb-bend {
+  pointer-events: none;
+}
+
+.fb-break {
+  fill: none;
+  stroke: #f3e6c4;
+  stroke-width: 3;
+}
+
+.fb-bend {
+  fill: none;
+  stroke: #5fb3a3;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.blues-shift-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.blues-shift {
+  min-width: 64px;
+  font-size: 1.3em;
+}
+
+.blues-shift:disabled {
+  opacity: 0.35;
+}
+
+.blues-shift-label {
+  font-weight: 900;
+  color: var(--ink);
 }
 
 .blues-info {

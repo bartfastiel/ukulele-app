@@ -158,6 +158,9 @@ test('Blues: Einzählen, Takte laufen, Vorgabe auf dem Hals, freie Stufe zeigt d
   await page.getByRole('button', { name: '4 · Frei spielen' }).click();
   await expect(page.locator('.fb-mark.scale').first()).toBeVisible();
   await expect(page.locator('.fb-mark.chord').first()).toBeVisible();
+  // über F7 wird nicht gezogen
+  await expect(page.locator('.blues-now .chord-name')).toHaveText('F7');
+  await expect(page.locator('.fb-bend')).toHaveCount(0);
   await page.getByRole('button', { name: /Stopp/ }).click();
 });
 
@@ -169,6 +172,34 @@ test('Blues in G: Akkorde, Erklärung und Vorgabe wandern mit', async ({ page })
   await expect(page.locator('.blues-bar').nth(8)).toContainText('D');
   await expect(page.locator('.blues-target')).toHaveText('Spiel G');
   await expect(page.getByText(/4 Takte G, 2 Takte C/)).toBeVisible();
+});
+
+test('Blues: Hals verschieben, frei spielen mit fünf Bünden und Ziehton', async ({ page }) => {
+  await page.goto('#/blues');
+  const head = page.getByRole('button', { name: 'Richtung Kopf' });
+  await expect(head).toBeDisabled();
+  await expect(page.locator('.blues-shift-label')).toHaveText('Bund 1–3');
+  for (let i = 0; i < 4; i++) await page.getByRole('button', { name: 'Richtung Korpus' }).click();
+  await expect(page.locator('.blues-shift-label')).toHaveText('Bund 5–8');
+  await expect(head).toBeEnabled();
+  // C liegt jetzt gegriffen im Ausschnitt (G-Saite, 5. Bund) statt auf der leeren C-Saite
+  await expect(page.locator('.fb-mark-label.now')).toHaveText('5');
+  await page.getByRole('button', { name: '4 · Frei spielen' }).click();
+  await expect(page.locator('.blues-shift-label')).toHaveText('Bund 5–9');
+  await expect(page.locator('.fb-bend').first()).toBeVisible();
+  await expect(page.getByText(/Ziehen ↑/)).toBeVisible();
+  // jede Stelle lässt sich antippen, auch leere Saiten und Töne außerhalb der Tonleiter; der Ziehpfeil zieht
+  await page.locator('.fb-hit[data-string="1"][data-fret="0"]').click();
+  await expect(page.locator('.fb-mark.played')).toHaveCount(1);
+  await page.locator('.fb-hit[data-string="0"][data-fret="9"]').click();
+  await expect(page.locator('.fb-mark.played')).toHaveCount(1);
+  await page.locator('.fb-hit-bend').first().click();
+  await expect(page.locator('.fb-mark.played')).toHaveCount(1);
+  await page.getByRole('button', { name: '5 · Dur und Moll mischen' }).click();
+  await expect(page.locator('.fb-mark.weak').first()).toBeVisible();
+  await expect(page.getByText(/große Terz E/)).toBeVisible();
+  await page.getByRole('button', { name: 'Sehr langsam' }).click();
+  await expect(page.getByRole('button', { name: 'Sehr langsam' })).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('Startseite: Blues und Akkord-Detektiv sind erreichbar', async ({ page }) => {
