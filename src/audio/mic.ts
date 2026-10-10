@@ -16,10 +16,29 @@ export interface Mic {
   stop(): void;
 }
 
-export type MicState = 'unknown' | 'granted' | 'denied' | 'unsupported';
+export type MicState = 'unknown' | 'granted' | 'denied' | 'unsupported' | 'failed';
 
 let current: Mic | null = null;
 let state: MicState = 'unknown';
+/** Name des letzten Fehlers beim Öffnen (für die Hilfe-Anzeige, z. B. „NotReadableError“). */
+let lastError = '';
+
+export function micError(): string {
+  return lastError;
+}
+
+interface AudioSessionNav {
+  audioSession?: { type: string };
+}
+
+/**
+ * Safari ab 16.4 (iPad, iPhone, Mac) hat einen Audio-Modus: „playback“ spielt auch bei Lautlos-Schalter, sperrt aber das
+ * Mikrofon. Vor dem Öffnen muss er auf „play-and-record“ stehen – danach umzuschalten ist zu spät.
+ */
+function sessionType(type: 'playback' | 'play-and-record'): void {
+  const nav = navigator as unknown as AudioSessionNav;
+  if (nav.audioSession && nav.audioSession.type !== type) nav.audioSession.type = type;
+}
 
 export function micState(): MicState {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !hasAudio()) return 'unsupported';
@@ -33,19 +52,25 @@ export async function openMic(): Promise<Mic> {
     state = 'unsupported';
     throw new Error('unsupported');
   }
+  sessionType('play-and-record');
   let stream: MediaStream;
   try {
     stream = await navigator.mediaDevices.getUserMedia({
       audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
     });
   } catch (e) {
-    state = 'denied';
+    // DOMException ist in älterem Safari kein Error – den Namen direkt lesen
+    const name = e && typeof e === 'object' ? (e as { name?: unknown }).name : undefined;
+    lastError = typeof name === 'string' && name ? name : String(e);
+    // gesperrt (Einstellungen, Nachfrage abgelehnt) oder belegt bzw. technisch nicht startbar
+    state = lastError === 'NotAllowedError' || lastError === 'SecurityError' || lastError === 'PermissionDeniedError' ? 'denied' : 'failed';
+    sessionType('playback');
     throw e;
   }
   state = 'granted';
-  const nav = navigator as unknown as { audioSession?: { type: string } };
-  if (nav.audioSession) nav.audioSession.type = 'play-and-record';
-  if (c.state === 'suspended') await c.resume();
+  lastError = '';
+  // der Moduswechsel kann den Audio-Kontext unterbrechen („interrupted“) – wieder anwerfen
+  if (c.state !== 'running') await c.resume().catch(() => undefined);
   const source = c.createMediaStreamSource(stream);
   const analyser = c.createAnalyser();
   analyser.fftSize = 8192;
@@ -53,6 +78,11 @@ export async function openMic(): Promise<Mic> {
   analyser.minDecibels = -110;
   analyser.maxDecibels = -10;
   source.connect(analyser);
+  // Safari rechnet nur Knoten, die (über Umwege) am Ausgang hängen – sonst bleibt der Analysator still. Stumm anschließen.
+  const sink = c.createGain();
+  sink.gain.value = 0;
+  analyser.connect(sink);
+  sink.connect(c.destination);
   const bytes = new Uint8Array(analyser.fftSize);
   const full = new Float32Array(analyser.fftSize);
   const mic: Mic = {
@@ -78,6 +108,8 @@ export async function openMic(): Promise<Mic> {
     stop() {
       stream.getTracks().forEach((t) => t.stop());
       source.disconnect();
+      sink.disconnect();
+      sessionType('playback');
       current = null;
     },
   };
