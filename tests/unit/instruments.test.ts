@@ -15,7 +15,7 @@ import { parseFrets, plan } from '../../src/music/recording-plan.ts';
 import type { Chord } from '../../src/music/grip.ts';
 
 const SR = 48000;
-const OTHERS = ['gitarre', 'banjo'];
+const OTHERS = ['gitarre', 'banjo', 'bariton'];
 
 /** Für jedes Instrument ausführen; danach wieder Ukulele. */
 function each(ids: string[], f: (id: string) => void): void {
@@ -70,14 +70,15 @@ function playErrors(ch: Chord): string[] {
   return errors;
 }
 
-test('Stimmungen: Ukulele G4 C4 E4 A4, Gitarre E2 A2 D3 G3 B3 E4, Banjo g4 D3 G3 B3 D4', () => {
+test('Stimmungen: Ukulele G4 C4 E4 A4, Gitarre E2 A2 D3 G3 B3 E4, Banjo g4 D3 G3 B3 D4, Bariton D3 G3 B3 E4', () => {
   const tunings: Record<string, string> = {};
-  each(['ukulele', 'gitarre', 'banjo'], (id) => {
+  each(['ukulele', 'gitarre', 'banjo', 'bariton'], (id) => {
     tunings[id] = STRINGS.map((s) => `${s.name}${s.midi}`).join(' ');
   });
   assert.equal(tunings.ukulele, 'G67 C60 E64 A69');
   assert.equal(tunings.gitarre, 'E40 A45 D50 G55 B59 e64');
   assert.equal(tunings.banjo, 'g67 D50 G55 B59 D62');
+  assert.equal(tunings.bariton, 'D50 G55 B59 E64');
 });
 
 test('kurze Banjo-Saite: beginnt am 5. Bund, Tabulatur nutzt sie nur leer', () => {
@@ -98,7 +99,7 @@ test('Gitarre: Tabulatur der Melodie eine Oktave tiefer, in den ersten Bünden',
   });
 });
 
-test('alle Melodien liegen auf jedem Instrument, auf Gitarre und Banjo fast alle in den ersten Bünden', () => {
+test('alle Melodien liegen auf jedem Instrument, auf Gitarre, Banjo und Bariton-Ukulele fast alle in den ersten Bünden', () => {
   each(['ukulele', ...OTHERS], (id) => {
     let notes = 0;
     let low = 0;
@@ -107,13 +108,14 @@ test('alle Melodien liegen auf jedem Instrument, auf Gitarre und Banjo fast alle
       for (const e of s.events) {
         if (e.midi === null) continue;
         const pos = tabPosition(e.midi + offset);
-        assert.ok(pos && pos.fret <= (id === 'banjo' ? 17 : 12), `${id} ${s.id}: ${e.syllable} (${e.midi})`);
+        assert.ok(pos && pos.fret <= (id === 'banjo' || id === 'bariton' ? 17 : 12), `${id} ${s.id}: ${e.syllable} (${e.midi})`);
         notes++;
         if (pos!.fret <= 5) low++;
       }
     }
     if (id === 'gitarre') assert.ok(low / notes > 0.95, `nur ${low}/${notes} Töne in den ersten fünf Bünden`);
     if (id === 'banjo') assert.ok(low / notes > 0.85, `nur ${low}/${notes} Töne in den ersten fünf Bünden`);
+    if (id === 'bariton') assert.ok(low / notes > 0.9, `nur ${low}/${notes} Töne in den ersten fünf Bünden`);
   });
 });
 
@@ -156,6 +158,29 @@ test('Banjo (Open G): G ist leer, die kurze Saite schweigt bei Akkorden ohne G',
       const ch = chord(r);
       assert.equal(ch.frets[0] === 0, chordMidis(ch).map(pitchClass).indexOf(7) >= 0, `${r}: ${ch.frets.join(' ')}`);
     }
+  });
+});
+
+test('Bariton-Ukulele: Griffe wie auf den vier hohen Gitarrensaiten, Ukulele-Formen eine Quarte tiefer', () => {
+  const g = (n: string) => chord(n).frets.map((f) => (f < 0 ? 'x' : String(f))).join('');
+  const guitar: Record<string, string> = {};
+  const uke: Record<string, string> = {};
+  each(['gitarre'], () => {
+    for (const ch of CHORDS) guitar[ch.name] = g(ch.name);
+  });
+  for (const r of ROOTS) for (const q of ['', 'm', '7']) uke[r + q] = g(r + q);
+  each(['bariton'], () => {
+    assert.equal(g('G'), '0003');
+    assert.equal(g('C'), '2010');
+    assert.equal(g('D'), '0232');
+    assert.equal(g('Em7'), '0000');
+    // Am7 und A7 brauchen auf vier Saiten den Grundton A, den die Gitarre auf der A-Saite spielt
+    for (const ch of CHORDS) if (guitar[ch.name] && ch.name !== 'Am7' && ch.name !== 'A7') assert.equal(g(ch.name), guitar[ch.name].slice(2), ch.name);
+    for (const r of ROOTS)
+      for (const q of ['', 'm', '7']) {
+        const ch = chord(r + q);
+        if (CHORDS.indexOf(ch) < 0) assert.equal(g(r + q), uke[transposeName(r + q, 5)], r + q);
+      }
   });
 });
 
@@ -400,7 +425,7 @@ test('Instrumentwechsel: Griffe und Saiten folgen, Ukulele bleibt wie sie war', 
   assert.equal(chord('C').frets.join(''), '0003');
   each(['gitarre'], () => assert.equal(chord('C').frets.length, 6));
   assert.equal(chord('C').frets.join(''), '0003');
-  assert.equal(INSTRUMENTS.length, 3);
+  assert.equal(INSTRUMENTS.length, 4);
   assert.equal(setInstrument('gibt-es-nicht').id, 'ukulele');
 });
 

@@ -1,5 +1,5 @@
 // Erzeugt ein synthetisches Aufnahme-Set nach dem Aufnahmeplan (gleiches Format wie #/aufnahme), als Gegenprobe
-// zu echten Aufnahmen für tools/eval-recordings.ts:   node tools/synth-recordings.ts <ziel.zip> [ukulele|gitarre|banjo]
+// zu echten Aufnahmen für tools/eval-recordings.ts:   node tools/synth-recordings.ts <ziel.zip> [ukulele|gitarre|banjo|bariton]
 import { writeFileSync } from 'node:fs';
 import { plan, parseFrets } from '../src/music/recording-plan.ts';
 import { instrument, setInstrument } from '../src/music/instrument.ts';

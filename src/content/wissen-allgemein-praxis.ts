@@ -8,7 +8,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
       en: 'sore-fingertips-calluses',
       fr: 'doigts-douloureux-corne',
     },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'technik',
     title: {
       de: 'Fingerkuppen tun weh? So wächst Hornhaut beim Saitenspiel',
@@ -122,7 +122,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'akkordwechsel-schneller',
     slug: { de: 'akkordwechsel-schneller', en: 'faster-chord-changes', fr: 'changer-accords-plus-vite' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'technik',
     title: {
       de: 'Akkordwechsel schneller lernen – 6 Tricks für Anfänger',
@@ -207,7 +207,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'saubere-griffe',
     slug: { de: 'saite-schnarrt-klingt-dumpf', en: 'buzzing-muted-strings', fr: 'corde-qui-frise' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'technik',
     title: {
       de: 'Saite schnarrt oder klingt dumpf? So greifst du sauber',
@@ -310,7 +310,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'lieder-fuer-anfaenger',
     slug: { de: 'lieder-fuer-anfaenger', en: 'easy-songs-beginners', fr: 'chansons-faciles-debutants' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'erste-schritte',
     title: {
       de: 'Einfache Lieder für Anfänger – mit einem, zwei oder drei Akkorden',
@@ -412,7 +412,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'ueben-mit-kindern',
     slug: { de: 'ueben-mit-kindern', en: 'practicing-with-kids', fr: 'faire-pratiquer-enfants' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'eltern-lehrkraefte',
     title: {
       de: 'Üben mit Kindern – so bleibt die Freude am Instrument',
@@ -528,7 +528,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'instrumentalklasse-schule',
     slug: { de: 'instrumentalklasse-schule', en: 'school-instrument-class', fr: 'classe-instrument-ecole' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'eltern-lehrkraefte',
     title: {
       de: 'Instrumentalklasse in der Schule – Tipps für Lehrkräfte und Eltern',
@@ -640,7 +640,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'app-ohne-konto',
     slug: { de: 'app-ohne-konto-datenschutz', en: 'app-privacy-no-account', fr: 'appli-sans-compte-vie-privee' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'eltern-lehrkraefte',
     title: {
       de: 'Lern-App ohne Konto: Datenschutz, Mikrofon und Werbefreiheit',
@@ -727,7 +727,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'saiten-wechseln-pflege',
     slug: { de: 'saiten-wechseln-pflege', en: 'change-strings-care', fr: 'changer-cordes-entretien' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'instrument',
     title: {
       de: 'Saiten wechseln und Instrument pflegen – so geht’s',

@@ -7,6 +7,7 @@
  *   Ukulele  Mahagoni (Korpus und Knöpfe), cremefarbene Einfassung
  *   Gitarre  Hintergrund aus gealterter Fichtendecke, Knöpfe aus Palisander, Einfassung elfenbein-schwarz
  *   Banjo    gebeizter, geflammter Ahorn (Resonator und Knöpfe), Einfassung wie verchromte Spannreifen
+ *   Bariton  dunkles, geriegeltes Koa (Korpus), Knöpfe aus hellerem Koa, Einfassung elfenbein mit Abalone-Streifen
  */
 import { instrument } from '../music/instrument.ts';
 
@@ -99,6 +100,24 @@ function flamedMaple(seed: number): Grain {
   };
 }
 
+function koa(seed: number): Grain {
+  const warp = lattice(4, 6, 61 + seed);
+  const curlAmp = lattice(6, 3, 67 + seed);
+  const streaks = lattice(5, 40, 71 + seed);
+  const fine = lattice(150, 24, 73 + seed);
+  return (u, v) => {
+    const w = warp(u * 4, v * 6) * 2.4;
+    const grain = Math.sin(v * TAU * 30 + w * 3) * 0.5 + 0.5;
+    // Riegel („Curl“): dichte, wellige Querstreifen, die im Licht schimmern – das Erkennungszeichen von Koa
+    const curl = Math.sin(u * TAU * 28 + Math.sin(v * TAU * 4 + w * 2) * 2 + w * 3) * 0.5 + 0.5;
+    const amp = curlAmp(u * 6, v * 3);
+    // vereinzelte dunkle Adern längs der Faser
+    const st = streaks(u * 5, v * 40);
+    const dark = st > 0.66 ? (st - 0.66) * 1.8 : 0;
+    return clamp(0.4 + grain * 0.2 + (curl - 0.5) * amp * 0.36 + (fine(u * 150, v * 24) - 0.5) * 0.12 - dark);
+  };
+}
+
 export interface Material {
   grain: (seed: number) => Grain;
   dark: RGB;
@@ -119,6 +138,11 @@ export const MATERIALS: Record<string, { body: Material; button: Material }> = {
     // tabakfarben gebeizter Ahorn (Resonator), Knöpfe aus hellerem geflammtem Ahorn
     body: { grain: flamedMaple, dark: [40, 20, 8], light: [116, 64, 24] },
     button: { grain: flamedMaple, dark: [112, 60, 18], light: [204, 136, 60] },
+  },
+  bariton: {
+    // dunkles Koa für den Korpus, die Knöpfe goldbraun – verwandt mit der Ukulele, aber kühler und tiefer
+    body: { grain: koa, dark: [34, 17, 8], light: [136, 80, 34] },
+    button: { grain: koa, dark: [86, 44, 16], light: [188, 120, 52] },
   },
 };
 

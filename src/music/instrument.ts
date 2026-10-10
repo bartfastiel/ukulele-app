@@ -2,8 +2,9 @@ import type { Chord } from './grip.ts';
 import { UKULELE } from './instruments/ukulele.ts';
 import { GITARRE } from './instruments/gitarre.ts';
 import { BANJO } from './instruments/banjo.ts';
+import { BARITON } from './instruments/bariton.ts';
 
-export type InstrumentId = 'ukulele' | 'gitarre' | 'banjo';
+export type InstrumentId = 'ukulele' | 'gitarre' | 'banjo' | 'bariton';
 
 export interface InstrumentString {
   /** Kurzname im Griffbild und in Sätzen („{s}-Saite“): G C E A, Gitarre E A D G B e, Banjo g D G B D. */
@@ -102,7 +103,7 @@ export interface Instrument {
   recordChords: string[];
 }
 
-export const INSTRUMENTS: Instrument[] = [UKULELE, GITARRE, BANJO];
+export const INSTRUMENTS: Instrument[] = [UKULELE, GITARRE, BANJO, BARITON];
 
 let current: Instrument = UKULELE;
 const listeners: (() => void)[] = [];

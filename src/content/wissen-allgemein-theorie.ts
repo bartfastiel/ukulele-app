@@ -4,7 +4,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'akkordsymbole-lesen',
     slug: { de: 'akkordsymbole-lesen', en: 'read-chord-symbols', fr: 'lire-symboles-accords' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'akkorde',
     title: {
       de: 'Akkordsymbole lesen: Was bedeuten C, Am, G7 und Fmaj7?',
@@ -102,7 +102,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'dur-und-moll',
     slug: { de: 'dur-und-moll', en: 'major-and-minor', fr: 'majeur-et-mineur' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'theorie',
     title: {
       de: 'Dur und Moll hören und verstehen – einfach erklärt',
@@ -188,7 +188,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'takt-und-taktarten',
     slug: { de: 'takt-und-taktarten', en: 'time-signatures', fr: 'mesures-et-temps' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'rhythmus',
     title: {
       de: 'Takt und Taktarten: 4/4, 3/4, 2/4 und 6/8 einfach erklärt',
@@ -281,7 +281,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'schlagmuster-lernen',
     slug: { de: 'schlagmuster-lernen', en: 'strumming-patterns', fr: 'rythmiques-grattage' },
-    instruments: ['ukulele', 'gitarre'],
+    instruments: ['ukulele', 'gitarre', 'bariton'],
     category: 'rhythmus',
     title: {
       de: 'Schlagmuster lernen: Die besten Anschläge für Anfänger',
@@ -375,7 +375,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'mit-metronom-ueben',
     slug: { de: 'mit-metronom-ueben', en: 'practice-with-metronome', fr: 'travailler-avec-metronome' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'rhythmus',
     title: {
       de: 'Mit Metronom üben – so wird dein Rhythmus stabil',
@@ -470,7 +470,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'toene-und-notennamen',
     slug: { de: 'toene-und-notennamen', en: 'note-names', fr: 'noms-des-notes' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'theorie',
     title: {
       de: 'Töne und Notennamen: C D E F G A B – und warum B auch H heißt',
@@ -540,7 +540,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'transponieren',
     slug: { de: 'transponieren-tonarten', en: 'transpose-keys', fr: 'transposer-tonalites' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'theorie',
     title: {
       de: 'Transponieren: Lieder in eine andere Tonart bringen',
@@ -585,9 +585,9 @@ export const ALLGEMEIN_THEORIE: Article[] = [
       { h2: { de: 'Ein Beispiel', en: 'An example', fr: 'Un exemple' } },
       {
         p: {
-          de: 'Ein Lied in C-Dur mit **C, F, G7** soll fünf Halbtöne tiefer klingen. Fünf Schritte nach links ergibt **G, C, D7**. Auf der Gitarre und dem Banjo liegt G-Dur besonders gut, auf der Ukulele fühlt sich C-Dur oder F-Dur oft leichter an. Darum transponieren Musikerinnen und Musiker ständig.',
-          en: 'A song in C major with **C, F, G7** should sound five half steps lower. Five steps to the left gives **G, C, D7**. On guitar and banjo G major is especially comfortable; on ukulele C or F major often feels easier. That’s why musicians transpose all the time.',
-          fr: 'Une chanson en Do majeur avec **C, F, G7** doit sonner cinq demi-tons plus bas. Cinq pas vers la gauche donnent **G, C, D7**. À la guitare et au banjo, Sol majeur est très confortable ; au ukulélé, Do ou Fa majeur sont souvent plus faciles. C’est pour ça que les musiciens transposent sans arrêt.',
+          de: 'Ein Lied in C-Dur mit **C, F, G7** soll fünf Halbtöne tiefer klingen. Fünf Schritte nach links ergibt **G, C, D7**. Auf der Gitarre, der Bariton-Ukulele und dem Banjo liegt G-Dur besonders gut, auf der Ukulele fühlt sich C-Dur oder F-Dur oft leichter an. Darum transponieren Musikerinnen und Musiker ständig.',
+          en: 'A song in C major with **C, F, G7** should sound five half steps lower. Five steps to the left gives **G, C, D7**. On guitar, baritone ukulele and banjo G major is especially comfortable; on ukulele C or F major often feels easier. That’s why musicians transpose all the time.',
+          fr: 'Une chanson en Do majeur avec **C, F, G7** doit sonner cinq demi-tons plus bas. Cinq pas vers la gauche donnent **G, C, D7**. À la guitare, au ukulélé baryton et au banjo, Sol majeur est très confortable ; au ukulélé, Do ou Fa majeur sont souvent plus faciles. C’est pour ça que les musiciens transposent sans arrêt.',
         },
       },
       { chord: 'C' },
@@ -633,7 +633,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'tabulatur-lesen',
     slug: { de: 'tabulatur-lesen', en: 'read-tabs', fr: 'lire-tablature' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'theorie',
     title: {
       de: 'Tabulatur lesen lernen – Tabs einfach erklärt',
@@ -717,7 +717,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'zwoelf-takt-blues',
     slug: { de: 'zwoelf-takt-blues', en: 'twelve-bar-blues', fr: 'blues-douze-mesures' },
-    instruments: ['ukulele', 'gitarre', 'banjo'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
     category: 'theorie',
     title: {
       de: '12-Takt-Blues lernen: Das Grundschema für Einsteiger',
@@ -772,9 +772,9 @@ export const ALLGEMEIN_THEORIE: Article[] = [
       { h2: { de: 'Der Blues in anderen Tonarten', en: 'The blues in other keys', fr: 'Le blues dans d’autres tonalités' } },
       {
         p: {
-          de: 'Das Schema funktioniert in jeder Tonart. Man nennt die drei Akkorde oft **I, IV und V** – nach ihrer Stufe in der Tonleiter. In G sind das G, C und D7, in A sind es A, D und E7. Auf der Gitarre und dem Banjo ist der Blues in G oder A beliebt, auf der Ukulele in C. Mehr dazu in [Transponieren](wissen:transponieren).',
-          en: 'The pattern works in any key. The three chords are often called **I, IV and V** after their place in the scale. In G they’re G, C and D7; in A they’re A, D and E7. On guitar and banjo the blues in G or A is popular, on ukulele the blues in C. More in [Transposing](wissen:transponieren).',
-          fr: 'La grille fonctionne dans toutes les tonalités. On appelle souvent les trois accords **I, IV et V**, d’après leur degré dans la gamme. En Sol, ce sont G, C et D7 ; en La, A, D et E7. À la guitare et au banjo, on aime le blues en Sol ou en La ; au ukulélé, en Do. Plus d’infos dans [Transposer](wissen:transponieren).',
+          de: 'Das Schema funktioniert in jeder Tonart. Man nennt die drei Akkorde oft **I, IV und V** – nach ihrer Stufe in der Tonleiter. In G sind das G, C und D7, in A sind es A, D und E7. Auf der Gitarre, der Bariton-Ukulele und dem Banjo ist der Blues in G oder A beliebt, auf der Ukulele in C. Mehr dazu in [Transponieren](wissen:transponieren).',
+          en: 'The pattern works in any key. The three chords are often called **I, IV and V** after their place in the scale. In G they’re G, C and D7; in A they’re A, D and E7. On guitar, baritone ukulele and banjo the blues in G or A is popular, on ukulele the blues in C. More in [Transposing](wissen:transponieren).',
+          fr: 'La grille fonctionne dans toutes les tonalités. On appelle souvent les trois accords **I, IV et V**, d’après leur degré dans la gamme. En Sol, ce sont G, C et D7 ; en La, A, D et E7. À la guitare, au ukulélé baryton et au banjo, on aime le blues en Sol ou en La ; au ukulélé, en Do. Plus d’infos dans [Transposer](wissen:transponieren).',
         },
       },
       { h2: { de: 'Selbst Töne spielen', en: 'Playing your own notes', fr: 'Jouer tes propres notes' } },
