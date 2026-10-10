@@ -5,10 +5,14 @@
 #               https://gitarre.wer-ist-daniel-schwarz.de/  ← dist/gitarre  (Server: app-gitarre/)
 #               https://banjo.wer-ist-daniel-schwarz.de/    ← dist/banjo    (Server: app-banjo/)
 #               https://bariton.wer-ist-daniel-schwarz.de/  ← dist/bariton  (Server: app-bariton/)
-#               (dist/start, die Instrumentenwahl, kommt erst mit einer eigenen Domain dazu)
+#   Eigene Domain (Variable SITE_DOMAIN gesetzt, z. B. openstring.de):
+#               https://<SITE_DOMAIN>/ (Instrumentenwahl), https://<SITE_DOMAIN>/ukulele/, …  ← dist/  (Server: site/)
+#               Die alten Subdomains werden zu Weiterleitungen dorthin, die die Daten im Browser mitnehmen (MOVE_TO).
 #   Vorschau    https://ukulele.wer-ist-daniel-schwarz.de/<UKULELE_PREVIEW_PATH>/pr-<nr>/<seite>/  ← dist/ je Pull Request
 #
-# Secrets: DEPLOY_HOST, DEPLOY_USER (Standard root), DEPLOY_SSH_KEY, LEGAL_ADDRESS/LEGAL_EMAIL (Impressum, nur verpackt in der Seite). Variablen: UKULELE_PREVIEW_PATH, UKULELE_HOST (optional).
+# Secrets: DEPLOY_HOST, DEPLOY_USER (Standard root), DEPLOY_SSH_KEY, LEGAL_ADDRESS/LEGAL_EMAIL (Impressum, nur verpackt in der Seite). Variablen: UKULELE_PREVIEW_PATH, UKULELE_HOST (optional), SITE_DOMAIN (optional: eigene Domain).
+# Caddy für SITE_DOMAIN: root auf site/, file_server mit try_files {path} {path}/index.html und handle_errors → 404.html
+# des jeweiligen Unterordners (Repo frag-daniel).
 # Forks bekommen keine Secrets – die Deployments werden dann sauber übersprungen.
 name: Deploy
 
@@ -64,12 +68,13 @@ jobs:
     timeout-minutes: 10
     environment:
       name: production
-      url: https://${{ vars.UKULELE_HOST || 'ukulele.wer-ist-daniel-schwarz.de' }}/
+      url: ${{ vars.SITE_DOMAIN && format('https://{0}/', vars.SITE_DOMAIN) || format('https://{0}/', vars.UKULELE_HOST || 'ukulele.wer-ist-daniel-schwarz.de') }}
     env:
       DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER || 'root' }}
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
       UKULELE_HOST: ${{ vars.UKULELE_HOST || 'ukulele.wer-ist-daniel-schwarz.de' }}
+      SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -77,24 +82,39 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --no-audit --no-fund
-      - run: npm run build
+      - name: SSH-Schlüssel
+        run: .github/scripts/ssh-setup.sh
+      - name: Subdomains (ohne eigene Domain)
+        if: env.SITE_DOMAIN == ''
         env:
           SITE_URL: https://{site}.wer-ist-daniel-schwarz.de/
           PUBLIC_URL: https://{site}.wer-ist-daniel-schwarz.de/
           LEGAL_ADDRESS: ${{ secrets.LEGAL_ADDRESS }}
           LEGAL_EMAIL: ${{ secrets.LEGAL_EMAIL }}
-      - name: SSH-Schlüssel
-        run: .github/scripts/ssh-setup.sh
-      - name: Hochladen
         run: |
+          npm run build
           .github/scripts/upload-dir.sh dist/ukulele "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app"
           .github/scripts/upload-dir.sh dist/gitarre "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-gitarre"
           .github/scripts/upload-dir.sh dist/banjo "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-banjo"
           .github/scripts/upload-dir.sh dist/bariton "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-bariton"
-      - name: Live-Prüfung
-        run: |
           curl -fsS --retry 5 --retry-delay 5 "https://$UKULELE_HOST/" | grep -q 'data-instrument="ukulele"'
           echo "Live: https://$UKULELE_HOST/"
+      - name: Eigene Domain
+        if: env.SITE_DOMAIN != ''
+        env:
+          LEGAL_ADDRESS: ${{ secrets.LEGAL_ADDRESS }}
+          LEGAL_EMAIL: ${{ secrets.LEGAL_EMAIL }}
+        run: |
+          SITE_URL="https://$SITE_DOMAIN/{site}/" PUBLIC_URL="https://$SITE_DOMAIN/{site}/" npm run build
+          .github/scripts/upload-dir.sh dist "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/site"
+          curl -fsS --retry 5 --retry-delay 5 "https://$SITE_DOMAIN/ukulele/" | grep -q 'data-instrument="ukulele"'
+          echo "Live: https://$SITE_DOMAIN/"
+          # alte Subdomains: Weiterleitungen, die Sterne und eigene Lieder mitnehmen
+          SITE_URL="https://{site}.wer-ist-daniel-schwarz.de/" PUBLIC_URL="https://{site}.wer-ist-daniel-schwarz.de/" MOVE_TO="https://$SITE_DOMAIN/{site}/" npm run build
+          .github/scripts/upload-dir.sh dist/ukulele "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app"
+          .github/scripts/upload-dir.sh dist/gitarre "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-gitarre"
+          .github/scripts/upload-dir.sh dist/banjo "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-banjo"
+          .github/scripts/upload-dir.sh dist/bariton "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-bariton"
 
   preview:
     name: Vorschau

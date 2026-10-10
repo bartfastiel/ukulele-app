@@ -42,3 +42,6 @@ declare module 'node:fs' {
 declare module 'node:crypto' {
   export function createHash(alg: string): { update(data: string | Uint8Array): { digest(enc: 'hex'): string } };
 }
+declare module 'node:vm' {
+  export function runInNewContext(code: string, context: Record<string, unknown>): unknown;
+}

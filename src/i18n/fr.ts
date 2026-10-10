@@ -168,6 +168,7 @@ export const FR: Record<string, string> = {
   "Ziehen ↑: Den Ton mit Pfeil ({note}) kannst du ein kleines Stück hochziehen – drück die Saite mit dem greifenden Finger quer über das Griffbrett, bis sie etwas höher klingt. Das ist die „Blue Note“ zwischen Moll und Dur. Der Pfeil erscheint nur, wenn der {i}-Akkord klingt – nur dort passt das Ziehen. Der Ton {b5} ist ein Durchgangston: kurz antippen, dann weiter.": "Tirer ↑ : la note avec la flèche ({note}), tu peux la monter un tout petit peu – pousse la corde sur le côté avec le doigt qui appuie, jusqu’à ce qu’elle sonne un peu plus haut. C’est la « blue note » entre mineur et majeur. La flèche n’apparaît que pendant l’accord de {i} – c’est là que tirer sonne bien. La note {b5} est une note de passage : touche-la brièvement, puis continue.",
   "5 · Dur und Moll mischen": "5 · Mélanger majeur et mineur",
   "Wie Stufe 4, dazu kommen blasse Punkte: Töne aus Dur. Über dem {i}-Akkord klingt seine große Terz {iii} wunderbar – rutsch gern von {b3} aus hinein. Über {iv} ist {iii} ausgeblendet, dort reibt er sich mit dem Akkord.": "Comme le niveau 4, avec en plus des points pâles : des notes du majeur. Sur l’accord de {i}, sa tierce majeure {iii} sonne à merveille – glisse-y depuis {b3}. Sur {iv}, {iii} est masqué, car il frotte avec l’accord.",
+  "Zuletzt gespielt": "Joué récemment",
   'Langsam': 'Lent',
   'Mittel': 'Moyen',
   'Schnell': 'Rapide',

@@ -219,7 +219,7 @@ export const UKULELE_ARTICLES: Article[] = [
       },
       { tool: 'akkorde' },
     ],
-    related: ['ukulele-kinder', 'ukulele-erste-akkorde', 'saubere-griffe', 'schlagmuster-lernen'],
+    related: ['ukulele-kinder', 'ukulele-erste-akkorde', 'saubere-griffe', 'schlagmuster-lernen', 'ukulele-linkshaender'],
   },
   {
     id: 'ukulele-saiten',
@@ -854,5 +854,98 @@ export const UKULELE_ARTICLES: Article[] = [
       { tool: 'rhythmus' },
     ],
     related: ['ukulele-saiten', 'tabulatur-lesen', 'mit-metronom-ueben', 'takt-und-taktarten'],
+  },
+  {
+    id: 'ukulele-linkshaender',
+    slug: { de: 'ukulele-linkshaender', en: 'left-handed-ukulele', fr: 'ukulele-gaucher' },
+    instruments: ['ukulele'],
+    category: 'erste-schritte',
+    published: '2026-10-10',
+    title: {
+      de: 'Ukulele für Linkshänder – umdrehen, umbesaiten oder rechtsherum?',
+      en: 'Left-handed ukulele – flip it, restring it or play right-handed?',
+      fr: 'Ukulélé pour gaucher – inverser les cordes ou jouer en droitier ?',
+    },
+    description: {
+      de: 'Linkshänder an der Ukulele: rechtsherum lernen, umbesaiten oder verkehrt herum spielen? Vor- und Nachteile und gespiegelte Griffbilder in der App.',
+      en: 'Left-handed on the ukulele: learn right-handed, restring it or play it upside down? Pros and cons, plus mirrored chord charts in the app.',
+      fr: 'Gaucher au ukulélé : jouer en droitier, inverser les cordes ou jouer à l’envers ? Avantages, inconvénients et diagrammes inversés dans l’appli.',
+    },
+    blocks: [
+      {
+        p: {
+          de: 'Du schreibst mit links und fragst dich, wie herum du die Ukulele halten sollst? Gute Nachricht: Bei der Ukulele brauchen **beide Hände** Geschick. Die eine greift die Akkorde, die andere schlägt den Rhythmus. Es gibt deshalb kein „richtig“ oder „verkehrt“, sondern drei Wege, die alle funktionieren.',
+          en: 'You write with your left hand and wonder which way round to hold the ukulele? Good news: on the ukulele **both hands** need skill. One frets the chords, the other strums the rhythm. So there is no single correct way – there are three ways, and all of them work.',
+          fr: 'Tu écris de la main gauche et tu te demandes dans quel sens tenir le ukulélé ? Bonne nouvelle : au ukulélé, **les deux mains** travaillent. L’une forme les accords, l’autre gratte le rythme. Il n’y a donc pas de bon ou de mauvais sens, mais trois façons de faire qui marchent toutes.',
+        },
+      },
+      { h2: { de: 'Weg 1: ganz normal rechtsherum', en: 'Option 1: play the standard way', fr: 'Option 1 : jouer comme un droitier' } },
+      {
+        p: {
+          de: 'Viele Linkshänder lernen Ukulele einfach wie alle anderen: Hals nach links, die linke Hand greift. Das hat Vorteile: Du kannst jede Ukulele ausleihen, siehst die Griffe der Lehrkraft und der Klasse genau so wie in den Schulheften, und deine geschickte linke Hand übernimmt die Griffe – das ist oft der schwierigere Teil.',
+          en: 'Many left-handers simply learn the ukulele like everybody else: neck to the left, left hand on the chords. That has advantages: you can borrow any ukulele, you see your teacher’s and classmates’ chords exactly as in the school books, and your skilful left hand does the fretting – often the harder job.',
+          fr: 'Beaucoup de gauchers apprennent tout simplement comme tout le monde : manche à gauche, main gauche sur les accords. C’est pratique : tu peux emprunter n’importe quel ukulélé, tu vois les accords du professeur et de la classe comme dans les méthodes, et ta main gauche habile s’occupe des accords – souvent la partie la plus difficile.',
+        },
+      },
+      { h2: { de: 'Weg 2: umdrehen und umbesaiten', en: 'Option 2: flip it and restring it', fr: 'Option 2 : le retourner et inverser les cordes' } },
+      {
+        p: {
+          de: 'Hier hältst du die Ukulele spiegelverkehrt: Hals nach rechts, die rechte Hand greift, die linke schlägt. Damit die Saiten wieder in der gewohnten Reihenfolge liegen – G oben beim Kinn, A unten –, werden sie **umgekehrt aufgezogen**. Alles ist dann genau ein Spiegelbild einer Rechtshänder-Ukulele.',
+          en: 'Here you hold the ukulele mirrored: neck to the right, right hand fretting, left hand strumming. So that the strings are back in their usual order – G at the top near your chin, A at the bottom – they are **strung the other way round**. Everything is then an exact mirror image of a right-handed ukulele.',
+          fr: 'Ici, tu tiens le ukulélé en miroir : manche à droite, la main droite forme les accords, la gauche gratte. Pour que les cordes retrouvent leur ordre habituel – Sol en haut près du menton, La en bas –, on les **monte dans l’autre sens**. Tout devient alors le reflet exact d’un ukulélé de droitier.',
+        },
+      },
+      {
+        ul: [
+          {
+            de: 'Der **Sattel** oben am Hals hat für jede Saite eine Kerbe, passend zu ihrer Dicke. Nach dem Umbesaiten liegen dickere Saiten in Kerben für dünnere. Oft geht es trotzdem; sonst passt eine Fachwerkstatt die Kerben an oder setzt einen neuen Sattel ein.',
+            en: 'The **nut** at the top of the neck has a slot for each string, cut to its thickness. After restringing, thicker strings sit in slots meant for thinner ones. Often it still works; otherwise a repair shop adjusts the slots or fits a new nut.',
+            fr: 'Le **sillet** en haut du manche a une encoche par corde, adaptée à son épaisseur. Après l’inversion, des cordes plus épaisses se retrouvent dans des encoches plus fines. Souvent ça marche quand même ; sinon, un luthier ajuste les encoches ou pose un nouveau sillet.',
+          },
+          {
+            de: 'Der **Steg** unten auf dem Korpus ist bei den meisten Ukulelen gerade und funktioniert in beide Richtungen. Ist die Stegeinlage schräg oder abgestuft, sollte sie umgedreht oder ersetzt werden, damit die Töne weiter oben am Hals stimmen.',
+            en: 'The **bridge** on the body is straight on most ukuleles and works either way. If the saddle is slanted or stepped, it should be turned round or replaced so notes higher up the neck stay in tune.',
+            fr: 'Le **chevalet** sur la caisse est droit sur la plupart des ukulélés et fonctionne dans les deux sens. Si le sillet de chevalet est en biais ou en escalier, il faut le retourner ou le remplacer pour que les notes restent justes plus haut sur le manche.',
+          },
+          {
+            de: 'Die kleinen **Orientierungspunkte** an der Halskante zeigen dann nach unten. Ein Erwachsener kann neue Punkte als Aufkleber oben anbringen.',
+            en: 'The little **side dots** on the edge of the neck then face downwards. An adult can stick new ones on the top edge.',
+            fr: 'Les petits **repères** sur la tranche du manche se retrouvent en dessous. Un adulte peut coller de nouveaux repères sur le dessus.',
+          },
+        ],
+      },
+      {
+        p: {
+          de: 'Weil die meisten Ukulelen fast symmetrisch gebaut sind, klappt das Umbesaiten hier leichter als bei vielen anderen Instrumenten. Es gibt auch fertige Linkshänder-Ukulelen.',
+          en: 'Because most ukuleles are built almost symmetrically, restringing is easier than on many other instruments. Ready-made left-handed ukuleles exist too.',
+          fr: 'Comme la plupart des ukulélés sont presque symétriques, l’inversion des cordes est plus simple que sur beaucoup d’autres instruments. Il existe aussi des ukulélés pour gauchers tout prêts.',
+        },
+      },
+      { h2: { de: 'Weg 3: verkehrt herum, ohne Umbesaiten', en: 'Option 3: upside down, without restringing', fr: 'Option 3 : à l’envers, sans inverser les cordes' } },
+      {
+        p: {
+          de: 'Manche drehen eine normale Ukulele einfach um und spielen sie so. Dann liegt die A-Saite oben und die G-Saite unten. Das geht, aber alle Griffe fühlen sich anders an als in jedem Schulheft, und die Finger müssen eigene Fingersätze finden. Für den Anfang in einer Klasse ist das meist der schwerste Weg.',
+          en: 'Some people simply turn an ordinary ukulele over and play it that way. The A string is then at the top and the G string at the bottom. It works, but every chord feels different from any school book, and your fingers have to find their own fingerings. When starting out in a class, it is usually the hardest option.',
+          fr: 'Certains retournent simplement un ukulélé normal et jouent ainsi. La corde de La est alors en haut et celle de Sol en bas. Ça marche, mais tous les accords se sentent autrement que dans les méthodes, et les doigts doivent trouver leurs propres doigtés. Pour débuter en classe, c’est souvent le chemin le plus difficile.',
+        },
+      },
+      { h2: { de: 'Die Linkshänder-Ansicht in der App', en: 'The left-handed view in the app', fr: 'Le mode gaucher dans l’appli' } },
+      {
+        p: {
+          de: 'Spielst du eine umbesaitete Ukulele (Weg 2), schalte die Einstellung **Linkshänder** ein – unter „Meine Sterne“ oder direkt unter dem Griffbild auf jeder Akkord-Seite. Dann sind alle Griffbilder und der Hals beim Blues gespiegelt, so wie du dein Instrument siehst. Die Buchstaben und Zahlen bleiben gut lesbar. Spielst du rechtsherum oder verkehrt herum ohne Umbesaiten, lass die Einstellung aus: Dann zeigen die normalen Griffbilder, wo die Finger hingehören.',
+          en: 'If you play a restrung ukulele (option 2), switch on the **Left-handed** setting – under “My Stars” or right below the chord chart on any chord page. All chord charts and the blues neck are then mirrored, just as you see your instrument. Letters and numbers stay easy to read. If you play right-handed, or upside down without restringing, leave it off: the normal charts then show where your fingers go.',
+          fr: 'Si tu joues un ukulélé aux cordes inversées (option 2), active le réglage **Mode gaucher** – dans « Mes étoiles » ou juste sous le diagramme de chaque page d’accord. Tous les diagrammes et le manche du blues sont alors inversés, comme tu vois ton instrument. Les lettres et les chiffres restent lisibles. Si tu joues en droitier, ou à l’envers sans inverser les cordes, laisse-le désactivé : les diagrammes normaux montrent où vont tes doigts.',
+        },
+      },
+      { tool: 'akkorde' },
+      {
+        tip: {
+          de: 'Probiert in Ruhe beide Richtungen aus, bevor ihr umbauen lasst, und sprecht mit der Lehrkraft. Wichtig ist nur, dass du dich wohlfühlst und gern spielst.',
+          en: 'Try both directions calmly before having anything changed, and talk to the teacher. All that matters is that you feel comfortable and enjoy playing.',
+          fr: 'Essayez tranquillement les deux sens avant de faire modifier l’instrument, et parlez-en au professeur. L’essentiel, c’est que tu te sentes à l’aise et que tu aies envie de jouer.',
+        },
+      },
+    ],
+    related: ['ukulele-halten', 'ukulele-saiten', 'ukulele-kinder', 'saiten-wechseln-pflege'],
   },
 ];

@@ -27,7 +27,17 @@ export interface Progress {
   };
 }
 
-const KEY = 'ukulele-club:v1';
+/**
+ * Fortschritt je Instrument – unter einer gemeinsamen Domain liegen alle Instrumente im selben Speicher. Früher gab es
+ * nur einen Schlüssel je Subdomain; der gilt weiter, bis das Instrument zum ersten Mal speichert.
+ */
+const LEGACY_KEY = 'ukulele-club:v1';
+function siteInstrument(): string {
+  return (typeof document !== 'undefined' && document.documentElement.getAttribute('data-instrument')) || 'ukulele';
+}
+const progressKey = () => 'saiten:' + siteInstrument() + ':v1';
+/** Zuletzt gespieltes Instrument – die Startseite bietet es oben an. */
+const LAST_KEY = 'saiten:zuletzt';
 
 const DEFAULTS: Progress = {
   stars: {},
@@ -58,7 +68,7 @@ export function load(): Progress {
   if (cache) return cache;
   let data: Partial<Progress> = {};
   try {
-    data = JSON.parse(localStorage.getItem(KEY) || '{}') as Partial<Progress>;
+    data = JSON.parse(localStorage.getItem(progressKey()) || localStorage.getItem(LEGACY_KEY) || '{}') as Partial<Progress>;
   } catch {
     data = {};
   }
@@ -70,7 +80,7 @@ export function save(mutate: (p: Progress) => void): Progress {
   const p = load();
   mutate(p);
   try {
-    localStorage.setItem(KEY, JSON.stringify(p));
+    localStorage.setItem(progressKey(), JSON.stringify(p));
   } catch {
     // privater Modus oder voller Speicher: die App läuft trotzdem, nur ohne Gedächtnis
   }
@@ -135,7 +145,7 @@ export function importCode(code: string): boolean {
     }
     delete data.ownSongs;
     cache = null;
-    localStorage.setItem(KEY, JSON.stringify(data));
+    localStorage.setItem(progressKey(), JSON.stringify(data));
     load();
     return true;
   } catch {
@@ -145,7 +155,9 @@ export function importCode(code: string): boolean {
 
 // ---------- Eigene Lieder: eigener Schlüssel mit Versionsnummer, damit sich das Format später ändern kann ----------
 
-const OWN_KEY = 'ukulele-club:eigene-lieder';
+// für alle Instrumente gemeinsam: Akkorde passen sich beim Spielen dem Instrument an
+const OWN_KEY = 'saiten:eigene-lieder';
+const LEGACY_OWN_KEY = 'ukulele-club:eigene-lieder';
 const OWN_VERSION = 1;
 let ownCache: OwnSong[] | null = null;
 
@@ -170,7 +182,7 @@ export function ownSongs(): OwnSong[] {
   if (ownCache) return ownCache;
   let raw: string | null = null;
   try {
-    raw = localStorage.getItem(OWN_KEY);
+    raw = localStorage.getItem(OWN_KEY) || localStorage.getItem(LEGACY_OWN_KEY);
   } catch {
     raw = null;
   }
@@ -207,4 +219,72 @@ export function removeOwnSong(id: string): boolean {
       if (p.lastSong === id) p.lastSong = null;
     });
   return ok;
+}
+
+// ---------- Zuletzt gespieltes Instrument und Umzug auf eine neue Adresse ----------
+
+export function rememberInstrument(): void {
+  try {
+    localStorage.setItem(LAST_KEY, siteInstrument());
+  } catch {
+    // ohne Speicher bietet die Startseite eben nichts an
+  }
+}
+
+export function lastInstrument(): string | null {
+  try {
+    return localStorage.getItem(LAST_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Daten von der alten Adresse übernehmen (src/site/move.ts): Sterne und Bestwerte das Bessere von beiden, Übungstage
+ * zusammen, sonst gilt, was hier schon war; eigene Lieder kommen dazu. false bei kaputten Daten.
+ */
+export function takeMoved(code: string): boolean {
+  let data: { p?: string | null; o?: string | null };
+  try {
+    data = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(code))))) as typeof data;
+  } catch {
+    return false;
+  }
+  if (!data || typeof data !== 'object') return false;
+  if (data.p) {
+    let incoming: Partial<Progress>;
+    try {
+      incoming = JSON.parse(data.p) as Partial<Progress>;
+    } catch {
+      incoming = {};
+    }
+    let had = false;
+    try {
+      had = !!localStorage.getItem(progressKey());
+    } catch {
+      had = false;
+    }
+    cache = null;
+    if (!had) {
+      try {
+        localStorage.setItem(progressKey(), JSON.stringify(incoming));
+      } catch {
+        return false;
+      }
+    } else
+      save((p) => {
+        const stars = incoming.stars || {};
+        for (const id of Object.keys(stars)) p.stars[id] = Math.max(p.stars[id] || 0, stars[id]);
+        const hunt = incoming.bestHunt || {};
+        for (const id of Object.keys(hunt)) p.bestHunt[id] = Math.max(p.bestHunt[id] || 0, hunt[id]);
+        for (const d of incoming.days || []) if (p.days.indexOf(d) < 0) p.days.push(d);
+        p.days.sort();
+      });
+  }
+  if (data.o) {
+    const incoming = readOwn(data.o);
+    const mine = ownSongs();
+    writeOwn(mine.concat(incoming.filter((s) => !mine.some((x) => x.id === s.id))));
+  }
+  return true;
 }

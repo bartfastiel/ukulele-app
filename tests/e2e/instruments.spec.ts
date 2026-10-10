@@ -120,11 +120,20 @@ test('Banjo: Rhythmus hat ein Zupfmuster mit Daumen, Zeige- und Mittelfinger', a
   await page.getByRole('button', { name: /Stopp/ }).click();
 });
 
+test('Startseite an der Wurzel: das zuletzt gespielte Instrument steht vorn', async ({ page }) => {
+  await page.goto('http://localhost:4173/');
+  await expect(page.locator('.tile-badge')).toHaveCount(0);
+  await page.goto('http://localhost:4173/gitarre/');
+  await page.goto('http://localhost:4173/');
+  await expect(page.locator('.tiles .tile').first()).toHaveClass(/tile-gitarre/);
+  await expect(page.locator('.tile-gitarre .tile-badge')).toHaveText('Zuletzt gespielt');
+});
+
 test('Bariton-Ukulele: G mit einem Finger wie die vier hohen Gitarrensaiten, eigene Kachel auf der Startseite', async ({ page }) => {
   await page.goto('../bariton/#/akkord/G');
   await expect(page.locator('.diagram-big')).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-instrument', 'bariton');
   await expect(page.getByText('G: Ringfinger auf der E-Saite im 3. Bund')).toBeVisible();
-  await page.goto('../start/');
+  await page.goto('../');
   await expect(page.locator('a.tile-bariton')).toContainText('Bariton-Ukulele-Club');
 });

@@ -1,11 +1,13 @@
 import { installWood } from './ui/wood.ts';
 import { closeMic } from './audio/mic.ts';
-import { load } from './store.ts';
+import { lastInstrument, load, rememberInstrument, takeMoved } from './store.ts';
 import { isLang, setLang, t, tk } from './i18n.ts';
 import { base, brand, link } from './site/nav.ts';
 import { offerLanguage } from './ui/lang-switch.ts';
 import { renderSecrets } from './ui/secret-text.ts';
 import { initInstrument } from './music/instrument.ts';
+import { chord } from './music/chords.ts';
+import { chordDiagram } from './ui/chord-diagram.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
 import { songs } from './views/songs.ts';
@@ -83,6 +85,18 @@ function mount(): void {
   }
 }
 
+/** Griffbilder in Wissensartikeln sind für Rechtshänder vorgerendert; nach dem Laden gilt die Einstellung. */
+function mirrorArticleChords(): void {
+  if (!load().settings.lefty) return;
+  const tiles = document.querySelectorAll('.article-chord');
+  for (let i = 0; i < tiles.length; i++) {
+    const name = tiles[i].querySelector('.chord-name');
+    const old = tiles[i].querySelector('svg');
+    if (!name || !old || !old.parentNode) continue;
+    old.parentNode.replaceChild(chordDiagram(chord(name.textContent || ''), { lefty: true, labels: false }), old);
+  }
+}
+
 // zuerst das Instrument: Holz und Farben hängen davon ab
 initInstrument();
 installWood();
@@ -93,16 +107,42 @@ function redirectOldHash(): boolean {
   return true;
 }
 window.addEventListener('hashchange', redirectOldHash);
+
+/** Umzug von der alten Adresse: Daten aus dem „#“ übernehmen und die Adresse wieder sauber machen. */
+function takeOverMove(): void {
+  if (location.hash.indexOf('#umzug=') !== 0) return;
+  takeMoved(location.hash.slice(7));
+  history.replaceState(null, '', location.pathname + location.search);
+}
+
+/** Startseite: das zuletzt gespielte Instrument steht vorn. */
+function offerLastInstrument(): void {
+  const last = lastInstrument();
+  const tile = last ? document.querySelector('.tile-' + last) : null;
+  if (!tile || !tile.parentNode) return;
+  tile.parentNode.insertBefore(tile, tile.parentNode.firstChild);
+  const badge = document.createElement('span');
+  badge.className = 'tile-badge';
+  badge.textContent = t('Zuletzt gespielt');
+  (tile.querySelector('.tile-text') || tile).appendChild(badge);
+}
+
+const isStart = html.getAttribute('data-site') === 'start';
+takeOverMove();
+if (isStart) offerLastInstrument();
+else if (html.hasAttribute('data-instrument')) rememberInstrument();
 if (!redirectOldHash()) {
   setLang(isLang(html.lang) ? html.lang : 'de');
   if (load().settings.calm) html.classList.add('calm');
   mount();
+  mirrorArticleChords();
   renderSecrets();
   if (html.hasAttribute('data-hash-param')) window.addEventListener('hashchange', () => mount());
   offerLanguage(load().settings.lang);
 }
 
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
+// Die Startseite liegt an der Wurzel; ein Service Worker dort wäre für alle Instrumente zuständig
+if ('serviceWorker' in navigator && location.protocol === 'https:' && !isStart) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register(base() + 'sw.js', { scope: base() }).catch(() => undefined);
   });

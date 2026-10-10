@@ -207,7 +207,7 @@ export const BANJO_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['banjo-kinder', 'banjo-saiten', 'banjo-rolls', 'fingerkuppen-hornhaut'],
+    related: ['banjo-kinder', 'banjo-saiten', 'banjo-rolls', 'fingerkuppen-hornhaut', 'banjo-linkshaender'],
   },
   {
     id: 'banjo-saiten',
@@ -807,5 +807,83 @@ export const BANJO_ARTICLES: Article[] = [
       },
     ],
     related: ['transponieren', 'banjo-stimmen', 'banjo-akkorde', 'banjo-saiten'],
+  },
+  {
+    id: 'banjo-linkshaender',
+    slug: { de: 'banjo-linkshaender', en: 'left-handed-banjo', fr: 'banjo-gaucher' },
+    instruments: ['banjo'],
+    category: 'erste-schritte',
+    published: '2026-10-10',
+    title: {
+      de: 'Banjo für Linkshänder – was geht mit der kurzen 5. Saite?',
+      en: 'Left-handed banjo – what about the short fifth string?',
+      fr: 'Banjo pour gaucher – et la petite 5e corde ?',
+    },
+    description: {
+      de: 'Linkshänder am Banjo: Warum Umbesaiten wegen der kurzen 5. Saite nicht reicht, wann ein Linkshänder-Hals hilft und wie die App Griffbilder spiegelt.',
+      en: 'Left-handed banjo: why restringing isn’t enough because of the short fifth string, when a left-handed neck helps and how the app mirrors chord charts.',
+      fr: 'Gaucher au banjo : pourquoi inverser les cordes ne suffit pas à cause de la petite 5e corde, quand un manche gaucher aide, et le mode gaucher de l’appli.',
+    },
+    blocks: [
+      {
+        p: {
+          de: 'Beim Banjo greift eine Hand die Akkorde, die andere zupft mit Daumen, Zeige- und Mittelfinger die Rolls. Beide Hände haben also viel zu tun. Linkshänder können deshalb gut rechtsherum spielen – oder ein Banjo nehmen, das spiegelverkehrt gebaut ist. Eine Besonderheit macht das Banjo aber anders als Ukulele und Gitarre: die **kurze 5. Saite**.',
+          en: 'On the banjo one hand frets the chords, the other picks the rolls with thumb, index and middle finger. Both hands are busy. So left-handers can play right-handed perfectly well – or use a banjo that is built mirrored. One feature, though, makes the banjo different from the ukulele and guitar: the **short fifth string**.',
+          fr: 'Au banjo, une main forme les accords et l’autre joue les rolls avec le pouce, l’index et le majeur. Les deux mains ont donc beaucoup à faire. Un gaucher peut très bien jouer en droitier – ou prendre un banjo construit en miroir. Mais un détail rend le banjo différent du ukulélé et de la guitare : la **petite 5e corde**.',
+        },
+      },
+      { h2: { de: 'Warum Umbesaiten beim Banjo nicht reicht', en: 'Why restringing isn’t enough on a banjo', fr: 'Pourquoi inverser les cordes ne suffit pas' } },
+      {
+        p: {
+          de: 'Die 5. Saite beginnt nicht am Kopf, sondern an einem eigenen Wirbel seitlich am Hals, beim 5. Bund. Dieser Wirbel sitzt fest an der Halsseite, die beim Spielen oben liegt. Dreht man ein normales Banjo um, liegt er unten – und die kurze Saite gleich mit. Anders als bei Ukulele oder Gitarre lässt sich das nicht einfach durch neues Aufziehen der Saiten ändern.',
+          en: 'The fifth string doesn’t start at the headstock but at its own tuning peg on the side of the neck, at the fifth fret. That peg is fixed to the side of the neck that faces up while playing. Turn a standard banjo over and it ends up underneath – along with the short string. Unlike a ukulele or guitar, this can’t be fixed just by stringing it differently.',
+          fr: 'La 5e corde ne part pas de la tête, mais d’une cheville à part sur le côté du manche, au niveau de la 5e case. Cette cheville est fixée sur le côté du manche qui est en haut quand on joue. Si on retourne un banjo normal, elle se retrouve en dessous – avec la petite corde. Contrairement au ukulélé ou à la guitare, on ne peut pas régler ça en remontant simplement les cordes.',
+        },
+      },
+      {
+        ul: [
+          {
+            de: '**Linkshänder-Banjo:** Hals, Sattel und der Wirbel der 5. Saite sind spiegelverkehrt gebaut. Das ist die beste Lösung, wenn du andersherum spielen möchtest.',
+            en: '**Left-handed banjo:** the neck, nut and fifth-string peg are built mirrored. This is the best solution if you want to play the other way round.',
+            fr: '**Banjo pour gaucher :** le manche, le sillet et la cheville de la 5e corde sont construits en miroir. C’est la meilleure solution si tu veux jouer dans l’autre sens.',
+          },
+          {
+            de: '**Neuer Hals:** Bei vielen Banjos lässt sich der Hals vom runden Korpus abschrauben. Eine Fachwerkstatt kann dann einen Linkshänder-Hals anbauen.',
+            en: '**New neck:** on many banjos the neck can be unbolted from the round body. A repair shop can then fit a left-handed neck.',
+            fr: '**Nouveau manche :** sur beaucoup de banjos, le manche se dévisse du corps rond. Un luthier peut alors monter un manche pour gaucher.',
+          },
+          {
+            de: '**Steg:** Der Banjo-Steg ist lose und wird nur von den Saiten gehalten. Für Linkshänder wird er passend zur neuen Saitenreihenfolge eingesetzt und neu ausgerichtet, damit die Töne stimmen.',
+            en: '**Bridge:** the banjo bridge is loose, held in place only by the strings. For left-handers it is set up to match the new string order and repositioned so the notes are in tune.',
+            fr: '**Chevalet :** le chevalet du banjo est mobile, tenu seulement par les cordes. Pour un gaucher, on le place selon le nouvel ordre des cordes et on le règle pour que les notes soient justes.',
+          },
+        ],
+      },
+      { h2: { de: 'Verkehrt herum spielen?', en: 'Playing it upside down?', fr: 'Jouer à l’envers ?' } },
+      {
+        p: {
+          de: 'Ein normales Banjo einfach umgedreht zu spielen, ist kaum üblich: Die kurze 5. Saite liegt dann unten, wo der Daumen sie für die Rolls nicht gut erreicht. Wenn es nicht gleich ein Linkshänder-Banjo sein soll, ist **rechtsherum lernen** meist der einfachere Weg – viele Linkshänder spielen so ganz selbstverständlich.',
+          en: 'Simply playing a standard banjo upside down is rare: the short fifth string then lies at the bottom, where the thumb can’t reach it well for rolls. If a left-handed banjo isn’t an option yet, **learning right-handed** is usually the easier path – many left-handers play that way quite naturally.',
+          fr: 'Jouer un banjo normal simplement retourné est rare : la petite 5e corde se retrouve en bas, là où le pouce l’atteint mal pour les rolls. Si un banjo pour gaucher n’est pas possible tout de suite, **apprendre en droitier** est souvent le plus simple – beaucoup de gauchers jouent ainsi tout naturellement.',
+        },
+      },
+      { h2: { de: 'Die Linkshänder-Ansicht in der App', en: 'The left-handed view in the app', fr: 'Le mode gaucher dans l’appli' } },
+      {
+        p: {
+          de: 'Spielst du ein Linkshänder-Banjo, schalte die Einstellung **Linkshänder** ein – unter „Meine Sterne“ oder direkt unter dem Griffbild auf jeder Akkord-Seite. Dann sind alle Griffbilder und der Hals beim Blues gespiegelt, so wie du dein Banjo siehst. Die kurze 5. Saite steht dann auch im Bild auf der anderen Seite; Saitennamen und Zahlen bleiben lesbar. Spielst du rechtsherum, lass die Einstellung aus.',
+          en: 'If you play a left-handed banjo, switch on the **Left-handed** setting – under “My Stars” or right below the chord chart on any chord page. All chord charts and the blues neck are then mirrored, just as you see your banjo. The short fifth string moves to the other side in the pictures too; string names and numbers stay readable. If you play right-handed, leave it off.',
+          fr: 'Si tu joues un banjo pour gaucher, active le réglage **Mode gaucher** – dans « Mes étoiles » ou juste sous le diagramme de chaque page d’accord. Tous les diagrammes et le manche du blues sont alors inversés, comme tu vois ton banjo. La petite 5e corde passe aussi de l’autre côté sur les images ; les noms des cordes et les chiffres restent lisibles. Si tu joues en droitier, laisse-le désactivé.',
+        },
+      },
+      { tool: 'akkorde' },
+      {
+        tip: {
+          de: 'Probiert vor dem Kauf beide Richtungen aus, am besten mit einem geliehenen Banjo, und fragt die Lehrkraft um Rat. Linkshänder-Banjos sind seltener – ein Fachgeschäft kann sie aber meist besorgen.',
+          en: 'Try both directions before buying, ideally on a borrowed banjo, and ask the teacher for advice. Left-handed banjos are less common – but a music shop can usually order one.',
+          fr: 'Essayez les deux sens avant d’acheter, idéalement avec un banjo emprunté, et demandez conseil au professeur. Les banjos pour gaucher sont plus rares, mais un magasin de musique peut en général en commander un.',
+        },
+      },
+    ],
+    related: ['banjo-halten', 'banjo-kinder', 'banjo-saiten', 'saiten-wechseln-pflege'],
   },
 ];

@@ -40,7 +40,7 @@ export const SITES: SiteDef[] = [
   {
     id: 'start',
     instrument: null,
-    brand: { de: 'Saiten-Club', en: 'Strings Club', fr: 'Club des cordes' },
+    brand: { de: 'Open String', en: 'Open String', fr: 'Open String' },
     name: { de: 'Saiteninstrumente', en: 'string instruments', fr: 'instruments à cordes' },
   },
 ];
