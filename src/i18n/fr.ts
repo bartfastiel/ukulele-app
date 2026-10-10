@@ -718,6 +718,40 @@ export const FR: Record<string, string> = {
   "12-saitige Gitarre": "Guitare 12 cordes",
   "Jede Saite hat eine Partnerin: Bei E, A, D und G klingt sie eine Oktave höher, bei B und e genau gleich. Stimm erst die dicke Saite, dann ihre Partnerin – das Stimmgerät erkennt beide.": "Chaque corde a une partenaire : pour E, A, D et G, elle sonne une octave plus haut, pour B et e exactement pareil. Accorde d’abord la corde épaisse, puis sa partenaire – l’accordeur reconnaît les deux.",
   "Oktavsaite": "corde à l’octave",
+  // src/site/relatives.ts
+  'Du spielst Bariton-Ukulele? Dort greifst du {chord} anders': 'Tu joues du ukulélé baryton ? Là-bas, {chord} se joue autrement',
+  'Du spielst Bariton-Ukulele? Die wird tiefer gestimmt: D G B E': 'Tu joues du ukulélé baryton ? Il s’accorde plus grave : D G B E',
+  'Sopran-, Konzert- oder Tenor-Ukulele? Dort greifst du {chord} anders': 'Ukulélé soprano, concert ou ténor ? Là-bas, {chord} se joue autrement',
+  'Sopran-, Konzert- oder Tenor-Ukulele? Die wird höher gestimmt: G C E A': 'Ukulélé soprano, concert ou ténor ? Il s’accorde plus aigu : G C E A',
+  'Gitarre? {chord} hat auf den vier hohen Saiten dieselbe Form': 'Guitare ? {chord} a la même forme sur les quatre cordes aiguës',
+  'Bariton-Ukulele? {chord} hat dieselbe Form wie auf den vier hohen Gitarrensaiten': 'Ukulélé baryton ? {chord} a la même forme que sur les quatre cordes aiguës de la guitare',
+  'E-Bass? Gestimmt wie die vier tiefen Gitarrensaiten, nur eine Oktave tiefer': 'Basse électrique ? Accordée comme les quatre cordes graves de la guitare, une octave plus bas',
+  'Gitarre? Ihre vier tiefen Saiten klingen wie der Bass, eine Oktave höher': 'Guitare ? Ses quatre cordes graves sonnent comme la basse, une octave plus haut',
+  // Powerchords
+  'Powerchords': 'Power chords',
+  'Alle Powerchords': 'Tous les power chords',
+  'Alle Powerchords auf einen Blick': 'Tous les power chords en un coup d’œil',
+  'Powerchords für E-Gitarre: E5, A5, D5 …': 'Power chords pour guitare électrique : E5, A5, D5 …',
+  'Powerchords für {instrument}: E5, A5, D5 und alle anderen': 'Power chords pour {instrument} : E5, A5, D5 et tous les autres',
+  'Powerchords für {instrument} mit Griffbild: nur Grundton und Quinte, mit zwei oder drei Fingern und verschiebbar – E5, A5, D5, G5, C5 und alle anderen Tonarten.':
+    'Power chords pour {instrument} avec diagrammes : juste la fondamentale et la quinte, à deux ou trois doigts et déplaçables – E5, A5, D5, G5, C5 et toutes les autres tonalités.',
+  'Ein Powerchord hat nur zwei Töne: den Grundton und die Quinte, oft dazu den Grundton eine Oktave höher. Er ist weder Dur noch Moll und klingt mit E-Gitarre und Verzerrung besonders kräftig.':
+    'Un power chord n’a que deux notes : la fondamentale et la quinte, souvent avec la fondamentale une octave plus haut. Il n’est ni majeur ni mineur et sonne particulièrement fort à la guitare électrique avec de la distorsion.',
+  'Die Form lässt sich verschieben: Zeigefinger auf der tiefen E- oder A-Saite, Ring- und kleiner Finger zwei Bünde höher auf den nächsten beiden Saiten. Schlag nur diese drei Saiten an, die anderen dämpfst du leicht ab.':
+    'La forme se déplace : index sur la corde de E grave ou de A, annulaire et auriculaire deux cases plus haut sur les deux cordes suivantes. Ne gratte que ces trois cordes et étouffe légèrement les autres.',
+  // Griffe in anderen Stimmungen
+  'Akkorde in {tuning}': 'Accords en {tuning}',
+  'Akkorde in {tuning} – alle Griffbilder': 'Accords en {tuning} – tous les diagrammes',
+  'Akkorde in {tuning} – Griffbilder für {instrument}': 'Accords en {tuning} – diagrammes pour {instrument}',
+  'Griffbilder für {instrument} in {tuning} ({notes}): {chords} und mehr – passend zu dieser Stimmung berechnet, mit Tipps zum Umstimmen.':
+    'Diagrammes pour {instrument} en {tuning} ({notes}) : {chords} et plus – calculés pour cet accordage, avec des conseils pour réaccorder.',
+  'Griffe in anderen Stimmungen': 'Accords dans d’autres accordages',
+  'Die Saiten sind auf {notes} gestimmt.': 'Les cordes sont accordées en {notes}.',
+  'Die wichtigsten Griffe': 'Les accords les plus importants',
+  'In der App einstellen': 'Le réglage dans l’appli',
+  'Im Stimmgerät unter „Andere Stimmung …“ wählst du {tuning}. Dann zeigen Stimmgerät, Griffbilder, Lieder und Blues diese Stimmung, bis du zur Normalstimmung zurückkehrst.':
+    'Dans l’accordeur, choisis {tuning} sous « Autre accordage … ». L’accordeur, les diagrammes, les chansons et le blues suivent alors cet accordage, jusqu’à ce que tu reviennes à l’accordage standard.',
+  'Griffe dazu': 'Les accords qui vont avec',
   "Linkshänder-Ansicht ausschalten": "Désactiver le mode gaucher",
   "Für Linkshänder": "Pour les gauchers",
   "Tipp eine Saite an oder wisch über alle.": "Touche une corde ou glisse sur toutes.",

@@ -34,6 +34,26 @@ function barreTable(q: string): Instrument['shapes'][string] {
 const shapes: Instrument['shapes'] = {};
 for (const q of Object.keys(FORMS)) shapes[q] = barreTable(q);
 
+/**
+ * Powerchords (E5, A5 …): Grundton, Quinte und Grundton eine Oktave höher auf drei benachbarten Saiten, die anderen
+ * schlägt man nicht an. Grundton auf der tiefen E- oder A-Saite, je nachdem, was tiefer am Hals liegt; die Form lässt
+ * sich unverändert verschieben. E5, A5 und D5 gehen mit einer leeren Saite.
+ */
+function powerChords(): Instrument['shapes'][string] {
+  const out: Instrument['shapes'][string] = [];
+  for (let root = 0; root < 12; root++) {
+    const re = (root - 4 + 12) % 12;
+    const ra = (root - 9 + 12) % 12;
+    if (root === 2) out.push({ frets: [X, X, 0, 2, 3, X], fingers: [0, 0, 0, 1, 2, 0] });
+    else if (re === 0) out.push({ frets: [0, 2, 2, X, X, X], fingers: [0, 1, 2, 0, 0, 0] });
+    else if (ra === 0) out.push({ frets: [X, 0, 2, 2, X, X], fingers: [0, 0, 1, 2, 0, 0] });
+    else if (re <= ra) out.push({ frets: [re, re + 2, re + 2, X, X, X], fingers: [1, 3, 4, 0, 0, 0] });
+    else out.push({ frets: [X, ra, ra + 2, ra + 2, X, X], fingers: [0, 1, 3, 4, 0, 0] });
+  }
+  return out;
+}
+shapes['5'] = powerChords();
+
 /** Konzert- oder Westerngitarre in Standardstimmung (E2 A2 D3 G3 B3 E4). */
 export const GITARRE: Instrument = {
   id: 'gitarre',
@@ -107,6 +127,7 @@ export const GITARRE: Instrument = {
   tunings: [
     {
       id: 'drop-d',
+      article: 'gitarre-drop-d',
       name: 'Drop D',
       why: tk('Nur die tiefe E-Saite einen Ganzton tiefer: kräftige Rock-Akkorde mit einem Finger und Lieder in D.'),
       names: ['D', 'A', 'D', 'G', 'B', 'e'],
@@ -115,6 +136,7 @@ export const GITARRE: Instrument = {
     },
     {
       id: 'open-g',
+      article: 'gitarre-open-g',
       name: 'Open G',
       why: tk('Alle Saiten leer klingen schon als G-Dur. Gut für Blues, Rock und das Spiel mit dem Bottleneck.'),
       names: ['D', 'G', 'D', 'G', 'B', 'd'],
@@ -125,6 +147,7 @@ export const GITARRE: Instrument = {
     },
     {
       id: 'open-d',
+      article: 'gitarre-open-d-open-e',
       name: 'Open D',
       why: tk('Alle Saiten leer klingen als D-Dur – voll und tief. Beliebt für Slide-Gitarre und Folk.'),
       names: ['D', 'A', 'D', 'F#', 'A', 'd'],
@@ -135,6 +158,7 @@ export const GITARRE: Instrument = {
     },
     {
       id: 'open-e',
+      article: 'gitarre-open-d-open-e',
       name: 'Open E',
       why: tk('Alle Saiten leer klingen als E-Dur, hell und kräftig – der Klassiker für Slide-Blues. Drei Saiten werden höher gespannt: lieber mit einem Erwachsenen.'),
       names: ['E', 'B', 'E', 'G#', 'B', 'e'],
@@ -145,6 +169,7 @@ export const GITARRE: Instrument = {
     },
     {
       id: 'dadgad',
+      article: 'gitarre-dadgad',
       name: 'DADGAD',
       why: tk('Offen und schwebend, weder Dur noch Moll. Typisch für keltische und irische Musik.'),
       names: ['D', 'A', 'D', 'G', 'A', 'd'],

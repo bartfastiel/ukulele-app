@@ -104,21 +104,31 @@ function flamedMaple(seed: number): Grain {
   };
 }
 
+/**
+ * Koa: Die Faser bildet keine gleichmäßigen Linien, sondern unterschiedlich helle Bänder (golden bis schokoladenbraun).
+ * Der Riegel („Curl“) schimmert quer dazu – weich, unregelmäßig im Abstand und je Band versetzt, mal kräftig, mal
+ * kaum zu sehen. Regelmäßige Streifen in beiden Richtungen ergäben ein Gitter wie Stoff.
+ */
 function koa(seed: number): Grain {
-  const warp = lattice(4, 6, 61 + seed);
-  const curlAmp = lattice(6, 3, 67 + seed);
-  const streaks = lattice(5, 40, 71 + seed);
-  const fine = lattice(150, 24, 73 + seed);
+  const warp = lattice(3, 5, 61 + seed);
+  const bands = lattice(2, 14, 63 + seed);
+  const narrow = lattice(3, 44, 65 + seed);
+  const lines = lattice(5, 170, 67 + seed);
+  const curlWarp = lattice(7, 3, 69 + seed);
+  const curlAmp = lattice(4, 3, 71 + seed);
+  const streaks = lattice(3, 64, 73 + seed);
   return (u, v) => {
-    const w = warp(u * 4, v * 6) * 2.4;
-    const grain = Math.sin(v * TAU * 30 + w * 3) * 0.5 + 0.5;
-    // Riegel („Curl“): dichte, wellige Querstreifen, die im Licht schimmern – das Erkennungszeichen von Koa
-    const curl = Math.sin(u * TAU * 28 + Math.sin(v * TAU * 4 + w * 2) * 2 + w * 3) * 0.5 + 0.5;
-    const amp = curlAmp(u * 6, v * 3);
-    // vereinzelte dunkle Adern längs der Faser
-    const st = streaks(u * 5, v * 40);
-    const dark = st > 0.66 ? (st - 0.66) * 1.8 : 0;
-    return clamp(0.4 + grain * 0.2 + (curl - 0.5) * amp * 0.36 + (fine(u * 150, v * 24) - 0.5) * 0.12 - dark);
+    const w = warp(u * 3, v * 5);
+    const b1 = bands(u * 2, v * 14 + w * 2);
+    const b2 = narrow(u * 3, v * 44 + w * 4);
+    const fine = lines(u * 5, v * 170 + w * 8);
+    // Querschimmer: Abstand und Lage schwanken, und jedes Faserband verschiebt ihn ein Stück
+    const phase = u * TAU * 18 + curlWarp(u * 7, v * 3) * TAU * 2.2 + b1 * 2 + b2 * 2.5;
+    const curl = (Math.sin(phase) + Math.sin(phase * 2 + 1.3) * 0.35) / 1.35;
+    const amp = Math.pow(curlAmp(u * 4, v * 3), 1.6) * (0.4 + b1);
+    const st = streaks(u * 3, v * 64 + w * 5);
+    const dark = st > 0.7 ? (st - 0.7) * 1.6 : 0;
+    return clamp(0.44 + (b1 - 0.5) * 0.62 + (b2 - 0.5) * 0.26 + (fine - 0.5) * 0.08 + curl * amp * 0.26 - dark);
   };
 }
 
@@ -243,7 +253,7 @@ function varyAll(root: ParentNode): void {
 
 /** Einmal gerechnete Texturen bleiben im Cache des Browsers: Jede weitere Seite bekommt sie sofort. Ändert sich die
  * Maserung, die Nummer erhöhen. */
-const CACHE = 'saiten-holz-1';
+const CACHE = 'saiten-holz-2';
 
 function cached(key: string): Promise<string | null> {
   if (typeof caches === 'undefined') return Promise.resolve(null);
@@ -255,7 +265,17 @@ function cached(key: string): Promise<string | null> {
     .catch(() => null);
 }
 
+/** Texturen einer früheren Maserung freigeben. */
+function dropOldCaches(): void {
+  if (typeof caches === 'undefined') return;
+  caches
+    .keys()
+    .then((keys) => Promise.all(keys.filter((k) => k.indexOf('saiten-holz-') === 0 && k !== CACHE).map((k) => caches.delete(k))))
+    .catch(() => undefined);
+}
+
 function store(key: string, canvas: HTMLCanvasElement, apply: (url: string) => void): void {
+  dropOldCaches();
   if (!canvas.toBlob) {
     apply(canvas.toDataURL());
     return;

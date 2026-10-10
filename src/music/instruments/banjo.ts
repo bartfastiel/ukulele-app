@@ -69,6 +69,7 @@ export const BANJO: Instrument = {
   tunings: [
     {
       id: 'double-c',
+      article: 'banjo-double-c-g-modal',
       name: 'Double C',
       why: tk('Die tiefe D-Saite und die B-Saite werden zu C: Lieder in C und alte Fiddle-Melodien gehen leicht von der Hand.'),
       names: ['g', 'C', 'G', 'C', 'D'],
@@ -78,6 +79,7 @@ export const BANJO: Instrument = {
     },
     {
       id: 'g-modal',
+      article: 'banjo-double-c-g-modal',
       name: 'G-Modal (Sawmill)',
       why: tk('Die B-Saite einen Halbton höher auf C: klingt geheimnisvoll und alt, wie in den Bergen der Appalachen.'),
       names: ['g', 'D', 'G', 'C', 'D'],

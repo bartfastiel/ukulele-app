@@ -2459,6 +2459,20 @@ summary:focus-visible {
   margin: 3px;
 }
 
+/* Hinweis auf ein verwandtes Instrument oder eine Übersicht: klein, unter dem Eigentlichen */
+.relative-hint {
+  margin-top: 14px;
+  padding: 10px 14px;
+  font-size: 0.8em;
+}
+
+.relative-hint a {
+  display: block;
+  color: var(--teal);
+  font-weight: 700;
+  text-decoration: none;
+}
+
 .site-footer {
   margin-top: 24px;
   margin-bottom: 24px;

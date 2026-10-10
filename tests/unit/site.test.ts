@@ -4,6 +4,7 @@ import { renderSite, sitemap, type BuildEnv, type Page } from '../../src/site/pa
 import { chordSlug, routePath } from '../../src/site/routes.ts';
 import type { SiteId } from '../../src/site/sites.ts';
 import { ogImagePng, OG_HEIGHT, OG_WIDTH } from '../../src/site/og-image.ts';
+import { ICON_SIZES, iconColor, iconPng, iconSvg, renderIcon } from '../../src/site/app-icon.ts';
 
 const SITES: SiteId[] = ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass', 'start'];
 const env: BuildEnv = {
@@ -89,7 +90,8 @@ test('Lied- und Akkordseiten enthalten ihren Inhalt schon ohne Skript', () => {
   assert.ok(en.html.indexOf('B flat major') >= 0);
 });
 
-test('Instrument-Seiten verlinken sich gegenseitig nur unauffällig in der Fußzeile', () => {
+// Früher nur in der Fußzeile; dazu kommen jetzt kleine Hinweise bei echten Verwandten (Test „Verwechslungshinweise“)
+test('Instrument-Seiten verlinken sich gegenseitig in der Fußzeile', () => {
   const home = rendered.ukulele.filter((p) => p.file === 'index.html')[0];
   const foot = home.html.slice(home.html.indexOf('<footer'));
   assert.ok(foot.indexOf('href="/gitarre/"') >= 0);
@@ -206,4 +208,92 @@ test('Vorschaubild: PNG in 1200 × 630', () => {
     assert.equal(v.getUint32(20), OG_HEIGHT);
     assert.ok(png.length < 600 * 1024, `${id}: ${png.length} Bytes`);
   }
+});
+
+test('App-Symbole: je Seite ein eigenes, gültiges PNG in jeder Größe und ein SVG', () => {
+  const seen: Record<string, string> = {};
+  for (const id of SITES) {
+    for (const size of ICON_SIZES) {
+      const png = iconPng(id, size);
+      assert.deepEqual(Array.from(png.slice(0, 8)), [137, 80, 78, 71, 13, 10, 26, 10], `${id} ${size}`);
+      const v = new DataView(png.buffer, png.byteOffset);
+      assert.equal(v.getUint32(16), size);
+      assert.equal(v.getUint32(20), size);
+    }
+    const key = Array.from(renderIcon(id, 48)).join(',');
+    assert.ok(!seen[key], `${id} sieht aus wie ${seen[key]}`);
+    seen[key] = id;
+    const svg = iconSvg(id);
+    assert.match(svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 512 512">/);
+    assert.ok(svg.trim().endsWith('</svg>'));
+    assert.match(iconColor(id), /^#[0-9a-f]{6}$/);
+  }
+  const home = page('gitarre', 'index.html').html;
+  assert.ok(home.indexOf('<link rel="icon" href="/gitarre/icon.svg" type="image/svg+xml">') >= 0);
+  assert.ok(home.indexOf('<link rel="apple-touch-icon" href="/gitarre/icon-180.png">') >= 0);
+});
+
+test('Verwechslungshinweise: nur echte Verwandte, auf dieselbe Seite beim Verwandten', () => {
+  const uke = page('ukulele', 'akkorde/c/index.html').html;
+  assert.ok(uke.indexOf('class="card relative-hint"><a href="/bariton/akkorde/c/"') >= 0, 'Ukulele → Bariton fehlt');
+  assert.ok(page('ukulele', 'en/chords/f-sharp-m/index.html').html.indexOf('href="/bariton/en/chords/f-sharp-m/"') >= 0);
+  const bari = page('bariton', 'akkorde/g-7/index.html').html;
+  assert.ok(bari.indexOf('href="/ukulele/akkorde/g-7/"') >= 0 && bari.indexOf('href="/gitarre/akkorde/g-7/"') >= 0);
+  assert.ok(page('gitarre', 'akkorde/a-m/index.html').html.indexOf('relative-hint"><a href="/bariton/akkorde/a-m/"') >= 0);
+  assert.ok(page('ukulele', 'stimmgeraet/index.html').html.indexOf('relative-hint"><a href="/bariton/stimmgeraet/"') >= 0);
+  // keine Verwandten in der App (Mandoline, Banjo); Powerchords gibt es bei der Bariton-Ukulele nicht
+  for (const f of ['akkorde/c/index.html', 'stimmgeraet/index.html']) {
+    assert.ok(page('mandoline', f).html.indexOf('relative-hint') < 0, `mandoline/${f}`);
+    assert.ok(page('banjo', f).html.indexOf('relative-hint"><a href="/') < 0, `banjo/${f}`);
+  }
+  assert.ok(page('gitarre', 'akkorde/e-5/index.html').html.indexOf('relative-hint"><a href="/bariton/') < 0);
+  // Gitarre ↔ E-Bass: gleiche Stimmung eine Oktave auseinander – Hinweis im Stimmgerät, nicht auf Akkordseiten
+  assert.ok(page('gitarre', 'stimmgeraet/index.html').html.indexOf('relative-hint"><a href="/bass/stimmgeraet/">E-Bass?') >= 0, 'Gitarre → Bass fehlt');
+  assert.ok(page('bass', 'stimmgeraet/index.html').html.indexOf('relative-hint"><a href="/gitarre/stimmgeraet/">Gitarre?') >= 0, 'Bass → Gitarre fehlt');
+  assert.ok(page('bass', 'toene/c/index.html').html.indexOf('relative-hint') < 0);
+  // ein Verwandter ohne eigene Seite erzeugt keinen Link
+  const noBass = renderSite('gitarre', { ...env, sites: ['gitarre'] }).filter((p) => p.file === 'stimmgeraet/index.html')[0];
+  assert.ok(noBass.html.indexOf('E-Bass?') < 0);
+});
+
+test('Powerchords: nur auf der Gitarre, Übersicht und Akkordseiten, verlinkt mit dem Wissensartikel', () => {
+  const overview = page('gitarre', 'powerchords/index.html');
+  assert.ok(overview.url, 'Übersicht indexierbar');
+  for (const n of ['e-5', 'a-5', 'd-5', 'g-5', 'c-5', 'f-sharp-5']) assert.ok(overview.html.indexOf(`href="/gitarre/akkorde/${n}/"`) >= 0, n);
+  assert.ok(overview.html.indexOf('href="/gitarre/wissen/e-gitarre-powerchords-ziehen/"') >= 0);
+  assert.ok(page('gitarre', 'wissen/e-gitarre-powerchords-ziehen/index.html').html.indexOf('href="/gitarre/powerchords/"') >= 0);
+  assert.ok(page('gitarre', 'akkorde/index.html').html.indexOf('href="/gitarre/powerchords/"') >= 0);
+  const e5 = page('gitarre', 'akkorde/e-5/index.html');
+  assert.ok(e5.url && /<title>E5 \(E-Powerchord\)/.test(e5.html), 'Titel E5');
+  assert.ok(page('gitarre', 'en/power-chords/index.html'));
+  for (const s of ['ukulele', 'banjo', 'bariton', 'mandoline']) {
+    assert.equal(page(s, 'powerchords/index.html'), undefined, s);
+    assert.equal(page(s, 'akkorde/e-5/index.html'), undefined, s);
+  }
+});
+
+test('Seiten je Stimmung: Griffe in der Stimmung, Sitemap, Brotkrümel, verlinkt vom Stimmgerät und vom Artikel', () => {
+  const og = page('gitarre', 'stimmung/open-g/index.html');
+  assert.equal(og.url, 'https://gitarre.example.org/stimmung/open-g/');
+  assert.equal(og.alternates.en, 'https://gitarre.example.org/en/tuning/open-g/');
+  assert.equal(og.alternates.fr, 'https://gitarre.example.org/fr/accordage/open-g/');
+  assert.ok(sitemap(rendered.gitarre).indexOf('<loc>https://gitarre.example.org/stimmung/drop-d/</loc>') >= 0);
+  // Griffe der Stimmung: Dur-Akkorde als Barré, Saitennamen der Stimmung
+  assert.ok(og.html.indexOf('class="barre') >= 0, 'Barré-Griffe');
+  assert.ok(/>d<\/text>/.test(og.html), 'Saitennamen der Stimmung');
+  const crumbs = jsonLd(og.html).filter((x) => x['@type'] === 'BreadcrumbList')[0] as { itemListElement: { item: string }[] };
+  assert.deepEqual(
+    crumbs.itemListElement.map((x) => x.item),
+    ['https://gitarre.example.org/', 'https://gitarre.example.org/stimmgeraet/', 'https://gitarre.example.org/stimmung/open-g/'],
+  );
+  const tuner = page('gitarre', 'stimmgeraet/index.html').html;
+  for (const id of ['drop-d', 'open-g', 'open-d', 'open-e', 'dadgad']) assert.ok(tuner.indexOf(`href="/gitarre/stimmung/${id}/"`) >= 0, id);
+  assert.ok(page('gitarre', 'wissen/open-g-stimmung-gitarre/index.html').html.indexOf('href="/gitarre/stimmung/open-g/"') >= 0);
+  assert.ok(page('banjo', 'stimmung/double-c/index.html').url);
+  assert.ok(page('ukulele', 'stimmung/d/index.html').url);
+  // tiefes G ändert keine Griffe: keine eigene Seite
+  assert.equal(page('ukulele', 'stimmung/tiefes-g/index.html'), undefined);
+  assert.ok(page('ukulele', 'fr/accordage/d/index.html').html.indexOf('Accords avec l’accordage en D') >= 0);
+  // danach gilt wieder die Normalstimmung
+  assert.ok(!/>d<\/text>/.test(page('gitarre', 'akkorde/g/index.html').html), 'Normalstimmung auf den Akkordseiten');
 });

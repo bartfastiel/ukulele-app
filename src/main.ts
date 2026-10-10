@@ -5,7 +5,7 @@ import { isLang, setLang, t, tk } from './i18n.ts';
 import { base, brand, link } from './site/nav.ts';
 import { offerLanguage } from './ui/lang-switch.ts';
 import { renderSecrets } from './ui/secret-text.ts';
-import { initInstrument } from './music/instrument.ts';
+import { activeTuning, initInstrument, setTuning } from './music/instrument.ts';
 import { chord } from './music/chords.ts';
 import { playableChord, tuningNow, type Tuning } from './ui/chord-play.ts';
 import { LEFTY_EVENT, syncLeftyBadge } from './ui/lefty.ts';
@@ -95,16 +95,24 @@ let articleChords: { ch: Chord; strings: Tuning }[] | null = null;
 function playArticleChords(): void {
   const tiles = document.querySelectorAll('.article-chord');
   if (!tiles.length) return;
-  const lefty = load().settings.lefty;
-  const known = articleChords || [];
-  for (let i = 0; i < tiles.length; i++) {
-    const name = tiles[i].querySelector('.chord-name');
-    const old = tiles[i].querySelector('svg');
-    if (!name || !old || !old.parentNode) continue;
-    if (!known[i]) known[i] = { ch: chord(name.textContent || ''), strings: tuningNow() };
-    old.parentNode.replaceChild(playableChord(known[i].ch, { lefty, labels: false }, known[i].strings), old);
+  // Seiten einer anderen Stimmung (/stimmung/…) zeigen deren Griffe und Saitennamen – und so klingen sie auch
+  const tuning = tiles[0].getAttribute('data-tuning');
+  const keep = activeTuning();
+  if (tuning) setTuning(tuning);
+  try {
+    const lefty = load().settings.lefty;
+    const known = articleChords || [];
+    for (let i = 0; i < tiles.length; i++) {
+      const name = tiles[i].querySelector('.chord-name');
+      const old = tiles[i].querySelector('svg');
+      if (!name || !old || !old.parentNode) continue;
+      if (!known[i]) known[i] = { ch: chord(name.textContent || ''), strings: tuningNow() };
+      old.parentNode.replaceChild(playableChord(known[i].ch, { lefty, labels: !!tuning }, known[i].strings), old);
+    }
+    articleChords = known;
+  } finally {
+    if (tuning) setTuning(keep ? keep.id : '');
   }
-  articleChords = known;
 }
 
 // zuerst das Instrument: Holz und Farben hängen davon ab

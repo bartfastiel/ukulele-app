@@ -71,6 +71,10 @@ test('E-Bass: zu jedem Akkord der Grundton, so tief wie möglich in der ersten L
     // Akkordart egal: Am7, A7 und A haben denselben Basston
     assert.equal(at('Am7'), 'A0');
     assert.equal(at('G7'), 'E3');
+    // Powerchords (nur Grundton und Quinte) kommen als ihr Grundton an, die Quinte liegt daneben
+    assert.equal(at('E5'), 'E0');
+    assert.equal(at('F#5'), 'E2');
+    assert.equal(bassPosition('A5', true).midi, bassPosition('A5', false).midi + 7);
     for (const r of ROOTS) {
       const ch = chord(r);
       const sounding = ch.frets.filter((f) => f >= 0);

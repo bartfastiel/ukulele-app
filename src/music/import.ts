@@ -80,7 +80,7 @@ const QUALITY: Record<string, { q: string; exact: boolean }> = {
   m11: { q: 'm7', exact: false },
   maj9: { q: 'maj7', exact: false },
   '69': { q: '6', exact: false },
-  '5': { q: '', exact: false },
+  '5': { q: '5', exact: true },
 };
 
 /** Sieht das Wort wie ein Akkordname aus (unabhängig davon, ob es ein Griffbild gibt)? */

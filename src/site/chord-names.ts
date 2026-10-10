@@ -24,6 +24,7 @@ const QUALITY_NAMES: Record<string, Record<Lang, string>> = {
   dim7: { de: ' vermindert mit Septime', en: ' diminished seventh', fr: ' septième diminuée' },
   m7b5: { de: ' halbvermindert', en: ' half-diminished', fr: ' demi-diminué' },
   aug: { de: ' übermäßig', en: ' augmented', fr: ' augmenté' },
+  '5': { de: '-Powerchord (Grundton und Quinte)', en: ' power chord', fr: ' power chord' },
 };
 
 /** Ausgeschriebener Akkordname, z. B. „F#m“ → „Fis-Moll“ / „F sharp minor“ / „fa dièse mineur“. */
@@ -39,3 +40,6 @@ export function chordLongName(name: string, lang: Lang): string {
 
 /** Akkordarten, für die es eigene Seiten gibt (häufig gesucht und auf allen Instrumenten greifbar). */
 export const PAGE_QUALITIES = ['', 'm', '7', 'm7', 'maj7', '6', 'm6', 'sus2', 'sus4', '7sus4', 'add9', 'dim', 'dim7', 'm7b5', 'aug'];
+
+/** Grundtöne der Powerchords in der Reihenfolge am Gitarrenhals: ab der leeren tiefen E-Saite aufwärts. */
+export const POWER_ORDER = [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3];

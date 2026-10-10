@@ -24,6 +24,9 @@ export const SEGMENTS: Record<string, Record<Lang, string>> = {
   impressum: { de: 'impressum', en: 'imprint', fr: 'mentions-legales' },
   datenschutz: { de: 'datenschutz', en: 'privacy', fr: 'confidentialite' },
   ueber: { de: 'ueber', en: 'about', fr: 'a-propos' },
+  powerchords: { de: 'powerchords', en: 'power-chords', fr: 'power-chords' },
+  // Griffe in einer anderen Stimmung: „stimmung/open-g“
+  stimmung: { de: 'stimmung', en: 'tuning', fr: 'accordage' },
 };
 
 /** Instrumente ohne Akkorde (E-Bass): Töne statt Akkorde, Ton-Spiel und Ton-Detektiv – auch in der Adresse. */
@@ -81,6 +84,7 @@ export function routePath(route: string, lang: Lang, isOwn: (id: string) => bool
   const seg = segment(name);
   if (!seg) return prefix;
   if (HASH_PARAM.indexOf(name) >= 0) return `${prefix}${seg[lang]}/${param ? '#' + param : ''}`;
+  if (name === 'stimmung' && param) return `${prefix}${seg[lang]}/${param}/`;
   if (name === 'wissen' && param) {
     const slug = articleSlug ? articleSlug(param, lang) : undefined;
     return `${prefix}${seg[lang]}/${slug ? slug + '/' : ''}`;
