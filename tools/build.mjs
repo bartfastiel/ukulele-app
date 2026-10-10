@@ -9,6 +9,7 @@
 //               Vorschau „/<pfad>/pr-<nr>/{site}/“)
 //   PUBLIC_URL  öffentliche Adresse je Seite für canonical/hreflang/Sitemap (Standard https://{site}.wer-ist-daniel-schwarz.de/)
 //   PREVIEW=1   nichts indexieren (Vorschauen, lokale Builds)
+//   LINKED_SITES  nur auf diese Seiten verlinken (Komma-Liste; Standard alle) – für Subdomains, die es nicht für jedes Instrument gibt
 //   MOVE_TO     Umzug: alte Instrument-Seiten werden zu Weiterleitungen auf diese Adresse ({site} wird ersetzt). Sie nehmen
 //               Sterne, Übungstage und eigene Lieder hinter dem „#“ mit (src/site/move.ts), der Service Worker räumt ab.
 //
@@ -32,6 +33,8 @@ const SITE_URL = process.env.SITE_URL || '/{site}/';
 const PUBLIC_URL = process.env.PUBLIC_URL || 'https://{site}.wer-ist-daniel-schwarz.de/';
 const PREVIEW = process.env.PREVIEW === '1' || !process.env.PUBLIC_URL;
 const MOVE_TO = process.env.MOVE_TO || '';
+// Instrumente, auf die Seiten verlinken dürfen (Subdomains: nur die, die dort wirklich ausgeliefert werden)
+const LINKED = process.env.LINKED_SITES ? process.env.LINKED_SITES.split(',').map((x) => x.trim()) : SITE_IDS;
 const PATHS = SITE_URL.indexOf('/{site}/') >= 0;
 const BUILD_IDS = MOVE_TO ? SITE_IDS.filter((id) => id !== 'start') : SITE_IDS;
 
@@ -88,7 +91,7 @@ async function renderAll(assets) {
   for (const id of BUILD_IDS) {
     const lines = (process.env.LEGAL_ADDRESS || '').split('|').map((x) => x.trim()).filter(Boolean);
     const legal = { address: lines.join('\n'), email: (process.env.LEGAL_EMAIL || '').trim() };
-    const pages = renderSite(id, { url, publicUrl, preview: PREVIEW, assets, sites: SITE_IDS, legal });
+    const pages = renderSite(id, { url, publicUrl, preview: PREVIEW, assets, sites: LINKED, legal });
     out[id] = { pages, sitemap: sitemap(pages), def: SITES.filter((s) => s.id === id)[0] };
   }
   return out;
