@@ -1,4 +1,5 @@
 import { openMic, type Mic } from './mic.ts';
+import { hearingOwnSound } from './own-sound.ts';
 import { dbToLinear, holdSpectrum, instrumentPeaks, judgeChord, type ChordVerdict } from './chord-detect.ts';
 import { CHORDS, chord } from '../music/chords.ts';
 
@@ -33,7 +34,8 @@ export async function listenForChord(expected: string, ev: ListenEvents): Promis
     let rms = 0;
     for (let i = 0; i < time.length; i++) rms += time[i] * time[i];
     rms = Math.sqrt(rms / time.length);
-    if (rms < 0.006) {
+    // was die App eben selbst gespielt hat, ist nie „richtig gespielt“
+    if (rms < 0.006 || hearingOwnSound()) {
       streak = 0;
       ev.onVerdict?.(null, rms);
       return;

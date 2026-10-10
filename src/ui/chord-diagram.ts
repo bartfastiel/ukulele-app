@@ -11,24 +11,59 @@ let uid = 0;
  * Neusilber-Bünde, Perlmutt-Punkte, Finger als Messingknöpfe, ein Barré als Messingbalken. Liegt ein Griff höher als
  * im 5. Bund, beginnt das Bild an seinem tiefsten Bund mit der Bundzahl daneben.
  */
-export function chordDiagram(ch: Chord, opts: { lefty?: boolean; highlight?: number; labels?: boolean } = {}): SVGElement {
-  const id = `cd${++uid}`;
-  const inst = instrument();
+export interface DiagramOptions {
+  lefty?: boolean;
+  highlight?: number;
+  labels?: boolean;
+}
+
+/** Maße eines Griffbilds in viewBox-Einheiten – zum Zeichnen und, um Berührungen einer Stelle zuzuordnen. */
+export interface DiagramLayout {
+  n: number;
+  /** erster gezeigter Bund und Zahl der Bundreihen */
+  first: number;
+  rows: number;
+  x0: number;
+  gap: number;
+  y0: number;
+  fh: number;
+  width: number;
+  height: number;
+  /** Saite (Spielreihenfolge) je Spalte von links */
+  order: number[];
+}
+
+export function diagramLayout(ch: Chord, opts: DiagramOptions = {}): DiagramLayout {
   const n = ch.frets.length;
   const pressed = ch.frets.filter((f) => f > 0);
   const top = pressed.length ? Math.max(...pressed) : 0;
   const first = top > 5 ? Math.min(...pressed) : 1;
-  const rows = Math.max(inst.diagram.minRows, top - first + 1);
-  const shown = (fret: number) => fret - first + 1;
+  const rows = Math.max(instrument().diagram.minRows, top - first + 1);
   const x0 = first > 1 ? 26 : 18;
   const gap = 22;
   const y0 = 26;
   const fh = 24;
-  const boardW = gap * (n - 1);
-  const width = x0 + boardW + 18;
-  const height = y0 + fh * rows + (opts.labels === false ? 8 : 26);
   const order: number[] = [];
   for (let i = 0; i < n; i++) order.push(opts.lefty ? n - 1 - i : i);
+  return { n, first, rows, x0, gap, y0, fh, width: x0 + gap * (n - 1) + 18, height: y0 + fh * rows + (opts.labels === false ? 8 : 26), order };
+}
+
+export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
+  const id = `cd${++uid}`;
+  const inst = instrument();
+  const L = diagramLayout(ch, opts);
+  const n = L.n;
+  const first = L.first;
+  const rows = L.rows;
+  const shown = (fret: number) => fret - first + 1;
+  const x0 = L.x0;
+  const gap = L.gap;
+  const y0 = L.y0;
+  const fh = L.fh;
+  const boardW = gap * (n - 1);
+  const width = L.width;
+  const height = L.height;
+  const order = L.order;
   const xOf = (stringIdx: number) => x0 + order.indexOf(stringIdx) * gap;
 
   const svg = s('svg', {
@@ -107,6 +142,8 @@ export function chordDiagram(ch: Chord, opts: { lefty?: boolean; highlight?: num
       stroke: hl ? '#ff7a45' : '#f7f1e6',
       'stroke-width': hl ? 3.2 : 1.4 + (n === 4 && i === 1 ? 0.5 : 0) + (n === 6 ? (2 - Math.min(i, 2)) * 0.35 : 0),
       'stroke-linecap': 'round',
+      class: 'string',
+      'data-string': i,
     };
     if (start >= first) {
       // kurze Banjo-Saite: erst ab ihrem Wirbel am 5. Bund eine echte Saite, darüber nur angedeutet

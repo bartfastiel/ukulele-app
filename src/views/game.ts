@@ -1,7 +1,7 @@
 import { h, clear, announce } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, praise, keepAwake, type View } from '../ui/screen.ts';
-import { chordDiagram } from '../ui/chord-diagram.ts';
+import { playableChord } from '../ui/chord-play.ts';
 import { CHORDS, chord } from '../music/chords.ts';
 import { successSound } from '../audio/engine.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
@@ -82,7 +82,7 @@ export const game: View = (root) => {
       return next;
     };
     const name = h('div', { class: 'chord-name huge' }, current);
-    const diag = h('div', { class: 'diagram-big' }, chordDiagram(chord(current), { lefty }));
+    const diag = h('div', { class: 'diagram-big' }, playableChord(chord(current), { lefty }));
     const scoreEl = h('div', { class: 'score', 'aria-live': 'polite' }, '0');
     const timeEl = h('div', { class: 'time' }, String(SECONDS));
     const ring = h('div', { class: 'time-ring' }, timeEl);
@@ -94,7 +94,7 @@ export const game: View = (root) => {
       msg.textContent = praise();
       current = pick();
       name.textContent = current;
-      diag.replaceChild(chordDiagram(chord(current), { lefty }), diag.firstChild!);
+      diag.replaceChild(playableChord(chord(current), { lefty }), diag.firstChild!);
       listener?.setExpected(current);
       announce(`${current}`);
     };

@@ -7,6 +7,7 @@ import { countWord, t, tk } from '../i18n.ts';
 import { STRINGS } from '../music/notes.ts';
 import { langSwitch } from '../ui/lang-switch.ts';
 import { link } from '../site/nav.ts';
+import { setLefty } from '../ui/lefty.ts';
 
 const WEEKDAYS = [tk('So'), tk('Mo'), tk('Di'), tk('Mi'), tk('Do'), tk('Fr'), tk('Sa')];
 
@@ -28,7 +29,8 @@ export const stars: View = (root) => {
   const settingToggle = (label: string, key: 'lefty' | 'calm') => {
     const b = button(label, () => {
       const v = !load().settings[key];
-      save((pr) => (pr.settings[key] = v));
+      if (key === 'lefty') setLefty(v);
+      else save((pr) => (pr.settings[key] = v));
       b.setAttribute('aria-pressed', String(v));
       if (key === 'calm') document.documentElement.classList.toggle('calm', v);
     }, 'btn-seg', { 'aria-pressed': String(p.settings[key]) });
@@ -77,7 +79,7 @@ export const stars: View = (root) => {
         ),
       ),
     ),
-    h('h2', null, t('Einstellungen')),
+    h('h2', { id: 'einstellungen' }, t('Einstellungen')),
     h('div', { class: 'seg seg-wrap' }, settingToggle(t('Linkshänder'), 'lefty'), settingToggle(t('Weniger Bewegung'), 'calm')),
     langSwitch(),
     h(
@@ -105,4 +107,7 @@ export const stars: View = (root) => {
       t('Für Erwachsene: Beispiel-Akkorde aufnehmen'),
     ),
   );
+  // vom Link „Für Linkshänder“ in der Fußzeile: die Seite entsteht erst jetzt, der Browser fand die Stelle noch nicht
+  const target = location.hash === '#einstellungen' ? document.getElementById('einstellungen') : null;
+  if (target) target.scrollIntoView();
 };

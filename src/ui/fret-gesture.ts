@@ -26,6 +26,8 @@ export interface NeckGeometry {
   fret: number;
   gap: number;
   lefty: boolean;
+  /** Griffbild: Saiten senkrecht (entlang = nach unten, quer = zur Seite) statt waagrecht wie der Hals */
+  vertical?: boolean;
 }
 
 const pressure = new PressureSense();
@@ -47,14 +49,14 @@ function force(t: Touch): number | undefined {
  * Finger (oder Maus) auf einer Stelle des Halses: anschlagen, halten, ziehen, rutschen, wiegen. Mehrere Finger
  * gleichzeitig klingen zusammen. Bewusst mit Touch- statt Pointer-Events: alte iPads (Safari 12) kennen nur diese.
  */
-export function attachPlay(el: Element, geo: NeckGeometry, hit: () => Omit<Press, 'pressure'>, play: Play): void {
+export function attachPlay(el: Element, geo: NeckGeometry, hit: (clientX: number, clientY: number) => Omit<Press, 'pressure'>, play: Play): void {
   const scale = () => {
     const r = geo.svg.getBoundingClientRect();
     return r.width ? r.width / geo.width : 1;
   };
   const begin = (x: number, y: number, p: number | undefined) => {
     pressure.observe(p);
-    const base = hit();
+    const base = hit(x, y);
     // vor dem Anschlag zählen: der Ton löst Neuzeichnen aus, das bis zum Loslassen warten muss
     active++;
     const held = play({ string: base.string, fret: base.fret, arrow: base.arrow, pressure: pressure.normalised(p) });
@@ -70,6 +72,11 @@ export function attachPlay(el: Element, geo: NeckGeometry, hit: () => Omit<Press
     return {
       move(mx: number, my: number, mp?: number) {
         pressure.observe(mp);
+        if (geo.vertical) {
+          const dy = my - y;
+          held.move(dy / k / geo.fret, ((mx - x) * sign) / k / geo.gap, dy, now());
+          return;
+        }
         const dx = (mx - x) * sign;
         held.move(dx / k / geo.fret, (my - y) / k / geo.gap, dx, now());
       },

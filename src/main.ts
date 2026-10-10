@@ -5,9 +5,11 @@ import { isLang, setLang, t, tk } from './i18n.ts';
 import { base, brand, link } from './site/nav.ts';
 import { offerLanguage } from './ui/lang-switch.ts';
 import { renderSecrets } from './ui/secret-text.ts';
-import { initInstrument } from './music/instrument.ts';
+import { activeTuning, initInstrument, setTuning } from './music/instrument.ts';
 import { chord } from './music/chords.ts';
-import { chordDiagram } from './ui/chord-diagram.ts';
+import { playableChord, tuningNow, type Tuning } from './ui/chord-play.ts';
+import { LEFTY_EVENT, syncLeftyBadge } from './ui/lefty.ts';
+import type { Chord } from './music/chords.ts';
 import { TUNING_EVENT, applyStoredTuning } from './ui/tuning.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
@@ -86,15 +88,30 @@ function mount(): void {
   }
 }
 
-/** Griffbilder in Wissensartikeln sind für Rechtshänder vorgerendert; nach dem Laden gilt die Einstellung. */
-function mirrorArticleChords(): void {
-  if (!load().settings.lefty) return;
+/** Griff und Stimmung der Griffbilder in Wissensartikeln – vom ersten Laden, also in Normalstimmung. */
+let articleChords: { ch: Chord; strings: Tuning }[] | null = null;
+
+/** Griffbilder in Wissensartikeln sind für Rechtshänder vorgerendert; nach dem Laden gilt die Hand und sie klingen. */
+function playArticleChords(): void {
   const tiles = document.querySelectorAll('.article-chord');
-  for (let i = 0; i < tiles.length; i++) {
-    const name = tiles[i].querySelector('.chord-name');
-    const old = tiles[i].querySelector('svg');
-    if (!name || !old || !old.parentNode) continue;
-    old.parentNode.replaceChild(chordDiagram(chord(name.textContent || ''), { lefty: true, labels: false }), old);
+  if (!tiles.length) return;
+  // Seiten einer anderen Stimmung (/stimmung/…) zeigen deren Griffe und Saitennamen – und so klingen sie auch
+  const tuning = tiles[0].getAttribute('data-tuning');
+  const keep = activeTuning();
+  if (tuning) setTuning(tuning);
+  try {
+    const lefty = load().settings.lefty;
+    const known = articleChords || [];
+    for (let i = 0; i < tiles.length; i++) {
+      const name = tiles[i].querySelector('.chord-name');
+      const old = tiles[i].querySelector('svg');
+      if (!name || !old || !old.parentNode) continue;
+      if (!known[i]) known[i] = { ch: chord(name.textContent || ''), strings: tuningNow() };
+      old.parentNode.replaceChild(playableChord(known[i].ch, { lefty, labels: !!tuning }, known[i].strings), old);
+    }
+    articleChords = known;
+  } finally {
+    if (tuning) setTuning(keep ? keep.id : '');
   }
 }
 
@@ -136,9 +153,15 @@ if (!redirectOldHash()) {
   setLang(isLang(html.lang) ? html.lang : 'de');
   if (load().settings.calm) html.classList.add('calm');
   // Wissensartikel erklären die Normalstimmung – ihre Griffbilder werden vor dem Umstimmen gespiegelt
-  mirrorArticleChords();
+  playArticleChords();
+  syncLeftyBadge();
   if (!isStart) applyStoredTuning();
   window.addEventListener(TUNING_EVENT, () => mount());
+  window.addEventListener(LEFTY_EVENT, () => {
+    playArticleChords();
+    // die Einstellungen selbst zeigen keine Griffbilder – dort bleibt alles stehen, wo es ist
+    if ((html.getAttribute('data-route') || '').indexOf('sterne') !== 0) mount();
+  });
   mount();
   renderSecrets();
   if (html.hasAttribute('data-hash-param')) window.addEventListener('hashchange', () => mount());

@@ -749,4 +749,7 @@ export const EN: Record<string, string> = {
   'Im Stimmgerät unter „Andere Stimmung …“ wählst du {tuning}. Dann zeigen Stimmgerät, Griffbilder, Lieder und Blues diese Stimmung, bis du zur Normalstimmung zurückkehrst.':
     'In the tuner, choose {tuning} under “Other tuning …”. The tuner, chord charts, songs and blues then follow this tuning until you go back to standard tuning.',
   'Griffe dazu': 'Matching chords',
+  "Linkshänder-Ansicht ausschalten": "Turn off left-handed view",
+  "Für Linkshänder": "For left-handers",
+  "Tipp eine Saite an oder wisch über alle.": "Tap a string or swipe across them all.",
 };

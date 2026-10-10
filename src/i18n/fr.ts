@@ -752,4 +752,7 @@ export const FR: Record<string, string> = {
   'Im Stimmgerät unter „Andere Stimmung …“ wählst du {tuning}. Dann zeigen Stimmgerät, Griffbilder, Lieder und Blues diese Stimmung, bis du zur Normalstimmung zurückkehrst.':
     'Dans l’accordeur, choisis {tuning} sous « Autre accordage … ». L’accordeur, les diagrammes, les chansons et le blues suivent alors cet accordage, jusqu’à ce que tu reviennes à l’accordage standard.',
   'Griffe dazu': 'Les accords qui vont avec',
+  "Linkshänder-Ansicht ausschalten": "Désactiver le mode gaucher",
+  "Für Linkshänder": "Pour les gauchers",
+  "Tipp eine Saite an oder wisch über alle.": "Touche une corde ou glisse sur toutes.",
 };

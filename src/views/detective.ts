@@ -1,8 +1,9 @@
 import { h, clear, announce } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
-import { chordDiagram } from '../ui/chord-diagram.ts';
+import { playableChord } from '../ui/chord-play.ts';
 import { openMic } from '../audio/mic.ts';
+import { hearingOwnSound } from '../audio/own-sound.ts';
 import { dbToLinear, holdSpectrum, instrumentPeaks } from '../audio/chord-detect.ts';
 import { identifyFingering, libraryName, nameChord, noteLabel, positions, singleNote, PREFER } from '../music/identify.ts';
 import { NOTE_NAMES, STRINGS, pitchClass } from '../music/notes.ts';
@@ -67,7 +68,7 @@ export const detective: View = (root) => {
           lib ? h('a', { class: 'btn btn-chip', href: link(`akkord/${encodeURIComponent(lib)}`) }, t('{chord} in der Akkord-Liste', { chord: lib })) : null,
           h('p', { class: 'small' }, t('Bünde {strings}: {frets}', { strings: STRINGS.map((x) => x.name).join('-'), frets: frets.map((f) => (f < 0 ? 'x' : f)).join(' ') })),
         ),
-        h('div', { class: 'diagram-big' }, chordDiagram(ch, { lefty })),
+        h('div', { class: 'diagram-big' }, playableChord(ch, { lefty })),
       ),
     );
     announce(main ? `${main.name}, ${t(main.quality.name)}` : t('unbekannter Akkord'));
@@ -118,6 +119,11 @@ export const detective: View = (root) => {
         rms = Math.sqrt(rms / time.length);
         let key = '';
         let view: () => void = () => undefined;
+        if (hearingOwnSound()) {
+          // ein angetipptes Griffbild klingt: nicht deuten, aber auch nicht als Stille werten
+          recent.length = 0;
+          return;
+        }
         if (rms >= 0.006) {
           quietSince = 0;
           const peaks = instrumentPeaks(held, binHz);
