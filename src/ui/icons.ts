@@ -54,6 +54,7 @@ export function soundHole(): SVGElement {
   const id = instrument().id;
   if (id === 'banjo') return banjoHead();
   if (id === 'mandoline') return mandolinTop();
+  if (id === 'bass') return bassBody();
   if (id === 'gitarre') return guitarRosette();
   // Bariton-Ukulele: dieselbe Rosette wie die Ukulele, aber mit Abalone-Tönen, die tiefen D- und G-Saiten umsponnen
   if (id === 'bariton') return ukuleleHole(['#1f4f5a', '#8fc0b2', '#3b1d0c', '#c9a24a'], 2);
@@ -198,6 +199,60 @@ function mandolinTop(): SVGElement {
     for (const d of [-2.8, 2.8])
       g.appendChild(s('rect', { x: x + d - w / 2, y: 0, width: w, height: 200, fill: i < 2 ? 'url(#wound)' : 'url(#str)', opacity: 0.95 }));
   }
+  return g;
+}
+
+/** E-Bass: kein Schallloch, sondern Korpus aus schwarzer Esche mit Schlagbrett, geteiltem Tonabnehmer und dicken Saiten. */
+function bassBody(): SVGElement {
+  const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
+  g.appendChild(
+    s(
+      'defs',
+      null,
+      s(
+        'radialGradient',
+        { id: 'ash', cx: 0.45, cy: 0.35, r: 0.7 },
+        s('stop', { offset: 0, 'stop-color': '#4a4540' }),
+        s('stop', { offset: 0.6, 'stop-color': '#1e1c1b' }),
+        s('stop', { offset: 1, 'stop-color': '#0b0b0c' }),
+      ),
+      s(
+        'linearGradient',
+        { id: 'wound', x1: 0, x2: 1 },
+        s('stop', { offset: 0, 'stop-color': '#7d838a' }),
+        s('stop', { offset: 0.5, 'stop-color': '#f1f3f5' }),
+        s('stop', { offset: 1, 'stop-color': '#6c7279' }),
+      ),
+      s('clipPath', { id: 'bass-body' }, s('circle', { cx: 100, cy: 100, r: 88 })),
+    ),
+  );
+  // Kante wie ein dreilagiges Schlagbrett: weiß-schwarz-weiß
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 95, fill: '#101113' }));
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 93, fill: '#f2efe8' }));
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 91, fill: '#101113' }));
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 89.5, fill: '#f2efe8' }));
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 88, fill: 'url(#ash)' }));
+  const body = s('g', { 'clip-path': 'url(#bass-body)' });
+  // Jahresringe der Esche als helle Bögen
+  for (let i = 0; i < 9; i++) body.appendChild(s('path', { d: `M0 ${30 + i * 20} Q100 ${-10 + i * 20} 200 ${30 + i * 20}`, fill: 'none', stroke: '#6e6862', 'stroke-width': 1.4, opacity: 0.35 }));
+  body.appendChild(s('path', { d: 'M0 64 C52 56 84 96 104 140 C114 164 120 184 124 200 L0 200 Z', fill: '#101113' }));
+  body.appendChild(s('path', { d: 'M0 68 C50 60 80 98 100 142 C110 166 116 186 119 200 L0 200 Z', fill: '#f2efe8' }));
+  g.appendChild(body);
+  // geteilter Tonabnehmer: eine Hälfte unter E und A, die andere unter D und G
+  const n = STRINGS.length;
+  const xs: number[] = [];
+  for (let i = 0; i < n; i++) xs.push(70 + (i * 60) / (n - 1));
+  g.appendChild(s('rect', { x: xs[0] - 14, y: 74, width: xs[1] - xs[0] + 28, height: 22, rx: 7, fill: '#151517', stroke: '#000', 'stroke-width': 1 }));
+  g.appendChild(s('rect', { x: xs[n - 2] - 14, y: 92, width: xs[n - 1] - xs[n - 2] + 28, height: 22, rx: 7, fill: '#151517', stroke: '#000', 'stroke-width': 1 }));
+  xs.forEach((x, i) => {
+    const y = i < n / 2 ? 85 : 103;
+    for (const d of [-4, 4]) g.appendChild(s('circle', { cx: x + d, cy: y, r: 2.2, fill: '#9aa0a6' }));
+  });
+  // Rundwickelsaiten: dick und silbern, die tiefe E-Saite am dicksten
+  xs.forEach((x, i) => {
+    const w = 5.4 - i * 0.7;
+    g.appendChild(s('rect', { x: x - w / 2, y: 0, width: w, height: 200, fill: 'url(#wound)', opacity: 0.97 }));
+  });
   return g;
 }
 

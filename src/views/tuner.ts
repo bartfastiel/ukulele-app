@@ -2,7 +2,7 @@ import { h, s, announce } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { STRINGS, midiToFreq } from '../music/notes.ts';
-import { detectPitch, cents } from '../audio/pitch.ts';
+import { detectPitchIn, cents } from '../audio/pitch.ts';
 import { openMic } from '../audio/mic.ts';
 import { pluckCourse, successSound } from '../audio/engine.ts';
 import { save } from '../store.ts';
@@ -22,6 +22,9 @@ export const tuner: View = (root) => {
   // 12-saitige Gitarre: auch die Oktavsaiten der vier tiefen Chöre erkennen
   const targets = STRINGS.map((st, i) => ({ string: i, midi: st.midi, octave: false }));
   if (twelveString()) STRINGS.forEach((st, i) => i < 4 && targets.push({ string: i, midi: st.midi + 12, octave: true }));
+  // E-Bass: Handy-Mikrofone hören den tiefen Grundton kaum und melden oft die Oktave darüber. Die vier Leersaiten
+  // heißen alle verschieden (E A D G), also gehört auch die Oktave eindeutig zu ihrer Saite.
+  if (instrument().notesOnly) STRINGS.forEach((st, i) => targets.push({ string: i, midi: st.midi + 12, octave: false }));
   let inTuneSince = 0;
   let lastString = -1;
   let smooth = 0;
@@ -70,7 +73,7 @@ export const tuner: View = (root) => {
     const tick = () => {
       mic.timeData(buf);
       const now = performance.now();
-      const p = detectPitch(buf, mic.sampleRate, range.minHz, range.maxHz);
+      const p = detectPitchIn(buf, mic.sampleRate, range.minHz, range.maxHz);
       if (!p || p.clarity <= 0.85) {
         const tip = coach.silence(now);
         if (tip) showTip(tipText(tip, STRINGS[tip.string].name), tip.string);

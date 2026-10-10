@@ -1,9 +1,35 @@
 import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, keepAwake, type View } from '../ui/screen.ts';
-import { audio, click, pluckString, strum } from '../audio/engine.ts';
+import { audio, click, pluck, pluckString, strum } from '../audio/engine.ts';
+import { bassPosition } from '../music/bassline.ts';
+import { fretboard, type Mark } from '../ui/fretboard.ts';
+import { STRINGS, stringMidi } from '../music/notes.ts';
 import { instrument } from '../music/instrument.ts';
-import { t, tk } from '../i18n.ts';
+import { load } from '../store.ts';
+import { noteText, t, tk } from '../i18n.ts';
+
+/** Ton der Basslinie: Grundton, Quinte oder Oktave des gewählten Tons. */
+function bassMidi(name: string, step: string): number {
+  const root = bassPosition(name, false).midi;
+  return step === 'F' ? bassPosition(name, true).midi : step === 'O' ? root + 12 : root;
+}
+
+/** Wo Grundton (1), Quinte (5) und Oktave (8) in der ersten Lage liegen. */
+function bassMarks(name: string): Mark[] {
+  const root = bassPosition(name, false);
+  const fifth = bassPosition(name, true);
+  const marks: Mark[] = [{ string: root.string, fret: root.fret, kind: 'now', label: '1' }];
+  if (fifth.midi !== root.midi) marks.push({ string: fifth.string, fret: fifth.fret, kind: 'chord', label: '5' });
+  for (let s = root.string + 1; s < STRINGS.length; s++) {
+    const f = root.midi + 12 - stringMidi(s, 0);
+    if (f >= 0 && f <= 5) {
+      marks.push({ string: s, fret: f, kind: 'chord', label: '8' });
+      break;
+    }
+  }
+  return marks;
+}
 
 /**
  * Schlagmuster je Achtel: D = abwärts, U = aufwärts, - = Pause (Hand bewegt sich trotzdem).
@@ -17,6 +43,8 @@ interface Pattern {
   sub: number;
   say: string;
   roll?: boolean;
+  /** E-Bass: R = Grundton, F = Quinte, O = Oktave, - = Pause (der Ton klingt weiter). */
+  bass?: boolean;
 }
 const PATTERNS: Pattern[] = [
   { name: tk('Nur runter'), meter: '4/4', steps: 'D-D-D-D-', sub: 2, say: tk('runter, runter, runter, runter') },
@@ -28,6 +56,19 @@ const PATTERNS: Pattern[] = [
   { name: tk('Walzer mit rauf (3/4)'), meter: '3/4', steps: 'D-DUDU', sub: 2, say: tk('runter, runter-rauf, runter-rauf') },
   { name: tk('Schaukeln (6/8)'), meter: '6/8', steps: 'D-UD-U', sub: 3, say: tk('runter … rauf, runter … rauf – schaukelnd, zwei große Schläge mit je drei Achteln') },
 ];
+const BASS_PATTERNS: Pattern[] = [
+  { name: tk('Grundton auf der Eins'), meter: '4/4', steps: 'R-------', sub: 2, say: tk('eins – zwei – drei – vier: nur auf der Eins zupfen und klingen lassen'), bass: true },
+  { name: tk('Grundton auf 1 und 3'), meter: '4/4', steps: 'R---R---', sub: 2, say: tk('eins, zwei, drei, vier – auf eins und drei zupfen'), bass: true },
+  { name: tk('Grundton und Quinte'), meter: '4/4', steps: 'R---F---', sub: 2, say: tk('Grundton auf eins, Quinte auf drei'), bass: true },
+  { name: tk('Auf jeden Schlag'), meter: '4/4', steps: 'R-R-R-R-', sub: 2, say: tk('eins, zwei, drei, vier – gleichmäßig wie Schritte'), bass: true },
+  { name: tk('Oktave'), meter: '4/4', steps: 'R-O-R-O-', sub: 2, say: tk('tief, hoch, tief, hoch – Grundton und Oktave im Wechsel'), bass: true },
+  { name: tk('Rock-Achtel'), meter: '4/4', steps: 'RRRRRRRR', sub: 2, say: tk('eins und zwei und drei und vier und – gleichmäßig wie ein Motor'), bass: true },
+  { name: tk('Marsch (2/4)'), meter: '2/4', steps: 'R-F-', sub: 2, say: tk('Grundton, Quinte – im Zweiertakt'), bass: true },
+  { name: tk('Walzer (3/4)'), meter: '3/4', steps: 'R-----', sub: 2, say: tk('Grundton auf eins, dann klingen lassen – zwei, drei'), bass: true },
+  { name: tk('Schaukeln (6/8)'), meter: '6/8', steps: 'R--F--', sub: 3, say: tk('Grundton … Quinte – schaukelnd, zwei große Schläge mit je drei Achteln'), bass: true },
+];
+/** Ziffer über dem Ton: 1 = Grundton, 5 = Quinte, 8 = Oktave. */
+const BASS_GLYPH: Record<string, string> = { R: '1', F: '5', O: '8' };
 const TEMPOS = [
   { label: tk('Langsam'), bpm: 60 },
   { label: tk('Mittel'), bpm: 80 },
@@ -41,7 +82,9 @@ const FINGER_WORD: Record<string, string> = { T: tk('Daumen'), I: tk('Zeigefinge
 export const rhythm: View = (root) => {
   const inst = instrument();
   const roll = inst.roll;
-  const patterns = roll
+  const patterns = inst.notesOnly
+    ? BASS_PATTERNS
+    : roll
     ? PATTERNS.concat([
         {
           name: tk('Banjo-Roll: Daumen – Zeige – Mittel'),
@@ -73,16 +116,18 @@ export const rhythm: View = (root) => {
   const explain = h('p', { class: 'small' });
   const drawArrows = () => {
     clear(arrows);
-    explain.textContent = pattern.roll && roll
+    explain.textContent = pattern.bass
+      ? t('1 = Grundton, 5 = Quinte (eine Saite höher, zwei Bünde weiter), 8 = Oktave (zwei Saiten höher, zwei Bünde weiter). Bei „·“ klingt der Ton weiter. Tipp: Tippe mehrmals im Takt eines Liedes auf „Tippen“ – dann passt sich das Tempo an.')
+      : pattern.roll && roll
       ? t(roll.explain)
       : t('↓ = runter streichen (Daumen oder Zeigefinger), ↑ = hoch. Die Hand schwingt immer weiter, auch bei „·“. Tipp: Tippe mehrmals im Takt eines Liedes auf „Tippen“ – dann passt sich das Tempo an.');
     sayLine.textContent = t('Gesprochen: {say}', { say: t(pattern.say) });
     pattern.steps.split('').forEach((st, i) => {
-      const glyph = pattern.roll ? t(FINGER_WORD[st]).charAt(0).toUpperCase() : st === 'D' ? '↓' : st === 'U' ? '↑' : '·';
+      const glyph = pattern.bass ? BASS_GLYPH[st] || '·' : pattern.roll ? t(FINGER_WORD[st]).charAt(0).toUpperCase() : st === 'D' ? '↓' : st === 'U' ? '↑' : '·';
       arrows.appendChild(
         h(
           'span',
-          { class: `arrow ${pattern.roll ? 'pick' : st === 'D' ? 'down' : st === 'U' ? 'up' : 'rest'}` },
+          { class: `arrow ${pattern.bass ? (st === '-' ? 'rest' : 'pick') : pattern.roll ? 'pick' : st === 'D' ? 'down' : st === 'U' ? 'up' : 'rest'}` },
           h('span', { class: 'glyph' }, glyph),
           h('span', { class: 'beat-count' }, pattern.sub === 3 ? String(i + 1) : i % 2 === 0 ? String(i / 2 + 1) : t('und')),
         ),
@@ -123,7 +168,8 @@ export const rhythm: View = (root) => {
       const t = start + scheduled * stepDur();
       if (i % pattern.sub === 0) click(t, accent && i === 0, 0.4);
       else if (pattern.sub === 3) click(t, false, 0.12);
-      if (playStrum && pattern.roll && roll) pluckString(chordName, roll.strings[i], t, 0.4);
+      if (playStrum && pattern.bass && steps[i] !== '-') pluck(bassMidi(chordName, steps[i]), t, 0.75);
+      else if (playStrum && pattern.roll && roll) pluckString(chordName, roll.strings[i], t, 0.4);
       else if (playStrum && steps[i] !== '-') strum(chordName, t, 0.28, steps[i] === 'U');
       scheduled++;
     }
@@ -186,12 +232,20 @@ export const rhythm: View = (root) => {
   );
   bpmShow.textContent = t('{n} Schläge pro Minute', { n: bpm });
 
+  // E-Bass: wo Grundton, Quinte und Oktave des gewählten Tons liegen
+  const neck = h('div', { class: 'rhythm-neck' });
+  const drawNeck = () => {
+    if (!inst.notesOnly) return;
+    clear(neck);
+    if (playStrum) neck.appendChild(fretboard(bassMarks(chordName), 5, 1, undefined, load().settings.lefty));
+  };
   drawArrows();
+  drawNeck();
   label();
   screen(
     root,
     { title: t('Rhythmus'), theme: 'teal' },
-    h('div', { class: 'card rhythm-card' }, arrows, sayLine, explain),
+    h('div', { class: 'card rhythm-card' }, arrows, sayLine, explain, inst.notesOnly ? neck : null),
     h(
       'div',
       { class: 'controls' },
@@ -206,10 +260,11 @@ export const rhythm: View = (root) => {
       tempoRow,
       h('h2', null, t('Betonung')),
       seg(t('Betonung'), [true, false], (c) => (c ? t('Eins betont') : t('Alle gleich')), (c) => c === accent, (c) => (accent = c)),
-      h('h2', null, t('Akkord')),
-      seg(t('Akkord'), CHORD_CHOICES.concat(['']), (c) => c || t('nur Klick'), (c) => c === chordName, (c) => {
+      h('h2', null, inst.notesOnly ? t('Ton') : t('Akkord')),
+      seg(inst.notesOnly ? t('Ton') : t('Akkord'), CHORD_CHOICES.concat(['']), (c) => (c ? (inst.notesOnly ? noteText(c) : c) : t('nur Klick')), (c) => c === chordName, (c) => {
         playStrum = c !== '';
         if (playStrum) chordName = c;
+        drawNeck();
       }),
     ),
   );

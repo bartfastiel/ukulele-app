@@ -280,6 +280,7 @@ function makeChord(name: string): Chord | null {
   const p = parseChordName(name);
   if (!p) return null;
   const inst = instrument();
+  if (inst.notesOnly) return rootGrip(name, p.root);
   const shift = sameShapes();
   if (shift !== null) {
     const from = baseInstrument();
@@ -316,6 +317,26 @@ function makeChord(name: string): Chord | null {
   if (made) return made;
   const frets = findShape(p.root, QUALITY_INTERVALS[p.quality]) || (p.quality === '5' ? findPowerChord(p.root) : null);
   return frets ? withFingers(name, { frets }) : null;
+}
+
+/**
+ * Einzeltöne (E-Bass): der Grundton so tief wie möglich in der ersten Lage (Bund 0–4, ein Finger je Bund) – dort
+ * liegt jeder der zwölf Töne. Die Quinte für die Basslinie liegt eine Saite höher, zwei Bünde weiter.
+ */
+export function rootGrip(name: string, root: number): Chord {
+  let best = { string: 0, fret: 0, midi: Infinity };
+  for (let reach = 4; best.midi === Infinity && reach <= 11; reach += 7)
+    STRINGS.forEach((_, i) => {
+      for (let f = 0; f <= reach; f++) {
+        const m = stringMidi(i, f);
+        if (pitchClass(m) === root && playableFret(i, f) && m < best.midi) best = { string: i, fret: f, midi: m };
+      }
+    });
+  const frets = STRINGS.map((_, i) => (i === best.string ? best.fret : -1));
+  const ch: Chord = { name, frets, fingers: frets.map((f) => (f > 0 ? Math.min(4, f) : 0)), say: name, level: 5 };
+  const up = best.string + 1;
+  if (up < STRINGS.length && stringMidi(up, best.fret + 2) === best.midi + 7) ch.fifth = { string: up, fret: best.fret + 2 };
+  return ch;
 }
 
 /**
@@ -408,6 +429,16 @@ export function playableChord(ch: Chord): boolean {
 const FINGER_NAME = ['', tk('Zeigefinger'), tk('Mittelfinger'), tk('Ringfinger'), tk('kleiner Finger')];
 
 export function describeChord(ch: Chord): string {
+  if (instrument().notesOnly) {
+    const i = ch.frets.findIndex((f) => f >= 0);
+    if (i < 0) return ch.name;
+    const f = ch.frets[i];
+    const where =
+      f > 0
+        ? t('{finger} auf der {string}-Saite im {fret} Bund', { finger: t(FINGER_NAME[ch.fingers[i]] || tk('Finger')), string: STRINGS[i].name, fret: ordinal(f) })
+        : t('leere {s}-Saite', { s: STRINGS[i].name });
+    return `${ch.name}: ${where}`;
+  }
   const parts: string[] = [];
   const b = ch.barre;
   if (b && b.to - b.from >= 2)

@@ -10,6 +10,8 @@ export interface Chord {
   level: number;
   /** Der Zeigefinger liegt quer über mehrere Saiten (Barré): Bund und erste/letzte Saite. */
   barre?: { fret: number; from: number; to: number };
+  /** Nur bei Einzeltönen (E-Bass): wo die Quinte für die Basslinie Grundton–Quinte liegt. */
+  fifth?: { string: number; fret: number };
 }
 
 /** Bünde als Text, ein Zeichen je Saite: „x32010“ → [-1, 3, 2, 0, 1, 0]. */

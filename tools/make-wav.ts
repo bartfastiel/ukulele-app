@@ -2,7 +2,8 @@
 // einzelne Saite, jede Sekunde neu angeschlagen. Gleiche Synthese wie in der App (Karplus-Strong).
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
-import { renderPluck, renderStrum } from '../src/audio/pluck.ts';
+import { lowpass, renderPluck, renderStrum } from '../src/audio/pluck.ts';
+import { BASS } from '../src/music/instruments/bass.ts';
 import { chord, chordMidis } from '../src/music/chords.ts';
 import { midiToFreq } from '../src/music/notes.ts';
 
@@ -36,12 +37,21 @@ function repeat(make: () => Float32Array, times: number, gain: number): Float32A
   return out;
 }
 
-export function makeTestAudio(dir: string): { chordC: string; stringE: string } {
+export function makeTestAudio(dir: string): { chordC: string; stringE: string; bassE: string } {
   const chordC = `${dir}/chord-c.wav`;
   const stringE = `${dir}/string-e.wav`;
+  const bassE = `${dir}/bass-e.wav`;
   mkdirSync(dirname(chordC), { recursive: true });
   writeFileSync(chordC, wav(repeat(() => renderStrum(chordMidis(chord('C')).map(midiToFreq), SR, 1), 8, 0.8)));
   // E-Saite um 20 Cent zu tief – das Stimmgerät soll „zu tief“ sagen
   writeFileSync(stringE, wav(repeat(() => renderPluck(329.63 * Math.pow(2, -20 / 1200), SR, 1), 8, 0.6)));
-  return { chordC, stringE };
+  // tiefe E-Saite des E-Basses (E1 ≈ 41 Hz), ebenfalls 20 Cent zu tief, mit dem Klang aus der App
+  const b = BASS.synth;
+  const bass = () => {
+    const sig = renderPluck(41.2034 * Math.pow(2, -20 / 1200), SR, 1.5, b.brightness, 28, b.sustain, b.position);
+    lowpass(sig, SR, b.lowpass!);
+    return sig;
+  };
+  writeFileSync(bassE, wav(repeat(bass, 6, 0.7)));
+  return { chordC, stringE, bassE };
 }

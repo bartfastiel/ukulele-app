@@ -5,8 +5,9 @@ import { GITARRE } from './instruments/gitarre.ts';
 import { BANJO } from './instruments/banjo.ts';
 import { BARITON } from './instruments/bariton.ts';
 import { MANDOLINE } from './instruments/mandoline.ts';
+import { BASS } from './instruments/bass.ts';
 
-export type InstrumentId = 'ukulele' | 'gitarre' | 'banjo' | 'bariton' | 'mandoline';
+export type InstrumentId = 'ukulele' | 'gitarre' | 'banjo' | 'bariton' | 'mandoline' | 'bass';
 
 export interface InstrumentString {
   /** Kurzname im Griffbild und in Sätzen („{s}-Saite“): G C E A, Gitarre E A D G B e, Banjo g D G B D. */
@@ -55,6 +56,8 @@ export interface Synth {
   drive?: number;
   /** Doppelsaiten (Mandoline): die zweite Saite so viele Cent höher – beide zusammen schweben leicht. */
   course?: number;
+  /** Tiefpass in Hz nach dem Zupfen (E-Bass: rund statt drahtig). */
+  lowpass?: number;
 }
 
 export interface Instrument {
@@ -90,6 +93,11 @@ export interface Instrument {
   cost: { barre: number; muted: number };
   /** Kapodaster-Hinweis im Player. */
   capo: boolean;
+  /**
+   * Spielt Einzeltöne statt Akkorde (E-Bass): Zu jedem Akkord gehört sein Grundton, die Akkorde-Seite zeigt Töne auf
+   * dem Hals, Spiel und Detektiv arbeiten mit Tönen, die Begleitung spielt weiter die Akkorde.
+   */
+  notesOnly?: boolean;
   /** Klang der Saiten (Vorgabe). */
   synth: Synth;
   /** Klänge zur Wahl (Gitarre: Nylon, Stahl, E-Gitarre); der erste ist die Vorgabe und gleich `synth`. */
@@ -146,7 +154,12 @@ export interface Tuning {
   article?: string;
 }
 
-export const INSTRUMENTS: Instrument[] = [UKULELE, GITARRE, BANJO, BARITON, MANDOLINE];
+export const INSTRUMENTS: Instrument[] = [UKULELE, GITARRE, BANJO, BARITON, MANDOLINE, BASS];
+
+/** Spielt das aktuelle Instrument nur Einzeltöne (E-Bass)? */
+export function notesOnly(): boolean {
+  return !!current.notesOnly;
+}
 
 let current: Instrument = UKULELE;
 let base: Instrument = UKULELE;

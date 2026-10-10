@@ -30,6 +30,10 @@ export interface Progress {
     twelve: boolean;
     /** gewählte Sprache; '' = Sprache des Geräts */
     lang: string;
+    /** E-Bass im Lied: nur Grundtöne oder Grundton und Quinte */
+    bassLine: 'root' | 'fifth';
+    /** E-Bass: die Basslinie zum Mitspielen vorspielen */
+    bassDemo: boolean;
   };
 }
 
@@ -112,6 +116,8 @@ const DEFAULTS: Progress = {
     sound: '',
     twelve: false,
     lang: '',
+    bassLine: 'root',
+    bassDemo: false,
   },
 };
 

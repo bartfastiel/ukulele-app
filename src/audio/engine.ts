@@ -1,8 +1,8 @@
-import { overdrive, renderPluck } from './pluck.ts';
+import { lowpass, overdrive, renderPluck } from './pluck.ts';
 import { midiToFreq } from '../music/notes.ts';
-import { chord as chordByName } from '../music/chords.ts';
+import { QUALITY_INTERVALS, chord as chordByName, parseChordName } from '../music/chords.ts';
 import { stringMidi } from '../music/notes.ts';
-import { onInstrumentChange, twelveString, voice } from '../music/instrument.ts';
+import { notesOnly, onInstrumentChange, twelveString, voice, type Synth } from '../music/instrument.ts';
 
 type Ctx = AudioContext;
 
@@ -64,22 +64,57 @@ export function hasAudio(): boolean {
   return !silent;
 }
 
+function renderBuffer(midi: number, tone: Synth): AudioBuffer {
+  const c = audio();
+  const data = renderPluck(midiToFreq(midi), c.sampleRate, tone.seconds, tone.brightness, midi, tone.sustain, tone.position);
+  if (tone.course) {
+    const pair = renderPluck(midiToFreq(midi) * Math.pow(2, tone.course / 1200), c.sampleRate, tone.seconds, tone.brightness, midi + 97, tone.sustain, tone.position);
+    for (let i = 0; i < data.length; i++) data[i] = (data[i] + pair[i]) * 0.5;
+  }
+  if (tone.lowpass) lowpass(data, c.sampleRate, tone.lowpass);
+  if (tone.drive) overdrive(data, tone.drive);
+  const buf = c.createBuffer(1, data.length, c.sampleRate);
+  buf.getChannelData(0).set(data);
+  return buf;
+}
+
 function pluckBuffer(midi: number): AudioBuffer {
   let buf = plucks.get(midi);
   if (!buf) {
-    const c = audio();
-    const tone = voice();
-    const data = renderPluck(midiToFreq(midi), c.sampleRate, tone.seconds, tone.brightness, midi, tone.sustain, tone.position);
-    if (tone.course) {
-      const pair = renderPluck(midiToFreq(midi) * Math.pow(2, tone.course / 1200), c.sampleRate, tone.seconds, tone.brightness, midi + 97, tone.sustain, tone.position);
-      for (let i = 0; i < data.length; i++) data[i] = (data[i] + pair[i]) * 0.5;
-    }
-    if (tone.drive) overdrive(data, tone.drive);
-    buf = c.createBuffer(1, data.length, c.sampleRate);
-    buf.getChannelData(0).set(data);
+    buf = renderBuffer(midi, voice());
     plucks.set(midi, buf);
   }
   return buf;
+}
+
+/**
+ * Begleitung auf Instrumenten ohne Akkorde (E-Bass): Akkorde, Melodie und Erfolgsklang kommen von einer Nylon-Gitarre
+ * in der Mittellage – der Bass bleibt dem Kind.
+ */
+const COMP: Synth = { brightness: 0.5, sustain: 1, seconds: 1.8, position: 0.3 };
+const comps = new Map<number, AudioBuffer>();
+
+function compBuffer(midi: number): AudioBuffer {
+  let buf = comps.get(midi);
+  if (!buf) {
+    buf = renderBuffer(midi, COMP);
+    comps.set(midi, buf);
+  }
+  return buf;
+}
+
+/** Melodieton: auf dem E-Bass von der Begleitung gespielt, sonst vom Instrument selbst. */
+export function melodyNote(midi: number, when = 0, gain = 0.55): void {
+  if (!hasAudio()) return;
+  if (notesOnly()) play(compBuffer(midi), when, gain);
+  else pluck(midi, when, gain);
+}
+
+/** Akkordtöne der Begleitung zwischen G3 und F#4. */
+function compVoicing(name: string): number[] {
+  const p = parseChordName(name);
+  if (!p) return [];
+  return QUALITY_INTERVALS[p.quality].map((i) => 55 + ((((p.root + i - 55) % 12) + 12) % 12)).sort((a, b) => a - b);
 }
 
 function play(buf: AudioBuffer, when: number, gain: number, bend = 0): void {
@@ -203,6 +238,13 @@ export function hold(midi: number, gain = 0.6, bend = 0): Voice {
 
 /** Akkord anschlagen; abwärts von der oberen Saite (Ukulele G) zur unteren (A), aufwärts umgekehrt. */
 export function strum(name: string, when = 0, gain = 0.35, up = false): void {
+  if (notesOnly()) {
+    if (!hasAudio()) return;
+    const notes = compVoicing(name);
+    const order = up ? notes.slice().reverse() : notes;
+    order.forEach((m, i) => play(compBuffer(m), when + i * 0.016, gain * (up ? 0.6 : 0.8)));
+    return;
+  }
   const ch = chordByName(name);
   const notes: { midi: number; string: number }[] = [];
   ch.frets.forEach((f, i) => {
@@ -250,6 +292,6 @@ export function click(when = 0, accent = false, gain = 0.5): void {
 /** Kurzer, freundlicher Erfolgsklang (zwei Töne aufwärts). */
 export function successSound(): void {
   const t = now();
-  pluck(79, t, 0.35);
-  pluck(84, t + 0.09, 0.35);
+  melodyNote(79, t, 0.35);
+  melodyNote(84, t + 0.09, 0.35);
 }

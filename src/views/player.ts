@@ -7,13 +7,22 @@ import { isOwnId } from '../music/own-songs.ts';
 import { chordChanges, eventAt, type Song } from '../music/song.ts';
 import { chord } from '../music/chords.ts';
 import { STRINGS, tabPosition } from '../music/notes.ts';
-import { audio, click, pluck, strum, successSound } from '../audio/engine.ts';
-import { listenForChord, type ChordListener } from '../audio/listen.ts';
+import { audio, click, melodyNote, pluck, strum, successSound } from '../audio/engine.ts';
+import { listenForChord, rootClass, type ChordListener } from '../audio/listen.ts';
 import { load, save, giveStars, markPracticed } from '../store.ts';
 import { capoHint, keyLabel, melodyOffset, originalShift, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
 import { simplifications, simplifySong } from '../music/simplify.ts';
 import { diagnose } from '../music/diagnose.ts';
-import { ordinal, t, tk, tParts } from '../i18n.ts';
+import { noteText, ordinal, t, tk, tParts } from '../i18n.ts';
+import { notesOnly } from '../music/instrument.ts';
+import { bassLine, bassPosition, type BassNote } from '../music/bassline.ts';
+import { ROOTS } from '../music/chords.ts';
+
+/** E-Bass: der Grundton eines Akkords als ausgeschriebener Ton („Am“ → „A“, im Französischen „La“). */
+function bassNote(chordName: string): string {
+  const pc = rootClass(chordName);
+  return pc < 0 ? chordName : noteText(ROOTS[pc]);
+}
 import { link, go } from '../site/nav.ts';
 
 const SPEEDS = [
@@ -70,12 +79,16 @@ class Player {
   private keyBox!: HTMLElement;
   /** Melodie auf dem Instrument gegen die gesungene Lage (Gitarre eine Oktave tiefer). */
   private melodyOffset = 0;
+  /** E-Bass: Grundtöne statt Griffe, die Begleitung spielt die Akkorde. */
+  private bass = notesOnly();
+  private bassNotes: BassNote[] = [];
 
   constructor(root: HTMLElement, song: Song) {
     this.base = song;
     this.shift = load().keys[song.id] || 0;
     this.song = this.arrange();
     this.changes = chordChanges(this.song);
+    this.bassNotes = this.bass ? bassLine(this.song, this.settings.bassLine) : [];
     this.render(root);
     this.drawKeyBox();
     this.showChords(0);
@@ -125,7 +138,7 @@ class Player {
           return b;
         }),
       );
-    const toggle = (label: string, key: 'backing' | 'melody' | 'clickOn' | 'tab') => {
+    const toggle = (label: string, key: 'backing' | 'melody' | 'clickOn' | 'tab' | 'bassDemo') => {
       const b = button(label, () => {
         const v = !this.settings[key];
         save((p) => (p.settings[key] = v));
@@ -154,6 +167,12 @@ class Player {
         t('Tempo'),
         SPEEDS.map((sp) => ({ label: t(sp.label), active: Math.abs(this.settings.speed - sp.value) < 0.01, on: () => this.setSpeed(sp.value) })),
       ),
+      this.bass
+        ? seg(t('Basslinie'), [
+            { label: t('Grundton'), active: this.settings.bassLine === 'root', on: () => this.setBassLine('root') },
+            { label: t('Grundton und Quinte'), active: this.settings.bassLine === 'fifth', on: () => this.setBassLine('fifth') },
+          ])
+        : null,
       h(
         'details',
         { class: 'more' },
@@ -163,8 +182,9 @@ class Player {
           { class: 'seg seg-wrap' },
           toggle(t('Begleitung'), 'backing'),
           this.song.hasMelody ? toggle(t('Melodie'), 'melody') : null,
+          this.bass ? toggle(t('Bass vorspielen'), 'bassDemo') : null,
           toggle(t('Klick'), 'clickOn'),
-          this.song.hasMelody ? toggle(t('Tabulatur'), 'tab') : null,
+          this.song.hasMelody || this.bass ? toggle(t('Tabulatur'), 'tab') : null,
         ),
         (this.keyBox = h('div', { class: 'key-box' })),
         h('p', { class: 'small' }, this.song.origin),
@@ -190,8 +210,8 @@ class Player {
         this.els[i] = this.els[lastVisible];
         return;
       }
-      // Gitarre: Melodie eine Oktave tiefer, damit sie in den ersten Bünden liegt
-      const tab = e.midi !== null ? tabPosition(e.midi + this.melodyOffset) : null;
+      // Gitarre: Melodie eine Oktave tiefer, damit sie in den ersten Bünden liegt; E-Bass: der Grundton beim Wechsel
+      const tab = this.bass ? (e.chordChange || i === 0 ? bassPosition(e.chord, false) : null) : e.midi !== null ? tabPosition(e.midi + this.melodyOffset) : null;
       const el = h(
         'span',
         { class: `syl${e.joinNext ? ' join' : ''}` },
@@ -227,19 +247,22 @@ class Player {
     const moving = animate && !reducedMotion() && !!this.shownChord && name !== this.shownChord;
     this.shownChord = name;
 
+    const fifth = this.bass && this.settings.bassLine === 'fifth';
     const nowInner = h(
       'div',
       { class: 'card-inner' },
       h('div', { class: 'card-label' }, t('Jetzt')),
       h('div', { class: 'chord-name' }, name),
-      playableChord(chord(name), { lefty: this.settings.lefty }),
+      this.bass ? h('div', { class: 'bass-root' }, t('Grundton {note}', { note: bassNote(name) })) : null,
+      playableChord(chord(name), { lefty: this.settings.lefty, fifth }),
     );
     const next = this.changes.find((c) => c > Math.max(0, idx));
     const nextInner = h('div', { class: 'card-inner' }, h('div', { class: 'card-label' }, t('Gleich')));
     if (next !== undefined) {
       const nn = this.song.events[next].chord;
       nextInner.appendChild(h('div', { class: 'chord-name' }, nn));
-      nextInner.appendChild(playableChord(chord(nn), { lefty: this.settings.lefty, labels: false }));
+      if (this.bass) nextInner.appendChild(h('div', { class: 'bass-root' }, t('Grundton {note}', { note: bassNote(nn) })));
+      nextInner.appendChild(playableChord(chord(nn), { lefty: this.settings.lefty, labels: false, fifth }));
       nextInner.appendChild(h('div', { class: 'beat-dots', 'aria-hidden': 'true' }));
     } else nextInner.appendChild(h('div', { class: 'chord-name end' }, t('Ende')));
 
@@ -415,7 +438,13 @@ class Player {
     if (this.settings.melody)
       for (const e of s.events) {
         if (e.midi === null || e.beat < this.scheduledTo - 1e-6 || e.beat >= until) continue;
-        pluck(e.midi + this.melodyOffset, t(e.beat), 0.55);
+        melodyNote(e.midi + this.melodyOffset, t(e.beat), 0.55);
+      }
+    // E-Bass: die Basslinie zum Mitspielen
+    if (this.bass && this.settings.bassDemo)
+      for (const n of this.bassNotes) {
+        if (n.beat < this.scheduledTo - 1e-6 || n.beat >= until) continue;
+        pluck(n.midi, t(n.beat), 0.75);
       }
     if (until > this.scheduledTo) this.scheduledTo = until;
   }
@@ -439,17 +468,18 @@ class Player {
     this.highlight(idx);
     this.showChords(idx, true);
     const name = this.song.events[idx].chord;
+    const shown = this.bass ? bassNote(name) : name;
     const hint = h('div', { class: 'hint-line' }, this.micOk ? t('Ich höre zu …') : t('Tippe auf „Geschafft“, wenn du so weit bist.'));
     this.overlayText(
       h(
         'div',
         { class: 'wait' },
-        h('div', { class: 'wait-title' }, ...tParts('Spiel jetzt {chord}', { chord: h('b', null, name) })),
+        h('div', { class: 'wait-title' }, ...tParts('Spiel jetzt {chord}', { chord: h('b', null, shown) })),
         hint,
         button(h('span', null, icon('check'), ' ', t('Geschafft')), () => this.confirmChord(false), 'btn-primary'),
       ),
     );
-    announce(t('Spiel jetzt {chord}', { chord: name }));
+    announce(t('Spiel jetzt {chord}', { chord: shown }));
     this.setPlayLabel();
     if (this.micOk) {
       const handle = (l: ChordListener) => {
@@ -574,10 +604,18 @@ class Player {
     });
     this.song = this.arrange();
     this.changes = chordChanges(this.song);
+    this.bassNotes = this.bass ? bassLine(this.song, this.settings.bassLine) : [];
     this.buildLyrics();
     this.lastLine = -1;
     this.reset();
     this.drawKeyBox();
+  }
+
+  /** E-Bass: nur Grundtöne oder Grundton und Quinte; das Griffbild zeigt dann auch die Quinte. */
+  private setBassLine(pattern: 'root' | 'fifth'): void {
+    save((p) => (p.settings.bassLine = pattern));
+    this.bassNotes = bassLine(this.song, pattern);
+    this.showChords(Math.max(0, this.lastIdx), false);
   }
 
   /** Gewählte Tonart, auf Wunsch mit leichteren Griffen. */
@@ -630,16 +668,17 @@ class Player {
           t('Mit dem Kapodaster im {fret} Bund klingen die leichten {key}-Griffe in {sound}.', { fret: ordinal(capo.capo), key: capo.shapes, sound: label(this.shift) }),
         ),
       );
-    const swaps = simplifications(transposeSong(this.base, this.shift));
+    // E-Bass: Grundtöne sind in jeder Tonart gleich leicht – nichts zu vereinfachen
+    const swaps = this.bass ? {} : simplifications(transposeSong(this.base, this.shift));
     const names = Object.keys(swaps);
-    this.keyBox.appendChild(
+    if (!this.bass) this.keyBox.appendChild(
       h(
         'div',
         { class: 'seg seg-wrap' },
         button(t('Einfache Griffe'), () => this.setSimplify(!this.settings.simplify), 'btn-seg', { 'aria-pressed': String(this.settings.simplify) }),
       ),
     );
-    this.keyBox.appendChild(
+    if (!this.bass) this.keyBox.appendChild(
       h(
         'p',
         { class: 'small' },

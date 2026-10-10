@@ -12,6 +12,7 @@ import { load } from '../store.ts';
 import { instrument } from '../music/instrument.ts';
 import { lang, noteText, ordinal, t } from '../i18n.ts';
 import { link } from '../site/nav.ts';
+import { noteDetective } from './notes.ts';
 
 /** Im Französischen ohne Oktavzahl: dort zählt man die Oktaven anders (C4 = Do3). */
 function noteShown(midi: number): string {
@@ -25,7 +26,9 @@ function stringText(i: number): string {
 }
 
 /** Akkord-Detektiv: irgendetwas spielen – die App zeigt Griff, Namen, Art und Töne. */
-export const detective: View = (root) => {
+export const detective: View = (root, param) => {
+  // E-Bass: Ton-Detektiv
+  if (instrument().notesOnly) return noteDetective(root, param);
   const lefty = load().settings.lefty;
   let timer = 0;
   let releaseWake: (() => void) | null = null;

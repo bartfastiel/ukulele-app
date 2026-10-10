@@ -111,6 +111,23 @@ const ICONS: Record<string, Icon> = {
       ...strings(4, 34, (i) => (i < 2 ? 4.5 - i * 0.5 : 3.6 - (i - 2) * 0.4), (i) => (i < 2 ? '#d8ab5c' : '#e4e8eb'), 6),
     ],
   },
+  // schwarze Esche, Schlagbrett mit weiß-schwarz-weißer Kante, geteilter Tonabnehmer, vier dicke Rundwickelsaiten
+  bass: {
+    bg: [[0, '#5a5550'], [0.6, '#24221f'], [1, '#0b0b0c']],
+    shapes: [
+      { k: 'circle', cx: 40, cy: 470, r: 300, fill: '#101113' },
+      { k: 'circle', cx: 40, cy: 470, r: 294, fill: '#f2efe8' },
+      { k: 'circle', cx: 40, cy: 470, r: 288, fill: '#101113' },
+      { k: 'circle', cx: 40, cy: 470, r: 284, fill: '#f2efe8' },
+      { k: 'rect', x: C - 132, y: 196, w: 140, h: 56, r: 18, fill: '#151517' },
+      { k: 'rect', x: C - 8, y: 262, w: 140, h: 56, r: 18, fill: '#151517' },
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((j): Shape => {
+        const i = j >> 1;
+        return { k: 'circle', cx: C + (i - 1.5) * 60 + (j % 2 ? 11 : -11), cy: i < 2 ? 224 : 290, r: 6, fill: '#9aa0a6' };
+      }),
+      ...strings(4, 60, (i) => 14 - i * 2, () => '#c3c8cd'),
+    ],
+  },
   // neutral: Griffbild mit Sattel, Saiten, einem Fingerpunkt und dem Kreis für „leere Saite“
   start: {
     bg: [[0, '#8a6a48'], [0.6, '#4e3622'], [1, '#22160c']],

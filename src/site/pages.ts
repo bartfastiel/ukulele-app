@@ -14,8 +14,10 @@ import { CHORDS, ROOTS, chord } from '../music/chords.ts';
 import { ARTICLES } from '../content/wissen.ts';
 import { LEGAL_NAME, type LegalContact } from './legal-data.ts';
 import { scramble } from './scramble.ts';
-import { baseInstrument, instrument, setInstrument, setTuning, type Tuning } from '../music/instrument.ts';
+import { baseInstrument, instrument, notesOnly, setInstrument, setTuning, type Tuning } from '../music/instrument.ts';
 import { tuningNotes } from '../ui/tuning.ts';
+import { noteText } from '../i18n.ts';
+import { parseChordName } from '../music/chords.ts';
 import type { Article, Block, L10n } from '../content/types.ts';
 import { h } from '../ui/dom.ts';
 import { icon, soundHole } from '../ui/icons.ts';
@@ -205,10 +207,10 @@ function toolTitle(tool: string): string {
   const titles: Record<string, string> = {
     stimmen: t('Zum Stimmgerät'),
     rhythmus: t('Rhythmus üben'),
-    spiel: t('Akkord-Spiel starten'),
+    spiel: notesOnly() ? t('Ton-Spiel starten') : t('Akkord-Spiel starten'),
     blues: t('Blues spielen'),
-    detektiv: t('Akkord-Detektiv öffnen'),
-    akkorde: t('Alle Akkorde'),
+    detektiv: notesOnly() ? t('Ton-Detektiv öffnen') : t('Akkord-Detektiv öffnen'),
+    akkorde: notesOnly() ? t('Alle Töne') : t('Alle Akkorde'),
     lieder: t('Lieder spielen'),
     'eigenes-lied': t('Eigenes Lied anlegen'),
   };
@@ -314,16 +316,17 @@ function primarySite(a: Article): SiteId {
 const GRAMMAR: Record<Lang, [RegExp, string][]> = {
   de: [
     [/\bauf (Ukulele|Gitarre|Bariton-Ukulele|Mandoline)\b/g, 'auf der $1'],
-    [/\bauf Banjo\b/g, 'auf dem Banjo'],
+    [/\bauf (Banjo|E-Bass)\b/g, 'auf dem $1'],
     [/\brund um (Ukulele|Gitarre|Bariton-Ukulele|Mandoline)\b/g, 'rund um die $1'],
     [/\brund um Banjo\b/g, 'rund ums Banjo'],
+    [/\brund um E-Bass\b/g, 'rund um den E-Bass'],
   ],
   en: [],
   fr: [
-    [/\b([Ll])e guitare\b/g, '$1a guitare'],
-    [/\bau guitare\b/g, 'à la guitare'],
-    [/\bdu guitare\b/g, 'de la guitare'],
-    [/\b([MmTtSs])on guitare\b/g, '$1a guitare'],
+    [/\b([Ll])e (guitare|basse électrique)/g, '$1a $2'],
+    [/\bau (guitare|basse électrique)/g, 'à la $1'],
+    [/\bdu (guitare|basse électrique)/g, 'de la $1'],
+    [/\b([MmTtSs])on (guitare|basse électrique)/g, '$1a $2'],
     // „Accords en {tuning}“ mit der Ukulele-Stimmung „Accordage en D“
     [/\ben Accordage en ([A-G])\b/g, 'avec l’accordage en $1'],
   ],
@@ -361,38 +364,51 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
     specs.push({
       route: '',
       title: t('{brand} – Saiteninstrumente lernen, kostenlos', { brand }),
-      description: t('Kostenlos Ukulele, Bariton-Ukulele, Gitarre, Banjo oder Mandoline lernen: Lieder zum Mitspielen, Akkorde, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.'),
+      description: t('Kostenlos Ukulele, Bariton-Ukulele, Gitarre, Banjo, Mandoline oder E-Bass lernen: Lieder zum Mitspielen, Akkorde, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.'),
       body: () => startPage(siteDef, l),
       jsonld: () => [webSite(siteDef, l)],
     });
     return specs.concat(legalSpecs(siteDef, l));
   }
+  // E-Bass: Basstöne statt Akkordgriffe, Töne statt Akkorde, Ton-Spiel und Ton-Detektiv
+  const bass = notesOnly();
   specs.push({
     route: '',
-    title: t('{instrument} lernen kostenlos: Lieder und Akkorde', { instrument: inst }),
-    description: t('Kostenlos {instrument} lernen, für Kinder und Einsteiger: Lieder zum Mitspielen, Akkorde mit Griffbildern, Stimmgerät und Rhythmus. Ohne Abo, ohne Werbung.', { instrument: inst }),
+    title: bass ? t('{instrument} lernen kostenlos: Lieder und Basslinien', { instrument: inst }) : t('{instrument} lernen kostenlos: Lieder und Akkorde', { instrument: inst }),
+    description: bass
+      ? t('Kostenlos {instrument} lernen, für Kinder und Einsteiger: Lieder mit Basstönen zum Mitspielen, Töne auf dem Hals, Stimmgerät und Walking Bass im Blues. Ohne Abo, ohne Werbung.', { instrument: inst })
+      : t('Kostenlos {instrument} lernen, für Kinder und Einsteiger: Lieder zum Mitspielen, Akkorde mit Griffbildern, Stimmgerät und Rhythmus. Ohne Abo, ohne Werbung.', { instrument: inst }),
     view: home,
     extra: () => aboutCard(siteDef, l),
     jsonld: () => [webSite(siteDef, l), webApp(siteDef, l)],
   });
   specs.push({
     route: 'lieder',
-    title: t('Lieder für {instrument} mit Akkorden und Text', { instrument: inst }),
-    description: t('{n} Lieder für {instrument}: Kinderlieder, Lagerfeuer, Weihnachten und mehr – mit Akkorden, Text und Melodie zum Mitspielen.', { n: SONGS.length, instrument: inst }),
+    title: bass ? t('Lieder für {instrument} mit Basstönen und Text', { instrument: inst }) : t('Lieder für {instrument} mit Akkorden und Text', { instrument: inst }),
+    description: bass
+      ? t('{n} Lieder für {instrument}: Kinderlieder, Lagerfeuer, Weihnachten und mehr – mit Akkorden, Basstönen und Tabulatur zum Mitspielen.', { n: SONGS.length, instrument: inst })
+      : t('{n} Lieder für {instrument}: Kinderlieder, Lagerfeuer, Weihnachten und mehr – mit Akkorden, Text und Melodie zum Mitspielen.', { n: SONGS.length, instrument: inst }),
     view: songs,
     extra: () => songsIntroCard(siteDef, l),
     crumb: t('Lieder'),
   });
   for (const s of SONGS) {
-    const long = t('{title} – Akkorde und Text für {instrument}', { title: s.title, instrument: inst });
+    const long = bass ? t('{title} – Basstöne und Text für {instrument}', { title: s.title, instrument: inst }) : t('{title} – Akkorde und Text für {instrument}', { title: s.title, instrument: inst });
+    const short = bass ? t('{title} – Basstöne für {instrument}', { title: s.title, instrument: inst }) : t('{title} – Akkorde für {instrument}', { title: s.title, instrument: inst });
     specs.push({
       route: `lied/${s.id}`,
-      title: long.length <= TITLE_MAX ? long : t('{title} – Akkorde für {instrument}', { title: s.title, instrument: inst }),
-      description: t('{title}: Akkorde ({chords}) und Text zum Mitspielen für {instrument} – mit Begleitung, die auf dich wartet.', {
-        title: s.title,
-        chords: s.chords.join(', '),
-        instrument: inst,
-      }),
+      title: long.length <= TITLE_MAX ? long : short,
+      description: bass
+        ? t('{title}: Basstöne zu den Akkorden ({chords}) und Text zum Mitspielen für {instrument} – mit Begleitung, die auf dich wartet.', {
+            title: s.title,
+            chords: s.chords.join(', '),
+            instrument: inst,
+          })
+        : t('{title}: Akkorde ({chords}) und Text zum Mitspielen für {instrument} – mit Begleitung, die auf dich wartet.', {
+            title: s.title,
+            chords: s.chords.join(', '),
+            instrument: inst,
+          }),
       view: player,
       extra: () => songCard(s, l),
       jsonld: () => [songLd(s, siteDef, l)],
@@ -401,7 +417,29 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
     });
   }
   specs.push({ route: 'lied/eigen', title: t('Eigenes Lied'), description: t('Dein eigenes Lied, gespeichert nur auf diesem Gerät.'), view: player, hashParam: true, noindex: true, body: () => staticScreen(t('Eigenes Lied'), rel('lieder', l)) });
-  specs.push({
+  if (bass) {
+    specs.push({
+      route: 'akkorde',
+      title: t('Töne auf dem {instrument} – wo liegt welcher Ton?', { instrument: inst }),
+      description: t('Alle zwölf Töne auf dem {instrument} mit Griffbild, Fingersatz und Prüf-Funktion übers Mikrofon – dazu die Quinte für die ersten Basslinien. Kostenlos und ohne Anmeldung.', { instrument: inst }),
+      view: chords,
+      extra: () => noteIndexCard(l),
+      crumb: t('Töne'),
+    });
+    for (const name of ROOTS)
+      specs.push({
+        route: `akkord/${encodeURIComponent(name)}`,
+        title: t('{note} auf dem {instrument} – so findest du den Ton', { note: noteText(name), instrument: inst }),
+        description: t('Wo liegt {note} auf dem {instrument}? Griffbild in der ersten Lage, alle Stellen bis zum 12. Bund und die Quinte für Basslinien – das Mikrofon prüft, ob der Ton stimmt.', {
+          note: noteText(name),
+          instrument: inst,
+        }),
+        view: chordDetail,
+        extra: () => noteCard(name, siteDef, l),
+        crumb: noteText(name),
+      });
+  }
+  if (!bass) specs.push({
     route: 'akkorde',
     title: t('Akkorde für {instrument} – Griffbilder zum Lernen', { instrument: inst }),
     description: t('Alle wichtigen Akkorde für {instrument} mit Griffbild, Fingersatz und Prüf-Funktion übers Mikrofon – kostenlos und ohne Anmeldung.', { instrument: inst }),
@@ -409,7 +447,7 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
     extra: () => chordIndexCard(l),
     crumb: t('Akkorde'),
   });
-  for (const name of chordPageNames()) {
+  if (!bass) for (const name of chordPageNames()) {
     // „Fis-Sept mit Quarte (7sus4)“: die Klammer wiederholt nur den Akkordnamen, der ohnehin davor steht
     const long = chordLongName(name, l).replace(/ \([^)]*\)$/, '');
     specs.push({
@@ -435,10 +473,18 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
     });
   const tools: [string, string, string][] = [
     ['stimmen', t('{instrument} stimmen – Stimmgerät online', { instrument: inst }), t('Kostenloses Stimmgerät für {instrument} im Browser: Saite anzupfen, die Anzeige zeigt zu hoch oder zu tief – mit Tipps, wenn es hakt.', { instrument: inst })],
-    ['rhythmus', t('Schlagmuster und Metronom für {instrument}', { instrument: inst }), t('Schlagmuster für {instrument} lernen: runter, rauf, Pausen – mit Metronom, Taktarten und Tempo zum Antippen.', { instrument: inst })],
-    ['spiel', t('Akkord-Spiel für {instrument} – Akkordwechsel üben', { instrument: inst }), t('Wie viele Akkorde schaffst du in einer Minute? Das Mikrofon hört zu und zählt mit – ein Spiel für {instrument}.', { instrument: inst })],
-    ['detektiv', t('Akkord-Detektiv für {instrument}: Welcher Akkord ist das?', { instrument: inst }), t('Spiel einen Akkord oder Ton auf {instrument} – der Detektiv sagt dir, wie er heißt und wo er auf dem Hals liegt.', { instrument: inst })],
-    ['blues', t('12-Takt-Blues zum Mitspielen für {instrument}', { instrument: inst }), t('Blues mit Band in jeder Tonart: erst Grundtöne, dann Riffs, dann frei spielen – auf {instrument}, mit Tabulatur.', { instrument: inst })],
+    bass
+      ? ['rhythmus', t('Basslinien und Metronom für {instrument}', { instrument: inst }), t('Basslinien für {instrument} lernen: Grundton, Quinte, Oktave – mit Metronom, Taktarten und Tempo zum Antippen.', { instrument: inst })]
+      : ['rhythmus', t('Schlagmuster und Metronom für {instrument}', { instrument: inst }), t('Schlagmuster für {instrument} lernen: runter, rauf, Pausen – mit Metronom, Taktarten und Tempo zum Antippen.', { instrument: inst })],
+    bass
+      ? ['spiel', t('Ton-Spiel für {instrument} – Töne finden üben', { instrument: inst }), t('Wie viele Töne findest du in einer Minute? Das Mikrofon hört zu und zählt mit – ein Spiel für {instrument}.', { instrument: inst })]
+      : ['spiel', t('Akkord-Spiel für {instrument} – Akkordwechsel üben', { instrument: inst }), t('Wie viele Akkorde schaffst du in einer Minute? Das Mikrofon hört zu und zählt mit – ein Spiel für {instrument}.', { instrument: inst })],
+    bass
+      ? ['detektiv', t('Ton-Detektiv für {instrument}: Welcher Ton ist das?', { instrument: inst }), t('Spiel einen Ton auf {instrument} – der Detektiv sagt dir, wie er heißt und wo du ihn überall auf dem Hals findest.', { instrument: inst })]
+      : ['detektiv', t('Akkord-Detektiv für {instrument}: Welcher Akkord ist das?', { instrument: inst }), t('Spiel einen Akkord oder Ton auf {instrument} – der Detektiv sagt dir, wie er heißt und wo er auf dem Hals liegt.', { instrument: inst })],
+    bass
+      ? ['blues', t('Walking Bass im 12-Takt-Blues für {instrument}', { instrument: inst }), t('Blues mit Band in jeder Tonart: erst Grundtöne, dann Grundton und Quinte, dann Walking Bass und frei spielen – auf {instrument}, mit Tabulatur.', { instrument: inst })]
+      : ['blues', t('12-Takt-Blues zum Mitspielen für {instrument}', { instrument: inst }), t('Blues mit Band in jeder Tonart: erst Grundtöne, dann Riffs, dann frei spielen – auf {instrument}, mit Tabulatur.', { instrument: inst })],
     ['sterne', t('Meine Sterne', {}), t('Deine Sterne, Abzeichen und Übungstage – gespeichert nur auf diesem Gerät.', {})],
   ];
   for (const tool of tools)
@@ -467,7 +513,8 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
       crumb: name,
     });
   }
-  specs.push({ route: 'aufnahme', title: t('Beispielaufnahmen'), description: t('Beispielaufnahmen für die Akkorderkennung.'), view: record, noindex: true });
+  // Beispielaufnahmen gibt es nur für die Akkorderkennung
+  if (!bass) specs.push({ route: 'aufnahme', title: t('Beispielaufnahmen'), description: t('Beispielaufnahmen für die Akkorderkennung.'), view: record, noindex: true });
   specs.push({
     route: 'eigenes-lied',
     title: t('Eigenes Lied anlegen'),
@@ -516,13 +563,16 @@ function aboutCard(siteDef: SiteDef, l: Lang): Node {
     'section',
     { class: 'card seo-card' },
     h('h2', null, t('Kostenlos {instrument} lernen', { instrument: inst })),
-    h(
-      'p',
-      null,
-      t('Lieder zum Mitspielen, die auf dich warten, Akkorde mit Prüf-Funktion übers Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.'),
-    ),
+    h('p', null, appText()),
     h('p', null, h('a', { href: rel('wissen', l) }, t('Tipps und Wissen rund um {instrument}', { instrument: inst }), ' ›')),
   );
+}
+
+/** Was die App kann – auf dem E-Bass mit Basstönen statt Akkorden. */
+function appText(): string {
+  return notesOnly()
+    ? t('Lieder zum Mitspielen, die auf dich warten, Basstöne mit Prüf-Funktion übers Mikrofon, Stimmgerät, Basslinien und Walking Bass im Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.')
+    : t('Lieder zum Mitspielen, die auf dich warten, Akkorde mit Prüf-Funktion übers Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.');
 }
 
 function toolCard(title: string, text: string, tool: string, siteDef: SiteDef, l: Lang): Node {
@@ -620,19 +670,45 @@ function tuningPage(tu: Tuning, siteDef: SiteDef, l: Lang): Node[] {
 }
 
 function songsIntroCard(siteDef: SiteDef, l: Lang): Node {
+  const inst = siteDef.name[l];
+  if (notesOnly()) {
+    const first = articlesOn(siteDef).filter((a) => a.id === 'bass-erste-toene')[0];
+    return h(
+      'section',
+      { class: 'card seo-card' },
+      h('h2', null, t('Lieder für {instrument} mit Basstönen und Text', { instrument: inst })),
+      h('p', null, t('Kinderlieder, Volkslieder, Weihnachtslieder und englische Songs mit Akkorden über dem Text. Zu jedem Akkord zeigt die App den Grundton auf dem Hals, auf Wunsch auch die Quinte – die Begleitung spielt die Akkorde und wartet auf dich.')),
+      h(
+        'ul',
+        { class: 'wissen-list' },
+        first ? h('li', null, h('a', { href: rel(`wissen/${first.id}`, l) }, first.title[l])) : null,
+        h('li', null, h('a', { href: rel('akkorde', l) }, t('Töne auf dem {instrument} – wo liegt welcher Ton?', { instrument: inst }))),
+      ),
+    );
+  }
   const easy = articlesOn(siteDef).filter((a) => a.id === 'lieder-fuer-anfaenger')[0];
   return h(
     'section',
     { class: 'card seo-card' },
-    h('h2', null, t('Lieder für {instrument} mit Akkorden und Text', { instrument: siteDef.name[l] })),
+    h('h2', null, t('Lieder für {instrument} mit Akkorden und Text', { instrument: inst })),
     h('p', null, t('Kinderlieder, Volkslieder, Weihnachtslieder und englische Songs, mit Akkorden über dem Text und vielen Melodien als Tabulatur. Beim Akkordwechsel wartet die Begleitung auf dich.')),
     h(
       'ul',
       { class: 'wissen-list' },
       easy ? h('li', null, h('a', { href: rel(`wissen/${easy.id}`, l) }, easy.title[l])) : null,
-      h('li', null, h('a', { href: rel('akkorde', l) }, t('Akkorde für {instrument} – Griffbilder zum Lernen', { instrument: siteDef.name[l] }))),
+      h('li', null, h('a', { href: rel('akkorde', l) }, t('Akkorde für {instrument} – Griffbilder zum Lernen', { instrument: inst }))),
     ),
   );
+}
+
+/** Grundtöne der Akkorde eines Liedes, jeder nur einmal (E-Bass). */
+function songRoots(s: Song): string[] {
+  const out: string[] = [];
+  for (const c of s.chords) {
+    const p = parseChordName(c);
+    if (p && out.indexOf(ROOTS[p.root]) < 0) out.push(ROOTS[p.root]);
+  }
+  return out;
 }
 
 function songCard(s: Song, l: Lang): Node {
@@ -641,7 +717,9 @@ function songCard(s: Song, l: Lang): Node {
     { class: 'card seo-card' },
     h('h2', null, t('Über das Lied')),
     h('p', null, s.origin),
-    h('p', null, t('Akkorde:'), ' ', ...s.chords.map((c, i) => h('span', null, i ? ', ' : '', h('a', { href: rel(`akkord/${encodeURIComponent(canonicalChord(c))}`, l) }, c)))),
+    notesOnly()
+      ? h('p', null, t('Basstöne:'), ' ', ...songRoots(s).map((r, i) => h('span', null, i ? ', ' : '', h('a', { href: rel(`akkord/${encodeURIComponent(r)}`, l) }, noteText(r)))))
+      : h('p', null, t('Akkorde:'), ' ', ...s.chords.map((c, i) => h('span', null, i ? ', ' : '', h('a', { href: rel(`akkord/${encodeURIComponent(canonicalChord(c))}`, l) }, c)))),
     h('p', null, t('{meter}er-Takt, {bpm} Schläge pro Minute.', { meter: s.meter, bpm: s.bpm })),
     moreSongs(s, l),
   );
@@ -684,6 +762,32 @@ function chordIndexCard(l: Lang): Node {
           h('p', { class: 'chord-index' }, ...powerChordNames().map((n) => h('a', { class: 'btn btn-chip', href: rel(`akkord/${encodeURIComponent(n)}`, l) }, n))),
         )
       : null,
+  );
+}
+
+function noteIndexCard(l: Lang): Node {
+  return h(
+    'section',
+    { class: 'card seo-card' },
+    h('h2', null, t('Alle zwölf Töne')),
+    h('p', { class: 'chord-index' }, ...ROOTS.map((r) => h('a', { class: 'btn btn-chip', href: rel(`akkord/${encodeURIComponent(r)}`, l) }, noteText(r)))),
+    h('p', null, t('Auf dem E-Bass spielst du zu jedem Akkord seinen Grundton: zu C, Cm und C7 immer das C. Die Quinte liegt eine Saite höher und zwei Bünde weiter.')),
+  );
+}
+
+/** Ton-Seite (E-Bass): Lieder, in denen der Ton Grundton eines Akkords ist, und passende Artikel. */
+function noteCard(name: string, siteDef: SiteDef, l: Lang): Node {
+  const root = ROOTS.indexOf(name);
+  const with_ = SONGS.filter((s) => s.chords.some((c) => {
+    const p = parseChordName(c);
+    return !!p && p.root === root;
+  })).slice(0, 12);
+  return h(
+    'section',
+    { class: 'card seo-card' },
+    h('h2', null, t('Der Ton {note} als Grundton', { note: noteText(name) })),
+    with_.length ? h('p', null, t('Lieder mit {note} im Bass:', { note: noteText(name) }), ' ', ...with_.map((s, i) => h('span', null, i ? ', ' : '', h('a', { href: rel(`lied/${s.id}`, l) }, s.title)))) : null,
+    articleLinks(t('Mehr dazu'), articlesAbout('chord', name, siteDef).slice(0, 4), l),
   );
 }
 
@@ -753,7 +857,7 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
           h(
             'a',
             { class: `tile btn tile-big theme-brass tile-${s.id}`, href: env().url(s.id) + (l === 'de' ? '' : l + '/') },
-            h('span', { class: 'tile-icon' }, icon(s.id === 'ukulele' ? 'songs' : s.id === 'gitarre' ? 'chords' : s.id === 'bariton' ? 'tuner' : s.id === 'mandoline' ? 'blues' : 'rhythm')),
+            h('span', { class: 'tile-icon' }, icon(s.id === 'ukulele' ? 'songs' : s.id === 'gitarre' ? 'chords' : s.id === 'bariton' ? 'tuner' : s.id === 'mandoline' ? 'blues' : s.id === 'bass' ? 'sound' : 'rhythm')),
             h('span', { class: 'tile-text' }, h('span', { class: 'tile-title' }, s.brand[l]), h('span', { class: 'tile-sub' }, t('{instrument} lernen', { instrument: s.name[l] }))),
           ),
         ),
@@ -847,7 +951,7 @@ function webApp(siteDef: SiteDef, l: Lang): object {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: siteDef.brand[l],
-    description: t('Lieder zum Mitspielen, die auf dich warten, Akkorde mit Prüf-Funktion übers Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.'),
+    description: appText(),
     image: env().publicUrl(siteDef.id) + OG_IMAGE,
     url: env().publicUrl(siteDef.id) + pathOf('', l),
     applicationCategory: 'EducationalApplication',
@@ -891,7 +995,7 @@ function breadcrumbLd(spec: Spec, siteDef: SiteDef, l: Lang, canonicalBase: stri
   const name = spec.route.split('/')[0];
   const parent: Record<string, [string, string]> = {
     lied: ['lieder', t('Lieder')],
-    akkord: ['akkorde', t('Akkorde')],
+    akkord: ['akkorde', notesOnly() ? t('Töne') : t('Akkorde')],
     wissen: ['wissen', t('Wissen')],
     stimmung: ['stimmen', t('Stimmgerät')],
     powerchords: ['akkorde', t('Akkorde')],
@@ -920,7 +1024,7 @@ function footer(siteDef: SiteDef, l: Lang, alternates: Partial<Record<Lang, stri
       ? []
       : [
           ['lieder', t('Lieder')],
-          ['akkorde', t('Akkorde')],
+          ['akkorde', notesOnly() ? t('Töne') : t('Akkorde')],
           ['stimmen', t('Stimmgerät')],
           ['wissen', t('Wissen')],
         ];

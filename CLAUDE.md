@@ -61,9 +61,11 @@ src/audio/pluck.ts       Synthese ohne Web Audio (auch für Tests und tools/make
 src/audio/pitch.ts       YIN-Tonhöhe (Stimmgerät)
 src/audio/chord-detect.ts  Spektralspitzen → Bewertung je Griff und Saite, Hinweis auf leer klingende Saite
 src/audio/mic.ts, listen.ts  Mikrofon (ohne Echo-/Rauschunterdrückung), Lauscher mit 2er-Bestätigung
-src/music/instrument.ts  Instrument-Modell: Ukulele (Standard), Gitarre, Banjo – Saiten, Griff-Bibliothek, Erkennung,
-                         Synthese, Blues; `instrument()`, Start über data-instrument am <html> oder ?instrument=gitarre.
-                         Daten je Instrument in src/music/instruments/*.ts; STRINGS/CHORDS folgen dem Instrument.
+src/music/instrument.ts  Instrument-Modell: Ukulele (Standard), Gitarre, Banjo, Bariton-Ukulele, Mandoline, E-Bass – Saiten,
+                         Griff-Bibliothek, Erkennung, Synthese, Blues; `instrument()`, Start über data-instrument am <html>
+                         oder ?instrument=gitarre. Daten je Instrument in src/music/instruments/*.ts; STRINGS/CHORDS folgen
+                         dem Instrument. `notesOnly` (E-Bass): Grundton statt Griff je Akkord (`rootGrip`), Töne statt
+                         Akkorde (src/views/notes.ts, eigene Pfade /toene/), Basslinien in src/music/bassline.ts.
                          Andere Stimmungen (`tunings`, `setTuning()`): abgeleitetes Instrument mit neuen Saiten, Griffe
                          rechnet chords.ts neu (offene Stimmung: Dur als Barré, sonst gewohnter Griff mit gleichen Tönen
                          oder Grifffinder; übliche Griffe, die der Finder nicht trifft, stehen in `grips` der Stimmung);

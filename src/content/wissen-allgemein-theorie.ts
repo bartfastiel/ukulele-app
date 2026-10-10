@@ -188,7 +188,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'takt-und-taktarten',
     slug: { de: 'takt-und-taktarten', en: 'time-signatures', fr: 'mesures-et-temps' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'],
     category: 'rhythmus',
     title: {
       de: 'Takt und Taktarten: 4/4, 3/4, 2/4 und 6/8 einfach erklärt',
@@ -375,7 +375,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'mit-metronom-ueben',
     slug: { de: 'mit-metronom-ueben', en: 'practice-with-metronome', fr: 'travailler-avec-metronome' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'],
     category: 'rhythmus',
     title: {
       de: 'Mit Metronom üben – so wird dein Rhythmus stabil',
@@ -470,7 +470,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'toene-und-notennamen',
     slug: { de: 'toene-und-notennamen', en: 'note-names', fr: 'noms-des-notes' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'],
     category: 'theorie',
     title: {
       de: 'Töne und Notennamen: C D E F G A B – und warum B auch H heißt',
@@ -540,7 +540,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'transponieren',
     slug: { de: 'transponieren-tonarten', en: 'transpose-keys', fr: 'transposer-tonalites' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'],
     category: 'theorie',
     title: {
       de: 'Transponieren: Lieder in eine andere Tonart bringen',
@@ -633,7 +633,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'tabulatur-lesen',
     slug: { de: 'tabulatur-lesen', en: 'read-tabs', fr: 'lire-tablature' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'],
     category: 'theorie',
     title: {
       de: 'Tabulatur lesen lernen – Tabs einfach erklärt',
@@ -656,9 +656,9 @@ export const ALLGEMEIN_THEORIE: Article[] = [
       { h2: { de: 'Linien sind Saiten', en: 'Lines are strings', fr: 'Les lignes sont les cordes' } },
       {
         p: {
-          de: 'Eine Tab hat so viele waagerechte Linien, wie dein Instrument Saiten hat: vier bei der Ukulele, sechs bei der Gitarre, fünf beim Banjo, vier bei der Mandoline (eine Linie je Saitenpaar). Die **oberste Linie** ist die Saite, die am **höchsten** klingt – also die, die beim Spielen dem Boden am nächsten ist. Das verwirrt am Anfang, weil es wie auf den Kopf gestellt aussieht. Stell dir einfach vor, du schaust von oben auf dein Instrument auf dem Schoß.',
-          en: 'A tab has as many horizontal lines as your instrument has strings: four for ukulele, six for guitar, five for banjo, four for mandolin (one line per pair of strings). The **top line** is the **highest-sounding** string – the one closest to the floor when you play. That’s confusing at first because it looks upside down. Just imagine looking down at the instrument lying in your lap.',
-          fr: 'Une tablature a autant de lignes horizontales que ton instrument a de cordes : quatre pour le ukulélé, six pour la guitare, cinq pour le banjo, quatre pour la mandoline (une ligne par paire de cordes). La **ligne du haut** est la corde **la plus aiguë**, celle qui est la plus proche du sol quand tu joues. Au début, ça semble à l’envers. Imagine simplement que tu regardes ton instrument posé à plat sur tes genoux.',
+          de: 'Eine Tab hat so viele waagerechte Linien, wie dein Instrument Saiten hat: vier bei der Ukulele, sechs bei der Gitarre, fünf beim Banjo, vier bei der Mandoline (eine Linie je Saitenpaar), vier beim E-Bass. Die **oberste Linie** ist die Saite, die am **höchsten** klingt – also die, die beim Spielen dem Boden am nächsten ist. Das verwirrt am Anfang, weil es wie auf den Kopf gestellt aussieht. Stell dir einfach vor, du schaust von oben auf dein Instrument auf dem Schoß.',
+          en: 'A tab has as many horizontal lines as your instrument has strings: four for ukulele, six for guitar, five for banjo, four for mandolin (one line per pair of strings), four for bass guitar. The **top line** is the **highest-sounding** string – the one closest to the floor when you play. That’s confusing at first because it looks upside down. Just imagine looking down at the instrument lying in your lap.',
+          fr: 'Une tablature a autant de lignes horizontales que ton instrument a de cordes : quatre pour le ukulélé, six pour la guitare, cinq pour le banjo, quatre pour la mandoline (une ligne par paire de cordes), quatre pour la basse électrique. La **ligne du haut** est la corde **la plus aiguë**, celle qui est la plus proche du sol quand tu joues. Au début, ça semble à l’envers. Imagine simplement que tu regardes ton instrument posé à plat sur tes genoux.',
         },
       },
       { h2: { de: 'Zahlen sind Bünde', en: 'Numbers are frets', fr: 'Les chiffres sont les cases' } },
@@ -717,7 +717,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
   {
     id: 'zwoelf-takt-blues',
     slug: { de: 'zwoelf-takt-blues', en: 'twelve-bar-blues', fr: 'blues-douze-mesures' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'],
     category: 'theorie',
     title: {
       de: '12-Takt-Blues lernen: Das Grundschema für Einsteiger',
@@ -772,9 +772,9 @@ export const ALLGEMEIN_THEORIE: Article[] = [
       { h2: { de: 'Der Blues in anderen Tonarten', en: 'The blues in other keys', fr: 'Le blues dans d’autres tonalités' } },
       {
         p: {
-          de: 'Das Schema funktioniert in jeder Tonart. Man nennt die drei Akkorde oft **I, IV und V** – nach ihrer Stufe in der Tonleiter. In G sind das G, C und D7, in A sind es A, D und E7. Auf der Gitarre, der Bariton-Ukulele und dem Banjo ist der Blues in G oder A beliebt, auf der Mandoline in D oder G, auf der Ukulele in C. Mehr dazu in [Transponieren](wissen:transponieren).',
-          en: 'The pattern works in any key. The three chords are often called **I, IV and V** after their place in the scale. In G they’re G, C and D7; in A they’re A, D and E7. On guitar, baritone ukulele and banjo the blues in G or A is popular, on mandolin in D or G, on ukulele the blues in C. More in [Transposing](wissen:transponieren).',
-          fr: 'La grille fonctionne dans toutes les tonalités. On appelle souvent les trois accords **I, IV et V**, d’après leur degré dans la gamme. En Sol, ce sont G, C et D7 ; en La, A, D et E7. À la guitare, au ukulélé baryton et au banjo, on aime le blues en Sol ou en La ; à la mandoline, en Ré ou en Sol ; au ukulélé, en Do. Plus d’infos dans [Transposer](wissen:transponieren).',
+          de: 'Das Schema funktioniert in jeder Tonart. Man nennt die drei Akkorde oft **I, IV und V** – nach ihrer Stufe in der Tonleiter. In G sind das G, C und D7, in A sind es A, D und E7. Auf der Gitarre, der Bariton-Ukulele und dem Banjo ist der Blues in G oder A beliebt, auf der Mandoline in D oder G, auf der Ukulele in C, auf dem E-Bass in E oder A – dort liegen die Grundtöne auf leeren Saiten. Mehr dazu in [Transponieren](wissen:transponieren).',
+          en: 'The pattern works in any key. The three chords are often called **I, IV and V** after their place in the scale. In G they’re G, C and D7; in A they’re A, D and E7. On guitar, baritone ukulele and banjo the blues in G or A is popular, on mandolin in D or G, on ukulele the blues in C, on bass guitar in E or A – there the root notes are open strings. More in [Transposing](wissen:transponieren).',
+          fr: 'La grille fonctionne dans toutes les tonalités. On appelle souvent les trois accords **I, IV et V**, d’après leur degré dans la gamme. En Sol, ce sont G, C et D7 ; en La, A, D et E7. À la guitare, au ukulélé baryton et au banjo, on aime le blues en Sol ou en La ; à la mandoline, en Ré ou en Sol ; au ukulélé, en Do ; à la basse électrique, en Mi ou en La – les fondamentales y sont des cordes à vide. Plus d’infos dans [Transposer](wissen:transponieren).',
         },
       },
       { h2: { de: 'Selbst Töne spielen', en: 'Playing your own notes', fr: 'Jouer tes propres notes' } },

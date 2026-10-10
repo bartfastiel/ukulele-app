@@ -58,6 +58,17 @@ export function detectPitch(
   return { freq: sampleRate / better, clarity: 1 - d[tau] };
 }
 
+/**
+ * Wie detectPitch, aber für tiefe Töne (E-Bass ab 41 Hz) erst auf die halbe Abtastrate gebracht: Die längste Periode
+ * passt dann mit genug Rest ins Fenster, und die Rechenzeit sinkt auf ein Viertel. Höhere Bereiche bleiben unverändert.
+ */
+export function detectPitchIn(buf: Float32Array, sampleRate: number, minFreq: number, maxFreq: number, threshold = 0.12): { freq: number; clarity: number } | null {
+  if (minFreq >= 60 || maxFreq * 8 > sampleRate / 2) return detectPitch(buf, sampleRate, minFreq, maxFreq, threshold);
+  const half = new Float32Array(buf.length >> 1);
+  for (let i = 0; i < half.length; i++) half[i] = (buf[2 * i] + buf[2 * i + 1]) * 0.5;
+  return detectPitch(half, sampleRate / 2, minFreq, maxFreq, threshold);
+}
+
 /** Abweichung in Cent von `target`. */
 export function cents(freq: number, target: number): number {
   return 1200 * Math.log2(freq / target);

@@ -2687,6 +2687,42 @@ html[data-instrument='mandoline'] .card {
     0 10px 24px rgba(0, 0, 0, 0.45);
 }
 
+/* E-Bass: schwarz gebeizte Esche, Knöpfe aus Esche unter Bernsteinlack, Einfassung wie die Kante eines Schlagbretts */
+html[data-instrument='bass'] {
+  --mahogany: #7a5226;
+  --mahogany-dark: #121214;
+  --binding: #f2efe8;
+  --edge: #101113;
+  --edge-dark: #0b0c0d;
+  --depth: #1c1408;
+  --shade: #22180a;
+}
+
+html[data-instrument='bass'] .card {
+  box-shadow:
+    0 0 0 3px var(--binding),
+    0 0 0 4px #101113,
+    0 0 0 6px #f2efe8,
+    0 0 0 7px #101113,
+    0 10px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Grundton unter dem Akkordnamen im Lied (E-Bass) */
+.bass-root {
+  font-size: 0.85em;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.notes-neck .fretboard {
+  margin: 6px 0;
+}
+
+.rhythm-neck .fretboard {
+  max-width: 420px;
+  margin: 10px auto 0;
+}
+
 /* Startseite: jede Instrument-Kachel trägt schon die Einfassung ihres Instruments */
 .start .tile-gitarre {
   background-color: #4a2a22;
@@ -2722,6 +2758,16 @@ html[data-instrument='mandoline'] .card {
     0 0 0 4px #1a0f0a,
     0 0 0 5px #6b3414,
     0 5px 0 5px #1c0b04,
+    0 9px 16px 5px rgba(0, 0, 0, 0.45);
+}
+
+.start .tile-bass {
+  background-color: #2a2826;
+  box-shadow:
+    0 0 0 3px #f2efe8,
+    0 0 0 4px #101113,
+    0 0 0 5px #f2efe8,
+    0 5px 0 5px #0b0c0d,
     0 9px 16px 5px rgba(0, 0, 0, 0.45);
 }
 

@@ -1,4 +1,5 @@
 import { ROOTS, parseChordName } from '../music/chords.ts';
+import { notesOnly } from '../music/instrument.ts';
 import type { Lang } from '../i18n.ts';
 
 /**
@@ -28,6 +29,17 @@ export const SEGMENTS: Record<string, Record<Lang, string>> = {
   stimmung: { de: 'stimmung', en: 'tuning', fr: 'accordage' },
 };
 
+/** Instrumente ohne Akkorde (E-Bass): Töne statt Akkorde, Ton-Spiel und Ton-Detektiv – auch in der Adresse. */
+const NOTE_SEGMENTS: Record<string, Record<Lang, string>> = {
+  akkorde: { de: 'toene', en: 'notes', fr: 'notes' },
+  spiel: { de: 'ton-spiel', en: 'note-game', fr: 'jeu-des-notes' },
+  detektiv: { de: 'ton-detektiv', en: 'note-detective', fr: 'detective-des-notes' },
+};
+
+function segment(name: string): Record<Lang, string> | undefined {
+  return (notesOnly() && NOTE_SEGMENTS[name]) || SEGMENTS[name];
+}
+
 /** Seiten, deren Parameter hinter dem „#“ steht (nur im Browser bekannt, daher nicht vorgerendert). */
 export const HASH_PARAM = ['eigenes-lied', 'lied-teilen', 'teilen'];
 
@@ -46,10 +58,11 @@ export function chordSlug(name: string): string {
   return out;
 }
 
-/** Gebräuchliche Schreibweise (C#, Eb, F#, Ab, Bb) für Links auf Akkordseiten. */
+/** Gebräuchliche Schreibweise (C#, Eb, F#, Ab, Bb) für Links auf Akkordseiten; beim E-Bass nur der Grundton. */
 export function canonicalChord(name: string): string {
   const p = parseChordName(name);
-  return p ? ROOTS[p.root] + p.quality : name;
+  if (!p) return name;
+  return notesOnly() ? ROOTS[p.root] : ROOTS[p.root] + p.quality;
 }
 
 /**
@@ -67,8 +80,8 @@ export function routePath(route: string, lang: Lang, isOwn: (id: string) => bool
     if (isOwn(param)) return `${prefix}${seg}/${OWN_SONG_SEGMENT}/#${encodeURIComponent(param)}`;
     return `${prefix}${seg}/${param}/`;
   }
-  if (name === 'akkord') return `${prefix}${SEGMENTS.akkorde[lang]}/${chordSlug(decodeURIComponent(param))}/`;
-  const seg = SEGMENTS[name];
+  if (name === 'akkord') return `${prefix}${segment('akkorde')![lang]}/${chordSlug(canonicalChord(decodeURIComponent(param)))}/`;
+  const seg = segment(name);
   if (!seg) return prefix;
   if (HASH_PARAM.indexOf(name) >= 0) return `${prefix}${seg[lang]}/${param ? '#' + param : ''}`;
   if (name === 'stimmung' && param) return `${prefix}${seg[lang]}/${param}/`;

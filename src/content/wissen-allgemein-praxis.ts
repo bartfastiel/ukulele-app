@@ -8,7 +8,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
       en: 'sore-fingertips-calluses',
       fr: 'doigts-douloureux-corne',
     },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'],
     category: 'technik',
     title: {
       de: 'Fingerkuppen tun weh? So wächst Hornhaut beim Saitenspiel',
@@ -47,6 +47,11 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
             de: '**Westerngitarre, Banjo und Mandoline** haben Stahlsaiten. Die sind dünner und härter, deshalb drücken sie am Anfang stärker.',
             en: '**Steel-string guitar, banjo and mandolin** use steel strings. They are thinner and harder, so they press more at first.',
             fr: '**La guitare folk, le banjo et la mandoline** ont des cordes en acier. Plus fines et plus dures, elles marquent davantage au début.',
+          },
+          {
+            de: '**Der E-Bass** hat dicke, umsponnene Stahlsaiten. Sie schneiden kaum ein, brauchen aber etwas mehr Kraft – beim Zupfen bekommen auch die Finger der rechten Hand Hornhaut.',
+            en: '**The bass guitar** has thick, wound steel strings. They hardly cut in but need a bit more strength – your plucking fingers grow calluses too.',
+            fr: '**La basse électrique** a de grosses cordes en acier filé. Elles marquent peu mais demandent un peu plus de force – les doigts de la main qui pince font aussi de la corne.',
           },
           {
             de: 'Nach etwa **zwei bis vier Wochen** regelmäßigem Üben merken die meisten kaum noch etwas.',
@@ -412,7 +417,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'ueben-mit-kindern',
     slug: { de: 'ueben-mit-kindern', en: 'practicing-with-kids', fr: 'faire-pratiquer-enfants' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'],
     category: 'eltern-lehrkraefte',
     title: {
       de: 'Üben mit Kindern – so bleibt die Freude am Instrument',
@@ -640,7 +645,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'app-ohne-konto',
     slug: { de: 'app-ohne-konto-datenschutz', en: 'app-privacy-no-account', fr: 'appli-sans-compte-vie-privee' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'],
     category: 'eltern-lehrkraefte',
     title: {
       de: 'Lern-App ohne Konto: Datenschutz, Mikrofon und Werbefreiheit',

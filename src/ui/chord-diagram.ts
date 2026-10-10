@@ -15,6 +15,8 @@ export interface DiagramOptions {
   lefty?: boolean;
   highlight?: number;
   labels?: boolean;
+  /** E-Bass: die Quinte als Perlmutt-Punkt „5“ zeigen */
+  fifth?: boolean;
 }
 
 /** Maße eines Griffbilds in viewBox-Einheiten – zum Zeichnen und, um Berührungen einer Stelle zuzuordnen. */
@@ -35,7 +37,9 @@ export interface DiagramLayout {
 
 export function diagramLayout(ch: Chord, opts: DiagramOptions = {}): DiagramLayout {
   const n = ch.frets.length;
-  const pressed = ch.frets.filter((f) => f > 0);
+  // E-Bass: ein Ton, die anderen Saiten bleiben einfach still – ohne Kreuz; auf Wunsch die Quinte als Perlmutt-Punkt
+  const fifth = opts.fifth && ch.fifth ? ch.fifth : null;
+  const pressed = ch.frets.filter((f) => f > 0).concat(fifth ? [fifth.fret] : []);
   const top = pressed.length ? Math.max(...pressed) : 0;
   const first = top > 5 ? Math.min(...pressed) : 1;
   const rows = Math.max(instrument().diagram.minRows, top - first + 1);
@@ -52,6 +56,7 @@ export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
   const id = `cd${++uid}`;
   const inst = instrument();
   const L = diagramLayout(ch, opts);
+  const fifth = opts.fifth && ch.fifth ? ch.fifth : null;
   const n = L.n;
   const first = L.first;
   const rows = L.rows;
@@ -168,6 +173,12 @@ export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
     const x = xOf(i);
     if (fret === 0) {
       svg.appendChild(s('circle', { cx: x, cy: y0 - 14, r: 4.6, fill: 'none', stroke: '#2b1608', 'stroke-width': 1.8, class: 'open' }));
+    } else if (fret === -1 && inst.notesOnly) {
+      if (fifth && fifth.string === i) {
+        const cy = y0 + fh * (shown(fifth.fret) - 0.5);
+        svg.appendChild(s('circle', { cx: x, cy, r: 8.6, fill: `url(#${id}p)`, stroke: '#5d6b78', 'stroke-width': 0.8, class: 'fifth' }));
+        svg.appendChild(s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger', fill: '#2b1608' }, '5'));
+      }
     } else if (fret === -1) {
       svg.appendChild(
         s('path', { d: `M${x - 4.5} ${y0 - 18.5}l9 9m0 -9l-9 9`, stroke: '#a3263a', 'stroke-width': 2.4, 'stroke-linecap': 'round', class: 'muted' }),
