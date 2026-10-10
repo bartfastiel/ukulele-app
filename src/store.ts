@@ -22,6 +22,8 @@ export interface Progress {
     calm: boolean;
     /** schwere Griffe durch leichtere Verwandte ersetzen (E → E7 …) */
     simplify: boolean;
+    /** andere Stimmung des Instruments; '' = Normalstimmung */
+    tuning: string;
     /** gewählte Sprache; '' = Sprache des Geräts */
     lang: string;
   };
@@ -57,6 +59,7 @@ const DEFAULTS: Progress = {
     waitMode: true,
     calm: false,
     simplify: false,
+    tuning: '',
     lang: '',
   },
 };

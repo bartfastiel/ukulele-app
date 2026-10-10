@@ -1,4 +1,5 @@
 import type { Chord } from './grip.ts';
+import { tk } from '../i18n.ts';
 import { UKULELE } from './instruments/ukulele.ts';
 import { GITARRE } from './instruments/gitarre.ts';
 import { BANJO } from './instruments/banjo.ts';
@@ -101,11 +102,34 @@ export interface Instrument {
   roll?: { fingers: string; strings: number[]; explain: string };
   /** Aufnahmeplan: Griffe für richtige Aufnahmen. */
   recordChords: string[];
+  /** Andere Stimmungen zum Auswählen; die Normalstimmung ist immer die Vorgabe und steht nicht in der Liste. */
+  tunings?: Tuning[];
+  /** Nur bei umgestimmten Instrumenten: die aktive Stimmung. */
+  tuning?: Tuning;
+}
+
+/** Eine andere Stimmung: Leersaiten in Spielreihenfolge wie beim Instrument. */
+export interface Tuning {
+  id: string;
+  /** Name (tk), z. B. „Open G“. */
+  name: string;
+  /** Kurzer Satz „Wofür?“ (tk). */
+  why: string;
+  /** Saitennamen und Leersaiten (MIDI). */
+  names: string[];
+  midi: number[];
+  /** Tonklasse des Dur-Akkords, der mit allen Saiten leer erklingt – Dur ist dann ein gerader Barré. */
+  open?: number;
+  /** Bequemste Blues-Tonart in dieser Stimmung. */
+  bluesKey?: number;
+  /** false: Die Griffe bleiben gleich (tiefes G) – dann kein Hinweis oben auf jeder Seite. */
+  banner?: boolean;
 }
 
 export const INSTRUMENTS: Instrument[] = [UKULELE, GITARRE, BANJO, BARITON];
 
 let current: Instrument = UKULELE;
+let base: Instrument = UKULELE;
 const listeners: (() => void)[] = [];
 
 export function instrument(): Instrument {
@@ -116,13 +140,70 @@ export function isInstrumentId(x: unknown): x is InstrumentId {
   return INSTRUMENTS.some((i) => i.id === x);
 }
 
+/** Wechselt das Instrument; eine Umstimmung gilt danach nicht mehr. */
 export function setInstrument(id: string): Instrument {
   const next = INSTRUMENTS.filter((i) => i.id === id)[0] || UKULELE;
   if (next !== current) {
     current = next;
+    base = next;
     listeners.forEach((f) => f());
   }
   return current;
+}
+
+/** Das aktuelle Instrument in Normalstimmung. */
+export function baseInstrument(): Instrument {
+  return base;
+}
+
+/** Aktive Stimmung, null bei Normalstimmung. */
+export function activeTuning(): Tuning | null {
+  return current.tuning || null;
+}
+
+/** Stimmung des aktuellen Instruments wählen; '' oder unbekannt = Normalstimmung. */
+export function setTuning(id: string): Instrument {
+  const tuning = (base.tunings || []).filter((x) => x.id === id)[0];
+  const next = tuning ? tuned(base, tuning) : base;
+  if (next.tuning !== current.tuning) {
+    current = next;
+    listeners.forEach((f) => f());
+  }
+  return current;
+}
+
+const freq = (midi: number) => 440 * Math.pow(2, (midi - 69) / 12);
+
+/**
+ * Umgestimmtes Instrument: neue Leersaiten, Frequenzfenster bis unter die tiefste Saite. Die Griffbibliothek behält
+ * ihre Namen, die Griffe rechnet chords.ts für die neuen Saiten aus.
+ */
+function tuned(inst: Instrument, tuning: Tuning): Instrument {
+  const strings = inst.strings.map((st, i) => {
+    const out: InstrumentString = { name: tuning.names[i], midi: tuning.midi[i] };
+    if (st.start) out.start = st.start;
+    if (st.hint) out.hint = st.hint;
+    return out;
+  });
+  const low = Math.min.apply(null, tuning.midi);
+  const below = (hz: number) => Math.min(hz, Math.floor(freq(low) * 0.85));
+  const own = tuning.bluesKey !== undefined;
+  return {
+    ...inst,
+    strings,
+    tuning,
+    tuner: { minHz: below(inst.tuner.minHz), maxHz: inst.tuner.maxHz },
+    detect: { ...inst.detect, minHz: below(inst.detect.minHz) },
+    blues: {
+      ...inst.blues,
+      low: Math.max(inst.blues.low, low),
+      easyKey: own ? tuning.bluesKey! : inst.blues.easyKey,
+      pitch: { minHz: below(inst.blues.pitch.minHz), maxHz: inst.blues.pitch.maxHz },
+      hint: own ? tk('★ In dieser Tonart liegen in deiner Stimmung die Grundtöne auf leeren Saiten – am bequemsten.') : inst.blues.hint,
+      boogie: own ? tk('Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff.') : inst.blues.boogie,
+    },
+    shapes: {},
+  };
 }
 
 /** Wird gerufen, wenn das Instrument wechselt (Zwischenspeicher leeren). */

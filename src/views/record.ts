@@ -116,6 +116,7 @@ export const record: View = (root) => {
     const meta = {
       app: instrument().club,
       instrument: instrument().id,
+      strings: STRINGS.map((x) => x.midi),
       createdAt: new Date().toISOString(),
       userAgent: navigator.userAgent,
       takes: list.map((s, i) => ({
