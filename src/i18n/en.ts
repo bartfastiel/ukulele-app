@@ -487,7 +487,7 @@ export const EN: Record<string, string> = {
   "Eigenes Lied anlegen": "Add your own song",
   "Tipp:": "Tip:",
   "{brand} – Saiteninstrumente lernen, kostenlos": "{brand} – learn string instruments for free",
-  "Kostenlos Ukulele, Bariton-Ukulele, Gitarre oder Banjo lernen: Lieder zum Mitspielen, Akkorde, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.": "Learn ukulele, baritone ukulele, guitar or banjo for free: play-along songs, chords, tuner and rhythm – no subscription, no ads, no account.",
+  "Kostenlos Ukulele, Bariton-Ukulele, Gitarre, Banjo oder Mandoline lernen: Lieder zum Mitspielen, Akkorde, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.": "Learn ukulele, baritone ukulele, guitar, banjo or mandolin for free: play-along songs, chords, tuner and rhythm – no subscription, no ads, no account.",
   "{instrument} lernen kostenlos: Lieder und Akkorde": "Learn {instrument} for free: songs and chords",
   "Kostenlos {instrument} lernen, für Kinder und Einsteiger: Lieder zum Mitspielen, Akkorde mit Griffbildern, Stimmgerät und Rhythmus. Ohne Abo, ohne Werbung.": "Learn {instrument} for free, for kids and beginners: play-along songs, chord charts, a tuner and rhythm. No subscription, no ads.",
   "Lieder für {instrument} mit Akkorden und Text": "{instrument} songs with chords and lyrics",
@@ -605,6 +605,12 @@ export const EN: Record<string, string> = {
   'deine Bariton-Ukulele': 'your baritone ukulele',
   'der Bariton-Ukulele': 'the baritone ukulele',
   'Heute spiel ich Bariton-Ukulele,': 'Today I play baritone uke,',
+  'Mandoline': 'Mandolin',
+  'Mandolinen-Club': 'Mandolin Club',
+  'die Mandoline': 'the mandolin',
+  'deine Mandoline': 'your mandolin',
+  'der Mandoline': 'the mandolin',
+  'Heute spiel ich Mandoline,': 'Today I play mandolin,',
   'kurz': 'short',
   'tief': 'low',
   'hoch': 'high',
@@ -618,6 +624,10 @@ export const EN: Record<string, string> = {
     '★ In E the root notes E and A are on open strings – the easiest. Other keys fit songs or friends you play with.',
   'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In E liegt es ganz bequem auf den beiden tiefsten Saiten.':
     'Root, third, fifth, sixth – the classic boogie riff. In E it sits comfortably on the two lowest strings.',
+  '★ In D liegen die Grundtöne D und A auf leeren Saiten – am bequemsten. Andere Tonarten passen zu Liedern oder Mitspielern.':
+    '★ In D, the roots D and A are open strings – the easiest key. Other keys suit songs or playing along with others.',
+  'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In D sind D und A leere Saiten, F# und B liegen gleich daneben!':
+    'Root, third, fifth, sixth – the classic boogie riff. In D, D and A are open strings, and F# and B are right next to them!',
   '★ In G liegen die Grundtöne G und D auf leeren Saiten – am bequemsten. Andere Tonarten passen zu Liedern oder Mitspielern.':
     '★ In G the root notes G and D are on open strings – the easiest. Other keys fit songs or friends you play with.',
   'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In G sind G, B und D leere Saiten!':

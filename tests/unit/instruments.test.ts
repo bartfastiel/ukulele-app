@@ -15,7 +15,7 @@ import { parseFrets, plan } from '../../src/music/recording-plan.ts';
 import type { Chord } from '../../src/music/grip.ts';
 
 const SR = 48000;
-const OTHERS = ['gitarre', 'banjo', 'bariton'];
+const OTHERS = ['gitarre', 'banjo', 'bariton', 'mandoline'];
 
 /** Für jedes Instrument ausführen; danach wieder Ukulele. */
 function each(ids: string[], f: (id: string) => void): void {
@@ -53,7 +53,9 @@ function playErrors(ch: Chord): string[] {
   const errors: string[] = [];
   if (!playableChord(ch)) errors.push('nicht auf dem Instrument');
   const pressed = ch.frets.filter((f) => f > 0);
-  if (pressed.length && Math.max(...pressed) - Math.min(...pressed) > 3) errors.push('Spanne > 3');
+  // Mandoline: kurze Mensur, in der ersten Lage reicht die Hand wie auf der Geige vom 1. bis zum 5. Bund (F = 5301)
+  const span = instrument().id === 'mandoline' ? 4 : 3;
+  if (pressed.length && Math.max(...pressed) - Math.min(...pressed) > span) errors.push(`Spanne > ${span}`);
   if (pressed.length && Math.max(...pressed) > 12) errors.push('über dem 12. Bund');
   const fingers = new Set(ch.fingers.filter((f) => f > 0));
   if (Array.from(fingers).some((f) => f < 1 || f > 4)) errors.push('Finger außerhalb 1–4');
@@ -70,15 +72,16 @@ function playErrors(ch: Chord): string[] {
   return errors;
 }
 
-test('Stimmungen: Ukulele G4 C4 E4 A4, Gitarre E2 A2 D3 G3 B3 E4, Banjo g4 D3 G3 B3 D4, Bariton D3 G3 B3 E4', () => {
+test('Stimmungen: Ukulele G4 C4 E4 A4, Gitarre E2 A2 D3 G3 B3 E4, Banjo g4 D3 G3 B3 D4, Bariton D3 G3 B3 E4, Mandoline G3 D4 A4 E5', () => {
   const tunings: Record<string, string> = {};
-  each(['ukulele', 'gitarre', 'banjo', 'bariton'], (id) => {
+  each(['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'], (id) => {
     tunings[id] = STRINGS.map((s) => `${s.name}${s.midi}`).join(' ');
   });
   assert.equal(tunings.ukulele, 'G67 C60 E64 A69');
   assert.equal(tunings.gitarre, 'E40 A45 D50 G55 B59 e64');
   assert.equal(tunings.banjo, 'g67 D50 G55 B59 D62');
   assert.equal(tunings.bariton, 'D50 G55 B59 E64');
+  assert.equal(tunings.mandoline, 'G55 D62 A69 E76');
 });
 
 test('kurze Banjo-Saite: beginnt am 5. Bund, Tabulatur nutzt sie nur leer', () => {
@@ -116,6 +119,8 @@ test('alle Melodien liegen auf jedem Instrument, auf Gitarre, Banjo und Bariton-
     if (id === 'gitarre') assert.ok(low / notes > 0.95, `nur ${low}/${notes} Töne in den ersten fünf Bünden`);
     if (id === 'banjo') assert.ok(low / notes > 0.85, `nur ${low}/${notes} Töne in den ersten fünf Bünden`);
     if (id === 'bariton') assert.ok(low / notes > 0.9, `nur ${low}/${notes} Töne in den ersten fünf Bünden`);
+    // Mandoline: die gesungene Lage, ohne Oktavsprung, und alles in der ersten Lage (der 6. Bund nur für C#4)
+    if (id === 'mandoline') assert.ok(low / notes > 0.98, `nur ${low}/${notes} Töne in den ersten fünf Bünden`);
   });
 });
 
@@ -180,6 +185,39 @@ test('Bariton-Ukulele: Griffe wie auf den vier hohen Gitarrensaiten, Ukulele-For
       for (const q of ['', 'm', '7']) {
         const ch = chord(r + q);
         if (CHORDS.indexOf(ch) < 0) assert.equal(g(r + q), uke[transposeName(r + q, 5)], r + q);
+      }
+  });
+});
+
+test('Mandoline: offene Griffe wie im Lehrbuch, bewegliche Formen (Chop Chords) in allen zwölf Tonarten', () => {
+  each(['mandoline'], () => {
+    const g = (n: string) => chord(n).frets.join('');
+    assert.equal(g('G'), '0023');
+    assert.equal(g('C'), '0230');
+    assert.equal(g('D'), '2002');
+    assert.equal(g('A'), '2240');
+    assert.equal(g('Em'), '0220');
+    assert.equal(g('Am'), '2230');
+    assert.equal(g('D7'), '2032');
+    assert.equal(g('G7'), '0021');
+    // Tabelle: G-, C- und E-Form ohne leere Saiten, je Grundton im tiefsten Bund
+    assert.equal(g('C#'), '1341');
+    assert.equal(g('Eb'), '3563');
+    assert.equal(g('F#'), '3442');
+    assert.equal(g('Ab'), '1134');
+    assert.equal(g('B'), '4467');
+    assert.equal(g('F#m'), '2442');
+    assert.equal(g('C#7'), '4341');
+    assert.deepEqual(chord('B').barre, { fret: 4, from: 0, to: 1 });
+    for (const q of ['', 'm', '7'])
+      for (const r of ROOTS) {
+        const shape = instrument().shapes[q][ROOTS.indexOf(r)];
+        const ch = { name: r + q, frets: shape.frets, fingers: shape.fingers!, say: '', level: 5 };
+        assert.deepEqual(toneErrors(r + q, ch), [], `${r + q} (${ch.frets.join(' ')})`);
+        assert.deepEqual(playErrors(ch), [], `${r + q} (${ch.frets.join(' ')} / ${ch.fingers.join(' ')})`);
+        assert.ok(Math.max(...shape.frets) <= 7, `${r + q}: zu weit oben`);
+        // ohne leere Saite: alle vier Saitenpaare gegriffen, die Form lässt sich verschieben
+        if (shape.frets.indexOf(0) < 0) assert.ok(shape.frets.every((f) => f > 0), r + q);
       }
   });
 });
@@ -425,7 +463,7 @@ test('Instrumentwechsel: Griffe und Saiten folgen, Ukulele bleibt wie sie war', 
   assert.equal(chord('C').frets.join(''), '0003');
   each(['gitarre'], () => assert.equal(chord('C').frets.length, 6));
   assert.equal(chord('C').frets.join(''), '0003');
-  assert.equal(INSTRUMENTS.length, 4);
+  assert.equal(INSTRUMENTS.length, 5);
   assert.equal(setInstrument('gibt-es-nicht').id, 'ukulele');
 });
 

@@ -2589,6 +2589,36 @@ html[data-instrument='bariton'] .card {
     0 10px 24px rgba(0, 0, 0, 0.45);
 }
 
+/* Mandoline: Fichtendecke im Sunburst, Knöpfe aus kirschrotem Riegelahorn, Einfassung elfenbein-schwarz mit Schildpatt */
+html[data-instrument='mandoline'] {
+  --mahogany: #8a3a1a;
+  --mahogany-dark: #241005;
+  --binding: #f4e9cc;
+  --edge: #1a0f0a;
+  --edge-dark: #120a06;
+  --depth: #1c0b04;
+  --shade: #2a1205;
+}
+
+html[data-instrument='mandoline'] body {
+  background-image: radial-gradient(ellipse 85% 75% at 50% 35%, rgba(255, 190, 80, 0.3), rgba(255, 150, 50, 0.06) 42%, rgba(36, 12, 2, 0.35) 66%, rgba(20, 7, 2, 0.85) 100%),
+    var(--wood-body);
+  background-size: auto, 768px 768px;
+  background-position: 0 0, var(--body-x, 0) var(--body-y, 0);
+  background-attachment: fixed, scroll;
+}
+
+html[data-instrument='mandoline'] .card {
+  box-shadow:
+    0 0 0 3px var(--binding),
+    0 0 0 4px #1a0f0a,
+    0 0 0 5px #f4e9cc,
+    0 0 0 6px #1a0f0a,
+    0 0 0 8px #6b3414,
+    0 0 0 9px #120a06,
+    0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
 /* Startseite: jede Instrument-Kachel trägt schon die Einfassung ihres Instruments */
 .start .tile-gitarre {
   background-color: #4a2a22;
@@ -2615,6 +2645,16 @@ html[data-instrument='bariton'] .card {
     0 0 0 4px #2f6f73,
     0 5px 0 4px #1a0c05,
     0 9px 16px 4px rgba(0, 0, 0, 0.45);
+}
+
+.start .tile-mandoline {
+  background-color: #8a3a1a;
+  box-shadow:
+    0 0 0 3px #f4e9cc,
+    0 0 0 4px #1a0f0a,
+    0 0 0 5px #6b3414,
+    0 5px 0 5px #1c0b04,
+    0 9px 16px 5px rgba(0, 0, 0, 0.45);
 }
 
 /* Impressum: Angaben als Grafik aus Kacheln (src/ui/secret-text.ts) */

@@ -70,6 +70,10 @@ function pluckBuffer(midi: number): AudioBuffer {
     const c = audio();
     const tone = voice();
     const data = renderPluck(midiToFreq(midi), c.sampleRate, tone.seconds, tone.brightness, midi, tone.sustain, tone.position);
+    if (tone.course) {
+      const pair = renderPluck(midiToFreq(midi) * Math.pow(2, tone.course / 1200), c.sampleRate, tone.seconds, tone.brightness, midi + 97, tone.sustain, tone.position);
+      for (let i = 0; i < data.length; i++) data[i] = (data[i] + pair[i]) * 0.5;
+    }
     if (tone.drive) overdrive(data, tone.drive);
     buf = c.createBuffer(1, data.length, c.sampleRate);
     buf.getChannelData(0).set(data);

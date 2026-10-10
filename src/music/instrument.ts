@@ -4,8 +4,9 @@ import { UKULELE } from './instruments/ukulele.ts';
 import { GITARRE } from './instruments/gitarre.ts';
 import { BANJO } from './instruments/banjo.ts';
 import { BARITON } from './instruments/bariton.ts';
+import { MANDOLINE } from './instruments/mandoline.ts';
 
-export type InstrumentId = 'ukulele' | 'gitarre' | 'banjo' | 'bariton';
+export type InstrumentId = 'ukulele' | 'gitarre' | 'banjo' | 'bariton' | 'mandoline';
 
 export interface InstrumentString {
   /** Kurzname im Griffbild und in Sätzen („{s}-Saite“): G C E A, Gitarre E A D G B e, Banjo g D G B D. */
@@ -52,6 +53,8 @@ export interface Synth {
   seconds: number;
   position: number;
   drive?: number;
+  /** Doppelsaiten (Mandoline): die zweite Saite so viele Cent höher – beide zusammen schweben leicht. */
+  course?: number;
 }
 
 export interface Instrument {
@@ -139,7 +142,7 @@ export interface Tuning {
   banner?: boolean;
 }
 
-export const INSTRUMENTS: Instrument[] = [UKULELE, GITARRE, BANJO, BARITON];
+export const INSTRUMENTS: Instrument[] = [UKULELE, GITARRE, BANJO, BARITON, MANDOLINE];
 
 let current: Instrument = UKULELE;
 let base: Instrument = UKULELE;

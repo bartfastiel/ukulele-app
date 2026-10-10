@@ -280,9 +280,9 @@ function primarySite(a: Article): SiteId {
 // Instrumentnamen stehen ohne Artikel in den Texten; wo die Sprache einen verlangt, wird er hier ergänzt.
 const GRAMMAR: Record<Lang, [RegExp, string][]> = {
   de: [
-    [/\bauf (Ukulele|Gitarre|Bariton-Ukulele)\b/g, 'auf der $1'],
+    [/\bauf (Ukulele|Gitarre|Bariton-Ukulele|Mandoline)\b/g, 'auf der $1'],
     [/\bauf Banjo\b/g, 'auf dem Banjo'],
-    [/\brund um (Ukulele|Gitarre|Bariton-Ukulele)\b/g, 'rund um die $1'],
+    [/\brund um (Ukulele|Gitarre|Bariton-Ukulele|Mandoline)\b/g, 'rund um die $1'],
     [/\brund um Banjo\b/g, 'rund ums Banjo'],
   ],
   en: [],
@@ -326,7 +326,7 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
     specs.push({
       route: '',
       title: t('{brand} – Saiteninstrumente lernen, kostenlos', { brand }),
-      description: t('Kostenlos Ukulele, Bariton-Ukulele, Gitarre oder Banjo lernen: Lieder zum Mitspielen, Akkorde, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.'),
+      description: t('Kostenlos Ukulele, Bariton-Ukulele, Gitarre, Banjo oder Mandoline lernen: Lieder zum Mitspielen, Akkorde, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.'),
       body: () => startPage(siteDef, l),
       jsonld: () => [webSite(siteDef, l)],
     });
@@ -598,7 +598,7 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
           h(
             'a',
             { class: `tile btn tile-big theme-brass tile-${s.id}`, href: env().url(s.id) + (l === 'de' ? '' : l + '/') },
-            h('span', { class: 'tile-icon' }, icon(s.id === 'ukulele' ? 'songs' : s.id === 'gitarre' ? 'chords' : s.id === 'bariton' ? 'tuner' : 'rhythm')),
+            h('span', { class: 'tile-icon' }, icon(s.id === 'ukulele' ? 'songs' : s.id === 'gitarre' ? 'chords' : s.id === 'bariton' ? 'tuner' : s.id === 'mandoline' ? 'blues' : 'rhythm')),
             h('span', { class: 'tile-text' }, h('span', { class: 'tile-title' }, s.brand[l]), h('span', { class: 'tile-sub' }, t('{instrument} lernen', { instrument: s.name[l] }))),
           ),
         ),
