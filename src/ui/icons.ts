@@ -46,10 +46,14 @@ export function icon(name: keyof typeof PATHS | string, cls = 'icon'): SVGElemen
   );
 }
 
-/** Erkennungszeichen oben auf der Startseite: Schallloch (Ukulele, Gitarre, Bariton-Ukulele) bzw. Trommelfell (Banjo). */
+/**
+ * Erkennungszeichen oben auf der Startseite: Schallloch (Ukulele, Gitarre, Bariton-Ukulele), Trommelfell (Banjo) bzw.
+ * Decke mit F-Löchern und Doppelsaiten (Mandoline).
+ */
 export function soundHole(): SVGElement {
   const id = instrument().id;
   if (id === 'banjo') return banjoHead();
+  if (id === 'mandoline') return mandolinTop();
   if (id === 'gitarre') return guitarRosette();
   // Bariton-Ukulele: dieselbe Rosette wie die Ukulele, aber mit Abalone-Tönen, die tiefen D- und G-Saiten umsponnen
   if (id === 'bariton') return ukuleleHole(['#1f4f5a', '#8fc0b2', '#3b1d0c', '#c9a24a'], 2);
@@ -144,6 +148,56 @@ function banjoHead(): SVGElement {
   g.appendChild(s('circle', { cx: 100, cy: 100, r: 78, fill: 'url(#head)' }));
   g.appendChild(s('rect', { x: 64, y: 122, width: 72, height: 7, rx: 2, fill: '#c9a46a', stroke: '#6b4a22', 'stroke-width': 1.5 }));
   strings(g, 74, 126, 0, 126);
+  return g;
+}
+
+/** Mandoline: gewölbte Decke im Sunburst, zwei F-Löcher, Steg und vier Saitenpaare (G und D umsponnen). */
+function mandolinTop(): SVGElement {
+  const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
+  g.appendChild(
+    s(
+      'defs',
+      null,
+      s(
+        'radialGradient',
+        { id: 'burst', cx: 0.5, cy: 0.45, r: 0.55 },
+        s('stop', { offset: 0, 'stop-color': '#f2bd5a' }),
+        s('stop', { offset: 0.45, 'stop-color': '#c9772a' }),
+        s('stop', { offset: 0.78, 'stop-color': '#6a2a0c' }),
+        s('stop', { offset: 1, 'stop-color': '#1c0903' }),
+      ),
+      stringGradient(),
+      s(
+        'linearGradient',
+        { id: 'wound', x1: 0, x2: 1 },
+        s('stop', { offset: 0, 'stop-color': '#9a7a4a' }),
+        s('stop', { offset: 0.5, 'stop-color': '#f0dcae' }),
+        s('stop', { offset: 1, 'stop-color': '#86683c' }),
+      ),
+    ),
+  );
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 95, fill: '#1a0f0a' }));
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 93, fill: '#f4e9cc' }));
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 90.5, fill: '#1a0f0a' }));
+  g.appendChild(s('circle', { cx: 100, cy: 100, r: 89, fill: 'url(#burst)' }));
+  // F-Löcher: geschwungener Schlitz mit runden Augen oben und unten und den kleinen Kerben in der Mitte
+  for (const side of [-1, 1]) {
+    const x = (v: number) => 100 + side * v;
+    g.appendChild(
+      s('path', { d: `M${x(52)},46 C${x(66)},70 ${x(40)},128 ${x(56)},154`, fill: 'none', stroke: '#140703', 'stroke-width': 5.5, 'stroke-linecap': 'round' }),
+    );
+    g.appendChild(s('circle', { cx: x(52), cy: 46, r: 6, fill: '#140703' }));
+    g.appendChild(s('circle', { cx: x(56), cy: 154, r: 6.5, fill: '#140703' }));
+    g.appendChild(s('path', { d: `M${x(49)},100 L${x(59)},100`, stroke: '#140703', 'stroke-width': 2, 'stroke-linecap': 'round' }));
+  }
+  g.appendChild(s('rect', { x: 62, y: 146, width: 76, height: 9, rx: 2, fill: '#2a1408', stroke: '#0e0603', 'stroke-width': 1.2 }));
+  const n = STRINGS.length;
+  for (let i = 0; i < n; i++) {
+    const x = 72 + (i * 56) / (n - 1);
+    const w = i < 2 ? 2.2 - i * 0.3 : 1.5 - (i - 2) * 0.2;
+    for (const d of [-2.8, 2.8])
+      g.appendChild(s('rect', { x: x + d - w / 2, y: 0, width: w, height: 200, fill: i < 2 ? 'url(#wound)' : 'url(#str)', opacity: 0.95 }));
+  }
   return g;
 }
 

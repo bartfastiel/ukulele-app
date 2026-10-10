@@ -3,8 +3,9 @@ import { UKULELE } from './instruments/ukulele.ts';
 import { GITARRE } from './instruments/gitarre.ts';
 import { BANJO } from './instruments/banjo.ts';
 import { BARITON } from './instruments/bariton.ts';
+import { MANDOLINE } from './instruments/mandoline.ts';
 
-export type InstrumentId = 'ukulele' | 'gitarre' | 'banjo' | 'bariton';
+export type InstrumentId = 'ukulele' | 'gitarre' | 'banjo' | 'bariton' | 'mandoline';
 
 export interface InstrumentString {
   /** Kurzname im Griffbild und in Sätzen („{s}-Saite“): G C E A, Gitarre E A D G B e, Banjo g D G B D. */
@@ -77,8 +78,11 @@ export interface Instrument {
   cost: { barre: number; muted: number };
   /** Kapodaster-Hinweis im Player. */
   capo: boolean;
-  /** Karplus-Strong: Helligkeit, Ausklingen (Faktor), Länge in s, Zupfstelle (Anteil der Saitenlänge). */
-  synth: { brightness: number; sustain: number; seconds: number; position: number };
+  /**
+   * Karplus-Strong: Helligkeit, Ausklingen (Faktor), Länge in s, Zupfstelle (Anteil der Saitenlänge); `course`:
+   * Doppelsaiten (Mandoline), die zweite Saite so viele Cent höher – beide zusammen schweben leicht.
+   */
+  synth: { brightness: number; sustain: number; seconds: number; position: number; course?: number };
   blues: {
     /** Tiefster Grundton der Vorgabe-Töne (MIDI); alles bleibt innerhalb einer Oktave darüber. */
     low: number;
@@ -103,7 +107,7 @@ export interface Instrument {
   recordChords: string[];
 }
 
-export const INSTRUMENTS: Instrument[] = [UKULELE, GITARRE, BANJO, BARITON];
+export const INSTRUMENTS: Instrument[] = [UKULELE, GITARRE, BANJO, BARITON, MANDOLINE];
 
 let current: Instrument = UKULELE;
 const listeners: (() => void)[] = [];

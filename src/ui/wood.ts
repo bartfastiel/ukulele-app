@@ -8,6 +8,8 @@
  *   Gitarre  Hintergrund aus gealterter Fichtendecke, Knöpfe aus Palisander, Einfassung elfenbein-schwarz
  *   Banjo    gebeizter, geflammter Ahorn (Resonator und Knöpfe), Einfassung wie verchromte Spannreifen
  *   Bariton  dunkles, geriegeltes Koa (Korpus), Knöpfe aus hellerem Koa, Einfassung elfenbein mit Abalone-Streifen
+ *   Mandoline  Fichtendecke im Sunburst (Mitte bernsteinfarben, Rand fast schwarz – der Verlauf liegt in styles.css),
+ *            Knöpfe aus kirschrot gebeiztem, geflammtem Ahorn, Einfassung mehrfach elfenbein-schwarz mit Schildpatt
  */
 import { instrument } from '../music/instrument.ts';
 
@@ -143,6 +145,10 @@ export const MATERIALS: Record<string, { body: Material; button: Material }> = {
     // dunkles Koa für den Korpus, die Knöpfe goldbraun – verwandt mit der Ukulele, aber kühler und tiefer
     body: { grain: koa, dark: [34, 17, 8], light: [136, 80, 34] },
     button: { grain: koa, dark: [86, 44, 16], light: [188, 120, 52] },
+  },
+  mandoline: {
+    body: { grain: spruce, dark: [66, 30, 8], light: [170, 100, 30] },
+    button: { grain: flamedMaple, dark: [72, 16, 10], light: [184, 70, 32] },
   },
 };
 

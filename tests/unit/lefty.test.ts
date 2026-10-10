@@ -42,6 +42,7 @@ test('Griffbild für Linkshänder: Saiten in umgekehrter Reihenfolge, Text bleib
       ['ukulele', ['G', 'C', 'E', 'A']],
       ['gitarre', ['E', 'A', 'D', 'G', 'B', 'e']],
       ['banjo', ['g', 'D', 'G', 'B', 'D']],
+      ['mandoline', ['G', 'D', 'A', 'E']],
     ] as [string, string[]][]) {
       setInstrument(id);
       const normal = chordDiagram(chord('C')) as unknown as El;

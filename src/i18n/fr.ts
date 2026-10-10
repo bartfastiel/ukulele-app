@@ -490,7 +490,7 @@ export const FR: Record<string, string> = {
   "Eigenes Lied anlegen": "Ajouter ta chanson",
   "Tipp:": "Astuce :",
   "{brand} – Saiteninstrumente lernen, kostenlos": "{brand} – apprendre un instrument à cordes gratuitement",
-  "Kostenlos Ukulele, Bariton-Ukulele, Gitarre oder Banjo lernen: Lieder zum Mitspielen, Akkorde, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.": "Apprendre le ukulélé, le ukulélé baryton, la guitare ou le banjo gratuitement : chansons à jouer, accords, accordeur et rythme – sans abonnement, sans pub, sans compte.",
+  "Kostenlos Ukulele, Bariton-Ukulele, Gitarre, Banjo oder Mandoline lernen: Lieder zum Mitspielen, Akkorde, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.": "Apprendre le ukulélé, le ukulélé baryton, la guitare, le banjo ou la mandoline gratuitement : chansons à jouer, accords, accordeur et rythme – sans abonnement, sans pub, sans compte.",
   "{instrument} lernen kostenlos: Lieder und Akkorde": "Apprendre le {instrument} gratuitement : chansons et accords",
   "Kostenlos {instrument} lernen, für Kinder und Einsteiger: Lieder zum Mitspielen, Akkorde mit Griffbildern, Stimmgerät und Rhythmus. Ohne Abo, ohne Werbung.": "Apprendre le {instrument} gratuitement, pour enfants et débutants : chansons à jouer, diagrammes d’accords, accordeur et rythme. Sans abonnement, sans pub.",
   "Lieder für {instrument} mit Akkorden und Text": "Chansons pour {instrument} avec accords et paroles",
@@ -608,6 +608,12 @@ export const FR: Record<string, string> = {
   'deine Bariton-Ukulele': 'ton ukulélé baryton',
   'der Bariton-Ukulele': 'du ukulélé baryton',
   'Heute spiel ich Bariton-Ukulele,': 'Aujourd’hui je joue du ukulélé baryton,',
+  'Mandoline': 'Mandoline',
+  'Mandolinen-Club': 'Club Mandoline',
+  'die Mandoline': 'ta mandoline',
+  'deine Mandoline': 'ta mandoline',
+  'der Mandoline': 'de la mandoline',
+  'Heute spiel ich Mandoline,': 'Aujourd’hui je joue de la mandoline,',
   'kurz': 'courte',
   'tief': 'grave',
   'hoch': 'aiguë',
@@ -621,6 +627,10 @@ export const FR: Record<string, string> = {
     '★ En Mi, les fondamentales Mi et La sont sur des cordes à vide – c’est le plus facile. Les autres tonalités vont avec des chansons ou d’autres musiciens.',
   'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In E liegt es ganz bequem auf den beiden tiefsten Saiten.':
     'Fondamentale, tierce, quinte, sixte – le riff boogie classique. En Mi, il se joue tout confortablement sur les deux cordes les plus graves.',
+  '★ In D liegen die Grundtöne D und A auf leeren Saiten – am bequemsten. Andere Tonarten passen zu Liedern oder Mitspielern.':
+    '★ En Ré, les fondamentales Ré et La sont sur des cordes à vide – c’est le plus facile. Les autres tonalités vont avec des chansons ou d’autres musiciens.',
+  'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In D sind D und A leere Saiten, F# und B liegen gleich daneben!':
+    'Fondamentale, tierce, quinte, sixte – le riff boogie classique. En Ré, Ré et La sont des cordes à vide, Fa# et Si sont juste à côté !',
   '★ In G liegen die Grundtöne G und D auf leeren Saiten – am bequemsten. Andere Tonarten passen zu Liedern oder Mitspielern.':
     '★ En Sol, les fondamentales Sol et Ré sont sur des cordes à vide – c’est le plus facile. Les autres tonalités vont avec des chansons ou d’autres musiciens.',
   'Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In G sind G, B und D leere Saiten!':
