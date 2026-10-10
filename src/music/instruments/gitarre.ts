@@ -121,6 +121,7 @@ export const GITARRE: Instrument = {
       midi: [38, 43, 50, 55, 59, 62],
       open: 7,
       bluesKey: 7,
+      grips: { Bm: 'xx4434' },
     },
     {
       id: 'open-d',
@@ -130,15 +131,17 @@ export const GITARRE: Instrument = {
       midi: [38, 45, 50, 54, 57, 62],
       open: 2,
       bluesKey: 2,
+      grips: { Gm: 'xx5455' },
     },
     {
       id: 'open-e',
       name: 'Open E',
-      why: tk('Alle Saiten leer klingen als E-Dur, hell und kräftig. Der Klassiker für Slide-Blues.'),
+      why: tk('Alle Saiten leer klingen als E-Dur, hell und kräftig – der Klassiker für Slide-Blues. Drei Saiten werden höher gespannt: lieber mit einem Erwachsenen.'),
       names: ['E', 'B', 'E', 'G#', 'B', 'e'],
       midi: [40, 47, 52, 56, 59, 64],
       open: 4,
       bluesKey: 4,
+      grips: { Am: 'xx5455', G7: 'xx3331' },
     },
     {
       id: 'dadgad',
@@ -147,6 +150,7 @@ export const GITARRE: Instrument = {
       names: ['D', 'A', 'D', 'G', 'A', 'd'],
       midi: [38, 45, 50, 55, 57, 62],
       bluesKey: 2,
+      grips: { G7: '020023' },
     },
   ],
 };

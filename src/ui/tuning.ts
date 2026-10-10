@@ -8,9 +8,10 @@ import { t } from '../i18n.ts';
 /** Die Ansicht neu aufbauen, wenn sich die Stimmung ändert (main.ts hört zu). */
 export const TUNING_EVENT = 'saiten-stimmung';
 
-/** Saitennamen von oben nach unten, z. B. „D G D G B D“. */
+/** Saitennamen von oben nach unten, z. B. „D G D G B D“; die kurze Banjo-Saite wie üblich klein („f# D F# A D“). */
 export function tuningNotes(names: string[]): string {
-  return names.map((n) => n.toUpperCase()).join(' ');
+  const strings = baseInstrument().strings;
+  return names.map((n, i) => (strings[i] && strings[i].start ? n.toLowerCase() : n.toUpperCase())).join(' ');
 }
 
 /** Gespeicherte Stimmung anwenden (nach dem Laden im Browser; vorgerenderte Seiten zeigen die Normalstimmung). */

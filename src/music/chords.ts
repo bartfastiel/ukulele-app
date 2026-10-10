@@ -1,6 +1,6 @@
 import { STRINGS, pitchClass, playableFret, stringMidi } from './notes.ts';
 import { baseInstrument, instrument, onInstrumentChange, type Instrument } from './instrument.ts';
-import { findBarre, type Chord } from './grip.ts';
+import { findBarre, parseGrip, type Chord } from './grip.ts';
 import { ordinal, t, tk } from '../i18n.ts';
 
 export type { Chord };
@@ -86,6 +86,14 @@ interface Fingering {
   barre: boolean;
 }
 
+/** Griff ohne Namen; moved: ein gewohnter Griff, der für die neue Stimmung verschoben wurde. */
+interface Entry {
+  frets: number[];
+  fingers?: number[];
+  barre?: boolean;
+  moved?: boolean;
+}
+
 /**
  * Finger nach Bund verteilen; liegen drei oder mehr Saiten im tiefsten Bund (ohne leere Saite dazwischen) oder
  * braucht der Griff sonst mehr als vier Finger, greift der Zeigefinger quer (Barré). null = nicht greifbar.
@@ -161,6 +169,11 @@ function findShape(root: number, intervals: number[]): number[] | null {
   return best;
 }
 
+function spread(frets: number[]): number {
+  const pressed = frets.filter((f) => f > 0);
+  return pressed.length ? Math.max.apply(null, pressed) - Math.min.apply(null, pressed) : 0;
+}
+
 function shapeCost(frets: number[], root: number, required: number[]): number {
   const set = instrument().finder;
   const notes: number[] = [];
@@ -180,6 +193,28 @@ function shapeCost(frets: number[], root: number, required: number[]): number {
     cost += frets.filter((f) => f < 0).length * set.mutedCost;
     if (notes[0] !== root) cost += set.bassRootCost;
   }
+  if (instrument().tuning && sameShapes() === null) cost += awkward(frets);
+  return cost;
+}
+
+/**
+ * Umgestimmt findet der Grifffinder sonst Griffe, deren Töne stimmen, die aber so niemand zeigt: weiter oben am Hals
+ * mehrere Finger im selben Bund, zwischen denen leere Saiten klingen (Open D: F#m = 404044 statt xx4344).
+ */
+function awkward(frets: number[]): number {
+  const fi = assignFingers(frets);
+  if (!fi) return 0;
+  let cost = 0;
+  const seen: number[] = [];
+  frets.forEach((f) => {
+    if (f < 4 || seen.indexOf(f) >= 0) return;
+    seen.push(f);
+    const at: number[] = [];
+    frets.forEach((g, i) => {
+      if (g === f && !(fi.barre && fi.fingers[i] === 1)) at.push(i);
+    });
+    for (let i = at.length ? at[0] : 0; at.length > 1 && i < at[at.length - 1]; i++) if (frets[i] === 0) cost += 2;
+  });
   return cost;
 }
 
@@ -196,10 +231,10 @@ function openBarre(root: number, open: number): { frets: number[]; fingers: numb
 }
 
 /**
- * Der gewohnte Griff, nur auf den umgestimmten Saiten so verschoben, dass dieselben Töne klingen (Drop D: G = 520003).
+ * Der gewohnte Griff, nur auf den umgestimmten Saiten so verschoben, dass dieselben Töne klingen (Drop D: E = 222100).
  * null, wenn er so nicht mehr greifbar ist.
  */
-function sameNotes(name: string, root: number, quality: string): { frets: number[]; fingers?: number[]; barre?: boolean } | null {
+function sameNotes(name: string, root: number, quality: string): Entry | null {
   const from = baseInstrument();
   const known = from.chords.filter((c) => c.name === name)[0];
   const table = from.shapes[quality];
@@ -216,10 +251,27 @@ function sameNotes(name: string, root: number, quality: string): { frets: number
     if (f >= 0 && (nf < 0 || nf > instrument().finder.maxFret || !playableFret(i, nf))) return null;
     frets.push(nf);
   }
+  openBass(frets, root, quality);
   if (!moved) return { frets, fingers: src.fingers, barre: !!src.barre };
-  const pressed = frets.filter((f) => f > 0);
-  if (pressed.length && Math.max.apply(null, pressed) - Math.min.apply(null, pressed) > 3) return null;
-  return { frets };
+  return spread(frets) > 3 ? null : { frets, moved: true };
+}
+
+/**
+ * Stumme Bass-Saiten, die nach dem Umstimmen leer Grundton oder Quinte sind, klingen bei offenen Griffen mit
+ * (Drop D: D = 000232) – aber nur, wenn danach der Grundton unten liegt.
+ */
+function openBass(frets: number[], root: number, quality: string): void {
+  if (frets.indexOf(0) < 0) return;
+  const fifth = QUALITY_INTERVALS[quality].indexOf(7) >= 0 ? (root + 7) % 12 : -1;
+  let top = 0;
+  while (top < frets.length && frets[top] < 0) top++;
+  let lowest = top;
+  for (let i = top - 1; i >= 0 && i < instrument().finder.mutable && !STRINGS[i].start; i--) {
+    const pc = pitchClass(STRINGS[i].midi);
+    if (pc !== root && pc !== fifth) break;
+    if (pc === root) lowest = i;
+  }
+  for (let i = lowest; i < top; i++) frets[i] = 0;
 }
 
 function makeChord(name: string): Chord | null {
@@ -237,19 +289,23 @@ function makeChord(name: string): Chord | null {
       return out;
     }
   }
-  let entry: { frets: number[]; fingers?: number[]; barre?: boolean } | null = null;
+  let entry: Entry | null = null;
   if (shift !== null) {
     const table = baseInstrument().shapes[p.quality];
     entry = table ? table[(p.root - shift + 12) % 12] : null;
+  } else if (inst.tuning && inst.tuning.grips && inst.tuning.grips[name]) {
+    entry = { frets: parseGrip(inst.tuning.grips[name]) };
   } else if (inst.tuning && inst.tuning.open !== undefined && p.quality === '') {
     entry = openBarre(p.root, inst.tuning.open);
   } else if (inst.tuning) {
     entry = sameNotes(name, p.root, p.quality);
-    // der gewohnte Griff gewinnt, außer die neue Stimmung bietet einen deutlich leichteren (Double C: C = 00002)
+    // ein verschobener gewohnter Griff gewinnt, außer die neue Stimmung bietet einen deutlich leichteren (Double C: C = 00002)
     const iv = QUALITY_INTERVALS[p.quality];
-    const found = entry && findShape(p.root, iv);
+    const found = entry && entry.moved && findShape(p.root, iv);
     const need = requiredTones(iv, p.root);
-    if (entry && found && shapeCost(found, p.root, need) < shapeCost(entry.frets, p.root, need) - 3) entry = { frets: found };
+    // weit gespreizt (Drop D: G = 520003) hat er weniger Vorsprung
+    const lead = spread(entry ? entry.frets : []) >= 3 ? 2 : 3;
+    if (entry && found && shapeCost(found, p.root, need) < shapeCost(entry.frets, p.root, need) - lead) entry = { frets: found };
   } else {
     const table = inst.shapes[p.quality];
     entry = table ? table[p.root] : null;
@@ -260,7 +316,7 @@ function makeChord(name: string): Chord | null {
   return frets ? withFingers(name, { frets }) : null;
 }
 
-function withFingers(name: string, entry: { frets: number[]; fingers?: number[]; barre?: boolean }): Chord | null {
+function withFingers(name: string, entry: Entry): Chord | null {
   const frets = entry.frets;
   let fingers = entry.fingers;
   let barre = !!entry.barre;

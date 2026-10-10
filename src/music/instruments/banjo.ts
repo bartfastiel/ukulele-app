@@ -74,6 +74,7 @@ export const BANJO: Instrument = {
       names: ['g', 'C', 'G', 'C', 'D'],
       midi: [67, 48, 55, 60, 62],
       bluesKey: 0,
+      grips: { G7: '02423' },
     },
     {
       id: 'g-modal',
@@ -82,6 +83,7 @@ export const BANJO: Instrument = {
       names: ['g', 'D', 'G', 'C', 'D'],
       midi: [67, 50, 55, 60, 62],
       bluesKey: 7,
+      grips: { Em: '02442' },
     },
     {
       id: 'open-d',
