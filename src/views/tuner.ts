@@ -4,18 +4,23 @@ import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts
 import { STRINGS, midiToFreq } from '../music/notes.ts';
 import { detectPitch, cents } from '../audio/pitch.ts';
 import { openMic } from '../audio/mic.ts';
-import { pluck, successSound } from '../audio/engine.ts';
+import { pluckCourse, successSound } from '../audio/engine.ts';
 import { save } from '../store.ts';
 import { TuningCoach, tipText } from '../audio/tuning-coach.ts';
-import { instrument } from '../music/instrument.ts';
+import { TWELVE_MAX_HZ, instrument, twelveString } from '../music/instrument.ts';
 import { countWord, t } from '../i18n.ts';
+import { tuningChooser, variantChooser } from '../ui/tuning.ts';
 
 export const tuner: View = (root) => {
   let raf = 0;
   let releaseWake: (() => void) | null = null;
-  const range = instrument().tuner;
+  const tr = instrument().tuner;
+  const range = { minHz: tr.minHz, maxHz: twelveString() ? Math.max(tr.maxHz, TWELVE_MAX_HZ) : tr.maxHz };
   const done = STRINGS.map(() => false);
   const names = STRINGS.map((st) => st.name);
+  // 12-saitige Gitarre: auch die Oktavsaiten der vier tiefen Chöre erkennen
+  const targets = STRINGS.map((st, i) => ({ string: i, midi: st.midi, octave: false }));
+  if (twelveString()) STRINGS.forEach((st, i) => i < 4 && targets.push({ string: i, midi: st.midi + 12, octave: true }));
   let inTuneSince = 0;
   let lastString = -1;
   let smooth = 0;
@@ -52,7 +57,7 @@ export const tuner: View = (root) => {
   const stringBtns = STRINGS.map((st) =>
     button(
       h('span', null, h('span', { class: 'sname' }, st.name, st.hint ? h('small', { class: 'shint' }, t(st.hint)) : null), icon('check', 'icon tick')),
-      () => pluck(st.midi, 0, 0.7),
+      () => pluckCourse(st.midi, STRINGS.indexOf(st), 0, 0.7),
       'btn-string',
       { 'aria-label': t('{s}-Saite anhören', { s: st.name }) },
     ),
@@ -72,11 +77,13 @@ export const tuner: View = (root) => {
       if (p && p.clarity > 0.85) {
         let best = 0;
         let bestC = Infinity;
-        STRINGS.forEach((st, i) => {
-          const c = cents(p.freq, midiToFreq(st.midi));
+        let octave = false;
+        targets.forEach((x) => {
+          const c = cents(p.freq, midiToFreq(x.midi));
           if (Math.abs(c) < Math.abs(bestC)) {
             bestC = c;
-            best = i;
+            best = x.string;
+            octave = x.octave;
           }
         });
         if (Math.abs(bestC) < 400) {
@@ -90,7 +97,8 @@ export const tuner: View = (root) => {
           const shown = Math.max(-50, Math.min(50, smooth));
           needle.setAttribute('transform', `rotate(${(shown / 50) * 70} 100 110)`);
           const hint = STRINGS[best].hint;
-          note.textContent = hint ? `${STRINGS[best].name} (${t(hint)})` : STRINGS[best].name;
+          const extra = octave ? t('Oktavsaite') : hint ? t(hint) : '';
+          note.textContent = extra ? `${STRINGS[best].name} (${extra})` : STRINGS[best].name;
           stringBtns.forEach((b, i) => b.classList.toggle('active', i === best));
           const ok = Math.abs(smooth) < 6;
           gauge.classList.toggle('in-tune', ok);
@@ -154,6 +162,8 @@ export const tuner: View = (root) => {
         listen,
         h('p', { class: 'small' }, t('Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: {strings}.', { strings: names.join(' – ') })),
         h('div', { class: `string-row strings-${STRINGS.length}` }, ...stringBtns),
+        tuningChooser(),
+        variantChooser(),
       ),
     ),
   );

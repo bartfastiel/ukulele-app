@@ -2465,6 +2465,64 @@ summary:focus-visible {
   color: var(--ink);
 }
 
+/* ---------- Andere Stimmung: Hinweis oben auf jeder Seite, Auswahl im Stimmgerät ---------- */
+.tuning-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: calc(100% - 44px);
+  max-width: 1156px;
+  margin: 18px auto 4px;
+  background: linear-gradient(180deg, #fff4cf, #f7e3a8);
+}
+
+.tuning-banner p {
+  flex: 1 1 260px;
+  margin: 0 12px 0 0;
+}
+
+.tuning-choice {
+  margin-top: 12px;
+}
+
+.tuning-choice summary {
+  list-style: none;
+}
+
+.tuning-choice summary::-webkit-details-marker {
+  display: none;
+}
+
+.tuning-intro {
+  margin: 0 6px 8px;
+  font-size: 0.8em;
+  color: var(--ink-soft);
+}
+
+.tuning-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tuning-btn {
+  width: calc(100% - 12px);
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.tuning-option {
+  display: block;
+}
+
+.tuning-why {
+  display: block;
+  font-weight: 400;
+  font-size: 0.85em;
+}
+
 /* ---------- Instrumente: gleiche Formen, eigenes Holz und eigene Einfassung ---------- */
 /* Gitarre: Fichtendecke, Palisander-Knöpfe, Einfassung elfenbein mit schwarzem Zierstreifen */
 html[data-instrument='gitarre'] {

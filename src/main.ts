@@ -8,6 +8,7 @@ import { renderSecrets } from './ui/secret-text.ts';
 import { initInstrument } from './music/instrument.ts';
 import { chord } from './music/chords.ts';
 import { chordDiagram } from './ui/chord-diagram.ts';
+import { TUNING_EVENT, applyStoredTuning } from './ui/tuning.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
 import { songs } from './views/songs.ts';
@@ -134,8 +135,11 @@ else if (html.hasAttribute('data-instrument')) rememberInstrument();
 if (!redirectOldHash()) {
   setLang(isLang(html.lang) ? html.lang : 'de');
   if (load().settings.calm) html.classList.add('calm');
-  mount();
+  // Wissensartikel erklären die Normalstimmung – ihre Griffbilder werden vor dem Umstimmen gespiegelt
   mirrorArticleChords();
+  if (!isStart) applyStoredTuning();
+  window.addEventListener(TUNING_EVENT, () => mount());
+  mount();
   renderSecrets();
   if (html.hasAttribute('data-hash-param')) window.addEventListener('hashchange', () => mount());
   offerLanguage(load().settings.lang);

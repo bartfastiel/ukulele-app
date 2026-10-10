@@ -5,7 +5,8 @@
 #               https://gitarre.wer-ist-daniel-schwarz.de/  ← dist/gitarre  (Server: app-gitarre/)
 #               https://banjo.wer-ist-daniel-schwarz.de/    ← dist/banjo    (Server: app-banjo/)
 #               https://bariton.wer-ist-daniel-schwarz.de/  ← dist/bariton  (Server: app-bariton/)
-#               https://mandoline.wer-ist-daniel-schwarz.de/ ← dist/mandoline (Server: app-mandoline/)
+#   Testadresse https://openstring.wer-ist-daniel-schwarz.de/ (Instrumentenwahl), …/ukulele/, …  ← dist/  (Server: openstring/)
+#               genau wie später die eigene Domain, aber nicht indexiert (PREVIEW)
 #   Eigene Domain (Variable SITE_DOMAIN gesetzt, z. B. openstring.de):
 #               https://<SITE_DOMAIN>/ (Instrumentenwahl), https://<SITE_DOMAIN>/ukulele/, …  ← dist/  (Server: site/)
 #               Die alten Subdomains werden zu Weiterleitungen dorthin, die die Daten im Browser mitnehmen (MOVE_TO).
@@ -98,9 +99,21 @@ jobs:
           .github/scripts/upload-dir.sh dist/gitarre "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-gitarre"
           .github/scripts/upload-dir.sh dist/banjo "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-banjo"
           .github/scripts/upload-dir.sh dist/bariton "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-bariton"
-          .github/scripts/upload-dir.sh dist/mandoline "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-mandoline"
           curl -fsS --retry 5 --retry-delay 5 "https://$UKULELE_HOST/" | grep -q 'data-instrument="ukulele"'
           echo "Live: https://$UKULELE_HOST/"
+      - name: Open String (Testadresse, wie später die eigene Domain)
+        if: env.SITE_DOMAIN == ''
+        env:
+          SITE_URL: https://openstring.wer-ist-daniel-schwarz.de/{site}/
+          PUBLIC_URL: https://openstring.wer-ist-daniel-schwarz.de/{site}/
+          PREVIEW: '1'
+          LEGAL_ADDRESS: ${{ secrets.LEGAL_ADDRESS }}
+          LEGAL_EMAIL: ${{ secrets.LEGAL_EMAIL }}
+        run: |
+          npm run build
+          .github/scripts/upload-dir.sh dist "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/openstring"
+          curl -fsS --retry 5 --retry-delay 5 "https://openstring.wer-ist-daniel-schwarz.de/ukulele/" | grep -q 'data-instrument="ukulele"' || echo "::warning::openstring.wer-ist-daniel-schwarz.de noch nicht erreichbar (Caddy-Block im Repo frag-daniel)"
+          echo "Test: https://openstring.wer-ist-daniel-schwarz.de/"
       - name: Eigene Domain
         if: env.SITE_DOMAIN != ''
         env:
@@ -117,7 +130,6 @@ jobs:
           .github/scripts/upload-dir.sh dist/gitarre "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-gitarre"
           .github/scripts/upload-dir.sh dist/banjo "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-banjo"
           .github/scripts/upload-dir.sh dist/bariton "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-bariton"
-          .github/scripts/upload-dir.sh dist/mandoline "$DEPLOY_USER@$DEPLOY_HOST" "$SERVER_DIR/app-mandoline"
 
   preview:
     name: Vorschau

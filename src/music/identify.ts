@@ -72,7 +72,8 @@ const libraries: Record<string, Map<string, string>> = {};
 
 /** Bibliotheksgriffe des aktuellen Instruments nach Bünden. */
 function library(): Map<string, string> {
-  const id = instrument().id;
+  const inst = instrument();
+  const id = inst.id + (inst.tuning ? ':' + inst.tuning.id : '');
   if (!libraries[id]) libraries[id] = new Map(CHORDS.map((c) => [c.frets.join(','), c.name]));
   return libraries[id];
 }
