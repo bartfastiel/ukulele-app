@@ -1788,6 +1788,17 @@ summary:focus-visible {
   fill: #fff;
 }
 
+.fb-hit {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.fb-mark,
+.fb-mark-label,
+.fb-bend {
+  pointer-events: none;
+}
+
 .fb-break {
   fill: none;
   stroke: #f3e6c4;

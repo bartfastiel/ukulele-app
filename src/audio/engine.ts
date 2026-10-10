@@ -77,11 +77,17 @@ function pluckBuffer(midi: number): AudioBuffer {
   return buf;
 }
 
-function play(buf: AudioBuffer, when: number, gain: number): void {
+function play(buf: AudioBuffer, when: number, gain: number, bend = 0): void {
   const c = audio();
   if (silent) return;
   const src = c.createBufferSource();
   src.buffer = buf;
+  if (bend) {
+    // gezogene Saite: erst gerade anschlagen, dann gleitend um `bend` Halbtöne hoch
+    const t0 = Math.max(when, c.currentTime);
+    src.playbackRate.setValueAtTime(1, t0 + 0.07);
+    src.playbackRate.linearRampToValueAtTime(Math.pow(2, bend / 12), t0 + 0.32);
+  }
   const g = c.createGain();
   g.gain.value = gain;
   src.connect(g);
@@ -89,9 +95,10 @@ function play(buf: AudioBuffer, when: number, gain: number): void {
   src.start(Math.max(when, c.currentTime));
 }
 
-export function pluck(midi: number, when = 0, gain = 0.6): void {
+/** Einen Ton zupfen; `bend` zieht ihn nach dem Anschlag um so viele Halbtöne hoch. */
+export function pluck(midi: number, when = 0, gain = 0.6, bend = 0): void {
   if (!hasAudio()) return;
-  play(pluckBuffer(midi), when, gain);
+  play(pluckBuffer(midi), when, gain, bend);
 }
 
 /** Akkord anschlagen; abwärts von der oberen Saite (Ukulele G) zur unteren (A), aufwärts umgekehrt. */

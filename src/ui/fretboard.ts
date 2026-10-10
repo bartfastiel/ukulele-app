@@ -17,7 +17,19 @@ export interface Mark {
  * (Ukulele G), links der Sattel, Bünde from … from+frets-1. Leere Saiten (Bund 0) stehen links vor dem Sattel – weiter
  * oben am Hals vor einem Bruch statt des Sattels. Die kurze Banjo-Saite ist bis zu ihrem Wirbel am 5. Bund nur angedeutet.
  */
-export function fretboard(marks: Mark[], frets = 5, from = 1): SVGElement {
+/** Antippen einer Stelle: Saite, Bund und ob der Ziehpfeil getroffen wurde. */
+export type Tap = (string: number, fret: number, bend: boolean) => void;
+
+/** Sofort beim Berühren auslösen (ohne Verzögerung des Klicks); Maus als Rückfall. */
+function onPress(el: Element, f: () => void): void {
+  el.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    f();
+  });
+  el.addEventListener('mousedown', f);
+}
+
+export function fretboard(marks: Mark[], frets = 5, from = 1, tap?: Tap): SVGElement {
   const n = STRINGS.length;
   const x0 = 70;
   const fw = 64;
@@ -55,6 +67,24 @@ export function fretboard(marks: Mark[], frets = 5, from = 1): SVGElement {
     svg.appendChild(s('text', { x: 4, y: y + 5, class: 'fb-label' }, STRINGS[i].name));
   }
   for (let f = from; f < from + frets; f++) svg.appendChild(s('text', { x: xOf(f), y: height - 3, class: 'fb-num', 'text-anchor': 'middle' }, String(f)));
+  if (tap) {
+    // jede Stelle im Ausschnitt ist antippbar, auch leere Saiten
+    for (let i = 0; i < n; i++)
+      for (let f = 0; f < from + frets; f++) {
+        if ((f > 0 && f < from) || (f > 0 && STRINGS[i].start)) continue;
+        const cell = s('rect', {
+          x: f === 0 ? x0 - 48 : x0 + fw * (f - from),
+          y: yOf(i) - gap / 2,
+          width: f === 0 ? 44 : fw,
+          height: gap,
+          class: 'fb-hit',
+          'data-string': String(i),
+          'data-fret': String(f),
+        });
+        onPress(cell, () => tap(i, f, false));
+        svg.appendChild(cell);
+      }
+  }
   const rank = { scale: 0, chord: 1, next: 2, played: 3, now: 4 };
   marks
     .slice()
@@ -66,7 +96,14 @@ export function fretboard(marks: Mark[], frets = 5, from = 1): SVGElement {
       svg.appendChild(s('circle', { cx, cy, r, class: `fb-mark ${m.kind}` }));
       if (m.label)
         svg.appendChild(s('text', { x: cx, y: cy + 4.5, 'text-anchor': 'middle', class: `fb-mark-label ${m.kind}` }, m.label));
-      if (m.bend) svg.appendChild(s('path', { d: `M${cx + r + 1} ${cy + 4} l5 -12 l5 12 m-5 -12 v16`, class: 'fb-bend' }));
+      if (m.bend) {
+        svg.appendChild(s('path', { d: `M${cx + r + 1} ${cy + 4} l5 -12 l5 12 m-5 -12 v16`, class: 'fb-bend' }));
+        if (tap) {
+          const hit = s('rect', { x: cx + r - 2, y: cy - gap / 2 - 4, width: 18, height: gap + 4, class: 'fb-hit fb-hit-bend' });
+          onPress(hit, () => tap(m.string, m.fret, true));
+          svg.appendChild(hit);
+        }
+      }
     });
   return svg;
 }

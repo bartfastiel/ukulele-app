@@ -188,6 +188,13 @@ test('Blues: Hals verschieben, frei spielen mit fünf Bünden und Ziehton', asyn
   await expect(page.locator('.blues-shift-label')).toHaveText('Bund 5–9');
   await expect(page.locator('.fb-bend').first()).toBeVisible();
   await expect(page.getByText(/Ziehen ↑/)).toBeVisible();
+  // jede Stelle lässt sich antippen, auch leere Saiten und Töne außerhalb der Tonleiter; der Ziehpfeil zieht
+  await page.locator('.fb-hit[data-string="1"][data-fret="0"]').click();
+  await expect(page.locator('.fb-mark.played')).toHaveCount(1);
+  await page.locator('.fb-hit[data-string="0"][data-fret="9"]').click();
+  await expect(page.locator('.fb-mark.played')).toHaveCount(1);
+  await page.locator('.fb-hit-bend').first().click();
+  await expect(page.locator('.fb-mark.played')).toHaveCount(1);
   await page.getByRole('button', { name: 'Sehr langsam' }).click();
   await expect(page.getByRole('button', { name: 'Sehr langsam' })).toHaveAttribute('aria-pressed', 'true');
 });

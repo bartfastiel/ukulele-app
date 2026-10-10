@@ -9,7 +9,7 @@ import { audio, click, pluck } from '../audio/engine.ts';
 import { bass, hat, kick, organ, snare } from '../audio/band.ts';
 import { openMic, type Mic } from '../audio/mic.ts';
 import { detectPitch } from '../audio/pitch.ts';
-import { freqToMidi, midiToFreq, pitchClass } from '../music/notes.ts';
+import { freqToMidi, midiToFreq, pitchClass, stringMidi } from '../music/notes.ts';
 import { markPracticed } from '../store.ts';
 import { noteText, t, tk, tp } from '../i18n.ts';
 
@@ -41,7 +41,8 @@ export const blues: View = (root) => {
   let lastBeat = -99;
   let hits = 0;
   let hitBeat = -1;
-  let played: { midi: number; at: number } | null = null;
+  let played: { midi: number; at: number; string?: number; fret?: number } | null = null;
+  let fade = 0;
   let releaseWake: (() => void) | null = null;
   let from = 1;
   const win = (): NeckWindow => (level.notes ? levelWindow(from) : { from: Math.min(from, instrument().frets - FREE_FRETS + 1), frets: FREE_FRETS });
@@ -110,7 +111,7 @@ export const blues: View = (root) => {
         });
     }
     if (played && audio().currentTime - played.at < 0.6) {
-      const p = place(played.midi, w);
+      const p = played.string !== undefined ? { string: played.string, fret: played.fret! } : place(played.midi, w);
       marks.push({ string: p.string, fret: p.fret, kind: 'played' });
     }
     neck.appendChild(
@@ -121,7 +122,7 @@ export const blues: View = (root) => {
         level.notes && beat >= 0 && targetAt(beat) !== null ? h('span', { class: 'blues-target' }, t('Spiel {note}', { note: noteText(ROOTS[pitchClass(targetAt(beat)!)]) })) : null,
       ),
     );
-    neck.appendChild(fretboard(marks, w.frets, w.from));
+    neck.appendChild(fretboard(marks, w.frets, w.from, tapNote));
   };
 
   const schedule = () => {
@@ -178,8 +179,15 @@ export const blues: View = (root) => {
       if (!p || p.clarity < 0.9) return;
       const midi = Math.round(freqToMidi(p.freq));
       played = { midi, at: audio().currentTime };
+      heard(midi);
+    }, 50);
+  };
+
+  /** Gespielter Ton (Mikrofon oder angetippt): Treffer zählen, solange die Band läuft. */
+  const heard = (midi: number) => {
+    if (running) {
       const beat = beatNow();
-      if (beat < 0) return;
+      if (beat < 0) return drawNeck(beat);
       if (level.notes) {
         const target = targetAt(beat);
         const whole = Math.floor(beat);
@@ -194,7 +202,17 @@ export const blues: View = (root) => {
         counter.textContent = tp(hits, '{n} Blues-Ton – klingt gut!', '{n} Blues-Töne – klingt gut!');
       }
       drawNeck(beat);
-    }, 50);
+    } else drawNeck(0);
+  };
+
+  /** Ton auf dem Hals antippen: klingt wie das Instrument, auf dem Ziehpfeil gezogen (Viertelton hoch). */
+  const tapNote = (string: number, fret: number, bend: boolean) => {
+    const midi = stringMidi(string, fret);
+    pluck(midi, 0, 0.6, bend ? 0.5 : 0);
+    played = { midi, at: audio().currentTime, string, fret };
+    heard(midi);
+    window.clearTimeout(fade);
+    fade = window.setTimeout(() => !running && drawNeck(0), 650);
   };
 
   const label = () => {
@@ -322,5 +340,6 @@ export const blues: View = (root) => {
   return () => {
     stop();
     window.clearInterval(micTimer);
+    window.clearTimeout(fade);
   };
 };
