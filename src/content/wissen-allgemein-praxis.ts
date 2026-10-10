@@ -8,7 +8,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
       en: 'sore-fingertips-calluses',
       fr: 'doigts-douloureux-corne',
     },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
     category: 'technik',
     title: {
       de: 'Fingerkuppen tun weh? So wächst Hornhaut beim Saitenspiel',
@@ -44,9 +44,9 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
             fr: '**Le ukulélé et la guitare classique** ont des cordes en nylon souples. Les doigts s’y habituent en général le plus vite.',
           },
           {
-            de: '**Westerngitarre und Banjo** haben Stahlsaiten. Die sind dünner und härter, deshalb drücken sie am Anfang stärker.',
-            en: '**Steel-string guitar and banjo** use steel strings. They are thinner and harder, so they press more at first.',
-            fr: '**La guitare folk et le banjo** ont des cordes en acier. Plus fines et plus dures, elles marquent davantage au début.',
+            de: '**Westerngitarre, Banjo und Mandoline** haben Stahlsaiten. Die sind dünner und härter, deshalb drücken sie am Anfang stärker.',
+            en: '**Steel-string guitar, banjo and mandolin** use steel strings. They are thinner and harder, so they press more at first.',
+            fr: '**La guitare folk, le banjo et la mandoline** ont des cordes en acier. Plus fines et plus dures, elles marquent davantage au début.',
           },
           {
             de: 'Nach etwa **zwei bis vier Wochen** regelmäßigem Üben merken die meisten kaum noch etwas.',
@@ -122,7 +122,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'akkordwechsel-schneller',
     slug: { de: 'akkordwechsel-schneller', en: 'faster-chord-changes', fr: 'changer-accords-plus-vite' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
     category: 'technik',
     title: {
       de: 'Akkordwechsel schneller lernen – 6 Tricks für Anfänger',
@@ -207,7 +207,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'saubere-griffe',
     slug: { de: 'saite-schnarrt-klingt-dumpf', en: 'buzzing-muted-strings', fr: 'corde-qui-frise' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
     category: 'technik',
     title: {
       de: 'Saite schnarrt oder klingt dumpf? So greifst du sauber',
@@ -310,7 +310,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'lieder-fuer-anfaenger',
     slug: { de: 'lieder-fuer-anfaenger', en: 'easy-songs-beginners', fr: 'chansons-faciles-debutants' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
     category: 'erste-schritte',
     title: {
       de: 'Einfache Lieder für Anfänger – mit einem, zwei oder drei Akkorden',
@@ -412,7 +412,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'ueben-mit-kindern',
     slug: { de: 'ueben-mit-kindern', en: 'practicing-with-kids', fr: 'faire-pratiquer-enfants' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
     category: 'eltern-lehrkraefte',
     title: {
       de: 'Üben mit Kindern – so bleibt die Freude am Instrument',
@@ -528,7 +528,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'instrumentalklasse-schule',
     slug: { de: 'instrumentalklasse-schule', en: 'school-instrument-class', fr: 'classe-instrument-ecole' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
     category: 'eltern-lehrkraefte',
     title: {
       de: 'Instrumentalklasse in der Schule – Tipps für Lehrkräfte und Eltern',
@@ -640,7 +640,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'app-ohne-konto',
     slug: { de: 'app-ohne-konto-datenschutz', en: 'app-privacy-no-account', fr: 'appli-sans-compte-vie-privee' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
     category: 'eltern-lehrkraefte',
     title: {
       de: 'Lern-App ohne Konto: Datenschutz, Mikrofon und Werbefreiheit',
@@ -727,7 +727,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
   {
     id: 'saiten-wechseln-pflege',
     slug: { de: 'saiten-wechseln-pflege', en: 'change-strings-care', fr: 'changer-cordes-entretien' },
-    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton'],
+    instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline'],
     category: 'instrument',
     title: {
       de: 'Saiten wechseln und Instrument pflegen – so geht’s',
@@ -816,9 +816,9 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
             fr: '**Guitare folk (acier) :** ne mets jamais de cordes en acier sur une guitare classique – la tension est bien plus forte et peut l’abîmer. Les bouts de cordes piquent : coupe-les prudemment.',
           },
           {
-            de: '**Banjo (Stahl):** Der Steg wird nur vom Druck der Saiten gehalten und ist nicht festgeklebt. Wechsle deshalb **eine Saite nach der anderen**, nie alle auf einmal. Markiere vorher die Steglage mit einem kleinen Stück Klebeband, denn schon ein paar Millimeter verschieben die Stimmung weiter oben am Hals.',
-            en: '**Banjo (steel):** the bridge is held in place only by string pressure, not glued. So change **one string at a time**, never all at once. Mark the bridge position with a small piece of tape first, because even a few millimetres throw off the tuning higher up the neck.',
-            fr: '**Banjo (acier) :** le chevalet tient uniquement grâce à la pression des cordes, il n’est pas collé. Change donc **une corde à la fois**, jamais toutes d’un coup. Marque d’abord sa position avec un petit bout de ruban adhésif : quelques millimètres suffisent à fausser la justesse plus haut sur le manche.',
+            de: '**Banjo und Mandoline (Stahl):** Der Steg wird nur vom Druck der Saiten gehalten und ist nicht festgeklebt. Wechsle deshalb **eine Saite nach der anderen**, nie alle auf einmal. Markiere vorher die Steglage mit einem kleinen Stück Klebeband, denn schon ein paar Millimeter verschieben die Stimmung weiter oben am Hals.',
+            en: '**Banjo and mandolin (steel):** the bridge is held in place only by string pressure, not glued. So change **one string at a time**, never all at once. Mark the bridge position with a small piece of tape first, because even a few millimetres throw off the tuning higher up the neck.',
+            fr: '**Banjo et mandoline (acier) :** le chevalet tient uniquement grâce à la pression des cordes, il n’est pas collé. Change donc **une corde à la fois**, jamais toutes d’un coup. Marque d’abord sa position avec un petit bout de ruban adhésif : quelques millimètres suffisent à fausser la justesse plus haut sur le manche.',
           },
         ],
       },
