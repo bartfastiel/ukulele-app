@@ -54,7 +54,7 @@ export const chordDetail: View = (root, param) => {
     go('akkorde');
     return;
   }
-  const lefty = load().settings.lefty;
+  let lefty = load().settings.lefty;
   let listener: ChordListener | null = null;
   let giveUp = 0;
   const diagramBox = h('div', { class: 'diagram-big' }, chordDiagram(ch, { lefty }));
@@ -113,6 +113,18 @@ export const chordDetail: View = (root, param) => {
     },
     'btn-primary',
   );
+  // dezent unter dem Griffbild: dieselbe Einstellung wie unter „Meine Sterne“
+  const leftyBtn = button(
+    t('Linkshänder'),
+    () => {
+      lefty = !lefty;
+      save((pr) => (pr.settings.lefty = lefty));
+      leftyBtn.setAttribute('aria-pressed', String(lefty));
+      diagramBox.replaceChild(chordDiagram(ch, { lefty }), diagramBox.firstChild!);
+    },
+    'btn-seg lefty-toggle',
+    { 'aria-pressed': String(lefty) },
+  );
   const p = parseChordName(ch.name);
   const family = p ? ['', 'm', '7', 'm7', 'maj7', 'sus4'].map((q) => ROOTS[p.root] + q) : [];
   const others = family.concat(CHORDS.filter((c) => c.level <= 2 && family.indexOf(c.name) < 0).map((c) => c.name)).slice(0, 14);
@@ -122,7 +134,7 @@ export const chordDetail: View = (root, param) => {
     h(
       'div',
       { class: 'chord-detail' },
-      h('div', { class: 'card detail-card' }, h('div', { class: 'chord-name huge' }, ch.name), h('div', { class: 'say' }, CHORDS.indexOf(ch) >= 0 ? chordSay(ch) : chordLongName(ch.name, lang())), diagramBox),
+      h('div', { class: 'card detail-card' }, h('div', { class: 'chord-name huge' }, ch.name), h('div', { class: 'say' }, CHORDS.indexOf(ch) >= 0 ? chordSay(ch) : chordLongName(ch.name, lang())), diagramBox, leftyBtn),
       h(
         'div',
         { class: 'detail-side' },

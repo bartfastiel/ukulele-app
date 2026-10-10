@@ -10,7 +10,7 @@ import { bass, hat, kick, organ, snare } from '../audio/band.ts';
 import { openMic, type Mic } from '../audio/mic.ts';
 import { detectPitch } from '../audio/pitch.ts';
 import { freqToMidi, midiToFreq, pitchClass, stringMidi } from '../music/notes.ts';
-import { markPracticed } from '../store.ts';
+import { load, markPracticed } from '../store.ts';
 import { noteText, t, tk, tp } from '../i18n.ts';
 
 const TEMPOS = [
@@ -55,9 +55,16 @@ export const blues: View = (root) => {
     from = Math.max(1, Math.min(instrument().frets - w.frets + 1, w.from + d));
     drawNeck(running ? beatNow() : 0);
   };
-  const towardHead = button('◀', () => shift(-1), 'btn-seg blues-shift', { 'aria-label': t('Richtung Kopf') });
-  const towardBody = button('▶', () => shift(1), 'btn-seg blues-shift', { 'aria-label': t('Richtung Korpus') });
-  const neckCard = h('div', { class: 'card blues-neck' }, neck, h('div', { class: 'blues-shift-row' }, towardHead, shiftLabel, towardBody));
+  // Linkshänder: der Kopf liegt rechts, also zeigen auch die Pfeile andersherum
+  const lefty = load().settings.lefty;
+  const towardHead = button(lefty ? '▶' : '◀', () => shift(-1), 'btn-seg blues-shift', { 'aria-label': t('Richtung Kopf') });
+  const towardBody = button(lefty ? '◀' : '▶', () => shift(1), 'btn-seg blues-shift', { 'aria-label': t('Richtung Korpus') });
+  const neckCard = h(
+    'div',
+    { class: 'card blues-neck' },
+    neck,
+    h('div', { class: 'blues-shift-row' }, lefty ? towardBody : towardHead, shiftLabel, lefty ? towardHead : towardBody),
+  );
   const info = h('p', { class: 'card blues-info' });
   const counter = h('div', { class: 'feedback', 'aria-live': 'polite' }, t('Tippe auf „Start“ – die Band zählt ein.'));
   const playBtn = button('', () => (running ? stop() : go()), 'btn-primary btn-play');
@@ -113,7 +120,7 @@ export const blues: View = (root) => {
         level.notes && beat >= 0 && targetAt(beat) !== null ? h('span', { class: 'blues-target' }, t('Spiel {note}', { note: noteText(spell(targetAt(beat)!, key)) })) : null,
       ),
     );
-    neck.appendChild(fretboard(marks, w.frets, w.from, tapNote));
+    neck.appendChild(fretboard(marks, w.frets, w.from, tapNote, lefty));
   };
 
   const schedule = () => {

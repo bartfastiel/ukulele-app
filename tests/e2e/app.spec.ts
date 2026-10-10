@@ -108,6 +108,42 @@ test('Linkshänder spiegelt die Griffbilder', async ({ page }) => {
   expect(labels).toEqual(['A', 'E', 'C', 'G']);
 });
 
+test('Linkshänder: Schalter auf der Akkord-Seite, bleibt nach Neuladen, spiegelt auch den Blues-Hals', async ({ page }) => {
+  const order = () =>
+    page.locator('.diagram-big .string-label').evaluateAll((els) =>
+      els.map((e) => ({ x: e.getBoundingClientRect().left, t: e.textContent })).sort((a, b) => a.x - b.x).map((e) => e.t),
+    );
+  await page.goto('#/akkord/C');
+  expect(await order()).toEqual(['G', 'C', 'E', 'A']);
+  const toggle = page.getByRole('button', { name: 'Linkshänder' });
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  expect(await order()).toEqual(['A', 'E', 'C', 'G']);
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Linkshänder' })).toHaveAttribute('aria-pressed', 'true');
+  expect(await order()).toEqual(['A', 'E', 'C', 'G']);
+
+  // Blues: Sattel rechts, Saitennamen lesbar am rechten Rand
+  await page.goto('#/blues');
+  const neck = page.locator('.fretboard');
+  await expect(neck).toHaveClass(/lefty/);
+  const box = (await neck.boundingBox())!;
+  const nut = (await page.locator('.fretboard .fb-nut').boundingBox())!;
+  expect(nut.x).toBeGreaterThan(box.x + box.width / 2);
+  const label = (await page.locator('.fretboard .fb-label').first().boundingBox())!;
+  expect(label.x).toBeGreaterThan(box.x + box.width / 2);
+
+  // Wissensartikel: vorgerendert für Rechtshänder, nach dem Laden gespiegelt
+  await page.goto('/ukulele/wissen/ukulele-erste-akkorde/');
+  // C: nur die A-Saite ist gegriffen – im gespiegelten Bild links außen
+  const tile = page.locator('.article-chord').first();
+  await expect(tile.locator('.chord-name')).toHaveText('C');
+  const svg = (await tile.locator('svg').boundingBox())!;
+  const finger = (await tile.locator('svg .finger').first().boundingBox())!;
+  expect(finger.x + finger.width / 2).toBeLessThan(svg.x + svg.width / 2);
+});
+
 test('Rhythmus startet und stoppt', async ({ page }) => {
   await page.goto('#/rhythmus');
   await page.getByRole('button', { name: 'Runter, runter, rauf, rauf, runter, rauf' }).click();

@@ -711,6 +711,11 @@ summary:focus-visible {
   margin: 8px auto 0;
 }
 
+.lefty-toggle {
+  margin-top: 4px;
+  font-size: 0.8em;
+}
+
 .desc {
   font-size: 1em;
 }

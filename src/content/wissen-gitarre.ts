@@ -216,7 +216,7 @@ export const GITARRE_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['gitarre-kinder', 'gitarre-saiten', 'gitarre-erste-akkorde', 'fingerkuppen-hornhaut'],
+    related: ['gitarre-kinder', 'gitarre-saiten', 'gitarre-erste-akkorde', 'fingerkuppen-hornhaut', 'gitarre-linkshaender'],
   },
   {
     id: 'gitarre-saiten',
@@ -935,5 +935,103 @@ export const GITARRE_ARTICLES: Article[] = [
       { tool: 'lieder' },
     ],
     related: ['schlagmuster-lernen', 'takt-und-taktarten', 'tabulatur-lesen', 'gitarre-halten'],
+  },
+  {
+    id: 'gitarre-linkshaender',
+    slug: { de: 'gitarre-linkshaender', en: 'left-handed-guitar', fr: 'guitare-gaucher' },
+    instruments: ['gitarre'],
+    category: 'erste-schritte',
+    published: '2026-10-10',
+    title: {
+      de: 'Gitarre für Linkshänder – umbauen, Linkshändermodell oder rechtsherum?',
+      en: 'Left-handed guitar – restring, buy a lefty model or play right-handed?',
+      fr: 'Guitare pour gaucher – modèle gaucher ou jouer en droitier ?',
+    },
+    description: {
+      de: 'Linkshänder an der Gitarre: rechtsherum lernen, umbesaiten (Sattel, Steg) oder verkehrt herum spielen? Was wirklich geht – und gespiegelte Griffbilder.',
+      en: 'Left-handed guitar: learn right-handed, restring it (nut, saddle) or play upside down? What really works – plus mirrored chord charts in the app.',
+      fr: 'Gaucher à la guitare : jouer en droitier, inverser les cordes (sillet, chevalet) ou jouer à l’envers ? Ce qui marche vraiment, et des diagrammes inversés.',
+    },
+    blocks: [
+      {
+        p: {
+          de: 'Linkshänder haben an der Gitarre drei Möglichkeiten. Keine davon ist ein Fehler – es gibt großartige Gitarristinnen und Gitarristen auf allen drei Wegen. Wichtig ist, dass ihr euch am Anfang bewusst entscheidet, denn später umzulernen ist mühsam.',
+          en: 'Left-handers have three options on the guitar. None of them is a mistake – there are great guitarists on all three paths. What matters is choosing deliberately at the start, because switching later is hard work.',
+          fr: 'Les gauchers ont trois possibilités à la guitare. Aucune n’est une erreur : il y a d’excellents guitaristes sur les trois chemins. L’important est de choisir consciemment dès le début, car changer plus tard demande beaucoup d’efforts.',
+        },
+      },
+      { h2: { de: 'Weg 1: rechtsherum lernen', en: 'Option 1: learn the standard way', fr: 'Option 1 : apprendre comme un droitier' } },
+      {
+        p: {
+          de: 'Die linke Hand greift, die rechte schlägt oder zupft – wie bei allen anderen. Für Linkshänder ist das oft gar nicht so ungewohnt, denn die greifende Hand hat viel Feinarbeit zu leisten. Du kannst jede Gitarre ausleihen, Unterricht und Bücher passen ohne Umdenken, und es gibt eine riesige Auswahl an Instrumenten.',
+          en: 'The left hand frets, the right hand strums or picks – like everyone else. For left-handers this is often less strange than expected, because the fretting hand does a lot of fine work. You can borrow any guitar, lessons and books fit without rethinking, and there is a huge choice of instruments.',
+          fr: 'La main gauche forme les accords, la droite gratte ou pince – comme tout le monde. Pour un gaucher, ce n’est souvent pas si étrange, car la main qui appuie sur les cordes fait un travail très précis. Tu peux emprunter n’importe quelle guitare, les cours et les méthodes conviennent sans tout inverser, et le choix d’instruments est immense.',
+        },
+      },
+      { h2: { de: 'Weg 2: Linkshändergitarre oder umbesaiten', en: 'Option 2: a left-handed guitar or restringing', fr: 'Option 2 : guitare pour gaucher ou cordes inversées' } },
+      {
+        p: {
+          de: 'Hier ist alles gespiegelt: Hals nach rechts, die rechte Hand greift, die linke schlägt. Die tiefe E-Saite liegt wie gewohnt oben. Am einfachsten ist eine **Linkshändergitarre**, die von vornherein spiegelverkehrt gebaut ist. Eine normale Gitarre lässt sich umbauen, aber nicht einfach nur umgekehrt besaiten:',
+          en: 'Here everything is mirrored: neck to the right, right hand fretting, left hand strumming. The low E string is at the top as usual. The easiest choice is a **left-handed guitar**, built mirrored from the start. A standard guitar can be converted, but not just by putting the strings on the other way round:',
+          fr: 'Ici, tout est inversé : manche à droite, la main droite forme les accords, la gauche gratte. La corde grave de Mi reste en haut, comme d’habitude. Le plus simple est une **guitare pour gaucher**, construite en miroir dès le départ. Une guitare normale peut être transformée, mais pas seulement en montant les cordes dans l’autre sens :',
+        },
+      },
+      {
+        ul: [
+          {
+            de: '**Sattel:** Seine Kerben sind genau auf die sehr unterschiedlich dicken Saiten zugeschnitten. Nach dem Umbesaiten braucht die Gitarre einen neuen, spiegelverkehrt gekerbten Sattel.',
+            en: '**Nut:** its slots are cut precisely for strings of very different thickness. After restringing, the guitar needs a new nut slotted the other way round.',
+            fr: '**Sillet :** ses encoches sont taillées pour des cordes d’épaisseurs très différentes. Après l’inversion, la guitare a besoin d’un nouveau sillet, entaillé en miroir.',
+          },
+          {
+            de: '**Steg:** Bei Westerngitarren steht die Stegeinlage schräg, auf der Seite der tiefen Saiten weiter hinten. Nur so stimmen die Töne auch weiter oben am Hals. Für Linkshänder muss sie andersherum schräg stehen – dafür braucht es meist einen neuen Steg oder eine neu gefräste Kerbe.',
+            en: '**Saddle:** on steel-string acoustic guitars the saddle is slanted, set further back on the bass side. That keeps notes in tune higher up the neck. For left-handers it has to slant the other way – which usually means a new bridge or a newly routed slot.',
+            fr: '**Chevalet :** sur les guitares folk, le sillet de chevalet est en biais, plus en arrière du côté des cordes graves. C’est ce qui garde les notes justes plus haut sur le manche. Pour un gaucher, il doit être incliné dans l’autre sens – il faut donc en général un nouveau chevalet ou une nouvelle fente.',
+          },
+          {
+            de: '**Konzertgitarren** (Nylonsaiten) haben meist eine gerade Stegeinlage und keinen Schlagschutz. Sie lassen sich deshalb leichter umbauen: neuer Sattel, Stegeinlage prüfen, fertig.',
+            en: '**Classical guitars** (nylon strings) usually have a straight saddle and no pickguard, so they are easier to convert: a new nut, check the saddle, done.',
+            fr: 'Les **guitares classiques** (cordes nylon) ont en général un sillet de chevalet droit et pas de plaque de protection. Elles sont donc plus faciles à transformer : nouveau sillet, vérifier le chevalet, et c’est tout.',
+          },
+          {
+            de: '**Schlagschutz, Cutaway und Regler** sitzen nach dem Umdrehen auf der ungünstigen Seite. Bei E-Gitarren lohnt sich ein Umbau deshalb selten.',
+            en: '**Pickguard, cutaway and controls** end up on the awkward side after flipping. On electric guitars a conversion is therefore rarely worth it.',
+            fr: 'La **plaque de protection, l’échancrure et les boutons** se retrouvent du mauvais côté après le retournement. Sur une guitare électrique, la transformation vaut donc rarement la peine.',
+          },
+        ],
+      },
+      {
+        p: {
+          de: 'Lass den Umbau von einer Fachwerkstatt machen. Oft ist eine fertige Linkshändergitarre kaum teurer als ein guter Umbau.',
+          en: 'Have a repair shop do the conversion. A ready-made left-handed guitar often costs hardly more than a good conversion.',
+          fr: 'Confie la transformation à un luthier. Une guitare pour gaucher toute faite ne coûte souvent guère plus qu’une bonne transformation.',
+        },
+      },
+      { h2: { de: 'Weg 3: verkehrt herum, ohne Umbesaiten', en: 'Option 3: upside down, without restringing', fr: 'Option 3 : à l’envers, sans inverser les cordes' } },
+      {
+        p: {
+          de: 'Manche nehmen eine normale Gitarre einfach spiegelverkehrt, ohne etwas umzubauen. Dann liegt die hohe e-Saite oben und die tiefe E-Saite unten. Das klappt, aber jeder Griff muss mit eigenen Fingersätzen neu erfunden werden, und Unterricht und Bücher helfen nur mit viel Umdenken.',
+          en: 'Some people simply hold a standard guitar mirrored without changing anything. The high E string is then at the top and the low E at the bottom. It works, but every chord has to be reinvented with your own fingerings, and lessons and books only help with a lot of rethinking.',
+          fr: 'Certains prennent simplement une guitare normale en miroir, sans rien modifier. La corde aiguë de Mi est alors en haut et la grave en bas. Ça marche, mais chaque accord doit être réinventé avec ses propres doigtés, et les cours et les méthodes n’aident qu’au prix de beaucoup de réflexion.',
+        },
+      },
+      { h2: { de: 'Die Linkshänder-Ansicht in der App', en: 'The left-handed view in the app', fr: 'Le mode gaucher dans l’appli' } },
+      {
+        p: {
+          de: 'Spielst du eine Linkshändergitarre oder eine umgebaute Gitarre (Weg 2), schalte die Einstellung **Linkshänder** ein – unter „Meine Sterne“ oder direkt unter dem Griffbild auf jeder Akkord-Seite. Dann sind alle Griffbilder und der Hals beim Blues gespiegelt, so wie du dein Instrument siehst; Saitennamen und Zahlen bleiben lesbar. Spielst du rechtsherum oder verkehrt herum ohne Umbau, lass sie aus: Dann zeigen die normalen Griffbilder, auf welche Saite und in welchen Bund die Finger gehören.',
+          en: 'If you play a left-handed or converted guitar (option 2), switch on the **Left-handed** setting – under “My Stars” or right below the chord chart on any chord page. All chord charts and the blues neck are then mirrored, just as you see your instrument; string names and numbers stay readable. If you play right-handed, or upside down without converting, leave it off: the normal charts then show which string and fret your fingers go on.',
+          fr: 'Si tu joues une guitare pour gaucher ou une guitare transformée (option 2), active le réglage **Mode gaucher** – dans « Mes étoiles » ou juste sous le diagramme de chaque page d’accord. Tous les diagrammes et le manche du blues sont alors inversés, comme tu vois ton instrument ; les noms des cordes et les chiffres restent lisibles. Si tu joues en droitier, ou à l’envers sans transformation, laisse-le désactivé : les diagrammes normaux montrent sur quelle corde et dans quelle case vont tes doigts.',
+        },
+      },
+      { tool: 'akkorde' },
+      {
+        tip: {
+          de: 'Lass dein Kind beide Richtungen ausprobieren, zum Beispiel mit einer geliehenen Gitarre, und frag die Lehrkraft, wie sie Linkshänder unterrichtet. Ein paar Wochen Geduld zeigen meist, was sich natürlicher anfühlt.',
+          en: 'Let your child try both directions, for example on a borrowed guitar, and ask the teacher how they teach left-handers. A few weeks of patience usually show what feels more natural.',
+          fr: 'Laisse ton enfant essayer les deux sens, par exemple avec une guitare empruntée, et demande au professeur comment il enseigne aux gauchers. Quelques semaines de patience suffisent souvent pour voir ce qui est le plus naturel.',
+        },
+      },
+    ],
+    related: ['gitarre-halten', 'gitarre-kinder', 'gitarre-saiten', 'saiten-wechseln-pflege'],
   },
 ];
