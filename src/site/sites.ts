@@ -1,12 +1,12 @@
 import type { Lang } from '../i18n.ts';
 
 /** Instrument-Seiten (je eine Subdomain) und die Startseite ohne Subdomain (nur Instrumentenwahl). */
-export type SiteId = 'ukulele' | 'gitarre' | 'banjo' | 'start';
+export type SiteId = 'ukulele' | 'gitarre' | 'banjo' | 'bariton' | 'start';
 
 export interface SiteDef {
   id: SiteId;
   /** Instrument der Seite (für data-instrument); die Startseite hat keins. */
-  instrument: 'ukulele' | 'gitarre' | 'banjo' | null;
+  instrument: 'ukulele' | 'gitarre' | 'banjo' | 'bariton' | null;
   brand: Record<Lang, string>;
   /** Instrumentname, wie er in Titeln steht („Lieder für Ukulele“). */
   name: Record<Lang, string>;
@@ -30,6 +30,12 @@ export const SITES: SiteDef[] = [
     instrument: 'banjo',
     brand: { de: 'Banjo-Club', en: 'Banjo Club', fr: 'Club Banjo' },
     name: { de: 'Banjo', en: 'banjo', fr: 'banjo' },
+  },
+  {
+    id: 'bariton',
+    instrument: 'bariton',
+    brand: { de: 'Bariton-Ukulele-Club', en: 'Baritone Ukulele Club', fr: 'Club Ukulélé baryton' },
+    name: { de: 'Bariton-Ukulele', en: 'baritone ukulele', fr: 'ukulélé baryton' },
   },
   {
     id: 'start',

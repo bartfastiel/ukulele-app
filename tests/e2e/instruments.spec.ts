@@ -1,9 +1,10 @@
 import { test, expect, type Page, navigationNoise } from './fixtures.ts';
 
-/** Gitarre und Banjo auf ihren eigenen Seiten (/gitarre/, /banjo/ – in Produktion eigene Subdomains). */
+/** Gitarre, Banjo und Bariton-Ukulele auf ihren eigenen Seiten (/gitarre/, /banjo/, /bariton/ – in Produktion eigene Subdomains). */
 const CASES = [
   { id: 'gitarre', club: 'Gitarren-Club', strings: ['E', 'A', 'D', 'G', 'B', 'e'], song: 'C', blues: 'E7', target: 'Spiel E' },
   { id: 'banjo', club: 'Banjo-Club', strings: ['g', 'D', 'G', 'B', 'D'], song: 'C', blues: 'G7', target: 'Spiel G' },
+  { id: 'bariton', club: 'Bariton-Ukulele-Club', strings: ['D', 'G', 'B', 'E'], song: 'C', blues: 'G7', target: 'Spiel G' },
 ];
 
 const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied'];
@@ -117,4 +118,13 @@ test('Banjo: Rhythmus hat ein Zupfmuster mit Daumen, Zeige- und Mittelfinger', a
   await page.getByRole('button', { name: /Start/ }).click();
   await expect(page.locator('.arrow.on')).toHaveCount(1, { timeout: 3000 });
   await page.getByRole('button', { name: /Stopp/ }).click();
+});
+
+test('Bariton-Ukulele: G mit einem Finger wie die vier hohen Gitarrensaiten, eigene Kachel auf der Startseite', async ({ page }) => {
+  await page.goto('../bariton/#/akkord/G');
+  await expect(page.locator('.diagram-big')).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-instrument', 'bariton');
+  await expect(page.getByText('G: Ringfinger auf der E-Saite im 3. Bund')).toBeVisible();
+  await page.goto('../start/');
+  await expect(page.locator('a.tile-bariton')).toContainText('Bariton-Ukulele-Club');
 });

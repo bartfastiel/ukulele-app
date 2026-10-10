@@ -5,7 +5,7 @@ import { chordSlug, routePath } from '../../src/site/routes.ts';
 import type { SiteId } from '../../src/site/sites.ts';
 import { ogImagePng, OG_HEIGHT, OG_WIDTH } from '../../src/site/og-image.ts';
 
-const SITES: SiteId[] = ['ukulele', 'gitarre', 'banjo', 'start'];
+const SITES: SiteId[] = ['ukulele', 'gitarre', 'banjo', 'bariton', 'start'];
 const env: BuildEnv = {
   url: (s) => `/${s}/`,
   publicUrl: (s) => `https://${s}.example.org/`,
@@ -94,9 +94,10 @@ test('Instrument-Seiten verlinken sich gegenseitig nur unauffällig in der Fußz
   const foot = home.html.slice(home.html.indexOf('<footer'));
   assert.ok(foot.indexOf('href="/gitarre/"') >= 0);
   assert.ok(foot.indexOf('href="/banjo/"') >= 0);
+  assert.ok(foot.indexOf('href="/bariton/"') >= 0);
   assert.ok(home.html.indexOf('data-instrument="ukulele"') >= 0);
   const start = rendered.start.filter((p) => p.file === 'index.html')[0];
-  for (const s of ['ukulele', 'gitarre', 'banjo']) assert.ok(start.html.indexOf(`href="/${s}/"`) >= 0, s);
+  for (const s of ['ukulele', 'gitarre', 'banjo', 'bariton']) assert.ok(start.html.indexOf(`href="/${s}/"`) >= 0, s);
 });
 
 const page = (site: string, file: string) => rendered[site].filter((p) => p.file === file)[0];
@@ -155,11 +156,13 @@ test('Sitemaps: x-default, jede Adresse nur einmal über alle Instrument-Seiten'
 test('Titel und Texte: Artikel vor Instrumentnamen, wo die Sprache einen braucht', () => {
   for (const s of SITES)
     for (const p of rendered[s]) {
-      const bad = /\b(le|au|du|mon|ton|son) guitare\b|\bauf (Ukulele|Gitarre|Banjo)\b|\brund um (Ukulele|Gitarre|Banjo)\b/i.exec(p.html);
+      const bad = /\b(le|au|du|mon|ton|son) guitare\b|\bauf (Ukulele|Gitarre|Banjo|Bariton-Ukulele)\b|\brund um (Ukulele|Gitarre|Banjo|Bariton-Ukulele)\b/i.exec(p.html);
       assert.equal(bad && bad[0], null, `${s}/${p.file}`);
     }
   assert.ok(page('gitarre', 'fr/index.html').html.indexOf('<title>Apprendre la guitare gratuitement') >= 0);
   assert.ok(page('banjo', 'wissen/index.html').html.indexOf('rund ums Banjo') >= 0);
+  assert.ok(page('bariton', 'wissen/index.html').html.indexOf('rund um die Bariton-Ukulele') >= 0);
+  assert.ok(page('bariton', 'akkorde/g/index.html').html.indexOf('auf der Bariton-Ukulele') >= 0);
 });
 
 test('Querverweise: Lied → weitere Lieder, Akkord → Wissen, Werkzeug → Wissen', () => {
@@ -171,10 +174,12 @@ test('Querverweise: Lied → weitere Lieder, Akkord → Wissen, Werkzeug → Wis
 });
 
 test('Vorschaubild: PNG in 1200 × 630', () => {
-  const png = ogImagePng('banjo');
-  assert.deepEqual(Array.from(png.slice(0, 8)), [137, 80, 78, 71, 13, 10, 26, 10]);
-  const v = new DataView(png.buffer, png.byteOffset);
-  assert.equal(v.getUint32(16), OG_WIDTH);
-  assert.equal(v.getUint32(20), OG_HEIGHT);
-  assert.ok(png.length < 600 * 1024, `${png.length} Bytes`);
+  for (const id of ['banjo', 'bariton']) {
+    const png = ogImagePng(id);
+    assert.deepEqual(Array.from(png.slice(0, 8)), [137, 80, 78, 71, 13, 10, 26, 10]);
+    const v = new DataView(png.buffer, png.byteOffset);
+    assert.equal(v.getUint32(16), OG_WIDTH);
+    assert.equal(v.getUint32(20), OG_HEIGHT);
+    assert.ok(png.length < 600 * 1024, `${id}: ${png.length} Bytes`);
+  }
 });

@@ -2482,6 +2482,26 @@ html[data-instrument='banjo'] .card {
     0 10px 24px rgba(0, 0, 0, 0.45);
 }
 
+/* Bariton-Ukulele: dunkles Koa, Einfassung elfenbein mit schmalem Abalone-Streifen */
+html[data-instrument='bariton'] {
+  --mahogany: #6a3c18;
+  --mahogany-dark: #24120a;
+  --binding: #efdcb0;
+  --edge: #1a2f33;
+  --edge-dark: #14262a;
+  --depth: #1a0c05;
+  --shade: #1e0e06;
+}
+
+html[data-instrument='bariton'] .card {
+  box-shadow:
+    0 0 0 3px var(--binding),
+    0 0 0 5px #2f6f73,
+    0 0 0 6px #9cc9bc,
+    0 0 0 7px #14262a,
+    0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
 /* Startseite: jede Instrument-Kachel trägt schon die Einfassung ihres Instruments */
 .start .tile-gitarre {
   background-color: #4a2a22;
@@ -2498,6 +2518,15 @@ html[data-instrument='banjo'] .card {
     0 0 0 3px #e4e9ed,
     0 0 0 4px #59626a,
     0 5px 0 4px #2e1806,
+    0 9px 16px 4px rgba(0, 0, 0, 0.45);
+}
+
+.start .tile-bariton {
+  background-color: #6a3c18;
+  box-shadow:
+    0 0 0 3px #efdcb0,
+    0 0 0 4px #2f6f73,
+    0 5px 0 4px #1a0c05,
     0 9px 16px 4px rgba(0, 0, 0, 0.45);
 }
 

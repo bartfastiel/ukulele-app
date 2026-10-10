@@ -1,5 +1,5 @@
 // Bildschirmfotos aller Ansichten in typischen Geräteformaten (Sichtprüfung des Designs).
-// node tools/shots.mjs <ordner> [de|en|fr] [ukulele|gitarre|banjo] – die Sprache kommt über die Browser-Sprache
+// node tools/shots.mjs <ordner> [de|en|fr] [ukulele|gitarre|banjo|bariton] – die Sprache kommt über die Browser-Sprache
 // (Standard: de), das Instrument über ?instrument=… (Standard: Ukulele).
 import { chromium, webkit } from '@playwright/test';
 

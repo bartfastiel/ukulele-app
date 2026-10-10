@@ -487,7 +487,7 @@ export const FR: Record<string, string> = {
   "Eigenes Lied anlegen": "Ajouter ta chanson",
   "Tipp:": "Astuce :",
   "{brand} – Saiteninstrumente lernen, kostenlos": "{brand} – apprendre un instrument à cordes gratuitement",
-  "Kostenlos Ukulele, Gitarre oder Banjo lernen: Lieder zum Mitspielen, Akkorde, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.": "Apprendre le ukulélé, la guitare ou le banjo gratuitement : chansons à jouer, accords, accordeur et rythme – sans abonnement, sans pub, sans compte.",
+  "Kostenlos Ukulele, Bariton-Ukulele, Gitarre oder Banjo lernen: Lieder zum Mitspielen, Akkorde, Stimmgerät und Rhythmus – ohne Abo, ohne Werbung, ohne Konto.": "Apprendre le ukulélé, le ukulélé baryton, la guitare ou le banjo gratuitement : chansons à jouer, accords, accordeur et rythme – sans abonnement, sans pub, sans compte.",
   "{instrument} lernen kostenlos: Lieder und Akkorde": "Apprendre le {instrument} gratuitement : chansons et accords",
   "Kostenlos {instrument} lernen, für Kinder und Einsteiger: Lieder zum Mitspielen, Akkorde mit Griffbildern, Stimmgerät und Rhythmus. Ohne Abo, ohne Werbung.": "Apprendre le {instrument} gratuitement, pour enfants et débutants : chansons à jouer, diagrammes d’accords, accordeur et rythme. Sans abonnement, sans pub.",
   "Lieder für {instrument} mit Akkorden und Text": "Chansons pour {instrument} avec accords et paroles",

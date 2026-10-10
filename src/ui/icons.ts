@@ -46,12 +46,14 @@ export function icon(name: keyof typeof PATHS | string, cls = 'icon'): SVGElemen
   );
 }
 
-/** Erkennungszeichen oben auf der Startseite: Schallloch (Ukulele, Gitarre) bzw. Trommelfell (Banjo). */
+/** Erkennungszeichen oben auf der Startseite: Schallloch (Ukulele, Gitarre, Bariton-Ukulele) bzw. Trommelfell (Banjo). */
 export function soundHole(): SVGElement {
   const id = instrument().id;
   if (id === 'banjo') return banjoHead();
   if (id === 'gitarre') return guitarRosette();
-  return ukuleleHole();
+  // Bariton-Ukulele: dieselbe Rosette wie die Ukulele, aber mit Abalone-Tönen, die tiefen D- und G-Saiten umsponnen
+  if (id === 'bariton') return ukuleleHole(['#1f4f5a', '#8fc0b2', '#3b1d0c', '#c9a24a'], 2);
+  return ukuleleHole(['#2c6e63', '#c9a24a', '#6a2410'], 0);
 }
 
 function strings(g: SVGElement, x0: number, x1: number, y0: number, y1: number): void {
@@ -145,7 +147,7 @@ function banjoHead(): SVGElement {
   return g;
 }
 
-function ukuleleHole(): SVGElement {
+function ukuleleHole(colors: string[], wound: number): SVGElement {
   const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
   g.appendChild(
     s(
@@ -165,10 +167,17 @@ function ukuleleHole(): SVGElement {
         s('stop', { offset: 0.5, 'stop-color': '#fffaf0' }),
         s('stop', { offset: 1, 'stop-color': '#cfc5b2' }),
       ),
+      s(
+        'linearGradient',
+        { id: 'wound', x1: 0, x2: 1 },
+        s('stop', { offset: 0, 'stop-color': '#8d9399' }),
+        s('stop', { offset: 0.5, 'stop-color': '#eef1f3' }),
+        s('stop', { offset: 1, 'stop-color': '#7d838a' }),
+      ),
     ),
   );
   g.appendChild(s('circle', { cx: 100, cy: 100, r: 92, fill: '#f1e2bf', opacity: 0.95 }));
-  const segs = 48;
+  const segs = colors.length * 16;
   for (let i = 0; i < segs; i++) {
     const a0 = (i / segs) * Math.PI * 2;
     const a1 = ((i + 1) / segs) * Math.PI * 2;
@@ -178,7 +187,7 @@ function ukuleleHole(): SVGElement {
     g.appendChild(
       s('path', {
         d: `M${p(r0, a0)} L${p(r1, a0)} A${r1},${r1} 0 0 1 ${p(r1, a1)} L${p(r0, a1)} A${r0},${r0} 0 0 0 ${p(r0, a0)}z`,
-        fill: i % 3 === 0 ? '#2c6e63' : i % 3 === 1 ? '#c9a24a' : '#6a2410',
+        fill: colors[i % colors.length],
       }),
     );
   }
@@ -189,7 +198,8 @@ function ukuleleHole(): SVGElement {
   for (let i = 0; i < n; i++) {
     const x = 64 + (i * 72) / (n - 1);
     const k = (i * 3) / (n - 1);
-    g.appendChild(s('rect', { x: x - 1.2 - k * 0.2, y: 0, width: 2.4 + k * 0.4, height: 200, fill: 'url(#str)', opacity: 0.95 }));
+    const w = i < wound ? 3.4 - i * 0.4 : 2.4 + k * 0.4;
+    g.appendChild(s('rect', { x: x - w / 2, y: 0, width: w, height: 200, fill: i < wound ? 'url(#wound)' : 'url(#str)', opacity: 0.95 }));
   }
   return g;
 }

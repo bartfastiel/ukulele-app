@@ -12,7 +12,7 @@ export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
 
 /** Akkord auf der Karte: drei Finger, alle im 1. bis 3. Bund. */
-const CARD_CHORD: Record<string, string> = { ukulele: 'G7', gitarre: 'C', banjo: 'C' };
+const CARD_CHORD: Record<string, string> = { ukulele: 'G7', gitarre: 'C', banjo: 'C', bariton: 'D' };
 
 type Sdf = (x: number, y: number) => number;
 type Paint = RGB | ((x: number, y: number) => RGB);
@@ -157,7 +157,7 @@ function hole(cx: number, cy: number, r: number): Paint {
   return (x, y) => mix(inner, outer, clamp(Math.hypot(x - cx, y - cy) / r));
 }
 
-/** Schallloch (Ukulele, Gitarre) bzw. Fell mit Spannreifen (Banjo). */
+/** Schallloch (Ukulele, Gitarre, Bariton-Ukulele) bzw. Fell mit Spannreifen (Banjo). */
 function soundHole(c: Canvas, id: string, cx: number, cy: number): void {
   if (id === 'gitarre') {
     const rings: [number, number, RGB][] = [
@@ -189,22 +189,25 @@ function soundHole(c: Canvas, id: string, cx: number, cy: number): void {
     c.shape(ring(cx, cy, 214, 2), box(cx, cy, 216), edge, 0.8);
     return;
   }
+  // Bariton-Ukulele: dieselbe Rosette, aber in Abalone-Tönen
+  const bariton = id === 'bariton';
   c.shape(circle(cx, cy, 246), box(cx, cy, 246), hex('#f1e2bf'));
-  c.shape(dashedRing(cx, cy, 217, 26, 34, 0.59), box(cx, cy, 232), TEAL);
-  c.shape(ring(cx, cy, 217, 9), box(cx, cy, 223), GOLD);
+  c.shape(dashedRing(cx, cy, 217, 26, bariton ? 44 : 34, 0.59), box(cx, cy, 232), bariton ? hex('#1f4f5a') : TEAL);
+  c.shape(ring(cx, cy, 217, 9), box(cx, cy, 223), bariton ? hex('#8fc0b2') : GOLD);
   c.shape(circle(cx, cy, 180), box(cx, cy, 180), hole(cx, cy, 180));
 }
 
 function strings(c: Canvas, id: string, cx: number): void {
   const n = instrument().strings.length;
-  const spacing = id === 'ukulele' ? 66 : id === 'gitarre' ? 40 : 44;
+  const spacing = id === 'ukulele' || id === 'bariton' ? 66 : id === 'gitarre' ? 40 : 44;
   const nylon = hex('#fffaf0');
   const bronze = hex('#d2a556');
   const steel = id === 'banjo' ? hex('#8d959c') : hex('#e4e8eb');
   for (let i = 0; i < n; i++) {
     const x = cx + (i - (n - 1) / 2) * spacing;
-    const w = id === 'ukulele' ? 6 + i : id === 'gitarre' ? 7 - i : 4.4 - i * 0.3;
-    const col = id === 'ukulele' ? nylon : id === 'gitarre' && i < 4 ? bronze : steel;
+    // Bariton-Ukulele: tiefe D- und G-Saite umsponnen, B und E aus Nylon
+    const w = id === 'ukulele' ? 6 + i : id === 'bariton' ? (i < 2 ? 9 - i : 6 + i) : id === 'gitarre' ? 7 - i : 4.4 - i * 0.3;
+    const col = id === 'ukulele' || (id === 'bariton' && i >= 2) ? nylon : id === 'gitarre' && i < 4 ? bronze : steel;
     c.shape(segment(x + 6, -20, x + 6, c.h + 20, w), [x - 20, 0, x + 30, c.h], BLACK, 0.35, 3);
     c.shape(segment(x, -20, x, c.h + 20, w), [x - 20, 0, x + 20, c.h], col);
   }
