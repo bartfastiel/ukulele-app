@@ -718,4 +718,7 @@ export const FR: Record<string, string> = {
   "12-saitige Gitarre": "Guitare 12 cordes",
   "Jede Saite hat eine Partnerin: Bei E, A, D und G klingt sie eine Oktave höher, bei B und e genau gleich. Stimm erst die dicke Saite, dann ihre Partnerin – das Stimmgerät erkennt beide.": "Chaque corde a une partenaire : pour E, A, D et G, elle sonne une octave plus haut, pour B et e exactement pareil. Accorde d’abord la corde épaisse, puis sa partenaire – l’accordeur reconnaît les deux.",
   "Oktavsaite": "corde à l’octave",
+  "Linkshänder-Ansicht ausschalten": "Désactiver le mode gaucher",
+  "Für Linkshänder": "Pour les gauchers",
+  "Tipp eine Saite an oder wisch über alle.": "Touche une corde ou glisse sur toutes.",
 };

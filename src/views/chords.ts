@@ -3,9 +3,11 @@ import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, praise, type View } from '../ui/screen.ts';
 import { diagnose } from '../music/diagnose.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
+import { playableChord } from '../ui/chord-play.ts';
 import { CHORDS, ROOTS, chord, chordSay, describeChord, parseChordName } from '../music/chords.ts';
 import { canonicalChord } from '../site/routes.ts';
 import { strum, successSound } from '../audio/engine.ts';
+import { markOwnSound } from '../audio/own-sound.ts';
 import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { load, save, markPracticed } from '../store.ts';
 import { lang, t, tk } from '../i18n.ts';
@@ -54,10 +56,10 @@ export const chordDetail: View = (root, param) => {
     go('akkorde');
     return;
   }
-  let lefty = load().settings.lefty;
+  const lefty = load().settings.lefty;
   let listener: ChordListener | null = null;
   let giveUp = 0;
-  const diagramBox = h('div', { class: 'diagram-big' }, chordDiagram(ch, { lefty }));
+  const diagramBox = h('div', { class: 'diagram-big' }, playableChord(ch, { lefty }));
   const feedback = h('div', { class: 'feedback', 'aria-live': 'polite' }, t('Greif den Akkord und tippe auf „Prüf mich!“.'));
   const stopListening = () => {
     listener?.stop();
@@ -87,7 +89,7 @@ export const chordDetail: View = (root, param) => {
               if (!p.chordsChecked.includes(ch.name)) p.chordsChecked.push(ch.name);
             });
             markPracticed();
-            diagramBox.replaceChild(chordDiagram(ch, { lefty }), diagramBox.firstChild!);
+            diagramBox.replaceChild(playableChord(ch, { lefty }), diagramBox.firstChild!);
           },
           onVerdict: (v) => {
             if (!v || v.ok || v.weakString < 0) return;
@@ -95,7 +97,7 @@ export const chordDetail: View = (root, param) => {
             if (streak.n === 4) {
               feedback.className = 'feedback almost';
               feedback.textContent = `${t('Fast!')} ${diagnose(ch, v.weakString, v.weakKind)}`;
-              diagramBox.replaceChild(chordDiagram(ch, { lefty, highlight: v.weakString }), diagramBox.firstChild!);
+              diagramBox.replaceChild(playableChord(ch, { lefty, highlight: v.weakString }), diagramBox.firstChild!);
             }
           },
         }).then((l) => {
@@ -113,18 +115,6 @@ export const chordDetail: View = (root, param) => {
     },
     'btn-primary',
   );
-  // dezent unter dem Griffbild: dieselbe Einstellung wie unter „Meine Sterne“
-  const leftyBtn = button(
-    t('Linkshänder'),
-    () => {
-      lefty = !lefty;
-      save((pr) => (pr.settings.lefty = lefty));
-      leftyBtn.setAttribute('aria-pressed', String(lefty));
-      diagramBox.replaceChild(chordDiagram(ch, { lefty }), diagramBox.firstChild!);
-    },
-    'btn-seg lefty-toggle',
-    { 'aria-pressed': String(lefty) },
-  );
   const p = parseChordName(ch.name);
   const family = p ? ['', 'm', '7', 'm7', 'maj7', 'sus4'].map((q) => ROOTS[p.root] + q) : [];
   const others = family.concat(CHORDS.filter((c) => c.level <= 2 && family.indexOf(c.name) < 0).map((c) => c.name)).slice(0, 14);
@@ -134,7 +124,7 @@ export const chordDetail: View = (root, param) => {
     h(
       'div',
       { class: 'chord-detail' },
-      h('div', { class: 'card detail-card' }, h('div', { class: 'chord-name huge' }, ch.name), h('div', { class: 'say' }, CHORDS.indexOf(ch) >= 0 ? chordSay(ch) : chordLongName(ch.name, lang())), diagramBox, leftyBtn),
+      h('div', { class: 'card detail-card' }, h('div', { class: 'chord-name huge' }, ch.name), h('div', { class: 'say' }, CHORDS.indexOf(ch) >= 0 ? chordSay(ch) : chordLongName(ch.name, lang())), diagramBox, h('p', { class: 'small play-hint' }, t('Tipp eine Saite an oder wisch über alle.'))),
       h(
         'div',
         { class: 'detail-side' },
@@ -142,7 +132,10 @@ export const chordDetail: View = (root, param) => {
         h(
           'div',
           { class: 'row' },
-          button(h('span', null, icon('sound'), ' ', t('Anhören')), () => strum(ch.name, 0, 0.45), ''),
+          button(h('span', null, icon('sound'), ' ', t('Anhören')), () => {
+            markOwnSound();
+            strum(ch.name, 0, 0.45);
+          }, ''),
           check,
         ),
         feedback,

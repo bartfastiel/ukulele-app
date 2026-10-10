@@ -4,6 +4,7 @@ import { openMic, micState } from '../audio/mic.ts';
 import { audio } from '../audio/engine.ts';
 import { t, tk } from '../i18n.ts';
 import { link } from '../site/nav.ts';
+import { syncLeftyBadge } from './lefty.ts';
 
 export type Cleanup = (() => void) | void;
 export type View = (root: HTMLElement, param: string) => Cleanup;
@@ -26,6 +27,7 @@ export function screen(root: HTMLElement, opts: { title: string; back?: string; 
     ),
   );
   root.appendChild(main);
+  syncLeftyBadge();
   return main;
 }
 

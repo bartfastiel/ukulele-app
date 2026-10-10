@@ -44,6 +44,51 @@ function siteInstrument(): string {
 const progressKey = () => 'saiten:' + siteInstrument() + ':v1';
 /** Zuletzt gespieltes Instrument – die Startseite bietet es oben an. */
 const LAST_KEY = 'saiten:zuletzt';
+/** Einstellungen, die für alle Instrumente gelten (die Hand wechselt nicht mit dem Instrument). */
+const SHARED_KEY = 'saiten:einstellungen';
+
+interface Shared {
+  lefty: boolean;
+}
+
+/**
+ * Gemeinsame Einstellungen lesen. Fehlen sie noch, gilt Linkshänder, wenn es bei irgendeinem Instrument (oder am
+ * früheren Speicherort) eingeschaltet war – so übernimmt jedes Instrument die frühere Wahl.
+ */
+function readShared(): Shared {
+  try {
+    const raw = localStorage.getItem(SHARED_KEY);
+    if (raw) {
+      const data = JSON.parse(raw) as Partial<Shared>;
+      if (data && typeof data.lefty === 'boolean') return { lefty: data.lefty };
+    }
+  } catch {
+    // kaputt oder kein Speicher: wie neu
+  }
+  let lefty = false;
+  try {
+    const store = localStorage;
+    const keys: string[] = [LEGACY_KEY];
+    if (typeof store.key === 'function') for (let i = 0; i < store.length; i++) keys.push(store.key(i) || '');
+    for (const k of keys) {
+      if (k !== LEGACY_KEY && !/^saiten:[a-z]+:v1$/.test(k)) continue;
+      const data = JSON.parse(store.getItem(k) || '{}') as Partial<Progress>;
+      if (data && data.settings && data.settings.lefty === true) lefty = true;
+    }
+  } catch {
+    // ohne lesbaren Speicher bleibt es bei rechts
+  }
+  writeShared({ lefty });
+  return { lefty };
+}
+
+function writeShared(shared: Shared): void {
+  try {
+    localStorage.setItem(SHARED_KEY, JSON.stringify(shared));
+  } catch {
+    // privater Modus: gilt nur bis zum Neuladen
+  }
+}
 
 const DEFAULTS: Progress = {
   stars: {},
@@ -82,12 +127,14 @@ export function load(): Progress {
     data = {};
   }
   cache = { ...DEFAULTS, ...data, keys: { ...(data.keys || {}) }, settings: { ...DEFAULTS.settings, ...(data.settings || {}) } };
+  cache.settings.lefty = readShared().lefty;
   return cache;
 }
 
 export function save(mutate: (p: Progress) => void): Progress {
   const p = load();
   mutate(p);
+  writeShared({ lefty: p.settings.lefty });
   try {
     localStorage.setItem(progressKey(), JSON.stringify(p));
   } catch {
@@ -153,6 +200,7 @@ export function importCode(code: string): boolean {
       writeOwn(ownSongs().filter((s) => !incoming.some((x) => x.id === s.id)).concat(incoming));
     }
     delete data.ownSongs;
+    if (data.settings && typeof data.settings.lefty === 'boolean') writeShared({ lefty: data.settings.lefty });
     cache = null;
     localStorage.setItem(progressKey(), JSON.stringify(data));
     load();
@@ -267,6 +315,7 @@ export function takeMoved(code: string): boolean {
     } catch {
       incoming = {};
     }
+    if (incoming && incoming.settings && incoming.settings.lefty === true) writeShared({ lefty: true });
     let had = false;
     try {
       had = !!localStorage.getItem(progressKey());

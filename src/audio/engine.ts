@@ -112,8 +112,8 @@ export interface Voice {
   pitch(semis: number, glide?: number): void;
   /** Vibrato: Schwingungen pro Sekunde und Tiefe in Cent (0 = aus). */
   vibrato(rate: number, cents: number): void;
-  /** Finger weg: kurz Angetipptes klingt aus wie gezupft, lange Gehaltenes wird gedämpft. */
-  release(): void;
+  /** Finger weg: kurz Angetipptes klingt aus wie gezupft, lange Gehaltenes wird gedämpft; `ring` lässt es ausklingen. */
+  release(ring?: boolean): void;
 }
 
 const SILENT_VOICE: Voice = { pitch: () => undefined, vibrato: () => undefined, release: () => undefined };
@@ -190,11 +190,11 @@ export function hold(midi: number, gain = 0.6, bend = 0): Voice {
       lfo.frequency.setTargetAtTime(Math.max(1, rate), c.currentTime, 0.05);
       depth.gain.setTargetAtTime(Math.pow(2, cents / 1200) - 1, c.currentTime, cents ? 0.06 : 0.26);
     },
-    release() {
+    release(ring = false) {
       if (ended) return;
       const now = c.currentTime;
       // kurz getippt: wie gezupft weiterklingen lassen; gehalten: Finger hebt ab, die Saite wird gedämpft
-      const tau = now - t0 < 0.18 ? 0.35 : 0.07;
+      const tau = ring || now - t0 < 0.18 ? 0.35 : 0.07;
       g.gain.setTargetAtTime(0, now, tau);
       end(now + tau * 8);
     },

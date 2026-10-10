@@ -711,9 +711,41 @@ summary:focus-visible {
   margin: 8px auto 0;
 }
 
-.lefty-toggle {
-  margin-top: 4px;
-  font-size: 0.8em;
+/* Griffbilder, die beim Antippen klingen: auf dem Bild selbst weder scrollen noch zoomen noch markieren */
+.chord-svg.playable {
+  cursor: pointer;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chord-svg .string.ringing {
+  stroke: #ffd36b;
+  stroke-width: 3.4;
+}
+
+/* nur sichtbar, wenn Linkshänder gewählt ist: klein in der Kopfzeile, Antippen schaltet zurück */
+.topbar .lefty-badge {
+  --tap: 52px;
+  flex-shrink: 0;
+  margin: 0 0 0 auto;
+  padding: 6px 12px;
+  font-size: 0.85em;
+  color: var(--ink);
+  text-shadow: none;
+  background-image: linear-gradient(180deg, var(--cream), var(--cream-2));
+}
+
+.lefty-badge .lefty-x {
+  margin-left: 8px;
+  font-size: 1.3em;
+  line-height: 1;
+}
+
+.topbar h1 {
+  min-width: 0;
 }
 
 .desc {
@@ -2380,7 +2412,18 @@ summary:focus-visible {
   padding: 8px;
   vertical-align: top;
   color: var(--ink);
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 2px rgba(60, 20, 6, 0.25);
   background: linear-gradient(180deg, var(--cream), var(--cream-2));
+}
+
+.article .article-chord .chord-name {
+  display: block;
+  min-width: 52px;
+  padding: 6px 10px;
+  font-size: 1.6em;
+  text-align: center;
+  color: var(--teal);
 }
 
 .article .article-chord .chord-svg {
@@ -2442,6 +2485,17 @@ summary:focus-visible {
 
 .footer-instruments {
   margin: 4px 0;
+}
+
+.footer-lefty {
+  margin: 0;
+}
+
+.site-footer .footer-lefty a {
+  display: inline-block;
+  padding: 8px 10px;
+  font-weight: 600;
+  color: var(--ink-soft);
 }
 
 .lang-offer {
