@@ -10,9 +10,9 @@ export const CHORD_SONGS: SongSource[] = [
     id: 'gedanken-sind-frei',
     title: 'Die Gedanken sind frei',
     category: 'lagerfeuer',
-    // Textquelle: https://de.wikisource.org/wiki/Die_Gedanken_sind_frei
     origin:
       'Text und Melodie anonym, Süddeutschland um 1800; Text nach Hoffmann von Fallersleben/Richter, Schlesische Volkslieder mit Melodien (1842, Nr. 262, Wikisource), Rechtschreibung modernisiert',
+    textUrl: 'https://de.wikisource.org/wiki/Die_Gedanken_sind_frei',
     meter: 3,
     bpm: 110,
     chordpro: `
@@ -33,9 +33,9 @@ und [F]Mauern ent[C]zwei: Die Ge[G7]danken sind [C]frei!`,
     id: 'kein-schoener-land',
     title: 'Kein schöner Land in dieser Zeit',
     category: 'lagerfeuer',
-    // Textquelle: https://de.wikisource.org/wiki/Abendlied_(Zuccalmaglio)
     origin:
       'Text und Melodie Anton Wilhelm von Zuccalmaglio (1803–1869), 1840 – Originalstrophen; Text nach Kretschmer/Zuccalmaglio, Deutsche Volkslieder mit ihren Original-Weisen, Bd. 2 (1840, Nr. 274, Wikisource), Rechtschreibung modernisiert',
+    textUrl: 'https://de.wikisource.org/wiki/Abendlied_(Zuccalmaglio)',
     meter: 3,
     bpm: 100,
     chordpro: `
@@ -60,9 +60,9 @@ der [F]hat die [G7]Gnad. [C]`,
     originalKey: 'Bb',
     title: 'Das Wandern ist des Müllers Lust',
     category: 'lagerfeuer',
-    // Textquelle: https://www.deutschestextarchiv.de/book/view/mueller_waldhornist_1821?p=19
     origin:
       'Text Wilhelm Müller (1794–1827), Melodie Carl Friedrich Zöllner (1800–1860); Text nach Müller, Sieben und siebzig Gedichte aus den hinterlassenen Papieren eines reisenden Waldhornisten (1821, S. 7, Deutsches Textarchiv), Rechtschreibung modernisiert',
+    textUrl: 'https://www.deutschestextarchiv.de/book/view/mueller_waldhornist_1821?p=19',
     meter: 4,
     bpm: 100,
     chordpro: `
@@ -89,9 +89,9 @@ die [G7]Räder! [C]`,
     id: 'muss-i-denn',
     title: 'Muss i denn zum Städtele hinaus',
     category: 'lagerfeuer',
-    // Textquelle: https://de.wikisource.org/wiki/Allgemeines_Deutsches_Kommersbuch:231
     origin:
       'Strophe 1 traditionell, Strophe 2 Heinrich Wagner (1783–1863), Melodie volkstümlich aus dem Remstal; Text nach Allgemeines Deutsches Kommersbuch (Lahr um 1896, Nr. 513, Wikisource), Rechtschreibung modernisiert',
+    textUrl: 'https://de.wikisource.org/wiki/Allgemeines_Deutsches_Kommersbuch:231',
     meter: 4,
     bpm: 100,
     chordpro: `
@@ -116,10 +116,10 @@ lieber [C]Schatz, i [G7]bleib dir [C]treu.`,
     id: 'wem-gott-will',
     title: 'Wem Gott will rechte Gunst erweisen',
     category: 'lagerfeuer',
-    // Textquelle: https://de.wikisource.org/wiki/Allgemeines_Deutsches_Kommersbuch:187
     // Erstdruck: https://www.deutschestextarchiv.de/book/view/eichendorff_taugenichts_1826?p=14
     origin:
       'Text Joseph von Eichendorff (1788–1857), Melodie Friedrich Theodor Fröhlich (1803–1836); Text als Lied nach Allgemeines Deutsches Kommersbuch (Lahr um 1896, Nr. 414, Wikisource; Erstdruck im „Taugenichts“ 1826), Rechtschreibung modernisiert',
+    textUrl: 'https://de.wikisource.org/wiki/Allgemeines_Deutsches_Kommersbuch:187',
     meter: 4,
     bpm: 100,
     chordpro: `
@@ -140,9 +140,9 @@ aus [F]voller [C]Kehl und [G7]frischer [C]Brust?`,
     id: 'freut-euch-des-lebens',
     title: 'Freut euch des Lebens',
     category: 'lagerfeuer',
-    // Textquelle: https://de.wikisource.org/wiki/Allgemeines_Deutsches_Kommersbuch:220
     origin:
       'Text Johann Martin Usteri (1763–1827), Melodie Hans Georg Nägeli (1773–1836); Text nach Allgemeines Deutsches Kommersbuch (Lahr um 1896, Nr. 484, Wikisource), Rechtschreibung modernisiert',
+    textUrl: 'https://de.wikisource.org/wiki/Allgemeines_Deutsches_Kommersbuch:220',
     meter: 3,
     bpm: 110,
     chordpro: `
@@ -163,9 +163,9 @@ die [G7]Sonne, ach, so [C]schön!`,
     id: 'mond-ist-aufgegangen',
     title: 'Der Mond ist aufgegangen',
     category: 'lagerfeuer',
-    // Textquelle: https://de.wikisource.org/wiki/Abendlied_(Matthias_Claudius)
     origin:
       'Text Matthias Claudius (1740–1815), Melodie Johann Abraham Peter Schulz (1747–1800); Text nach Claudius, Asmus omnia sua secum portans, 4. Teil (1782, S. 57, Wikisource)',
+    textUrl: 'https://de.wikisource.org/wiki/Abendlied_(Matthias_Claudius)',
     meter: 4,
     bpm: 80,
     chordpro: `
@@ -192,10 +192,10 @@ weil [F]unsre [C]Augen [G7]sie nicht [C]sehn.`,
     id: 'horch-was-kommt',
     title: 'Horch, was kommt von draußen rein',
     category: 'lagerfeuer',
-    // Textquelle: https://archive.org/details/BoehmeVtLieder1895/page/n481/mode/1up
     // Weitere Strophen sind vor 1930 nicht belegt (Böhme: „Mehr Text nicht dabei“).
     origin:
       'Text und Melodie anonym, belegt um 1890; Text nach Böhme, Volksthümliche Lieder der Deutschen (1895, Nr. 607, archive.org), Rechtschreibung modernisiert',
+    textUrl: 'https://archive.org/details/BoehmeVtLieder1895/page/n481/mode/1up',
     meter: 4,
     bpm: 110,
     chordpro: `
@@ -212,9 +212,9 @@ weil [F]unsre [C]Augen [G7]sie nicht [C]sehn.`,
     id: 'bunt-sind-die-waelder',
     title: 'Bunt sind schon die Wälder',
     category: 'jahreszeiten',
-    // Textquelle: https://de.wikisource.org/wiki/Herbstlied
     origin:
       'Text Johann Gaudenz von Salis-Seewis (1762–1834), Melodie Johann Friedrich Reichardt (1752–1814); Text nach Salis-Seewis, Gedichte, 3. Auflage (1797, S. 70, Wikisource), Rechtschreibung modernisiert',
+    textUrl: 'https://de.wikisource.org/wiki/Herbstlied',
     meter: 3,
     bpm: 110,
     chordpro: `
@@ -235,9 +235,9 @@ rot und [G7]weiß be[C]malt.`,
     id: 'klappert-die-muehle',
     title: 'Es klappert die Mühle am rauschenden Bach',
     category: 'kinder',
-    // Textquelle: https://archive.org/details/unserliederbuchd01merc/page/n14/mode/1up
     origin:
       'Text Ernst Anschütz (1780–1861), Melodie traditionell (18. Jh.); Text nach Merck, Unser Liederbuch. Die beliebtesten Kinderlieder, Bd. 1 (1900, S. 11, archive.org), Rechtschreibung modernisiert',
+    textUrl: 'https://archive.org/details/unserliederbuchd01merc/page/n14/mode/1up',
     meter: 6,
     bpm: 170,
     chordpro: `
@@ -260,9 +260,9 @@ Klipp [G7]klapp, klipp [C]klapp, klipp [G7]klapp! [C]`,
     id: 'jaeger-aus-kurpfalz',
     title: 'Ein Jäger aus Kurpfalz',
     category: 'lagerfeuer',
-    // Textquelle: https://de.wikisource.org/wiki/Seite:Deutscher_Liederhort_(Erk)_373.jpg
     origin:
       'Text und Melodie anonym, 18. Jahrhundert; Text nach Erk, Deutscher Liederhort (1856, Nr. 171, Wikisource), Rechtschreibung modernisiert',
+    textUrl: 'https://de.wikisource.org/wiki/Seite:Deutscher_Liederhort_(Erk)_373.jpg',
     meter: 3,
     bpm: 120,
     chordpro: `
@@ -283,9 +283,9 @@ all[F]hier auf grüner [C]Heid, all[G7]hier auf grüner [C]Heid.`,
     id: 'bruennlein-fliessen',
     title: 'Wenn alle Brünnlein fließen',
     category: 'lagerfeuer',
-    // Textquelle: https://de.wikisource.org/wiki/Seite:Deutscher_Liederhort_(Erk)_234.jpg
     origin:
-      'Text und Melodie anonym (Des Knaben Wunderhorn 1808); Text nach Erk, Deutscher Liederhort (1856, Nr. 89, mit Erks Lesart „so muß man trinken“, Wikisource), Rechtschreibung modernisiert',
+      'Text und Melodie anonym, schon in Drucken von 1541 und 1570 belegt; Text nach Erk, Deutscher Liederhort (1856, Nr. 89, mit Erks Lesart „so muß man trinken“, Wikisource), Rechtschreibung modernisiert',
+    textUrl: 'https://de.wikisource.org/wiki/Seite:Deutscher_Liederhort_(Erk)_234.jpg',
     meter: 3,
     bpm: 110,
     chordpro: `
@@ -304,9 +304,9 @@ und [G7]die mir werden [C]muss.`,
     id: 'ade-zur-guten-nacht',
     title: 'Ade zur guten Nacht',
     category: 'lagerfeuer',
-    // Textquelle: https://archive.org/details/bub_gb_dePoAAAAIAAJ/page/n581/mode/1up
     origin:
-      'Text und Melodie anonym, Sachsen/Thüringen um 1840; Text nach Erk/Böhme, Deutscher Liederhort, Bd. 2 (1893, Nr. 768, archive.org), Rechtschreibung modernisiert',
+      'Text und Melodie anonym, Sachsen/Thüringen, frühester Beleg 1848 (Schanz/Paruder, Deutsches Liederbuch); Text nach Erk/Böhme, Deutscher Liederhort, Bd. 2 (1893, Nr. 768, archive.org), Rechtschreibung modernisiert',
+    textUrl: 'https://archive.org/details/bub_gb_dePoAAAAIAAJ/page/n581/mode/1up',
     meter: 3,
     bpm: 100,
     chordpro: `
@@ -327,9 +327,9 @@ mit [C]großem Ver[G7]lan[C]gen.`,
     id: 'alle-voegel',
     title: 'Alle Vögel sind schon da',
     category: 'jahreszeiten',
-    // Textquelle: https://de.wikisource.org/wiki/Frühlings_Ankunft
     origin:
       'Text August Heinrich Hoffmann von Fallersleben (1798–1874), Melodie traditionell (18. Jh.); Text nach Hoffmann von Fallersleben, Kinderlieder, hg. von Donop (1878, S. 20, Wikisource), Rechtschreibung modernisiert',
+    textUrl: 'https://de.wikisource.org/wiki/Frühlings_Ankunft',
     meter: 4,
     bpm: 110,
     chordpro: `
@@ -348,9 +348,9 @@ mit [C]großem Ver[G7]lan[C]gen.`,
     id: 'kuckuck-und-esel',
     title: 'Der Kuckuck und der Esel',
     category: 'kinder',
-    // Textquelle: https://commons.wikimedia.org/wiki/File:Kinderlieder_Fallersleben_101.gif
     origin:
       'Text August Heinrich Hoffmann von Fallersleben (1798–1874), Melodie Carl Friedrich Zelter (1758–1832); Text nach Hoffmann von Fallersleben, Kinderlieder, hg. von Donop (1878, S. 101, Wikimedia Commons), Rechtschreibung modernisiert',
+    textUrl: 'https://commons.wikimedia.org/wiki/File:Kinderlieder_Fallersleben_101.gif',
     meter: 3,
     bpm: 120,
     chordpro: `
@@ -371,9 +371,9 @@ sie [C]sangen alle [F]beide:
     id: 'schwaebsche-eisebahne',
     title: 'Auf de schwäbsche Eisebahne',
     category: 'lagerfeuer',
-    // Textquelle: https://de.wikisource.org/wiki/Auf_de_schwäbsche_Eisebohne
     origin:
-      'Text und Melodie anonym, schwäbisches Volkslied (um 1853); Text nach Stehn, Was singet und klinget, 6. Auflage (1925, S. 130, Wikisource)',
+      'Text und Melodie anonym, schwäbisches Volkslied, erster bekannter Druck in Burckhardt, Allgemeiner Liederschatz (Basel 1888); Text nach Stehn, Was singet und klinget, 6. Auflage (1925, S. 130, Wikisource)',
+    textUrl: 'https://de.wikisource.org/wiki/Auf_de_schwäbsche_Eisebohne',
     meter: 4,
     bpm: 120,
     chordpro: `
@@ -394,9 +394,9 @@ goht an Schalter, [G7]lupft de Huet:
     id: 'es-toenen-die-lieder',
     title: 'Es tönen die Lieder (Kanon)',
     category: 'jahreszeiten',
-    // Textquelle: https://archive.org/details/10431772bsb/page/n92/mode/1up
     origin:
-      'Text und Melodie anonym, 19. Jahrhundert; Text nach Spieß, Reigen und Liederreigen für das Schulturnen (1869, S. 79, archive.org)',
+      'Text und Melodie anonym, gesungen beim Festturnen 1853, Erstdruck 1869; Text nach Spieß, Reigen und Liederreigen für das Schulturnen (1869, S. 79, archive.org)',
+    textUrl: 'https://archive.org/details/10431772bsb/page/n92/mode/1up',
     meter: 3,
     bpm: 110,
     chordpro: `
@@ -410,9 +410,9 @@ auf [G7]seiner Schal[C]mei:
     id: 'wohlauf-gottes-welt',
     title: 'Wohlauf in Gottes schöne Welt',
     category: 'lagerfeuer',
-    // Textquelle: https://archive.org/details/gedichte00rodegoog/page/n51/mode/1up
     origin:
       'Text Julius Rodenberg (1831–1914), Melodie anonym (frühes 19. Jh.); Text nach Rodenberg, Gedichte (1864, S. 28, „Ade!“, archive.org), Rechtschreibung modernisiert',
+    textUrl: 'https://archive.org/details/gedichte00rodegoog/page/n51/mode/1up',
     meter: 4,
     bpm: 110,
     chordpro: `
