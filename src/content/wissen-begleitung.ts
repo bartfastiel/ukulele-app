@@ -47,9 +47,9 @@ export const BEGLEITUNG_ARTICLES: Article[] = [
             fr: '**Accords :** gratte toutes les croches vers le bas, courtes et fortes. Si c’est trop rapide, commence par un seul coup par temps.',
           },
           {
-            de: '**Bass:** Spiel achtmal pro Takt den Grundton, gleichmäßig wie ein Motor. Am Anfang reicht der Grundton auf jedem Schlag.',
-            en: '**Bass:** play the root note eight times per bar, steady like an engine. To begin with, the root on every beat is enough.',
-            fr: '**Basse :** joue huit fois la fondamentale par mesure, régulière comme un moteur. Au début, la fondamentale sur chaque temps suffit.',
+            de: '**Bass:** Spiel achtmal pro Takt den Grundton, gleichmäßig wie ein Motor. Am Anfang reicht der Grundton auf jedem Schlag. Zupf abwechselnd mit Zeige- und Mittelfinger.',
+            en: '**Bass:** play the root note eight times per bar, steady like an engine. To begin with, the root on every beat is enough. Pluck with your index and middle finger in turn.',
+            fr: '**Basse :** joue huit fois la fondamentale par mesure, régulière comme un moteur. Au début, la fondamentale sur chaque temps suffit. Pince en alternant index et majeur.',
           },
         ],
       },
@@ -108,9 +108,9 @@ export const BEGLEITUNG_ARTICLES: Article[] = [
             fr: '**Accords :** le rythme « bas, bas, haut, haut, bas, haut » va presque toujours. Entre les deux « haut », la main redescend sans toucher les cordes.',
           },
           {
-            de: '**Bass:** Spiel den Grundton auf eins und drei und lass ihn klingen. Später kommt auf vier ein **Durchgangston** dazu – ein Ton aus der Tonleiter, der zum nächsten Grundton führt, in C etwa das B vor dem C.',
-            en: '**Bass:** play the root on one and three and let it ring. Later add a **passing note** on four – a note from the scale that leads to the next root, in C for example the B before the C.',
-            fr: '**Basse :** joue la fondamentale sur un et trois et laisse-la sonner. Plus tard, ajoute sur quatre une **note de passage** – une note de la gamme qui mène à la fondamentale suivante, en Do par exemple le Si avant le Do.',
+            de: '**Bass:** Spiel den Grundton auf eins und drei und lass ihn klingen. Später spielst du ihn auch kurz vor drei und auf vier einen **Zwischenton**, der zum nächsten Akkord führt – in C etwa das B vor dem C.',
+            en: '**Bass:** play the root on one and three and let it ring. Later also play it just before three, and on four an **in-between note** that leads to the next chord – in C for example the B before the C.',
+            fr: '**Basse :** joue la fondamentale sur un et trois et laisse-la sonner. Plus tard, joue-la aussi juste avant trois, et sur quatre une **note de liaison** qui mène à l’accord suivant – en Do par exemple le Si avant le Do.',
           },
         ],
       },
@@ -144,9 +144,9 @@ export const BEGLEITUNG_ARTICLES: Article[] = [
       fr: 'Le shuffle : des croches qui balancent long-court, et le riff boogie',
     },
     description: {
-      de: 'Beim Shuffle schwingen die Achtel lang-kurz. Dazu das Boogie-Riff 1-3-5-6-b7-6-5-3 – wie im Blues, aber fröhlich in Dur, als Rock’n’Roll.',
-      en: 'In a shuffle the eighth notes swing long-short. Add the boogie riff 1-3-5-6-b7-6-5-3 – like the blues, but cheerful in major, as rock ’n’ roll.',
-      fr: 'Dans le shuffle, les croches balancent long-court. Avec le riff boogie 1-3-5-6-b7-6-5-3 – comme le blues, mais joyeux en majeur, façon rock’n’roll.',
+      de: 'Beim Shuffle schwingen die Achtel lang-kurz. Dazu das Boogie-Riff 1-3-5-6-b7-6-5-3 – wie im Blues, nur heller: mit Dur-Akkorden, als Rock’n’Roll.',
+      en: 'In a shuffle the eighth notes swing long-short. Add the boogie riff 1-3-5-6-b7-6-5-3 – like the blues, just brighter: with major chords, as rock ’n’ roll.',
+      fr: 'Dans le shuffle, les croches balancent long-court. Avec le riff boogie 1-3-5-6-b7-6-5-3 – comme le blues, en plus lumineux : accords majeurs, façon rock’n’roll.',
     },
     blocks: [
       {
@@ -172,9 +172,9 @@ export const BEGLEITUNG_ARTICLES: Article[] = [
             fr: '**Accords :** bas-haut en croches, mais en balançant – le bas long, le haut court.',
           },
           {
-            de: '**Bass:** zuerst auf jeden Schlag den Grundton, dann das ganze Boogie-Riff.',
-            en: '**Bass:** first the root on every beat, then the whole boogie riff.',
-            fr: '**Basse :** d’abord la fondamentale sur chaque temps, puis tout le riff boogie.',
+            de: '**Bass:** zuerst auf jeden Schlag den Grundton, dann das Riff in Vierteln (1-3-5-6), dann das ganze Boogie-Riff. Nimm einen Finger pro Bund.',
+            en: '**Bass:** first the root on every beat, then the riff in quarter notes (1-3-5-6), then the whole boogie riff. Use one finger per fret.',
+            fr: '**Basse :** d’abord la fondamentale sur chaque temps, puis le riff en noires (1-3-5-6), puis tout le riff boogie. Mets un doigt par case.',
           },
         ],
       },

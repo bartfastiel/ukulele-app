@@ -43,8 +43,9 @@ export interface Groove {
   hat: number[];
   /** Akkord-Tupfer der Band: Achtel, Länge in Schlägen, Klang (Powerchord = Grundton und Quinte). */
   keys: { at: number[]; dur: number; power: boolean; gain: number };
-  /** Basslinie: einfach (nur Grundtöne) und die des Stils. */
+  /** Basslinie: einfach (nur Grundtöne), ggf. eine Zwischenstufe und die des Stils. */
   simple: LinePart[];
+  middle?: { line: LinePart[]; name: string; text: string };
   line: LinePart[];
   /** Schlagmuster für Akkordinstrumente: je Achtel D = runter, U = rauf, - = Pause. */
   strum: string;
@@ -81,7 +82,7 @@ export const GROOVES: Groove[] = [
     about: tk('Rock: gerade Achtel, kräftig und gleichmäßig. Die Akkordfolge {chords} – je zwei Takte, dann wieder von vorn.'),
     strumText: tk('Achtel, alle runter, kurz und kräftig. Zu schnell? Dann nur auf eins, zwei, drei, vier.'),
     lineName: tk('Rock-Achtel'),
-    lineText: tk('Achtmal den Grundton in jedem Takt, gleichmäßig wie ein Motor: eins und zwei und drei und vier und.'),
+    lineText: tk('Achtmal den Grundton in jedem Takt, gleichmäßig wie ein Motor: eins und zwei und drei und vier und. Zupf abwechselnd mit Zeige- und Mittelfinger.'),
     simpleText: tk('Spiel auf jeden Schlag den Grundton – den Ton, nach dem der Akkord heißt. Wo er liegt, zeigt der goldene Punkt.'),
   },
   {
@@ -101,8 +102,8 @@ export const GROOVES: Groove[] = [
     strum: 'D-DU-UDU',
     about: tk('Pop: ein ruhiger, gerader Beat und vier Akkorde, die in sehr vielen Liedern stecken: {chords}.'),
     strumText: tk('Runter, runter, rauf, rauf, runter, rauf – zwischen den beiden „rauf“ schwingt die Hand runter, ohne zu treffen.'),
-    lineName: tk('Mit Durchgangston'),
-    lineText: tk('Grundton auf eins, kurz vor drei noch einmal und auf drei. Auf vier ein Durchgangston: Er führt Schritt für Schritt zum nächsten Akkord.'),
+    lineName: tk('Mit Zwischenton'),
+    lineText: tk('Grundton auf eins, kurz vor drei noch einmal und auf drei. Auf vier ein Zwischenton, der zum nächsten Akkord führt.'),
     simpleText: tk('Spiel den Grundton auf eins und auf drei und lass ihn klingen. Wo er liegt, zeigt der goldene Punkt.'),
   },
   {
@@ -110,7 +111,7 @@ export const GROOVES: Groove[] = [
     name: tk('Shuffle'),
     title: tk('Shuffle-Begleitung'),
     // Rock’n’Roll in Dur, acht Takte; der V-Akkord als Septakkord
-    bars: [I, I, IV, IV, { deg: 7, q: '7' }, IV, I, { deg: 7, q: '7' }],
+    bars: [I, I, IV, IV, I, { deg: 7, q: '7' }, I, { deg: 7, q: '7' }],
     swing: true,
     tempos: [60, 75, 90, 110],
     kick: [0, 4],
@@ -118,12 +119,17 @@ export const GROOVES: Groove[] = [
     hat: [0, 1, 2, 3, 4, 5, 6, 7],
     keys: { at: [3, 7], dur: 0.45, power: false, gain: 0.06 },
     simple: roots([0, 2, 4, 6], 2),
+    middle: {
+      line: [0, 4, 7, 9].map((iv, beat) => part(beat * 2, iv, 2)),
+      name: tk('Boogie in Vierteln'),
+      text: tk('Ein Ton auf jeden Schlag: Grundton, Terz, Quinte, Sexte (1-3-5-6). Nimm einen Finger pro Bund, dann liegt jeder Ton schon unter einem Finger.'),
+    },
     line: [0, 4, 7, 9, 10, 9, 7, 4].map((iv, e) => part(e, iv, 1)),
     strum: 'DUDUDUDU',
-    about: tk('Shuffle: Die Achtel schwingen lang-kurz, lang-kurz – wie beim Blues, aber fröhlich in Dur, als Rock’n’Roll. Die Akkordfolge: {chords}.'),
+    about: tk('Shuffle: Die Achtel schwingen lang-kurz, lang-kurz – wie beim Blues, nur heller: mit einfachen Dur-Akkorden, als Rock’n’Roll. Die Akkordfolge: {chords}.'),
     strumText: tk('Runter-rauf in Achteln, aber schwingend: das Runter lang, das Rauf kurz – wie beim Hüpfen.'),
     lineName: tk('Boogie-Linie'),
-    lineText: tk('Das Boogie-Riff in Achteln: Grundton, Terz, Quinte, Sexte, kleine Septime – und über Sexte, Quinte, Terz zurück (1-3-5-6-b7-6-5-3).'),
+    lineText: tk('Das Boogie-Riff in Achteln: Grundton, Terz, Quinte, Sexte, kleine Septime – und über Sexte, Quinte, Terz zurück (1-3-5-6-b7-6-5-3). Ein Finger pro Bund hilft: Zeigefinger im 1. Bund, Mittelfinger im 2., Ringfinger im 3., kleiner Finger im 4.'),
     simpleText: tk('Spiel auf jeden Schlag den Grundton – und fühl, wie die Band dazwischen schwingt. Wo er liegt, zeigt der goldene Punkt.'),
   },
   {
@@ -272,11 +278,18 @@ export function chordPcs(name: string): number[] {
   return iv.map((i) => ((p ? p.root : 0) + i) % 12);
 }
 
+/** Stufen der Basslinie: nur Grundtöne, ggf. eine Zwischenstufe, die Linie des Stils. */
+export type Level = 'simple' | 'middle' | 'line';
+
+export function levels(g: Groove): Level[] {
+  return g.middle ? ['simple', 'middle', 'line'] : ['simple', 'line'];
+}
+
 /**
- * Basslinie eines Takts (`simple` = nur Grundtöne). Der Grundton liegt so tief wie möglich; passt die Linie darüber
- * nicht in den Bereich, rutschen einzelne Töne eine Oktave (wie beim Blues).
+ * Basslinie eines Takts auf einer Stufe. Der Grundton liegt so tief wie möglich; passt die Linie darüber nicht in den
+ * Bereich, rutschen einzelne Töne eine Oktave (wie beim Blues).
  */
-export function lineNotes(g: Groove, simple: boolean, key: number, bar: number, r: Range = firstPosition()): LineNote[] {
+export function lineNotes(g: Groove, level: Level, key: number, bar: number, r: Range = firstPosition()): LineNote[] {
   const bars = grooveBars(g, key);
   const name = bars[bar % bars.length];
   const nextName = bars[(bar + 1) % bars.length];
@@ -284,7 +297,7 @@ export function lineNotes(g: Groove, simple: boolean, key: number, bar: number, 
   const root = rootIn(pc, r);
   const next = rootIn(rootPc(nextName), r);
   const out: LineNote[] = [];
-  for (const p of simple ? g.simple : g.line) {
+  for (const p of level === 'simple' ? g.simple : level === 'middle' && g.middle ? g.middle.line : g.line) {
     let midi: number;
     let approach = false;
     if (p.step === 'fifth') midi = root - 5 >= r.lo ? root - 5 : root + 7;
@@ -359,6 +372,6 @@ export function bandBar(g: Groove, key: number, bar: number, ownBass: boolean, a
   for (const e of g.hat) out.push({ at: at(e), kind: 'hat', midi: [], dur: 0.04, gain: e % 2 ? 0.05 : 0.08 });
   for (const e of g.keys.at) out.push({ at: at(e), kind: 'keys', midi: keysVoicing(name, g.keys.power, above), dur: g.keys.dur, gain: g.keys.gain });
   if (!ownBass)
-    for (const n of lineNotes(g, false, key, bar, BAND_RANGE)) out.push({ at: n.at, kind: 'bass', midi: [n.midi], dur: n.dur * 0.92, gain: 0.5 });
+    for (const n of lineNotes(g, 'line', key, bar, BAND_RANGE)) out.push({ at: n.at, kind: 'bass', midi: [n.midi], dur: n.dur * 0.92, gain: 0.5 });
   return out.sort((a, b) => a.at - b.at);
 }

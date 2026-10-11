@@ -4,7 +4,7 @@ import { INSTRUMENTS, instrument, setInstrument } from '../../src/music/instrume
 import { chord, parseChordName } from '../../src/music/chords.ts';
 import { midiToFreq, pitchClass } from '../../src/music/notes.ts';
 import { position } from '../../src/music/blues.ts';
-import { BAND_RANGE, GROOVES, bandBar, chordPcs, chordsText, easyKey, eighthAt, eighthOf, firstPosition, groove, grooveBars, keysVoicing, lineNotes, noteAt } from '../../src/music/grooves.ts';
+import { BAND_RANGE, GROOVES, bandBar, chordPcs, chordsText, easyKey, eighthAt, eighthOf, firstPosition, groove, grooveBars, keysVoicing, levels, lineNotes, noteAt } from '../../src/music/grooves.ts';
 import { lowpass, renderPluck } from '../../src/audio/pluck.ts';
 import { detectPitchIn } from '../../src/audio/pitch.ts';
 import { routePath } from '../../src/site/routes.ts';
@@ -29,7 +29,7 @@ test('Akkordfolgen je Stil: Rock I–IV–V–IV, Pop I–V–vi–IV, Shuffle u
   assert.deepEqual(grooveBars(groove('rock')!, 0), ['C', 'C', 'F', 'F', 'G', 'G', 'F', 'F']);
   assert.deepEqual(grooveBars(groove('pop')!, 0), ['C', 'G', 'Am', 'F']);
   assert.deepEqual(grooveBars(groove('pop')!, 7), ['G', 'D', 'Em', 'C']);
-  assert.deepEqual(grooveBars(groove('shuffle')!, 4), ['E', 'E', 'A', 'A', 'B7', 'A', 'E', 'B7']);
+  assert.deepEqual(grooveBars(groove('shuffle')!, 4), ['E', 'E', 'A', 'A', 'E', 'B7', 'E', 'B7']);
   assert.deepEqual(grooveBars(groove('country')!, 7), ['G', 'G', 'C', 'C', 'G', 'G', 'D', 'D']);
   assert.equal(chordsText(groove('rock')!, 0), 'C – F – G – F');
   for (const g of GROOVES)
@@ -51,24 +51,24 @@ test('Basslinien auf dem E-Bass: passende Töne, alles in der ersten Lage, jeder
     assert.deepEqual(range, { lo: 28, hi: 47 });
     for (const g of GROOVES)
       for (let key = 0; key < 12; key++)
-        for (const simple of [true, false]) {
+        for (const level of levels(g)) {
           const bars = grooveBars(g, key);
           bars.forEach((name, bar) => {
-            const notes = lineNotes(g, simple, key, bar);
+            const notes = lineNotes(g, level, key, bar);
             const root = parseChordName(name)!.root;
             assert.equal(notes[0].at, 0);
             assert.equal(pitchClass(notes[0].midi), root, `${g.id} ${name}: Takt beginnt mit dem Grundton`);
             let last = -1;
             for (const n of notes) {
-              const where = `${g.id} in ${bars[0]} (${simple ? 'einfach' : 'Linie'}), Takt ${bar + 1} ${name}: ${n.midi}`;
+              const where = `${g.id} in ${bars[0]} (${level}), Takt ${bar + 1} ${name}: ${n.midi}`;
               assert.ok(n.at > last, `${where}: Reihenfolge`);
               last = n.at;
               assert.ok(n.midi >= range.lo && n.midi <= range.hi, `${where}: außerhalb der ersten Lage`);
               assert.ok(position(n.midi).fret <= instrument().blues.frets, `${where}: Bund ${position(n.midi).fret}`);
               const rel = (n.midi - root + 120) % 12;
-              if (simple || g.id === 'rock') assert.equal(rel, 0, where);
+              if (level === 'simple' || g.id === 'rock') assert.equal(rel, 0, where);
               else if (g.id === 'country') assert.ok(rel === 0 || rel === 7, where);
-              else if (g.id === 'shuffle') assert.ok([0, 4, 7, 9, 10].indexOf(rel) >= 0, where);
+              else if (g.id === 'shuffle') assert.ok((level === 'middle' ? [0, 4, 7, 9] : [0, 4, 7, 9, 10]).indexOf(rel) >= 0, where);
               else if (n.approach) {
                 // Durchgangston: leitereigen und einen Schritt neben dem nächsten Grundton
                 const next = parseChordName(bars[(bar + 1) % bars.length])!.root;
@@ -85,16 +85,20 @@ test('Basslinien auf dem E-Bass: passende Töne, alles in der ersten Lage, jeder
 test('Pop in C auf dem E-Bass: Durchgangstöne führen schrittweise zum nächsten Grundton', () => {
   each(['bass'], () => {
     const g = groove('pop')!;
-    const line = (bar: number) => lineNotes(g, false, 0, bar).map((n) => n.midi);
+    const line = (bar: number) => lineNotes(g, 'line', 0, bar).map((n) => n.midi);
     // C (A-Saite 3) → A → G (E-Saite 3) → B → A (leer) → G → F (E-Saite 1) → B → C
     assert.deepEqual(line(0), [36, 36, 36, 33]);
     assert.deepEqual(line(1), [31, 31, 31, 35]);
     assert.deepEqual(line(2), [33, 33, 33, 31]);
     assert.deepEqual(line(3), [29, 29, 29, 35]);
     // Shuffle in E: das Boogie-Riff E G# B C# D C# B G#, ganz in der ersten Lage
-    assert.deepEqual(lineNotes(groove('shuffle')!, false, 4, 0).map((n) => n.midi), [28, 32, 35, 37, 38, 37, 35, 32]);
+    assert.deepEqual(lineNotes(groove('shuffle')!, 'line', 4, 0).map((n) => n.midi), [28, 32, 35, 37, 38, 37, 35, 32]);
+    // Zwischenstufe: dieselben Töne 1-3-5-6 in Vierteln
+    assert.deepEqual(lineNotes(groove('shuffle')!, 'middle', 4, 0).map((n) => [n.at, n.midi]), [[0, 28], [1, 32], [2, 35], [3, 37]]);
+    assert.deepEqual(levels(groove('shuffle')!), ['simple', 'middle', 'line']);
+    assert.deepEqual(levels(groove('rock')!), ['simple', 'line']);
     // Country in G: Grundton und die Quinte darunter
-    assert.deepEqual(lineNotes(groove('country')!, false, 7, 0).map((n) => n.midi), [31, 26 + 12]);
+    assert.deepEqual(lineNotes(groove('country')!, 'line', 7, 0).map((n) => n.midi), [31, 26 + 12]);
   });
 });
 
@@ -122,14 +126,14 @@ test('Rhythmus: gerade Achtel bei Rock und Pop, triolisch beim Shuffle, Backbeat
     assert.ok(near(times(g.id, 'snare'), [1, 3]), `${g.id}: Backbeat`);
     assert.equal(times(g.id, 'kick')[0], 0, `${g.id}: Bassdrum auf der Eins`);
     // jede Note endet vor der nächsten, nichts ragt über den Takt
-    const line = lineNotes(g, false, 0, 0, BAND_RANGE);
+    const line = lineNotes(g, 'line', 0, 0, BAND_RANGE);
     line.forEach((n, i) => assert.ok(n.at + n.dur <= (i + 1 < line.length ? line[i + 1].at : 4) + 1e-9, `${g.id}: Note ${i}`));
     assert.equal(g.strum.length, 8);
     assert.equal(g.tempos.length, 4);
     for (let i = 1; i < 4; i++) assert.ok(g.tempos[i] > g.tempos[i - 1]);
   }
   // Vorgabe zum Schlag: der zuletzt angeschlagene Ton
-  const pop = lineNotes(groove('pop')!, false, 0, 0);
+  const pop = lineNotes(groove('pop')!, 'line', 0, 0);
   assert.equal(noteAt(pop, 1.4)!.eighth, 0);
   assert.equal(noteAt(pop, 1.5)!.eighth, 3);
   assert.equal(noteAt(pop, 3.9)!.eighth, 6);
@@ -243,7 +247,7 @@ test('Offline-Render: Basslinie und Schlagzeug setzen genau auf dem Achtel-Raste
       const want: number[] = [];
       const hits: Hit[] = [];
       for (let bar = 0; bar < 2; bar++)
-        for (const n of lineNotes(g, false, key, bar)) {
+        for (const n of lineNotes(g, 'line', key, bar)) {
           hits.push({ at: (bar * 4 + n.at) * spb, dur: n.dur * spb * 0.92, midi: n.midi });
           want.push((bar * 4 + n.at) * spb);
         }

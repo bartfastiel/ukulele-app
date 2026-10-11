@@ -52,7 +52,7 @@ test('Stil wechseln ohne Neuladen: Pop mit I–V–vi–IV, Tempo bleibt, Tonart
   await expect(page.locator('.groove-chord.next .chord-name')).toHaveText('D');
   // Shuffle schwingt: die gewählte Tonart bleibt
   await page.getByRole('navigation', { name: 'Stil', exact: true }).getByRole('link', { name: 'Shuffle', exact: true }).click();
-  expect(await bars(page)).toEqual(['G', 'G', 'C', 'C', 'D7', 'C', 'G', 'D7']);
+  expect(await bars(page)).toEqual(['G', 'G', 'C', 'C', 'G', 'D7', 'G', 'D7']);
   await expect(page.locator('.groove-pattern .arrow.up')).toHaveCount(4);
   // der Blues bleibt eine eigene Seite und verlinkt die anderen Stile
   await page.getByRole('navigation', { name: 'Stil', exact: true }).getByRole('link', { name: 'Blues', exact: true }).click();
@@ -67,17 +67,19 @@ test('Startseite führt zur Band-Begleitung', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Rock-Begleitung', exact: true })).toBeVisible();
 });
 
-test('E-Bass: Shuffle zeigt die Basslinie auf dem Hals, Stufe 2 ist das Boogie-Riff', async ({ page }) => {
+test('E-Bass: Shuffle zeigt die Basslinie auf dem Hals, Stufen bis zum Boogie-Riff', async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto('../bass/#/begleitung/shuffle');
   await expect(page).toHaveURL(/\/bass\/begleitung\/shuffle\/$/);
   await expect(page).toHaveTitle(/Shuffle-Begleitung zum Mitspielen für (den )?E-Bass/);
-  expect(await bars(page)).toEqual(['E', 'E', 'A', 'A', 'B7', 'A', 'E', 'B7']);
+  expect(await bars(page)).toEqual(['E', 'E', 'A', 'A', 'E', 'B7', 'E', 'B7']);
   await expect(page.locator('.groove-target')).toHaveText('Spiel E');
   await expect(page.locator('.fb-label')).toHaveCount(4);
   await expect(page.locator('.fb-mark.now')).toHaveCount(1);
   expect(await page.locator('.groove-pattern .glyph').allTextContents()).toEqual(['E', '·', 'E', '·', 'E', '·', 'E', '·']);
-  await page.getByRole('button', { name: '2 · Boogie-Linie' }).click();
+  await page.getByRole('button', { name: '2 · Boogie in Vierteln' }).click();
+  expect(await page.locator('.groove-pattern .glyph').allTextContents()).toEqual(['E', '·', 'G#', '·', 'B', '·', 'C#', '·']);
+  await page.getByRole('button', { name: '3 · Boogie-Linie' }).click();
   expect(await page.locator('.groove-pattern .glyph').allTextContents()).toEqual(['E', 'G#', 'B', 'C#', 'D', 'C#', 'B', 'G#']);
   await expect(page.getByText(/1-3-5-6-b7-6-5-3/)).toBeVisible();
   await page.getByRole('button', { name: /Mittel/ }).click();

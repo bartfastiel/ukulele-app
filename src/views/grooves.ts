@@ -4,7 +4,7 @@ import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts
 import { fretboard, type Mark } from '../ui/fretboard.ts';
 import { playableChord } from '../ui/chord-play.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
-import { GROOVES, bandBar, chordsText, easyKey, eighthOf, firstPosition, groove, grooveBars, lineNotes, noteAt, type Groove, type LineNote } from '../music/grooves.ts';
+import { GROOVES, bandBar, chordsText, easyKey, eighthOf, firstPosition, groove, grooveBars, levels, lineNotes, noteAt, type Groove, type Level, type LineNote } from '../music/grooves.ts';
 import { place, spell } from '../music/blues.ts';
 import { instrument } from '../music/instrument.ts';
 import { ROOTS, chord } from '../music/chords.ts';
@@ -49,7 +49,7 @@ function mount(root: HTMLElement, g: Groove, keep: Keep, switchTo: (g: Groove) =
   const star = easyKey(g);
   let key = keep.key === null ? star : keep.key;
   let bars = grooveBars(g, key);
-  let simple = true;
+  let level: Level = 'simple';
   let bpm = g.tempos[keep.tempo];
   let guide = false;
   let listening = false;
@@ -69,7 +69,7 @@ function mount(root: HTMLElement, g: Groove, keep: Keep, switchTo: (g: Groove) =
   const spb = () => 60 / bpm;
   const beatNow = () => (audio().currentTime - start) / spb();
   const barOf = (beat: number) => ((Math.floor(beat / 4) % bars.length) + bars.length) % bars.length;
-  const notesOf = (bar: number): LineNote[] => lineNotes(g, simple, key, bar);
+  const notesOf = (bar: number): LineNote[] => lineNotes(g, level, key, bar);
 
   /** Vorgabe-Ton zum Schlag (E-Bass) samt Kennung (Takt und Achtel), damit jeder Ton nur einmal zählt. */
   const targetAt = (beat: number): { note: LineNote; id: string } | null => {
@@ -299,7 +299,7 @@ function mount(root: HTMLElement, g: Groove, keep: Keep, switchTo: (g: Groove) =
 
   const texts = () => {
     about.textContent = t(g.about, { chords: chordsText(g, key) });
-    howTo.textContent = ownBass ? t(simple ? g.simpleText : g.lineText) : t(g.strumText);
+    howTo.textContent = ownBass ? t(level === 'simple' ? g.simpleText : level === 'middle' && g.middle ? g.middle.text : g.lineText) : t(g.strumText);
   };
 
   const redraw = () => {
@@ -350,8 +350,8 @@ function mount(root: HTMLElement, g: Groove, keep: Keep, switchTo: (g: Groove) =
       playBtn,
       ownBass ? h('h2', null, t('Stufe')) : null,
       ownBass
-        ? seg(t('Stufe'), [true, false], (x) => (x ? t('1 · Grundton') : t('2 · {name}', { name: t(g.lineName) })), (x) => x === simple, (x) => {
-            simple = x;
+        ? seg(t('Stufe'), levels(g), (x) => (x === 'simple' ? t('1 · Grundton') : t('{n} · {name}', { n: levels(g).indexOf(x) + 1, name: t(x === 'middle' && g.middle ? g.middle.name : g.lineName) })), (x) => x === level, (x) => {
+            level = x;
             redraw();
           })
         : null,
