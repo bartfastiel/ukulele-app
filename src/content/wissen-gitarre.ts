@@ -838,7 +838,7 @@ export const GITARRE_ARTICLES: Article[] = [
       },
       { tool: 'stimmen' },
     ],
-    related: ['transponieren', 'gitarre-barre', 'gitarre-akkorde', 'lieder-fuer-anfaenger'],
+    related: ['transponieren', 'gitarre-barre', 'gitarre-akkorde', 'lieder-fuer-anfaenger', 'gitarre-und-ukulele-zusammen'],
   },
   {
     id: 'gitarre-zupfen',

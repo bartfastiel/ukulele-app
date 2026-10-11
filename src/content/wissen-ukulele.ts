@@ -435,7 +435,7 @@ export const UKULELE_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['ukulele-saiten', 'saiten-wechseln-pflege', 'ukulele-erste-akkorde', 'toene-und-notennamen'],
+    related: ['ukulele-saiten', 'saiten-wechseln-pflege', 'ukulele-erste-akkorde', 'toene-und-notennamen', 'ukulele-klingt-schief'],
   },
   {
     id: 'ukulele-erste-akkorde',
@@ -642,7 +642,7 @@ export const UKULELE_ARTICLES: Article[] = [
       },
       { tool: 'akkorde' },
     ],
-    related: ['ukulele-erste-akkorde', 'ukulele-schwierige-akkorde', 'akkordsymbole-lesen', 'dur-und-moll'],
+    related: ['ukulele-erste-akkorde', 'ukulele-schwierige-akkorde', 'akkordsymbole-lesen', 'dur-und-moll', 'ukulele-gitarrenakkorde-uebertragen'],
   },
   {
     id: 'ukulele-schwierige-akkorde',
@@ -728,7 +728,7 @@ export const UKULELE_ARTICLES: Article[] = [
       },
       { tool: 'akkorde' },
     ],
-    related: ['ukulele-akkorde', 'transponieren', 'saubere-griffe', 'akkordsymbole-lesen'],
+    related: ['ukulele-akkorde', 'transponieren', 'saubere-griffe', 'akkordsymbole-lesen', 'ukulele-kapodaster'],
   },
   {
     id: 'ukulele-zupfen',
@@ -853,7 +853,7 @@ export const UKULELE_ARTICLES: Article[] = [
       },
       { tool: 'rhythmus' },
     ],
-    related: ['ukulele-saiten', 'tabulatur-lesen', 'mit-metronom-ueben', 'takt-und-taktarten'],
+    related: ['ukulele-saiten', 'tabulatur-lesen', 'mit-metronom-ueben', 'takt-und-taktarten', 'ukulele-ohne-singen'],
   },
   {
     id: 'ukulele-linkshaender',

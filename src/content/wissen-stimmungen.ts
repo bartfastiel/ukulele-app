@@ -618,6 +618,6 @@ export const STIMMUNGEN_ARTICLES: Article[] = [
       },
       { tool: 'stimmen' },
     ],
-    related: ['ukulele-kinder', 'ukulele-saiten', 'ukulele-d-stimmung-tiefes-g', 'ukulele-stimmen'],
+    related: ['ukulele-kinder', 'ukulele-saiten', 'ukulele-d-stimmung-tiefes-g', 'ukulele-stimmen', 'ukulele-steckbrief'],
   },
 ];
