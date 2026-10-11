@@ -21,6 +21,7 @@ import { permalink } from './wiki-api.ts';
 const EXCLUDE: Record<string, string> = {
   'im-maerzen-der-bauer': 'Notentext ist die Fassung von Walther Hensel (1923), geschützt bis Ende 2026',
   'wandern-muellers-lust': 'Notenbeispiel ist der vierstimmige Chorsatz mit Textwiederholungen, nicht die Liedfassung',
+  'wohlauf-gottes-welt': 'Notentext mit „lebe wohl“ und „lalala“, im Text von Rodenberg (1864) nicht belegt',
 };
 
 const dirs = process.argv.slice(2).filter((a) => !a.startsWith('--'));

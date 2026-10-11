@@ -5,9 +5,6 @@ import type { SongSource } from './song.ts';
  * Lebensdaten bzw. „traditionell“ in `origin`. Texte nach gemeinfreien historischen Drucken (Erstdruck oder Liederbuch,
  * Angabe in `origin`), Akkorde als einfache eigene Begleitung.
  */
-// Noch ohne historische Primärquelle abgeglichen.
-const VLA = 'Text nach volksliederarchiv.de';
-
 export const CHORD_SONGS: SongSource[] = [
   {
     id: 'gedanken-sind-frei',
@@ -195,42 +192,22 @@ weil [F]unsre [C]Augen [G7]sie nicht [C]sehn.`,
     id: 'horch-was-kommt',
     title: 'Horch, was kommt von draußen rein',
     category: 'lagerfeuer',
-    origin: `Text und Melodie anonym, belegt um 1890; ${VLA}`,
+    // Textquelle: https://archive.org/details/BoehmeVtLieder1895/page/n481/mode/1up
+    // Weitere Strophen sind vor 1930 nicht belegt (Böhme: „Mehr Text nicht dabei“).
+    origin:
+      'Text und Melodie anonym, belegt um 1890; Text nach Böhme, Volksthümliche Lieder der Deutschen (1895, Nr. 607, archive.org), Rechtschreibung modernisiert',
     meter: 4,
     bpm: 110,
     chordpro: `
 [C]Horch, was kommt von [G7]draußen rein? [C]Hollahi, hollaho!
-[C]Wird wohl mein Feins[G7]liebchen sein, hollahi [C]jaho!
-[C]Geht vorbei und [G7]schaut nicht rein, [C]hollahi, hollaho!
-[C]Wird’s wohl nicht ge[G7]wesen sein, hollahi [C]jaho!
-[C]Leute haben’s [G7]oft gesagt, [C]hollahi, hollaho!
-[C]Dass ich ein feins [G7]Liebchen hab, hollahi [C]jaho!
-[C]Lass sie reden, [G7]schweig fein still, [C]hollahi, hollaho!
-[C]Kann ja lieben, [G7]wen ich will, hollahi [C]jaho!`,
+[C]Wird wohl mein Feins[G7]liebchen sein, holla[C]hihaho!
+[C]Geht vorbei und [G7]kommt nicht rein, [C]hollahi, hollaho!
+[C]Wird’s wohl nicht ge[G7]wesen sein, holla[C]hihaho!`,
   },
-  {
-    id: 'junger-wandersmann',
-    title: 'Auf, du junger Wandersmann',
-    category: 'lagerfeuer',
-    origin: `Text und Melodie anonym, Franken um 1840; ${VLA}`,
-    meter: 4,
-    bpm: 110,
-    chordpro: `
-Auf, du [C]junger Wandersmann,
-[G7]jetzo kommt die [C]Zeit heran,
-die [F]Wanderszeit, die [C]gibt uns Freud.
-[G7]Woll’n uns auf die [C]Fahrt begeben,
-[G7]das ist unser [C]schönstes Leben,
-[F]große Wasser, [C]Berg und Tal
-[G7]anzuschauen [C]überall.
-An dem [C]schönen Donaufluss
-[G7]findet man ja [C]seine Lust
-und [F]seine Freud auf [C]grüner Heid,
-[G7]wo die Vöglein [C]lieblich singen
-[G7]und die Hirschlein [C]fröhlich springen;
-[F]dann kommt man an [C]eine Stadt,
-[G7]wo man gute [C]Arbeit hat.`,
-  },
+  // „Auf, du junger Wandersmann“ (id junger-wandersmann) ist vorerst entfernt: Die heutige erste Strophe stammt
+  // möglicherweise aus der Bearbeitung von Walther Hensel (Finkensteiner Liederbuch 1923, † 1956), frei erst ab
+  // 1.1.2027. Dann prüfen; die älteste Quelle (Ditfurth, Fränkische Volkslieder 1855, Nr. 298,
+  // https://www.digitale-sammlungen.de/de/view/bsb10107352?page=270) beginnt „Auf, ihr Brüder, seyd wohl daran!“.
   {
     id: 'bunt-sind-die-waelder',
     title: 'Bunt sind schon die Wälder',
@@ -433,16 +410,18 @@ auf [G7]seiner Schal[C]mei:
     id: 'wohlauf-gottes-welt',
     title: 'Wohlauf in Gottes schöne Welt',
     category: 'lagerfeuer',
-    origin: `Text Julius Rodenberg (1831–1914), Melodie anonym (frühes 19. Jh.); ${VLA}`,
+    // Textquelle: https://archive.org/details/gedichte00rodegoog/page/n51/mode/1up
+    origin:
+      'Text Julius Rodenberg (1831–1914), Melodie anonym (frühes 19. Jh.); Text nach Rodenberg, Gedichte (1864, S. 28, „Ade!“, archive.org), Rechtschreibung modernisiert',
     meter: 4,
     bpm: 110,
     chordpro: `
-Wohl[C]auf in Gottes [G7]schöne [C]Welt,
-lebe[G7]wohl, a[C]de!
-Die [C]Luft ist blau und [G7]grün das [C]Feld,
-lebe[G7]wohl, a[C]de!
-Die [F]Berge glühn wie [C]Edelstein,
-ich [G7]wandere mit dem [C]Sonnenschein,
-tra[F]lala, (ade, ade, ade,) ins [G7]weite Land hi[C]nein.`,
+Wohl[C]auf in Gottes [G7]schöne [C]Welt –
+a[G7]de! [C]
+Die [C]Luft ist blau und [G7]grün das [C]Feld –
+a[G7]de! [C]
+Die [F]Berge glühn wie [C]Edelstein;
+ich [G7]wandre mit dem [C]Sonnenschein
+ins [G7]weite Land hi[C]nein.`,
   },
 ];
