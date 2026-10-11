@@ -50,8 +50,9 @@ function instrumentName(): string {
   return def ? def.name[lang()] : t(instrument().name);
 }
 
-function qrCode(text: string, cls: string, label: string): SVGElement | null {
-  const code = encodeQr(text, { ecl: 'M' });
+/** QR-Code als schlichtes SVG; null, wenn der Text nicht in `maxVersion` passt (kleine Codes bleiben gut lesbar). */
+export function qrCode(text: string, cls: string, label: string, maxVersion?: number): SVGElement | null {
+  const code = encodeQr(text, { ecl: 'M', maxVersion });
   if (!code) return null;
   const n = code.size + 8;
   return s(

@@ -35,6 +35,7 @@ test('Liedblatt: vom Lied aus erreichbar, drei Arten, gedruckt nur das Blatt', a
   await page.getByRole('button', { name: 'Einen Halbton höher' }).click();
   await expect(page.locator('.sheet-sub')).toContainText('Tonart C#');
   await page.getByRole('button', { name: 'Einen Halbton tiefer' }).click();
+  await page.getByRole('button', { name: 'Nur Griffbilder' }).click();
   // Drucken: Kopfzeile, Wahlknöpfe und Fußzeile verschwinden
   await page.emulateMedia({ media: 'print' });
   await expect(page.locator('.topbar')).toBeHidden();
@@ -57,7 +58,9 @@ test('Liedblatt eines eigenen Liedes entsteht im Browser', async ({ page }) => {
   await expect(page).toHaveURL(/\/liedblatt\/eigen\/#mein-sonnenlied$/);
   await expect(page.locator('.print-sheet h2')).toHaveText('Sonnenlied');
   await expect(page.locator('.ps-line')).toHaveCount(2);
-  await expect(page.locator('.ps-line').first()).toContainText('Heute spiel ich Ukulele,');
+  await expect(page.locator('.ps-line').first().locator('.ps-word').last()).toHaveText('Ukulele,');
+  // QR-Code im Fuß: der Teilen-Link des eigenen Liedes
+  await expect(page.locator('.sheet-qr svg')).toHaveCount(1);
 });
 
 test('Griff-Übersicht und Hals: von Akkorden und Stimmgerät verlinkt, Knöpfe groß genug', async ({ page, browserName }) => {
@@ -107,5 +110,50 @@ for (const id of ['gitarre', 'banjo', 'bariton', 'mandoline', 'bass']) {
     await page.emulateMedia({ media: 'print' });
     expect(pageCount(await page.pdf({ preferCSSPageSize: true })), 'Hals hochkant').toBe(1);
     expect(errors).toEqual([]);
+  });
+}
+
+/** Im Druck: jedes Griffbild beginnt genau an der Silbe seines Wechsels, und zwei Griffbilder überlappen sich nie. */
+function sheetProblems(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const out: string[] = [];
+    const lines = document.querySelectorAll('.ps-line');
+    for (let l = 0; l < lines.length; l++) {
+      const anchors = lines[l].querySelectorAll('.ps-anchor');
+      let prev: DOMRect | null = null;
+      for (let i = 0; i < anchors.length; i++) {
+        const svg = anchors[i].querySelector('svg');
+        const box = (svg || anchors[i].querySelector('.ps-over')!).getBoundingClientRect();
+        const word = anchors[i].querySelector('.ps-word')!.getBoundingClientRect();
+        const text = (lines[l].textContent || '').slice(0, 40);
+        if (Math.abs(box.left - word.left) > 1) out.push(`„${text}“: Griffbild ${i} nicht über der Silbe`);
+        if (prev && Math.abs(prev.top - box.top) < 2 && prev.right > box.left + 0.5) out.push(`„${text}“: Griffbilder ${i - 1} und ${i} überlappen`);
+        prev = box;
+      }
+    }
+    return out;
+  });
+}
+
+for (const id of ['ukulele', 'gitarre']) {
+  test(`${id}: Liedblätter aller Lieder im Druck – Griffbild über der Silbe, nichts überlappt`, async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'Druck-Layout einmal genügt');
+    test.setTimeout(300000);
+    await page.goto(`../${id}/#/lieder`);
+    const songs = await page.locator('.song-card').evaluateAll((els) =>
+      els.map((e) => ((e.getAttribute('href') || '').match(/\/lieder\/([^/]+)\/$/) || [])[1]).filter((x) => !!x),
+    );
+    expect(songs.length).toBeGreaterThan(50);
+    await page.emulateMedia({ media: 'print' });
+    const problems: string[] = [];
+    for (const s of songs) {
+      await page.goto(`../${id}/liedblatt/${s}/`);
+      await expect(page.locator('.ps-line').first()).toBeAttached();
+      for (const mode of ['Nur Griffbilder', 'Name und Griffbild']) {
+        await page.locator('.print-controls button', { hasText: mode }).dispatchEvent('click');
+        for (const p of await sheetProblems(page)) problems.push(`${s} (${mode}) ${p}`);
+      }
+    }
+    expect(problems).toEqual([]);
   });
 }

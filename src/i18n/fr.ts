@@ -459,6 +459,9 @@ export const FR: Record<string, string> = {
   'Alle gleich': 'Tous pareils',
   'nur Klick': 'clic seul',
   // Druckansichten (src/views/print.ts, src/site/pages.ts)
+  "{url} – kostenlos, ohne Werbung": "{url} – gratuit, sans publicité",
+  "Saiten von links: {strings}": "Cordes de gauche à droite : {strings}",
+  "Zahl im Punkt = Finger: 1 Zeigefinger, 2 Mittelfinger, 3 Ringfinger, 4 kleiner Finger.": "Chiffre dans le point = doigt : 1 index, 2 majeur, 3 annulaire, 4 auriculaire.",
   "Liedblatt": "Fiche chanson",
   "Liedblatt: {title}": "Fiche chanson : {title}",
   "{title} zum Ausdrucken: Liedtext mit Griffbildern oder Akkordnamen für {instrument}.": "{title} à imprimer : paroles avec diagrammes ou noms d’accords pour {instrument}.",

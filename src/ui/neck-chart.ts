@@ -21,9 +21,13 @@ export interface NeckOptions {
 /** Tonnamen je Halbton: ohne Vorzeichen ein Name, sonst beide Schreibweisen (C#/Db). */
 const NAMES: string[][] = [['C'], ['C#', 'Db'], ['D'], ['D#', 'Eb'], ['E'], ['F'], ['F#', 'Gb'], ['G'], ['G#', 'Ab'], ['A'], ['A#', 'Bb'], ['B']];
 
-/** Lage eines Bundstäbchens: wie auf dem echten Hals werden die Bünde zum Korpus hin enger. */
+/**
+ * Lage eines Bundstäbchens: wie auf dem echten Hals werden die Bünde zum Korpus hin enger – etwas abgemildert, damit
+ * auch in den hohen Bünden die Tonnamen groß genug zum Lesen bleiben.
+ */
 function fretPos(f: number, frets: number, length: number): number {
-  return (length * (1 - Math.pow(2, -f / 12))) / (1 - Math.pow(2, -frets / 12));
+  const real = (1 - Math.pow(2, -f / 12)) / (1 - Math.pow(2, -frets / 12));
+  return length * (0.7 * real + 0.3 * (f / frets));
 }
 
 /**
@@ -113,13 +117,22 @@ export function neckChart(strings: NeckString[], opts: NeckOptions): SVGElement 
         svg.appendChild(s('circle', { cx: p.x, cy: p.y, r, fill: '#fff', stroke: '#000', 'stroke-width': 1.6 }));
         svg.appendChild(s('text', { x: p.x, y: p.y + r * 0.38, 'text-anchor': 'middle', class: 'neck-note', 'font-size': (r * 1.05).toFixed(1) }, noteText(names[0])));
       } else {
-        const size = Math.min(19, width / 3.2);
-        // weißer Grund, damit die Saite nicht durch die Schrift läuft
         const p = P(a, c);
-        const bw = Math.min(width - 6, 50);
-        svg.appendChild(s('rect', { x: p.x - bw / 2, y: p.y - size * 1.15, width: bw, height: size * 2.3, fill: '#fff' }));
-        svg.appendChild(s('text', { x: p.x, y: p.y - size * 0.15, 'text-anchor': 'middle', class: 'neck-sharp', 'font-size': size.toFixed(1) }, noteText(names[0])));
-        svg.appendChild(s('text', { x: p.x, y: p.y + size * 0.95, 'text-anchor': 'middle', class: 'neck-sharp', 'font-size': size.toFixed(1) }, noteText(names[1])));
+        if (upright) {
+          // hochkant ist es quer zur Saite breit, längs aber eng: beide Namen in einer Zeile
+          const label = noteText(names[0]) + '/' + noteText(names[1]);
+          const size = Math.min(19, width * 0.5, (gap - 10) / (label.length * 0.6));
+          const bw = gap - 8;
+          svg.appendChild(s('rect', { x: p.x - bw / 2, y: p.y - size * 0.75, width: bw, height: size * 1.5, fill: '#fff' }));
+          svg.appendChild(s('text', { x: p.x, y: p.y + size * 0.36, 'text-anchor': 'middle', class: 'neck-sharp', 'font-size': size.toFixed(1) }, label));
+        } else {
+          const size = Math.min(19, width / 3.2);
+          // weißer Grund, damit die Saite nicht durch die Schrift läuft
+          const bw = Math.min(width - 6, 50);
+          svg.appendChild(s('rect', { x: p.x - bw / 2, y: p.y - size * 1.15, width: bw, height: size * 2.3, fill: '#fff' }));
+          svg.appendChild(s('text', { x: p.x, y: p.y - size * 0.15, 'text-anchor': 'middle', class: 'neck-sharp', 'font-size': size.toFixed(1) }, noteText(names[0])));
+          svg.appendChild(s('text', { x: p.x, y: p.y + size * 0.95, 'text-anchor': 'middle', class: 'neck-sharp', 'font-size': size.toFixed(1) }, noteText(names[1])));
+        }
       }
     }
   });

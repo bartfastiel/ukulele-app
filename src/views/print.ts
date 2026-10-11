@@ -12,7 +12,11 @@ import { activeTuning, baseInstrument, instrument, notesOnly } from '../music/in
 import { tuningNotes } from '../ui/tuning.ts';
 import { load, save } from '../store.ts';
 import { noteText, ordinal, t, tk } from '../i18n.ts';
-import { brand, go, link } from '../site/nav.ts';
+import { go, link } from '../site/nav.ts';
+import { isOwnId, encodeShare } from '../music/own-songs.ts';
+import { importSong } from '../music/import.ts';
+import { ownSongs } from '../store.ts';
+import { publicLink, qrCode, shortUrl } from './teachers.ts';
 import { NOTE_GROUPS } from './notes.ts';
 import type { Song } from '../music/song.ts';
 
@@ -63,8 +67,33 @@ function sheet(cls: string, ...content: (Node | null)[]): HTMLElement {
 }
 
 /** Fuß jedes Blattes: Herkunft klein, dazu die Seite, von der es stammt. */
-function sheetFoot(...text: (string | null)[]): HTMLElement {
-  return h('footer', { class: 'sheet-foot' }, ...text.filter((x) => !!x).map((x) => h('p', null, x)), h('p', null, brand()));
+/** Fuß jedes Blattes: Herkunft klein, die öffentliche Adresse der Seite und auf Wunsch ein kleiner QR-Code. */
+function sheetFoot(text: (string | null)[], qr?: SVGElement | null): HTMLElement {
+  return h(
+    'footer',
+    { class: 'sheet-foot' },
+    h(
+      'div',
+      { class: 'sheet-foot-text' },
+      ...text.filter((x) => !!x).map((x) => h('p', null, x)),
+      h('p', { class: 'sheet-url' }, t('{url} – kostenlos, ohne Werbung', { url: shortUrl(publicLink('')) })),
+    ),
+    qr ? h('div', { class: 'sheet-qr' }, qr) : null,
+  );
+}
+
+/** QR-Code im Fuß: höchstens Version 10, damit er auch klein (ca. 2 cm) sicher erkannt wird. */
+const SHEET_QR_VERSION = 10;
+
+/** Ziel des QR-Codes auf dem Liedblatt: das Lied selbst, bei eigenen Liedern der Teilen-Link (sofern er klein genug passt). */
+function songQr(song: Song): SVGElement | null {
+  let url = publicLink(`lied/${song.id}`);
+  if (isOwnId(song.id)) {
+    const own = ownSongs().filter((o) => o.id === song.id)[0];
+    if (!own) return null;
+    url = publicLink(`teilen/${encodeShare({ title: own.title, text: importSong(own.text).chordpro, meter: own.meter, bpm: own.bpm })}`);
+  }
+  return qrCode(url, 'sheet-qr-svg', t('QR-Code zum Lied {title}', { title: song.title }), SHEET_QR_VERSION);
 }
 
 function tuningLabel(): string | null {
@@ -81,7 +110,7 @@ function overChord(name: string, mode: SheetMode, lefty: boolean): HTMLElement {
     'span',
     { class: 'ps-over' },
     mode !== 'griff' ? h('b', { class: 'ps-name' }, name) : null,
-    mode !== 'name' ? chordDiagram(ch, { print: true, lefty, labels: false }) : null,
+    mode !== 'name' ? chordDiagram(ch, { print: true, lefty, fingers: true, labels: false }) : null,
   );
 }
 
@@ -104,6 +133,20 @@ function legend(song: Song, lefty: boolean): HTMLElement {
   );
 }
 
+/** Kleine Lesehilfe über den Griffbildern: Saiten von links nach rechts, Zahl = Finger. */
+function gripKey(lefty: boolean): HTMLElement {
+  const names = instrument().strings.map((x) => x.name);
+  if (lefty) names.reverse();
+  return h(
+    'p',
+    { class: 'ps-key' },
+    h('b', null, t('Saiten von links: {strings}', { strings: names.join(' ') })),
+    ' · ',
+    t('Zahl im Punkt = Finger: 1 Zeigefinger, 2 Mittelfinger, 3 Ringfinger, 4 kleiner Finger.'),
+    notesOnly() ? null : ' ' + t('o: leere Saite, x: nicht spielen.'),
+  );
+}
+
 /**
  * Braucht das Griffbild (bzw. der Name) mehr Platz als der Text bis zum nächsten Wechsel? Dann hält es den Platz frei,
  * sonst ragt es über den folgenden Text hinaus und das Wort bleibt in einem Stück. Gemessen in Zeichen: ein Griffbild
@@ -111,8 +154,38 @@ function legend(song: Song, lefty: boolean): HTMLElement {
  */
 function needsRoom(chordName: string, text: string, mode: SheetMode): boolean {
   const strings = instrument().strings.length;
-  const over = mode === 'name' ? chordName.length + 1 : Math.max(strings + 3, mode === 'beides' ? chordName.length + 1 : 0);
+  const over = mode === 'name' ? chordName.length + 1 : Math.max(strings + 5, mode === 'beides' ? chordName.length + 1 : 0);
   return text.length < over;
+}
+
+/**
+ * Nachmessen im Browser: Ragt ein Griffbild bis an das nächste heran, hält es doch seinen Platz frei. Die Liedzeilen
+ * haben am Bildschirm dieselben Maße wie im Druck (pt, mm); gemessen wird kurz auf Papierbreite (A4 ohne Ränder).
+ */
+function fitSheet(root: HTMLElement): void {
+  const sheetEl = root.querySelector('.song-sheet') as HTMLElement | null;
+  if (!sheetEl || !root.parentNode || typeof sheetEl.getBoundingClientRect !== 'function') return;
+  const keep = sheetEl.getAttribute('style');
+  sheetEl.setAttribute('style', 'width: 182mm; max-width: none; padding: 0');
+  const right = (el: Element) => {
+    let r = -Infinity;
+    const parts = el.querySelectorAll('.ps-over > *');
+    for (let k = 0; k < parts.length; k++) r = Math.max(r, parts[k].getBoundingClientRect().right);
+    return r;
+  };
+  const lines = sheetEl.querySelectorAll('.ps-line');
+  for (let l = 0; l < lines.length; l++) {
+    const anchors = lines[l].querySelectorAll('.ps-anchor');
+    for (let i = 0; i + 1 < anchors.length; i++) {
+      const a = anchors[i];
+      if (a.className.indexOf('ps-free') < 0) continue;
+      const next = anchors[i + 1].getBoundingClientRect();
+      const sameRow = Math.abs(next.bottom - a.getBoundingClientRect().bottom) < 2;
+      if (sameRow && right(a) + 4 > next.left) a.className = 'ps-anchor';
+    }
+  }
+  if (keep === null) sheetEl.removeAttribute('style');
+  else sheetEl.setAttribute('style', keep);
 }
 
 export function songSheetNode(song: Song, mode: SheetMode, info: (string | null)[]): HTMLElement {
@@ -142,9 +215,9 @@ export function songSheetNode(song: Song, mode: SheetMode, info: (string | null)
   return sheet(
     `song-sheet mode-${mode}`,
     h('header', { class: 'sheet-head' }, h('h2', null, song.title), h('p', { class: 'sheet-sub' }, info.filter((x) => !!x).join(' · '))),
-    mode === 'name' ? legend(song, lefty) : null,
+    mode === 'name' ? legend(song, lefty) : gripKey(lefty),
     h('div', { class: 'ps-lines' }, ...lines),
-    sheetFoot(song.origin),
+    sheetFoot([song.origin], songQr(song)),
   );
 }
 
@@ -183,6 +256,7 @@ export const songSheet: View = (root, id) => {
   const draw = () => {
     clear(preview);
     preview.appendChild(songSheetNode(arranged(), mode, info()));
+    fitSheet(preview);
   };
   const drawKeys = () => {
     const k = songKey(song);
@@ -245,6 +319,7 @@ export const songSheet: View = (root, id) => {
     ],
     preview,
   );
+  fitSheet(preview);
 };
 
 // ---------- Griff-Übersicht ----------
@@ -286,7 +361,7 @@ export function chordChartNode(): HTMLElement {
       h('p', { class: 'sheet-sub' }, [tuningLabel(), lefty ? t('Linkshänder') + ' –' : null, t('Zahlen: 1 Zeigefinger, 2 Mittelfinger, 3 Ringfinger, 4 kleiner Finger.'), bass ? null : t('o: leere Saite, x: nicht spielen.')].filter((x) => !!x).join(' ')),
     ),
     ...groups.map((g) => h('section', { class: 'chart-group' }, h('h3', null, g.title), h('div', { class: 'chart-grid' }, ...g.cells))),
-    sheetFoot(bass ? t('Ab dem 5. Bund klingt jede Saite wie die nächste leer.') : null),
+    sheetFoot([bass ? t('Ab dem 5. Bund klingt jede Saite wie die nächste leer.') : null]),
   );
 }
 
@@ -336,7 +411,7 @@ export function neckSheetNode(tuningId: string, upright: boolean): HTMLElement {
       ' ',
       t('Ab dem {fret} Bund wiederholt sich alles eine Oktave höher.', { fret: ordinal(12) }),
     ),
-    sheetFoot(),
+    sheetFoot([]),
   );
 }
 

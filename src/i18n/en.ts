@@ -456,6 +456,9 @@ export const EN: Record<string, string> = {
   'Alle gleich': 'All the same',
   'nur Klick': 'click only',
   // Druckansichten (src/views/print.ts, src/site/pages.ts)
+  "{url} – kostenlos, ohne Werbung": "{url} – free, no ads",
+  "Saiten von links: {strings}": "Strings from the left: {strings}",
+  "Zahl im Punkt = Finger: 1 Zeigefinger, 2 Mittelfinger, 3 Ringfinger, 4 kleiner Finger.": "Number in the dot = finger: 1 index finger, 2 middle finger, 3 ring finger, 4 little finger.",
   "Liedblatt": "Song sheet",
   "Liedblatt: {title}": "Song sheet: {title}",
   "{title} zum Ausdrucken: Liedtext mit Griffbildern oder Akkordnamen für {instrument}.": "{title} to print: lyrics with chord diagrams or chord names for {instrument}.",

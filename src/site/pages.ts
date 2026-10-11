@@ -1376,7 +1376,7 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
   const attrs: string[] = [`lang="${l}"`, `data-base="${escAttr(currentBase)}"`, `data-brand="${escAttr(siteDef.brand[l])}"`, `data-site="${siteDef.id}"`];
   if (siteDef.instrument) attrs.push(`data-instrument="${siteDef.instrument}"`, `data-sites="${escAttr(siteUrls)}"`);
   if (spec.view) attrs.push(`data-route="${escAttr(spec.route)}"`);
-  if (spec.view === teachers) attrs.push(`data-public="${escAttr(e.publicUrl(siteDef.id))}"`);
+  if (spec.view === teachers || spec.view === songSheet || spec.view === chordChart || spec.view === neckView) attrs.push(`data-public="${escAttr(e.publicUrl(siteDef.id))}"`);
   if (spec.hashParam) attrs.push('data-hash-param');
   const html =
     `<!doctype html>\n<html ${attrs.join(' ')}>\n<head>\n${head.join('\n')}\n</head>\n<body>\n` +

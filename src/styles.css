@@ -2759,6 +2759,32 @@ summary:focus-visible {
   margin: 2px 0;
 }
 
+.sheet-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.sheet-foot-text {
+  flex: 1;
+}
+
+.sheet-qr {
+  flex: none;
+  margin-left: 12px;
+}
+
+.sheet-qr-svg {
+  display: block;
+  width: 76px;
+  height: 76px;
+}
+
+.ps-key {
+  margin: 0 0 12px;
+  font-size: 0.75em;
+}
+
 .pd-svg {
   display: block;
   width: 100%;
@@ -2776,16 +2802,22 @@ summary:focus-visible {
 
 .pd-label,
 .pd-fret {
-  font-size: 13px;
+  font-size: 15px;
+}
+
+/* kleine Kleinbuchstaben (hohe e-Saite, kurze g-Saite) bleiben in normaler Stärke als Buchstabe erkennbar */
+.pd-svg .pd-label {
+  font-weight: 700;
 }
 
 /* Liedblatt: Griffbild bzw. Akkordname steht mit dem ersten Wort darunter zusammen, der übrige Text fließt weiter */
+/* Bildschirm und Druck in denselben Maßen: so misst die Vorschau, ob Griffbilder Platz brauchen (fitSheet) */
 .ps-lines {
-  font-size: 1.15em;
+  font-size: 16pt;
 }
 
 .ps-line {
-  margin: 0 0 0.45em;
+  margin: 0 0 0.3em;
   line-height: 1.45;
   break-inside: avoid;
   page-break-inside: avoid;
@@ -2829,16 +2861,16 @@ summary:focus-visible {
 }
 
 .ps-over .pd-svg {
-  width: 58px;
+  width: 19mm;
   margin-bottom: 1px;
 }
 
 .ps-over .pd-svg.strings-5 {
-  width: 66px;
+  width: 21mm;
 }
 
 .ps-over .pd-svg.strings-6 {
-  width: 76px;
+  width: 23mm;
 }
 
 .ps-legend {
@@ -3002,20 +3034,13 @@ summary:focus-visible {
     font-size: 8pt;
   }
 
-  .ps-lines {
-    font-size: 16pt;
+  .ps-key {
+    font-size: 10pt;
   }
 
-  .ps-over .pd-svg {
-    width: 16mm;
-  }
-
-  .ps-over .pd-svg.strings-5 {
-    width: 18mm;
-  }
-
-  .ps-over .pd-svg.strings-6 {
-    width: 20mm;
+  .sheet-qr-svg {
+    width: 19mm;
+    height: 19mm;
   }
 
   .ps-legend-chord .pd-svg {
