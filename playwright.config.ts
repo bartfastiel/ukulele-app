@@ -10,6 +10,9 @@ const fakeMic = (file: string) => ({
   permissions: ['microphone'],
 });
 
+// eigener Port je Arbeitskopie (E2E_PORT), sonst nutzt ein paralleler Lauf den Server einer anderen Kopie mit
+const port = process.env.E2E_PORT || '4173';
+
 export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: true,
@@ -17,14 +20,14 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: 'http://localhost:4173/ukulele/',
+    baseURL: `http://localhost:${port}/ukulele/`,
     trace: 'retain-on-failure',
     // die bestehenden Tests prüfen deutsche Texte; ohne Angabe wäre die Browser-Sprache Englisch
     locale: 'de-DE',
   },
   webServer: {
-    command: 'node tools/serve.mjs dist 4173',
-    url: 'http://localhost:4173/ukulele/',
+    command: `node tools/serve.mjs dist ${port}`,
+    url: `http://localhost:${port}/ukulele/`,
     reuseExistingServer: !process.env.CI,
   },
   projects: [

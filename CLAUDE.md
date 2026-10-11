@@ -11,7 +11,7 @@ npm run dev        # Watch-Build + Server auf http://localhost:5173/ (Instrument
 npm run typecheck  # tsc --noEmit (TypeScript 7)
 npm test           # Unit-Tests: node --test mit Type-Stripping (tests/unit/*.test.ts)
 npm run build      # dist/ via tools/build.mjs (esbuild, Inhalts-Hash, Service Worker)
-npm run e2e        # Build + Playwright (tests/e2e), Server: tools/serve.mjs auf :4173
+npm run e2e        # Build + Playwright (tests/e2e), Server: tools/serve.mjs auf :4173 (E2E_PORT=… für parallele Arbeitskopien)
 node tools/shots.mjs <ordner> [de|en|fr] [gitarre|banjo]   # Bildschirmfotos aller Ansichten (iPad/WebKit, Handy hoch/quer)
 node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) durch die Akkorderkennung spielen
 ```
