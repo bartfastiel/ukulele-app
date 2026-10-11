@@ -52,9 +52,9 @@ export const LAGERFEUER_ARTICLES: Article[] = [
       { h2: { de: 'Finger liegen lassen', en: 'Leave your fingers where they are', fr: 'Laisser les doigts en place' } },
       {
         p: {
-          de: 'Beim **Rock-G** liegen Ringfinger und kleiner Finger im 3. Bund auf der B- und der e-Saite. Diese beiden bleiben einfach liegen, wenn du zu **Cadd9**, **Em7** oder [Dsus4](chord:Dsus4) wechselst – nur die anderen Finger wandern. Diese Akkorde heißen etwas anders als G, C, Em und D, weil ein Zusatzton mitklingt, passen aber in vielen Liedern und klingen schön offen.',
-          en: 'In **rock G**, your ring and little fingers sit at the 3rd fret on the B and high E strings. Those two simply stay put when you change to **Cadd9**, **Em7** or [Dsus4](chord:Dsus4) – only the other fingers move. These chords have slightly different names from G, C, Em and D because an extra note sounds along, but they fit many songs and sound nice and open.',
-          fr: 'Dans le **G rock**, l’annulaire et l’auriculaire sont en case 3 sur les cordes B et E aiguë. Ces deux doigts restent simplement en place quand tu passes à **Cadd9**, **Em7** ou [Dsus4](chord:Dsus4) ; seuls les autres doigts bougent. Ces accords ont un nom un peu différent de G, C, Em et D parce qu’une note en plus sonne avec, mais ils conviennent à beaucoup de chansons et sonnent joliment ouverts.',
+          de: 'Beim **Rock-G** liegen Ringfinger und kleiner Finger im 3. Bund auf der B- und der e-Saite. Diese beiden bleiben einfach liegen, wenn du zu [Cadd9](chord:Cadd9), [Dsus4](chord:Dsus4) oder zum Em7 mit denselben beiden Fingern im 3. Bund wechselst (unter [Em](chord:Em) bei **Leichter greifen**) – nur die anderen Finger wandern. Diese Akkorde heißen etwas anders als G, C, Em und D, weil ein Zusatzton mitklingt, passen aber in vielen Liedern und klingen schön offen.',
+          en: 'In **rock G**, your ring and little fingers sit at the 3rd fret on the B and high E strings. Those two simply stay put when you change to [Cadd9](chord:Cadd9), [Dsus4](chord:Dsus4) or the Em7 with the same two fingers at the 3rd fret (under [Em](chord:Em) in **Easier ways to play it**) – only the other fingers move. These chords have slightly different names from G, C, Em and D because an extra note sounds along, but they fit many songs and sound nice and open.',
+          fr: 'Dans le **G rock**, l’annulaire et l’auriculaire sont en case 3 sur les cordes B et E aiguë. Ces deux doigts restent simplement en place quand tu passes à [Cadd9](chord:Cadd9), [Dsus4](chord:Dsus4) ou au Em7 avec les mêmes deux doigts en case 3 (sous [Em](chord:Em) dans **Plus facile à jouer**) ; seuls les autres doigts bougent. Ces accords ont un nom un peu différent de G, C, Em et D parce qu’une note en plus sonne avec, mais ils conviennent à beaucoup de chansons et sonnent joliment ouverts.',
         },
       },
       { h2: { de: 'Ersatzakkorde, die fast gleich klingen', en: 'Stand-in chords that sound almost the same', fr: 'Des accords de remplacement qui sonnent presque pareil' } },
@@ -71,9 +71,9 @@ export const LAGERFEUER_ARTICLES: Article[] = [
             fr: '[Asus2](chord:Asus2) au lieu de A : deux doigts, un son ouvert – ni majeur ni mineur.',
           },
           {
-            de: '**Bm7** statt [Bm](chord:Bm): drei Finger im 2. Bund auf A-, G- und hoher e-Saite, klingt weich und fast wie Bm.',
-            en: '**Bm7** instead of [Bm](chord:Bm): three fingers at the 2nd fret on the A, G and high E strings, soft and almost like Bm.',
-            fr: '**Bm7** au lieu de [Bm](chord:Bm) : trois doigts en case 2 sur les cordes A, G et E aiguë, un son doux, presque comme Bm.',
+            de: '[Bm7](chord:Bm7) statt [Bm](chord:Bm): drei Finger im 2. Bund auf A-, G- und hoher e-Saite, klingt weich und fast wie Bm.',
+            en: '[Bm7](chord:Bm7) instead of [Bm](chord:Bm): three fingers at the 2nd fret on the A, G and high E strings, soft and almost like Bm.',
+            fr: '[Bm7](chord:Bm7) au lieu de [Bm](chord:Bm) : trois doigts en case 2 sur les cordes A, G et E aiguë, un son doux, presque comme Bm.',
           },
         ],
       },
@@ -88,9 +88,9 @@ export const LAGERFEUER_ARTICLES: Article[] = [
       },
       {
         tip: {
-          de: 'Schalte bei einem Lied **Einfache Griffe** ein: Dann zeigt die App für G und C die Mini-Griffe und nimmt, wo es passt, leichtere Verwandte. Hat ein Freund den vollen Griff, klingt beides zusammen trotzdem gut.',
-          en: 'Switch on **Easy chords** in a song: the app then shows the mini shapes for G and C and, where it fits, uses easier related chords. If a friend plays the full shape, both still sound good together.',
-          fr: 'Active **Accords faciles** dans une chanson : l’appli montre alors les mini-doigtés pour G et C et prend, quand ça va, des accords voisins plus faciles. Si un ami joue le doigté complet, les deux sonnent quand même bien ensemble.',
+          de: 'Schalte bei einem Lied **Einfache Griffe** ein: Dann zeigt die App für G, G7 und C die Mini-Griffe und nimmt, wo es passt, leichtere Verwandte. Hat ein Freund den vollen Griff, klingt beides zusammen trotzdem gut.',
+          en: 'Switch on **Easy chords** in a song: the app then shows the mini shapes for G, G7 and C and, where it fits, uses easier related chords. If a friend plays the full shape, both still sound good together.',
+          fr: 'Active **Accords faciles** dans une chanson : l’appli montre alors les mini-doigtés pour G, G7 et C et prend, quand ça va, des accords voisins plus faciles. Si un ami joue le doigté complet, les deux sonnent quand même bien ensemble.',
         },
       },
       { tool: 'akkorde' },
@@ -132,9 +132,9 @@ export const LAGERFEUER_ARTICLES: Article[] = [
       { h2: { de: '2. Daumen-G: zwei Finger, voller Klang', en: '2. Thumb G: two fingers, full sound', fr: '2. G avec le pouce : deux doigts, son plein' } },
       {
         p: {
-          de: 'Leg den Daumen über den Hals und drück die tiefe E-Saite im 3. Bund. Mit seiner Spitze berührt er die A-Saite, damit sie nicht mitklingt. Dazu der Ringfinger auf die hohe e-Saite im 3. Bund. Jetzt darfst du alle Saiten anschlagen, und der tiefste Ton ist ein G. Das klappt mit großen Händen und dünnem Hals besser.',
-          en: 'Wrap your thumb over the neck and press the low E string at the 3rd fret. Its tip touches the A string so it doesn’t ring. Add your ring finger on the high E string at the 3rd fret. Now you can strum all the strings, and the lowest note is a G. This works better with big hands and a slim neck.',
-          fr: 'Passe le pouce par-dessus le manche et appuie la corde E grave en case 3. Son bout effleure la corde A pour qu’elle ne sonne pas. Ajoute l’annulaire sur la corde E aiguë en case 3. Tu peux maintenant gratter toutes les cordes, et la note la plus grave est un Sol. C’est plus facile avec de grandes mains et un manche fin.',
+          de: 'Leg den Daumen über den Hals und drück die tiefe E-Saite im 3. Bund. Mit seiner Spitze berührt er die A-Saite, damit sie nicht mitklingt. Dazu der Ringfinger auf die hohe e-Saite im 3. Bund. Jetzt darfst du über alle Saiten schlagen – die A-Saite bleibt gedämpft still, deshalb steht im Griffbild dort ein x. Der tiefste Ton ist ein G. Das klappt mit großen Händen und dünnem Hals besser.',
+          en: 'Wrap your thumb over the neck and press the low E string at the 3rd fret. Its tip touches the A string so it doesn’t ring. Add your ring finger on the high E string at the 3rd fret. Now you can strum across all the strings – the A string stays muted, which is why the diagram shows an x there. The lowest note is a G. This works better with big hands and a slim neck.',
+          fr: 'Passe le pouce par-dessus le manche et appuie la corde E grave en case 3. Son bout effleure la corde A pour qu’elle ne sonne pas. Ajoute l’annulaire sur la corde E aiguë en case 3. Tu peux maintenant gratter toutes les cordes : la corde A reste étouffée, c’est pour ça que le schéma montre un x à cet endroit. La note la plus grave est un Sol. C’est plus facile avec de grandes mains et un manche fin.',
         },
       },
       { h2: { de: '3. Das volle G mit drei Fingern', en: '3. The full G with three fingers', fr: '3. Le G complet à trois doigts' } },
@@ -149,9 +149,9 @@ export const LAGERFEUER_ARTICLES: Article[] = [
       { h2: { de: '4. Rock-G: vier Finger, schnellere Wechsel', en: '4. Rock G: four fingers, quicker changes', fr: '4. G rock : quatre doigts, changements plus rapides' } },
       {
         p: {
-          de: 'Wie das volle G, aber der Ringfinger liegt auf der B-Saite und der kleine Finger auf der hohen e-Saite, beide im 3. Bund. Das sieht schwerer aus, aber beim Wechsel zu **Cadd9** oder [Dsus4](chord:Dsus4) bleiben diese beiden Finger einfach liegen. Mehr dazu unter [Lagerfeuer-Tricks](wissen:gitarre-lagerfeuer-tricks).',
-          en: 'Like the full G, but your ring finger sits on the B string and your little finger on the high E string, both at the 3rd fret. It looks harder, but when you change to **Cadd9** or [Dsus4](chord:Dsus4) those two fingers simply stay put. More in [campfire tricks](wissen:gitarre-lagerfeuer-tricks).',
-          fr: 'Comme le G complet, mais l’annulaire se pose sur la corde B et l’auriculaire sur la corde E aiguë, tous deux en case 3. Ça paraît plus dur, mais pour passer à **Cadd9** ou [Dsus4](chord:Dsus4), ces deux doigts restent simplement en place. Plus d’infos dans [astuces feu de camp](wissen:gitarre-lagerfeuer-tricks).',
+          de: 'Wie das volle G, aber der Ringfinger liegt auf der B-Saite und der kleine Finger auf der hohen e-Saite, beide im 3. Bund. Das sieht schwerer aus, aber beim Wechsel zu [Cadd9](chord:Cadd9) oder [Dsus4](chord:Dsus4) bleiben diese beiden Finger einfach liegen. Mehr dazu unter [Lagerfeuer-Tricks](wissen:gitarre-lagerfeuer-tricks).',
+          en: 'Like the full G, but your ring finger sits on the B string and your little finger on the high E string, both at the 3rd fret. It looks harder, but when you change to [Cadd9](chord:Cadd9) or [Dsus4](chord:Dsus4) those two fingers simply stay put. More in [campfire tricks](wissen:gitarre-lagerfeuer-tricks).',
+          fr: 'Comme le G complet, mais l’annulaire se pose sur la corde B et l’auriculaire sur la corde E aiguë, tous deux en case 3. Ça paraît plus dur, mais pour passer à [Cadd9](chord:Cadd9) ou [Dsus4](chord:Dsus4), ces deux doigts restent simplement en place. Plus d’infos dans [astuces feu de camp](wissen:gitarre-lagerfeuer-tricks).',
         },
       },
       {

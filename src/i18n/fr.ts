@@ -275,11 +275,14 @@ export const FR: Record<string, string> = {
   // leichte Griffe (src/music/easy-grips.ts, src/views/chords.ts, src/views/player.ts)
   '{title} anhören': 'Écouter {title}',
   '{title} prüfen lassen': 'Faire vérifier {title}',
+  'C-add-Neun': 'Do add neuf',
+  'h-Moll-Sieben (international Bm7)': 'Si mineur sept',
+  'B-Major-Sieben (international Bbmaj7)': 'Si bémol septième majeure',
   'Leichter greifen': 'Plus facile à jouer',
-  'Diese Griffe sind leichter als {chord}. Manche klingen ein bisschen anders – das steht immer dabei.':
-    'Ces doigtés sont plus faciles que {chord}. Certains sonnent un peu différemment – c’est toujours indiqué.',
+  'Andere Wege zu {chord}: Manche sind leichter, manche ein Trick für schnelle Wechsel. Was anders klingt, steht immer dabei.':
+    'D’autres façons de jouer {chord} : certaines sont plus faciles, d’autres sont une astuce pour changer vite. Ce qui sonne différemment est toujours indiqué.',
   'Dein leichter Griff klingt richtig gut!': 'Ton doigté facile sonne vraiment bien !',
-  'Leichtere Griffbilder für {list} – schlag nur die Saiten an, die das Bild zeigt.': 'Doigtés plus faciles pour {list} – gratte seulement les cordes indiquées sur le schéma.',
+  'Mit „Einfache Griffe“ zeigt die App leichtere Griffbilder für {list} – schlag dann nur die Saiten an, die das Bild zeigt.': 'Avec « Accords faciles », l’appli montre des doigtés plus faciles pour {list} – gratte alors seulement les cordes indiquées sur le schéma.',
   'eigentlich {chord}': 'en fait {chord}',
   'ohne Grundton {note}': 'sans la fondamentale {note}',
   'gleiche Töne, anderer Fingersatz': 'mêmes notes, autre doigté',
@@ -300,7 +303,7 @@ export const FR: Record<string, string> = {
   'Zeigefinger auf die G-Saite im 1. Bund, Mittelfinger auf die C-Saite und Ringfinger auf die A-Saite im 2. Bund. Die E-Saite bleibt leer.':
     'Index sur la corde G en case 1, majeur sur la corde C et annulaire sur la corde A en case 2. La corde E reste à vide.',
   'In den meisten Liedern klingt E7 an dieser Stelle fast genauso gut.': 'Dans la plupart des chansons, E7 sonne presque aussi bien à cet endroit.',
-  'E ohne Querbalken': 'E sans barré',
+  'E mit drei Fingern': 'E avec trois doigts',
   'Zeigefinger auf die G-Saite im 1. Bund, Mittelfinger auf die A-Saite im 2. Bund, Ringfinger auf die C-Saite im 4. Bund. Die E-Saite bleibt leer.':
     'Index sur la corde G en case 1, majeur sur la corde A en case 2, annulaire sur la corde C en case 4. La corde E reste à vide.',
   'Ein echtes E mit nur drei Fingern – dafür musst du sie weit spreizen.': 'Un vrai E avec seulement trois doigts – mais il faut bien les écarter.',
@@ -320,11 +323,6 @@ export const FR: Record<string, string> = {
   'Ringfinger auf die D-Saite im 3. Bund, Mittelfinger auf die G-Saite im 2. Bund, Zeigefinger auf die B-Saite im 1. Bund. Die hohe e-Saite bleibt leer, die zwei tiefen Saiten schlägst du nicht an.':
     'Annulaire sur la corde D en case 3, majeur sur la corde G en case 2, index sur la corde B en case 1. La corde E aiguë reste à vide, ne gratte pas les deux cordes graves.',
   'Der leichteste Einstieg statt F: klingt weicher und passt fast immer.': 'Le plus facile pour commencer à la place de F : plus doux, et il convient presque toujours.',
-  'Daumen-F': 'F avec le pouce',
-  'Wie das kleine F, dazu drückt der Daumen über den Hals die tiefe E-Saite im 1. Bund. Seine Spitze berührt die A-Saite leicht, damit sie still bleibt.':
-    'Comme le petit F, et en plus le pouce passe par-dessus le manche pour appuyer la corde E grave en case 1. Son bout effleure la corde A pour qu’elle reste muette.',
-  'Wenn das kleine F zu dünn klingt und der volle Barré noch zu schwer ist. Klappt mit großen Händen besser.':
-    'Quand le petit F sonne trop maigre et que le barré complet est encore trop dur. Plus facile avec de grandes mains.',
   'Mini-G mit einem Finger': 'Mini G avec un seul doigt',
   'Ringfinger auf die hohe e-Saite im 3. Bund. Nur die vier dünnen Saiten anschlagen.': 'Annulaire sur la corde E aiguë en case 3. Gratte seulement les quatre cordes fines.',
   'Für den Anfang und für schnelle Wechsel – zusammen mit Mini-C und D.': 'Pour débuter et pour changer vite – avec le mini C et D.',
@@ -335,7 +333,19 @@ export const FR: Record<string, string> = {
   'Rock-G für schnelle Wechsel': 'G rock pour changer vite',
   'Mittelfinger auf die tiefe E-Saite und Ringfinger auf die B-Saite, kleiner Finger auf die e-Saite – alle im 3. Bund. Zeigefinger auf die A-Saite im 2. Bund.':
     'Majeur sur la corde E grave, annulaire sur la corde B, auriculaire sur la corde E aiguë – tous en case 3. Index sur la corde A en case 2.',
-  'Ring- und kleiner Finger bleiben beim Wechsel zu Cadd9, Em7 und Dsus4 einfach liegen.': 'L’annulaire et l’auriculaire restent simplement en place pour passer à Cadd9, Em7 et Dsus4.',
+  'Ring- und kleiner Finger bleiben beim Wechsel zu Cadd9, Dsus4 und dem Em7 zum Rock-G einfach liegen.': 'L’annulaire et l’auriculaire restent simplement en place pour passer à Cadd9, Dsus4 et au Em7 du G rock.',
+  'Mini-G7 mit einem Finger': 'Mini G7 avec un seul doigt',
+  'Zeigefinger auf die hohe e-Saite im 1. Bund. Nur die vier dünnen Saiten anschlagen.': 'Index sur la corde E aiguë en case 1. Gratte seulement les quatre cordes fines.',
+  'Passt zu Mini-G und Mini-C – so geht C, G7 und G mit ganz wenig Fingerarbeit.': 'Va avec le mini G et le mini C – C, G7 et G presque sans effort pour les doigts.',
+  'Em7 zum Rock-G': 'Em7 avec le G rock',
+  'Zeigefinger auf die A-Saite und Mittelfinger auf die D-Saite im 2. Bund, Ringfinger und kleiner Finger auf B- und e-Saite im 3. Bund.': 'Index sur la corde A et majeur sur la corde D en case 2, annulaire et auriculaire sur les cordes B et E aiguë en case 3.',
+  'In Liedern mit G: Ring- und kleiner Finger bleiben vom Rock-G aus einfach liegen.': 'Dans les chansons avec G : depuis le G rock, l’annulaire et l’auriculaire restent simplement en place.',
+  'Em mit zwei Fingern': 'Em avec deux doigts',
+  'Ringfinger auf die C-Saite im 4. Bund, Zeigefinger auf die A-Saite im 2. Bund. G- und E-Saite bleiben leer.': 'Annulaire sur la corde C en case 4, index sur la corde A en case 2. Les cordes G et E restent à vide.',
+  'Ein echtes Em mit nur zwei Fingern. Pass auf, dass der Ringfinger die E-Saite nicht berührt.': 'Un vrai Em avec seulement deux doigts. Fais attention que l’annulaire ne touche pas la corde E.',
+  'A5 mit zwei Fingern': 'A5 avec deux doigts',
+  'Zeigefinger auf die G-Saite, Mittelfinger auf die D-Saite, beide im 2. Bund. A- und E-Saite bleiben leer.': 'Index sur la corde G, majeur sur la corde D, tous deux en case 2. Les cordes A et E restent à vide.',
+  'Ohne Terz, also weder Dur noch Moll – klingt kräftig und passt, wenn die anderen A spielen.': 'Sans tierce, donc ni majeur ni mineur – un son puissant qui va bien quand les autres jouent A.',
   'Mini-C mit zwei Fingern': 'Mini C avec deux doigts',
   'Mittelfinger auf die D-Saite im 2. Bund, Zeigefinger auf die B-Saite im 1. Bund. Nur die vier dünnen Saiten anschlagen.':
     'Majeur sur la corde D en case 2, index sur la corde B en case 1. Gratte seulement les quatre cordes fines.',

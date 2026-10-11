@@ -701,7 +701,7 @@ class Player {
       ),
     );
     if (minis.length)
-      this.keyBox.appendChild(h('p', { class: 'small' }, t('Leichtere Griffbilder für {list} – schlag nur die Saiten an, die das Bild zeigt.', { list: minis.join(', ') })));
+      this.keyBox.appendChild(h('p', { class: 'small' }, t('Mit „Einfache Griffe“ zeigt die App leichtere Griffbilder für {list} – schlag dann nur die Saiten an, die das Bild zeigt.', { list: minis.join(', ') })));
     this.keyBox.appendChild(
       h(
         'p',

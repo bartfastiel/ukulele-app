@@ -94,6 +94,8 @@ export const GITARRE: Instrument = {
     grip('C7', 'x32310', 'x32410', tk('C-Sieben'), 3),
     grip('Cmaj7', 'x32000', 'x32000', tk('C-Major-Sieben'), 3),
     grip('Fmaj7', 'xx3210', 'xx3210', tk('F-Major-Sieben'), 3),
+    grip('Cadd9', 'x32033', 'x21034', tk('C-add-Neun'), 3),
+    grip('Bm7', 'x20202', 'x10203', tk('h-Moll-Sieben (international Bm7)'), 3),
     grip('B7', 'x21202', 'x21304', tk('H-Sieben (international B7)'), 3),
     grip('F', 'xx3211', 'xx3211', tk('F-Dur'), 3, true),
     grip('Bm', 'x24432', 'x13421', tk('h-Moll (international Bm)'), 4, true),

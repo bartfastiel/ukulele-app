@@ -96,17 +96,30 @@ test('leichte Griffe: gewählt, erkennt das Mikrofon die Variante als richtig', 
   });
 });
 
-test('leichte Griffe: Kandidaten ersetzen den Bibliotheksgriff, gleiche Griffe fallen weg', () => {
+test('leichte Griffe: Variante kommt vorn dazu, der Bibliotheksgriff bleibt, gleiche Griffe fallen weg', () => {
   try {
     setInstrument('gitarre');
     const f = easyGrips('F').filter((e) => e.is === 'Fmaj7')[0];
     const c = candidatesFor('F', f.grip);
-    assert.equal(c.filter((x) => x.name === 'F').length, 1);
+    assert.equal(c.filter((x) => x.name === 'F').length, 2);
+    assert.equal(c[0].frets.join(''), f.grip.frets.join(''));
     assert.equal(c.filter((x) => x.name === 'Fmaj7').length, 0);
-    assert.equal(c.filter((x) => x.name === 'F')[0].frets.join(''), f.grip.frets.join(''));
   } finally {
     setInstrument('ukulele');
   }
+});
+
+test('leichte Griffe: mit gewählter Variante werden voller Griff UND Variante gelobt', () => {
+  each((id) => {
+    for (const e of allEasyGrips()) {
+      const c = candidatesFor(e.chord, e.grip);
+      for (const played of [e.grip, chord(e.chord)]) {
+        const sig = renderStrum(chordMidis(played).map(midiToFreq), SR, 1.2, 18, instrument().synth);
+        const v = judgeChord(instrumentPeaks(spectrum(sig, 4800 + 8192), SR / 8192), e.chord, c);
+        assert.ok(v && v.ok, `${id} ${e.chord}: ${played.frets.join('')} gespielt, Variante ${e.grip.frets.join('')} gewählt – erkannt als ${v && v.best}`);
+      }
+    }
+  });
 });
 
 test('leichte Griffe: Daumen im Text, in Liedern nur Mini-Griffe mit allen Tönen', () => {
@@ -117,6 +130,7 @@ test('leichte Griffe: Daumen im Text, in Liedern nur Mini-Griffe mit allen Töne
     assert.match(describeChord(thumbG.grip), /nicht anschlagen: A/);
     assert.equal(songGrip('G')!.frets.join(','), '-1,-1,0,0,0,3');
     assert.equal(songGrip('C')!.frets.join(','), '-1,-1,2,0,1,0');
+    assert.equal(songGrip('G7')!.frets.join(','), '-1,-1,0,0,0,1');
     assert.equal(songGrip('F'), null);
     assert.equal(songGrip('Am'), null);
     // in anderen Stimmungen gelten die Varianten nicht

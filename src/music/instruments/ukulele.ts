@@ -43,6 +43,7 @@ export const UKULELE: Instrument = {
     grip('E7', '1202', '1203', tk('E-Sieben'), 4),
     grip('B7', '2322', '1211', tk('H-Sieben (international B7)'), 4),
     grip('Bb', '3211', '3211', tk('B-Dur (international Bb)'), 4),
+    grip('Bbmaj7', '3210', '3210', tk('B-Major-Sieben (international Bbmaj7)'), 4),
   ],
   /** Übliche Ukulele-Griffe (G C E A) für Dur, Moll und Sept in allen zwölf Tonarten. */
   shapes: {

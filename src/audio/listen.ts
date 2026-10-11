@@ -69,13 +69,15 @@ async function listenForNote(expected: string, ev: ListenEvents): Promise<ChordL
 }
 
 /**
- * Kandidaten für die Bewertung. Mit eigenem Griff ersetzt er den Bibliotheksgriff; Bibliotheksgriffe mit genau denselben
- * Bünden (Fmaj7, wenn Fmaj7 als leichtes F gewählt ist) fallen weg, sonst lägen zwei gleich gute Griffe gleichauf.
+ * Kandidaten für die Bewertung. Ein eigener Griff kommt vorn dazu (er bestimmt die Hinweise), der Bibliotheksgriff gleichen
+ * Namens bleibt – beide gelten als richtig. Andere Griffe mit genau denselben Bünden (Fmaj7, wenn Fmaj7 als leichtes F
+ * gewählt ist) fallen weg, sonst lägen zwei gleich gute Griffe gleichauf.
  */
 export function candidatesFor(target: string, grip?: Chord): Chord[] {
   if (grip) {
     const key = grip.frets.join(' ');
-    return CHORDS.filter((c) => c.name !== target && c.frets.join(' ') !== key).concat([{ ...grip, name: target }]);
+    const lib = CHORDS.some((c) => c.name === target) ? CHORDS : CHORDS.concat([chord(target)]);
+    return [{ ...grip, name: target }].concat(lib.filter((c) => c.frets.join(' ') !== key));
   }
   // transponierte Lieder können Akkorde außerhalb der Bibliothek verlangen
   return CHORDS.some((c) => c.name === target) ? CHORDS : CHORDS.concat([chord(target)]);

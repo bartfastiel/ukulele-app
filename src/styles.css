@@ -679,6 +679,11 @@ summary:focus-visible {
   margin-bottom: 6px;
 }
 
+/* lange Namen (Bbmaj7) passen sonst nicht in die schmale Kachel */
+.chord-tile .chord-name.long {
+  font-size: 1.4em;
+}
+
 .chord-tile .chord-svg {
   max-width: 110px;
 }

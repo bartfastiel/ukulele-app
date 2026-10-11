@@ -58,7 +58,7 @@ const DEFS: Record<string, EasyDef[]> = {
       chord: 'E',
       frets: '1402',
       fingers: '1302',
-      title: tk('E ohne Querbalken'),
+      title: tk('E mit drei Fingern'),
       text: tk('Zeigefinger auf die G-Saite im 1. Bund, Mittelfinger auf die A-Saite im 2. Bund, Ringfinger auf die C-Saite im 4. Bund. Die E-Saite bleibt leer.'),
       when: tk('Ein echtes E mit nur drei Fingern – dafür musst du sie weit spreizen.'),
     },
@@ -89,6 +89,14 @@ const DEFS: Record<string, EasyDef[]> = {
       text: tk('Zeigefinger auf die C-Saite, Mittelfinger auf die A-Saite, beide im 2. Bund. G- und E-Saite bleiben leer.'),
       when: tk('Klingt fast wie Em und passt fast immer – viel leichter als drei Finger in drei Bünden.'),
     },
+    {
+      chord: 'Em',
+      frets: '0402',
+      fingers: '0301',
+      title: tk('Em mit zwei Fingern'),
+      text: tk('Ringfinger auf die C-Saite im 4. Bund, Zeigefinger auf die A-Saite im 2. Bund. G- und E-Saite bleiben leer.'),
+      when: tk('Ein echtes Em mit nur zwei Fingern. Pass auf, dass der Ringfinger die E-Saite nicht berührt.'),
+    },
   ],
   gitarre: [
     {
@@ -99,14 +107,6 @@ const DEFS: Record<string, EasyDef[]> = {
       title: tk('Fmaj7 ohne Barré'),
       text: tk('Ringfinger auf die D-Saite im 3. Bund, Mittelfinger auf die G-Saite im 2. Bund, Zeigefinger auf die B-Saite im 1. Bund. Die hohe e-Saite bleibt leer, die zwei tiefen Saiten schlägst du nicht an.'),
       when: tk('Der leichteste Einstieg statt F: klingt weicher und passt fast immer.'),
-    },
-    {
-      chord: 'F',
-      frets: '1x3211',
-      fingers: 'Dx3211',
-      title: tk('Daumen-F'),
-      text: tk('Wie das kleine F, dazu drückt der Daumen über den Hals die tiefe E-Saite im 1. Bund. Seine Spitze berührt die A-Saite leicht, damit sie still bleibt.'),
-      when: tk('Wenn das kleine F zu dünn klingt und der volle Barré noch zu schwer ist. Klappt mit großen Händen besser.'),
     },
     {
       chord: 'G',
@@ -130,7 +130,24 @@ const DEFS: Record<string, EasyDef[]> = {
       fingers: '210034',
       title: tk('Rock-G für schnelle Wechsel'),
       text: tk('Mittelfinger auf die tiefe E-Saite und Ringfinger auf die B-Saite, kleiner Finger auf die e-Saite – alle im 3. Bund. Zeigefinger auf die A-Saite im 2. Bund.'),
-      when: tk('Ring- und kleiner Finger bleiben beim Wechsel zu Cadd9, Em7 und Dsus4 einfach liegen.'),
+      when: tk('Ring- und kleiner Finger bleiben beim Wechsel zu Cadd9, Dsus4 und dem Em7 zum Rock-G einfach liegen.'),
+    },
+    {
+      chord: 'G7',
+      frets: 'xx0001',
+      fingers: 'xx0001',
+      title: tk('Mini-G7 mit einem Finger'),
+      text: tk('Zeigefinger auf die hohe e-Saite im 1. Bund. Nur die vier dünnen Saiten anschlagen.'),
+      when: tk('Passt zu Mini-G und Mini-C – so geht C, G7 und G mit ganz wenig Fingerarbeit.'),
+    },
+    {
+      chord: 'Em',
+      frets: '022033',
+      fingers: '012034',
+      is: 'Em7',
+      title: tk('Em7 zum Rock-G'),
+      text: tk('Zeigefinger auf die A-Saite und Mittelfinger auf die D-Saite im 2. Bund, Ringfinger und kleiner Finger auf B- und e-Saite im 3. Bund.'),
+      when: tk('In Liedern mit G: Ring- und kleiner Finger bleiben vom Rock-G aus einfach liegen.'),
     },
     {
       chord: 'C',
@@ -190,6 +207,17 @@ const DEFS: Record<string, EasyDef[]> = {
       title: tk('Mini-Bb'),
       text: tk('Mittel-, Ring- und kleiner Finger auf D-, G- und B-Saite im 3. Bund, Zeigefinger auf die hohe e-Saite im 1. Bund. Nur vier Saiten anschlagen.'),
       when: tk('Statt des großen Barrés, zum Beispiel in Liedern in F.'),
+    },
+  ],
+  mandoline: [
+    {
+      chord: 'A',
+      frets: '2200',
+      fingers: '1200',
+      is: 'A5',
+      title: tk('A5 mit zwei Fingern'),
+      text: tk('Zeigefinger auf die G-Saite, Mittelfinger auf die D-Saite, beide im 2. Bund. A- und E-Saite bleiben leer.'),
+      when: tk('Ohne Terz, also weder Dur noch Moll – klingt kräftig und passt, wenn die anderen A spielen.'),
     },
   ],
   bariton: [

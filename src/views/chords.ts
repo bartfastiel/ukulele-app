@@ -45,7 +45,7 @@ export const chords: View = (root, param) => {
             h(
               'a',
               { class: 'chord-tile btn', href: link(`akkord/${encodeURIComponent(c.name)}`), 'aria-label': describeChord(c) },
-              h('span', { class: 'chord-name' }, c.name, p.chordsChecked.includes(c.name) ? icon('check', 'icon tick') : null),
+              h('span', { class: c.name.length > 5 ? 'chord-name long' : 'chord-name' }, c.name, p.chordsChecked.includes(c.name) ? icon('check', 'icon tick') : null),
               chordDiagram(c, { lefty: p.settings.lefty, labels: false }),
             ),
           ),
@@ -190,7 +190,7 @@ function easySection(name: string, easy: EasyGrip[], lefty: boolean, checkButton
   return h(
     'section',
     { class: 'easy-grips' },
-    h('div', { class: 'card easy-intro' }, h('h2', null, t('Leichter greifen')), h('p', null, t('Diese Griffe sind leichter als {chord}. Manche klingen ein bisschen anders – das steht immer dabei.', { chord: name }))),
+    h('div', { class: 'card easy-intro' }, h('h2', null, t('Leichter greifen')), h('p', null, t('Andere Wege zu {chord}: Manche sind leichter, manche ein Trick für schnelle Wechsel. Was anders klingt, steht immer dabei.', { chord: name }))),
     h(
       'div',
       { class: 'easy-grid' },

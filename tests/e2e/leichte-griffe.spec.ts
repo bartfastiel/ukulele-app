@@ -50,5 +50,5 @@ test('Linkshänder: das Griffbild der Variante ist gespiegelt', async ({ page })
 
 test('Lied mit „Einfache Griffe“ auf der Gitarre nennt die Mini-Griffe', async ({ page }) => {
   await page.goto('/gitarre/#/lied/alle-meine-entchen');
-  await expect(page.locator('.key-box')).toContainText('Leichtere Griffbilder für');
+  await expect(page.locator('.key-box')).toContainText('leichtere Griffbilder für');
 });
