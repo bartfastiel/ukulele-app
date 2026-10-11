@@ -24,6 +24,7 @@ import { stars } from './views/stars.ts';
 import { record } from './views/record.ts';
 import { detective } from './views/detective.ts';
 import { blues } from './views/blues.ts';
+import { grooves } from './views/grooves.ts';
 import { ownSongEditor } from './views/own-song.ts';
 import { receiveSong, shareSong } from './views/share.ts';
 import { teachers } from './views/teachers.ts';
@@ -41,6 +42,7 @@ const ROUTES: Record<string, View> = {
   aufnahme: record,
   detektiv: detective,
   blues,
+  begleitung: grooves,
   'eigenes-lied': ownSongEditor,
   'lied-teilen': shareSong,
   teilen: receiveSong,

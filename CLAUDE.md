@@ -76,6 +76,8 @@ src/audio/offline.ts     Nachbau von AnalyserNode + Lauscher für Tests und tool
 src/views/record.ts      Aufnahme-Werkzeug (#/aufnahme), Plan in src/music/recording-plan.ts, ZIP via src/util/zip.ts
 src/music/identify.ts    Akkord-Detektiv: alle Griffe der ersten 5 Bünde bewerten, Akkordnamen aus Tonklassen
 src/music/blues.ts, src/audio/band.ts, src/ui/fretboard.ts   12-Takt-Blues, Begleitband aus Oszillatoren, Hals als Tabulatur
+src/music/grooves.ts, src/views/grooves.ts   Begleitungen Rock/Pop/Shuffle/Country (Seiten „begleitung/<stil>“): Akkordfolge,
+                         Schlagzeug, Basslinie je Achtel (E-Bass spielt sie selbst), Akkord-Tupfer im Register der Blues-Orgel
 src/music/transpose.ts   Transponieren, Tonart-Vorschlag (★) und Original-/Quellentonart (◆)
 src/music/songs-melodies.ts  erzeugt von tools/melody/import.ts (LilyPond aus Wikipedia → Melodieformat)
 src/music/import.ts      Eigene Lieder einlesen: ChordPro oder Akkordzeile über Text → ChordPro, Akkordnamen normalisieren

@@ -16,6 +16,8 @@ import { detectPitchIn } from '../audio/pitch.ts';
 import { freqToMidi, midiToFreq, pitchClass, playableFret, stringMidi } from '../music/notes.ts';
 import { load, markPracticed } from '../store.ts';
 import { noteText, t, tk, tp } from '../i18n.ts';
+import { GROOVES } from '../music/grooves.ts';
+import { link } from '../site/nav.ts';
 
 const TEMPOS = [
   { label: tk('Sehr langsam'), bpm: 55 },
@@ -409,6 +411,12 @@ export const blues: View = (root) => {
     ),
     counter,
     explain,
+    h(
+      'nav',
+      { class: 'card groove-others', 'aria-label': t('Andere Stile') },
+      h('h2', null, t('Andere Stile')),
+      h('div', { class: 'seg seg-wrap' }, ...GROOVES.map((g) => h('a', { class: 'btn btn-seg', href: link(`begleitung/${g.id}`) }, t(g.name)))),
+    ),
   );
   return () => {
     stop();

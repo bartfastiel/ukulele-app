@@ -17,6 +17,8 @@ export const SEGMENTS: Record<string, Record<Lang, string>> = {
   aufnahme: { de: 'aufnahmen', en: 'recordings', fr: 'enregistrements' },
   detektiv: { de: 'akkord-detektiv', en: 'chord-detective', fr: 'detective-des-accords' },
   blues: { de: 'blues', en: 'blues', fr: 'blues' },
+  // Begleitung je Stil: „begleitung/rock“
+  begleitung: { de: 'begleitung', en: 'backing-tracks', fr: 'accompagnement' },
   'eigenes-lied': { de: 'eigenes-lied', en: 'my-song', fr: 'ma-chanson' },
   'lied-teilen': { de: 'lied-teilen', en: 'share-song', fr: 'partager' },
   teilen: { de: 'geteiltes-lied', en: 'shared-song', fr: 'chanson-partagee' },
@@ -85,7 +87,7 @@ export function routePath(route: string, lang: Lang, isOwn: (id: string) => bool
   const seg = segment(name);
   if (!seg) return prefix;
   if (HASH_PARAM.indexOf(name) >= 0) return `${prefix}${seg[lang]}/${param ? '#' + param : ''}`;
-  if (name === 'stimmung' && param) return `${prefix}${seg[lang]}/${param}/`;
+  if ((name === 'stimmung' || name === 'begleitung') && param) return `${prefix}${seg[lang]}/${param}/`;
   if (name === 'wissen' && param) {
     const slug = articleSlug ? articleSlug(param, lang) : undefined;
     return `${prefix}${seg[lang]}/${slug ? slug + '/' : ''}`;
