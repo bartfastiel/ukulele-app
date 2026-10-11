@@ -1,9 +1,10 @@
 // Erzeugt src/music/songs-melodies.ts: Melodien für Lieder, die bisher nur Akkorde und Text haben – aus den
 // Wikipedia-Notenbeispielen (LilyPond; Cache von fetch-wiki.ts, fetch-langs.ts, search-wiki.ts, dann extract.ts) und
 // aus tools/melody/abc/. Transponiert in die einfache Tonart der App, Akkorde aus dem Notenbeispiel (falls vorhanden)
-// oder per Textabgleich aus unserem Akkordsatz. Meldet, wo der Notentext von unserem geprüften Text abweicht.
+// oder per Textabgleich aus unserem Akkordsatz. Meldet, wo der Notentext von unserem geprüften Text abweicht; die Silben
+// kommen am Ende aus unserem belegten Text (relyric.ts).
 //   node tools/melody/import.ts <ordner-mit-.ly> [weitere Ordner …] [--write]
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseLily, align, bestAligns, type Aligned, type AlignOptions, type LyScore, type LySyllable } from './lily.ts';
 import { parseAbc } from './abc.ts';
@@ -17,6 +18,8 @@ import { ROOTS, chord, chordMidis } from '../../src/music/chords.ts';
 import { NOTE_NAMES } from '../../src/music/notes.ts';
 import { WIKI } from './sources.ts';
 import { permalink } from './wiki-api.ts';
+import { lcsMap, relyric } from './relyric.ts';
+import { writeMelodies } from './melodies-file.ts';
 
 /** Nicht übernehmen – der Notentext ist eine geschützte oder abweichende Fassung. */
 const EXCLUDE: Record<string, string> = {
@@ -42,28 +45,6 @@ const songs = new Map<string, Song>();
 for (const s of CHORD_SONGS.concat(KINDER_SONGS, ENGLISH_SONGS, CHRISTMAS_SONGS)) songs.set(s.id, parseSong(s));
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-zäöüß]/g, '');
-
-/** Längste gemeinsame Teilfolge: für jede Stelle in a die zugeordnete Stelle in b (oder -1). */
-function lcsMap(a: string, b: string): { map: number[]; matched: number } {
-  const n = a.length;
-  const m = b.length;
-  const dp: Uint16Array[] = [];
-  for (let i = 0; i <= n; i++) dp.push(new Uint16Array(m + 1));
-  for (let i = n - 1; i >= 0; i--)
-    for (let j = m - 1; j >= 0; j--) dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
-  const map = new Array<number>(n).fill(-1);
-  let i = 0;
-  let j = 0;
-  while (i < n && j < m) {
-    if (a[i] === b[j]) {
-      map[i] = j;
-      i++;
-      j++;
-    } else if (dp[i + 1][j] >= dp[i][j + 1]) i++;
-    else j++;
-  }
-  return { map, matched: dp[0][0] };
-}
 
 function pitchName(midi: number): string {
   return `${NOTE_NAMES[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`;
@@ -386,35 +367,18 @@ for (const id of songs.keys()) {
   console.log(
     `${ok ? (c.similarity < 0.8 ? '⚠' : '✓') : '✗'} ${id.padEnd(28)} Rest ${c.leftover}  Text ${(c.similarity * 100).toFixed(0)} %  Akkorde: ${c.chordSource}  Quelle ${c.originalKey} ${c.file}${EXCLUDE[id] ? '  (' + EXCLUDE[id] + ')' : ''}`,
   );
-  if (ok) results.push(c);
+  if (!ok) continue;
+  // angezeigt wird unser belegter Text, nicht der Wortlaut des Notenbeispiels
+  const lyr = relyric(c.text, songs.get(id)!);
+  if (lyr.notes.length) console.log('    ' + lyr.notes.join('; '));
+  if (lyr.text === null) {
+    console.log('    ✗ Text passt nicht auf die Noten – nur Akkorde und Text');
+    continue;
+  }
+  results.push({ ...c, text: lyr.text });
 }
 
 if (write) {
-  const out = [
-    '// Erzeugt von tools/melody/import.ts aus den Notenbeispielen der Wikipedia-Artikel und tools/melody/abc/ (gemeinfreie',
-    '// Melodien; übernommen sind nur Tonhöhen, Dauern, Silben und ggf. Akkordfolgen). Nicht von Hand bearbeiten.',
-    '',
-    'export interface ImportedMelody {',
-    '  text: string;',
-    '  meter: number;',
-    '  pickup: number;',
-    '  originalKey: string;',
-    '  /** Anteil des Notentexts, der mit unserem geprüften Text übereinstimmt. */',
-    '  similarity: number;',
-    '  /** Herkunft der Melodie, wird an `origin` angehängt. */',
-    '  source: string;',
-    '  /** Adresse der Quelle (Permalink auf die verwendete Fassung des Notenbeispiels). */',
-    '  url: string;',
-    '}',
-    '',
-    'export const MELODIES: Record<string, ImportedMelody> = {',
-    ...results.map(
-      (r) =>
-        `  '${r.id}': { meter: ${r.meter}, pickup: ${r.pickup}, originalKey: '${r.originalKey}', similarity: ${r.similarity.toFixed(2)}, source: '${r.source.replace(/'/g, '’')}', url: '${r.url.replace(/'/g, '%27')}', text: \`${r.text.replace(/`/g, '\\`')}\` },`,
-    ),
-    '};',
-    '',
-  ].join('\n');
-  writeFileSync(new URL('../../src/music/songs-melodies.ts', import.meta.url), out);
+  writeMelodies(results);
   console.log(`\n${results.length} Melodien geschrieben.`);
 }

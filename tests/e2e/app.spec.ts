@@ -38,7 +38,7 @@ test('Startseite führt zu den Liedern und zurück', async ({ page }) => {
   await page.getByRole('link', { name: /Lieder spielen/ }).click();
   await expect(page.getByRole('heading', { name: 'Lieder', exact: true })).toBeVisible();
   await expect(page.locator('.song-card')).toHaveCount(103);
-  await expect(page.locator('.song-card .feature[title^="Melodie"]')).toHaveCount(71);
+  await expect(page.locator('.song-card .feature[title^="Melodie"]')).toHaveCount(65);
   await page.getByRole('button', { name: /^Weihnachten/ }).click();
   await expect(page.locator('.song-card')).toHaveCount(35);
   await page.getByRole('button', { name: /^Alle/ }).click();
