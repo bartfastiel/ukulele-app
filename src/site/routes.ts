@@ -28,6 +28,10 @@ export const SEGMENTS: Record<string, Record<Lang, string>> = {
   ueber: { de: 'ueber', en: 'about', fr: 'a-propos' },
   powerchords: { de: 'powerchords', en: 'power-chords', fr: 'power-chords' },
   lehrkraefte: { de: 'lehrkraefte-und-eltern', en: 'teachers-and-parents', fr: 'enseignants-et-parents' },
+  // Druckansichten: Liedblatt je Lied, Griff-Übersicht, ganzer Hals
+  liedblatt: { de: 'liedblatt', en: 'song-sheet', fr: 'fiche-chanson' },
+  'griffe-drucken': { de: 'griffe-drucken', en: 'chord-chart', fr: 'tableau-des-accords' },
+  hals: { de: 'griffbrett', en: 'fretboard', fr: 'manche' },
   // Griffe in einer anderen Stimmung: „stimmung/open-g“
   stimmung: { de: 'stimmung', en: 'tuning', fr: 'accordage' },
 };
@@ -37,6 +41,7 @@ const NOTE_SEGMENTS: Record<string, Record<Lang, string>> = {
   akkorde: { de: 'toene', en: 'notes', fr: 'notes' },
   spiel: { de: 'ton-spiel', en: 'note-game', fr: 'jeu-des-notes' },
   detektiv: { de: 'ton-detektiv', en: 'note-detective', fr: 'detective-des-notes' },
+  'griffe-drucken': { de: 'toene-drucken', en: 'note-chart', fr: 'tableau-des-notes' },
 };
 
 function segment(name: string): Record<Lang, string> | undefined {
@@ -78,8 +83,8 @@ export function routePath(route: string, lang: Lang, isOwn: (id: string) => bool
   const param = i < 0 ? '' : route.slice(i + 1);
   const prefix = lang === 'de' ? '' : lang + '/';
   if (!name) return prefix;
-  if (name === 'lied') {
-    const seg = SEGMENTS.lieder[lang];
+  if (name === 'lied' || name === 'liedblatt') {
+    const seg = SEGMENTS[name === 'lied' ? 'lieder' : 'liedblatt'][lang];
     if (isOwn(param)) return `${prefix}${seg}/${OWN_SONG_SEGMENT}/#${encodeURIComponent(param)}`;
     return `${prefix}${seg}/${param}/`;
   }

@@ -28,6 +28,7 @@ const PATHS: Record<string, string> = {
   trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
   share: 'M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4',
   copy: 'M9 9h11v11H9zM5 15H4V4h11v1',
+  print: 'M6 9V3h12v6M6 18H3v-9h18v9h-3M7 14h10v7H7z',
 };
 
 export function icon(name: keyof typeof PATHS | string, cls = 'icon'): SVGElement {

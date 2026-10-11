@@ -17,6 +17,10 @@ export interface DiagramOptions {
   labels?: boolean;
   /** E-Bass: die Quinte als Perlmutt-Punkt „5“ zeigen */
   fifth?: boolean;
+  /** Zum Drucken: weiß, dünne schwarze Linien, kaum Tinte (siehe printDiagram) */
+  print?: boolean;
+  /** Druck: Fingerzahlen in hellen Kreisen statt schwarzer Punkte (für größere Bilder) */
+  fingers?: boolean;
 }
 
 /** Maße eines Griffbilds in viewBox-Einheiten – zum Zeichnen und, um Berührungen einer Stelle zuzuordnen. */
@@ -52,7 +56,76 @@ export function diagramLayout(ch: Chord, opts: DiagramOptions = {}): DiagramLayo
   return { n, first, rows, x0, gap, y0, fh, width: x0 + gap * (n - 1) + 18, height: y0 + fh * rows + (opts.labels === false ? 8 : 26), order };
 }
 
+/**
+ * Griffbild zum Ausdrucken: gleiche Anordnung wie am Bildschirm, aber nur dünne schwarze Linien auf Weiß – spart Tinte
+ * und bleibt auf jedem Schwarzweiß-Drucker klar. Klein (über dem Liedtext) als schwarze Punkte, größer mit Fingerzahl.
+ */
+export function printDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
+  const inst = instrument();
+  const L = diagramLayout(ch, opts);
+  const n = L.n;
+  const first = L.first;
+  const y0 = L.y0;
+  const fh = L.fh;
+  const boardW = L.gap * (n - 1);
+  const bottom = y0 + fh * L.rows;
+  const xOf = (i: number) => L.x0 + L.order.indexOf(i) * L.gap;
+  const yOf = (fret: number) => y0 + fh * (fret - first + 0.5);
+  const ink = '#000';
+  const svg = s('svg', {
+    viewBox: `0 0 ${L.width} ${L.height}`,
+    class: `pd-svg strings-${n}`,
+    role: 'img',
+    'aria-label': describeChord(ch),
+  });
+  const line = (x1: number, y1: number, x2: number, y2: number, w: number, extra: Record<string, string | number> = {}) =>
+    svg.appendChild(s('line', { x1, y1, x2, y2, stroke: ink, 'stroke-width': w, 'stroke-linecap': 'round', ...extra }));
+  for (let f = 0; f <= L.rows; f++) line(L.x0, y0 + fh * f, L.x0 + boardW, y0 + fh * f, f === 0 && first === 1 ? 4.5 : 1.2);
+  if (first > 1) svg.appendChild(s('text', { x: 2, y: y0 + fh * 0.5 + 5, class: 'pd-fret', fill: ink }, String(first)));
+  for (let i = 0; i < n; i++) {
+    const x = xOf(i);
+    const start = STRINGS[i] ? STRINGS[i].start || 0 : 0;
+    if (start >= first) {
+      // kurze Banjo-Saite: bis zu ihrem Wirbel gestrichelt
+      const pegY = start - first + 1 <= L.rows ? y0 + fh * (start - first + 1) : bottom;
+      line(x, y0, x, pegY, 0.8, { 'stroke-dasharray': '2 4' });
+      if (pegY < bottom) {
+        line(x, pegY, x, bottom, 1.2);
+        svg.appendChild(s('circle', { cx: x, cy: pegY, r: 3.2, fill: '#fff', stroke: ink, 'stroke-width': 1.2 }));
+      }
+    } else line(x, y0, x, bottom, 1.2);
+  }
+  const barre = ch.barre && ch.barre.fret >= first ? ch.barre : null;
+  const big = !!opts.fingers;
+  const dot = { fill: big ? '#fff' : ink, stroke: ink, 'stroke-width': big ? 1.6 : 0 };
+  if (barre) {
+    const xa = Math.min(xOf(barre.from), xOf(barre.to));
+    const xb = Math.max(xOf(barre.from), xOf(barre.to));
+    const r = big ? 9.6 : 7.4;
+    svg.appendChild(s('rect', { x: xa - r, y: yOf(barre.fret) - r, width: xb - xa + 2 * r, height: 2 * r, rx: r, class: 'barre', ...dot }));
+  }
+  const onBarre = (i: number) => !!barre && ch.frets[i] === barre.fret && ch.fingers[i] === 1 && i >= barre.from && i <= barre.to;
+  for (let i = 0; i < n; i++) {
+    const fret = ch.frets[i];
+    const x = xOf(i);
+    if (fret === 0) svg.appendChild(s('circle', { cx: x, cy: y0 - 13, r: 5, fill: 'none', stroke: ink, 'stroke-width': 1.5, class: 'open' }));
+    else if (fret === -1 && !inst.notesOnly)
+      svg.appendChild(s('path', { d: `M${x - 4.5} ${y0 - 17.5}l9 9m0 -9l-9 9`, stroke: ink, 'stroke-width': 1.6, 'stroke-linecap': 'round', class: 'muted' }));
+    else if (fret > 0) {
+      const cy = yOf(fret);
+      if (!onBarre(i)) svg.appendChild(s('circle', { cx: x, cy, r: big ? 9.6 : 7.4, ...dot }));
+      if (big && ch.fingers[i] && (!onBarre(i) || i === barre!.from))
+        svg.appendChild(s('text', { x, y: cy + 5, 'text-anchor': 'middle', class: 'pd-finger', fill: ink }, String(ch.fingers[i])));
+    }
+  }
+  if (opts.labels !== false)
+    for (let i = 0; i < n; i++)
+      svg.appendChild(s('text', { x: xOf(i), y: bottom + 19, 'text-anchor': 'middle', class: 'pd-label', fill: ink }, STRINGS[i] ? STRINGS[i].name : ''));
+  return svg;
+}
+
 export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
+  if (opts.print) return printDiagram(ch, opts);
   const id = `cd${++uid}`;
   const inst = instrument();
   const L = diagramLayout(ch, opts);

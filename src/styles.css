@@ -2543,13 +2543,15 @@ summary:focus-visible {
 }
 
 /* Hinweis auf ein verwandtes Instrument oder eine Übersicht: klein, unter dem Eigentlichen */
-.relative-hint {
+.relative-hint,
+.print-hint {
   margin-top: 14px;
   padding: 10px 14px;
   font-size: 0.8em;
 }
 
-.relative-hint a {
+.relative-hint a,
+.print-hint a {
   display: block;
   color: var(--teal);
   font-weight: 700;
@@ -2672,6 +2674,385 @@ summary:focus-visible {
   display: block;
   font-weight: 400;
   font-size: 0.85em;
+}
+
+/* ---------- Druckansichten: Liedblatt, Griff-Übersicht, Hals ----------
+ * Wiederverwendbar: Ein Blatt ist `.print-sheet` (am Bildschirm ein weißes Papier, gedruckt nur das Blatt). Alles mit
+ * `.no-print` sowie Kopfzeile, Fußzeile und Hinweise bleiben beim Drucken weg. Weiß, dünne schwarze Linien, keine
+ * Flächen – spart Tinte und klappt auf jedem Schwarzweiß-Drucker. `.sheet-landscape` druckt quer (wo der Browser es kann).
+ */
+.print-controls h2 {
+  margin-top: 0;
+}
+
+.print-hint a {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+}
+
+.print-hint .icon {
+  width: 1.4em;
+  height: 1.4em;
+  flex: none;
+}
+
+.print-now {
+  min-width: 220px;
+}
+
+.print-preview {
+  margin: 6px 6px 18px;
+}
+
+.print-sheet {
+  background: #fff;
+  color: #000;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 28px 32px;
+  border-radius: 4px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  line-height: 1.3;
+  overflow: hidden;
+}
+
+.print-sheet.sheet-landscape {
+  max-width: 297mm;
+}
+
+.print-sheet h2 {
+  color: #000;
+  text-shadow: none;
+  margin: 0;
+  font-size: 1.6em;
+}
+
+.print-sheet h3 {
+  font-size: 1em;
+  margin: 12px 0 6px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #000;
+}
+
+.sheet-head {
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #000;
+}
+
+.sheet-sub {
+  margin: 4px 0 0;
+  font-size: 0.75em;
+}
+
+.sheet-foot {
+  margin-top: 18px;
+  padding-top: 6px;
+  border-top: 1px solid #000;
+  font-size: 0.65em;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.sheet-foot p {
+  margin: 2px 0;
+}
+
+.pd-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pd-svg text {
+  font-family: var(--font);
+  font-weight: 800;
+}
+
+.pd-finger {
+  font-size: 14px;
+}
+
+.pd-label,
+.pd-fret {
+  font-size: 13px;
+}
+
+/* Liedblatt: Griffbild bzw. Akkordname steht mit dem ersten Wort darunter zusammen, der übrige Text fließt weiter */
+.ps-lines {
+  font-size: 1.15em;
+}
+
+.ps-line {
+  margin: 0 0 0.45em;
+  line-height: 1.45;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.ps-anchor {
+  display: inline-block;
+  vertical-align: baseline;
+  line-height: 1.2;
+}
+
+.ps-anchor:not(.ps-free) {
+  margin-right: 4px;
+}
+
+.ps-over {
+  display: block;
+  white-space: nowrap;
+}
+
+/* genug Text bis zum nächsten Wechsel: das Griffbild darf über ihn hinausragen */
+.ps-free .ps-over {
+  width: 0;
+  overflow: visible;
+}
+
+.print-controls .key-now {
+  min-width: 0;
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.sheet-note {
+  font-size: 0.8em;
+  margin: 10px 0 0;
+}
+
+.ps-name {
+  display: block;
+  font-size: 1em;
+}
+
+.ps-over .pd-svg {
+  width: 58px;
+  margin-bottom: 1px;
+}
+
+.ps-over .pd-svg.strings-5 {
+  width: 66px;
+}
+
+.ps-over .pd-svg.strings-6 {
+  width: 76px;
+}
+
+.ps-legend {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #000;
+}
+
+.ps-legend-chord,
+.chart-chord {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 10px 8px 0;
+  text-align: center;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.ps-legend-chord figcaption,
+.chart-chord figcaption {
+  font-weight: 900;
+  font-size: 1.1em;
+}
+
+.ps-legend-chord .pd-svg {
+  width: 70px;
+}
+
+.ps-legend-chord .pd-svg.strings-5 {
+  width: 82px;
+}
+
+.ps-legend-chord .pd-svg.strings-6 {
+  width: 96px;
+}
+
+/* Griff-Übersicht */
+.chart-group {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.chart-chord {
+  margin-right: 14px;
+}
+
+.chart-chord .pd-svg {
+  width: 96px;
+}
+
+.chart-chord .pd-svg.strings-5 {
+  width: 104px;
+}
+
+.chart-chord .pd-svg.strings-6 {
+  width: 116px;
+}
+
+/* Hals */
+.neck-wrap svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.neck-chart.upright {
+  max-width: 560px;
+}
+
+.neck-chart text {
+  font-family: var(--font);
+}
+
+.neck-string {
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.neck-note {
+  font-weight: 800;
+}
+
+.neck-sharp {
+  font-weight: 600;
+}
+
+.neck-num {
+  font-size: 22px;
+}
+
+.neck-num.strong {
+  font-weight: 900;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 12mm 14mm 14mm;
+}
+
+@page quer {
+  size: A4 landscape;
+  margin: 10mm 12mm;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  body {
+    padding: 0;
+    min-height: 0;
+    font-size: 12pt;
+    color: #000;
+  }
+
+  #app {
+    max-width: none;
+    padding: 0;
+  }
+
+  .topbar,
+  .site-footer,
+  .page-extra,
+  .no-print,
+  .lang-offer,
+  .dialog-backdrop,
+  #tuning-banner {
+    display: none !important;
+  }
+
+  .print-preview {
+    margin: 0;
+  }
+
+  .print-sheet {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    font-size: 14pt;
+  }
+
+  .print-sheet.sheet-landscape {
+    page: quer;
+  }
+
+  .print-sheet h2 {
+    font-size: 20pt;
+  }
+
+  .sheet-sub {
+    font-size: 10pt;
+  }
+
+  .sheet-foot {
+    font-size: 8pt;
+  }
+
+  .ps-lines {
+    font-size: 16pt;
+  }
+
+  .ps-over .pd-svg {
+    width: 16mm;
+  }
+
+  .ps-over .pd-svg.strings-5 {
+    width: 18mm;
+  }
+
+  .ps-over .pd-svg.strings-6 {
+    width: 20mm;
+  }
+
+  .ps-legend-chord .pd-svg {
+    width: 22mm;
+  }
+
+  .ps-legend-chord .pd-svg.strings-5 {
+    width: 24mm;
+  }
+
+  .ps-legend-chord .pd-svg.strings-6 {
+    width: 26mm;
+  }
+
+  .sheet-note {
+    font-size: 11pt;
+  }
+
+  /* sieben Griffe je Reihe: so passt jede Griff-Übersicht auf ein Blatt */
+  .chart-chord {
+    margin: 0 3mm 2mm 0;
+  }
+
+  .chart-chord .pd-svg,
+  .chart-chord .pd-svg.strings-5,
+  .chart-chord .pd-svg.strings-6 {
+    width: 22mm;
+  }
+
+  .neck-chart.across {
+    max-height: 150mm;
+  }
+
+  .neck-chart.upright {
+    max-width: none;
+    max-height: 212mm;
+  }
 }
 
 /* ---------- Instrumente: gleiche Formen, eigenes Holz und eigene Einfassung ---------- */

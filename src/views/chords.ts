@@ -16,7 +16,7 @@ import { relativeHints } from '../site/relatives.ts';
 import { instrument } from '../music/instrument.ts';
 import { link, go } from '../site/nav.ts';
 import { notesOnly } from '../music/instrument.ts';
-import { noteDetail, notesView } from './notes.ts';
+import { noteDetail, notesView, printLinks } from './notes.ts';
 
 const GROUPS = [
   { title: tk('Die ersten Akkorde'), level: 1 },
@@ -53,6 +53,7 @@ export const chords: View = (root, param) => {
     ),
     // nur wo das Instrument eigene Powerchord-Griffe hat (Gitarre in Normalstimmung)
     ...(instrument().shapes['5'] ? [h('p', { class: 'card relative-hint' }, h('a', { href: link('powerchords') }, t('Powerchords für E-Gitarre: E5, A5, D5 …'), ' ›'))] : []),
+    printLinks(),
   );
 };
 
