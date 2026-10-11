@@ -123,6 +123,17 @@ export const EN: Record<string, string> = {
   'Eigene Lieder': 'My own songs',
   // src/ui/fretboard.ts
   'Griffbrett': 'Fretboard',
+  // Anschlagdynamik (src/ui/strike-meter.ts, Messanzeige mit ?druck=1)
+  'Druck-Messung': 'Touch pressure meter',
+  'Kraft': 'Force',
+  'Fläche': 'Area',
+  'erkannt': 'detected',
+  'noch offen': 'not sure yet',
+  'keiner': 'none',
+  'Anschlag': 'Strike',
+  'ohne Sensor gleich laut': 'no sensor, always the same volume',
+  'Klang': 'Tone',
+  'Tipp auf eine Saite – leicht und fest.': 'Tap a string – lightly and firmly.',
   // src/ui/screen.ts
   'Zur Startseite': 'Home',
   'Zurück': 'Back',

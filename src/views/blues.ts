@@ -9,7 +9,7 @@ import { audio, click, hold, pluck, setWah } from '../audio/engine.ts';
 import { hasMotion, watchTilt } from '../audio/motion.ts';
 import { hearingOwnSound, holdOwnSound } from '../audio/own-sound.ts';
 import { fingerDown, type Play } from '../ui/fret-gesture.ts';
-import { VIBRATO_CENTS, VibratoDetector, bendSemis, slideFret, strikeGain } from '../ui/expression.ts';
+import { VIBRATO_CENTS, VibratoDetector, bendSemis, slideFret, strikeCutoff, strikeGain } from '../ui/expression.ts';
 import { bass, hat, kick, organ, snare } from '../audio/band.ts';
 import { openMic, type Mic } from '../audio/mic.ts';
 import { detectPitchIn } from '../audio/pitch.ts';
@@ -230,7 +230,7 @@ export const blues: View = (root) => {
     const w = win();
     const midi = stringMidi(p.string, p.fret);
     const auto = p.arrow ? 0.5 : 0;
-    const voice = hold(midi, strikeGain(p.pressure), auto);
+    const voice = hold(midi, strikeGain(p.strength), auto, strikeCutoff(p.strength, midiToFreq(midi)));
     const own = holdOwnSound();
     if (wahCtl) wahCtl.rezero();
     const vib = new VibratoDetector();

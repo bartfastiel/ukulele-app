@@ -175,8 +175,11 @@ export function setWah(level: number | null): void {
   for (const v of live) wahTarget(v.filter, ctx.currentTime);
 }
 
-/** Ton anschlagen und halten; `bend` zieht ihn kurz nach dem Anschlag selbst um so viele Halbtöne hoch. */
-export function hold(midi: number, gain = 0.6, bend = 0): Voice {
+/**
+ * Ton anschlagen und halten; `bend` zieht ihn kurz nach dem Anschlag selbst um so viele Halbtöne hoch. `cutoff` (Hz)
+ * nimmt einem leisen Anschlag die Höhen (0 = unverändert hell).
+ */
+export function hold(midi: number, gain = 0.6, bend = 0, cutoff = 0): Voice {
   if (!hasAudio()) return SILENT_VOICE;
   const c = audio();
   const t0 = c.currentTime;
@@ -194,7 +197,14 @@ export function hold(midi: number, gain = 0.6, bend = 0): Voice {
   depth.gain.value = 0;
   lfo.connect(depth);
   depth.connect(src.playbackRate);
-  src.connect(filter);
+  if (cutoff > 0 && cutoff < 18000) {
+    const tone = c.createBiquadFilter();
+    tone.type = 'lowpass';
+    tone.frequency.value = cutoff;
+    tone.Q.value = 0.5;
+    src.connect(tone);
+    tone.connect(filter);
+  } else src.connect(filter);
   filter.connect(g);
   g.connect(master!);
   if (bend) {
