@@ -47,16 +47,21 @@ export const UKULELE_COURSE: Course = {
           'Ton premier accord : **C**. Pose l’annulaire sur la corde A (celle du bas) à la 3e case. Les autres cordes restent libres. Regarde le diagramme : [C](chord:C).',
         ),
         l(
-          'Schlag C viermal an und zähl laut mit: „eins, zwei, drei, vier“. Auf der Akkordseite kannst du ihn vom Mikrofon prüfen lassen.',
-          'Strum C four times and count out loud: “one, two, three, four”. On the chord page the microphone can check it for you.',
-          'Gratte C quatre fois en comptant à voix haute : « un, deux, trois, quatre ». Sur la page de l’accord, le micro peut le vérifier.',
+          'So liest du ein Griffbild: Die senkrechten Linien sind die Saiten (links G, rechts A), die waagrechten die Bundstäbchen. Ein Punkt zeigt, wo ein Finger drückt – die Zahl darin, welcher: 1 Zeige-, 2 Mittel-, 3 Ring-, 4 kleiner Finger. „o“ heißt leer anschlagen, „x“ nicht anschlagen.',
+          'How to read a chord chart: the vertical lines are the strings (G on the left, A on the right), the horizontal ones are the frets. A dot shows where a finger presses – the number says which one: 1 index, 2 middle, 3 ring, 4 little finger. “o” means play the open string, “x” means don’t play it.',
+          'Lire un diagramme : les lignes verticales sont les cordes (G à gauche, A à droite), les lignes horizontales les frettes. Un point montre où un doigt appuie – le chiffre dit lequel : 1 index, 2 majeur, 3 annulaire, 4 auriculaire. « o » : corde à vide, « x » : ne pas jouer la corde.',
+        ),
+        l(
+          'Zähl erst ein: „eins, zwei, drei, vier“ – dann schlag C viermal an und zähl laut weiter. Auf der Akkordseite kannst du ihn vom Mikrofon prüfen lassen.',
+          'Count in first: “one, two, three, four” – then strum C four times and keep counting out loud. On the chord page the microphone can check it for you.',
+          'Compte d’abord : « un, deux, trois, quatre » – puis gratte C quatre fois en continuant à compter à voix haute. Sur la page de l’accord, le micro peut le vérifier.',
         ),
       ],
       piece: {
         text: l(
           '„Bruder Jakob“ nur mit C: Bei jedem Schlag einmal runter. Die Begleitung wartet auf dich. Danach im Rhythmus: viermal C – kurz Pause – viermal C.',
-          '“Brother John” with just C: one strum down on every beat. The backing waits for you. Then with the rhythm tool: four times C – short pause – four times C.',
-          '« Frère Jacques » avec seulement C : un coup vers le bas à chaque temps. L’accompagnement t’attend. Puis avec le rythme : quatre fois C – petite pause – quatre fois C.',
+          '“Bruder Jakob” with just C: one strum down on every beat. The backing waits for you. Then with the rhythm tool: four times C – short pause – four times C.',
+          '« Bruder Jakob » avec seulement C : un coup vers le bas à chaque temps. L’accompagnement t’attend. Puis avec le rythme : quatre fois C – petite pause – quatre fois C.',
         ),
         play: [{ song: 'bruder-jakob', key: 'C' }, { tool: 'rhythmus', pattern: 'Nur runter' }],
       },
@@ -64,11 +69,11 @@ export const UKULELE_COURSE: Course = {
         l('Jeden Tag: Ukulele richtig halten, 1 Minute lang locker.', 'Every day: hold the ukulele properly, relaxed for 1 minute.', 'Chaque jour : tiens bien le ukulélé, détendu, pendant 1 minute.'),
         l('Jede Saite einzeln zupfen und lauschen.', 'Pluck each string on its own and listen.', 'Pince chaque corde seule et écoute.'),
         l('C greifen, viermal anschlagen, loslassen – fünfmal.', 'Fret C, strum four times, let go – five times.', 'Pose C, gratte quatre fois, relâche – cinq fois.'),
-        l('**Spaß:** „Bruder Jakob“ mit C spielen und dazu singen.', '**Fun:** play “Brother John” with C and sing along.', '**Pour le plaisir :** joue « Frère Jacques » avec C et chante.'),
+        l('**Spaß:** „Bruder Jakob“ mit C spielen und dazu singen.', '**Fun:** play “Bruder Jakob” with C and sing along.', '**Pour le plaisir :** joue « Bruder Jakob » avec C et chante.'),
       ],
       done: [
         l('du C viermal hintereinander anschlagen kannst, und es klingt', 'you can strum C four times in a row and it rings', 'tu peux gratter C quatre fois de suite et ça sonne'),
-        l('du „Bruder Jakob“ mit C einmal ganz durchspielst', 'you play “Brother John” with C all the way through', 'tu joues « Frère Jacques » avec C en entier'),
+        l('du „Bruder Jakob“ mit C einmal ganz durchspielst', 'you play “Bruder Jakob” with C all the way through', 'tu joues « Bruder Jakob » avec C en entier'),
       ],
       trouble: [
         l(
@@ -94,16 +99,16 @@ export const UKULELE_COURSE: Course = {
           'Exercice : poser C, gratter une fois chacun à tour de rôle, puis tous ensemble quatre fois sur « un, deux, trois, quatre ».',
         ),
         l(
-          'Gemeinsames Lied: „Bruder Jakob“ mit C, die Hälfte singt, die andere spielt – dann tauschen. Als Kanon wird es noch schöner.',
-          'Song together: “Brother John” with C, half sing, half play – then swap. As a round it sounds even nicer.',
-          'Chanson ensemble : « Frère Jacques » avec C, une moitié chante, l’autre joue – puis on échange. En canon, c’est encore plus beau.',
+          'Gemeinsames Lied: „Bruder Jakob“ mit C, die Hälfte singt, die andere spielt – dann tauschen. Als Kanon wird es noch schöner. Zum Singen liegt C etwas tief – summen ist in Ordnung; in Lektion 5 kommt das Lied in F, das passt besser zu Kinderstimmen.',
+          'Song together: “Bruder Jakob” with C, half sing, half play – then swap. As a round it sounds even nicer. C is a bit low for singing – humming is fine; in lesson 5 the song comes in F, which suits children’s voices better.',
+          'Chanson ensemble : « Bruder Jakob » avec C, une moitié chante, l’autre joue – puis on échange. En canon, c’est encore plus beau. En C, c’est un peu grave pour chanter – fredonner suffit ; en leçon 5, la chanson vient en F, mieux adapté aux voix d’enfants.',
         ),
       ],
       sheet: [
         l('Ukulele an den Bauch, Hals schräg nach oben, Schultern locker.', 'Ukulele against your tummy, neck up at an angle, shoulders loose.', 'Ukulélé contre le ventre, manche en biais vers le haut, épaules détendues.'),
         l('Einzelne Saite zupfen, dann mit dem Zeigefinger über alle Saiten runter.', 'Pluck one string, then brush down across all strings with your index finger.', 'Pince une corde, puis gratte toutes les cordes vers le bas avec l’index.'),
         l('**C:** Ringfinger auf die A-Saite, 3. Bund.', '**C:** ring finger on the A string, 3rd fret.', '**C :** annulaire sur la corde A, 3e case.'),
-        l('Viermal anschlagen und laut mitzählen.', 'Strum four times and count out loud.', 'Gratte quatre fois en comptant à voix haute.'),
+        l('Einzählen, dann viermal anschlagen und laut weiterzählen.', 'Count in, then strum four times and keep counting out loud.', 'Compte, puis gratte quatre fois en comptant à voix haute.'),
       ],
       wissen: ['ukulele-halten', 'ukulele-erste-akkorde'],
     },
@@ -147,12 +152,17 @@ export const UKULELE_COURSE: Course = {
           'Tune every time before you practise. A tuned ukulele sounds much nicer right away. Step by step: [Tuning the ukulele](wissen:ukulele-stimmen).',
           'Accorde avant chaque séance. Un ukulélé accordé sonne tout de suite bien mieux. Pas à pas : [Accorder le ukulélé](wissen:ukulele-stimmen).',
         ),
+        l(
+          'Pflege: Wisch nach dem Üben die Saiten kurz mit einem trockenen Tuch ab und leg die Ukulele in ihre Hülle – nicht an die Heizung und nicht in die pralle Sonne.',
+          'Care: after practising, wipe the strings with a dry cloth and put the ukulele in its bag – not next to the heater and not in bright sun.',
+          'Entretien : après avoir joué, essuie les cordes avec un chiffon sec et range le ukulélé dans sa housse – pas près du radiateur ni en plein soleil.',
+        ),
       ],
       piece: {
         text: l(
           'Im Rhythmus „Nur runter“: viermal C anschlagen, dann G, C, E, A einzeln zupfen – immer im Wechsel. Danach „Bruder Jakob“ mit C.',
-          'With the rhythm “Down only”: strum C four times, then pluck G, C, E, A one by one – keep switching. Then “Brother John” with C.',
-          'Avec le rythme « Seulement vers le bas » : gratte C quatre fois, puis pince G, C, E, A une par une – en alternance. Puis « Frère Jacques » avec C.',
+          'With the rhythm “Only down”: strum C four times, then pluck G, C, E, A one by one – keep switching. Then “Bruder Jakob” with C.',
+          'Avec le rythme « Que vers le bas » : gratte C quatre fois, puis pince G, C, E, A une par une – en alternance. Puis « Bruder Jakob » avec C.',
         ),
         play: [{ tool: 'stimmen' }, { tool: 'rhythmus', pattern: 'Nur runter' }, { song: 'bruder-jakob', key: 'C' }],
       },
@@ -191,8 +201,8 @@ export const UKULELE_COURSE: Course = {
         ),
         l(
           'Gemeinsames Lied: „Bruder Jakob“ mit C. Eine Gruppe schlägt C, die andere zupft dazu G C E A.',
-          'Song together: “Brother John” with C. One group strums C, the other plucks G C E A.',
-          'Chanson ensemble : « Frère Jacques » avec C. Un groupe gratte C, l’autre pince G C E A.',
+          'Song together: “Bruder Jakob” with C. One group strums C, the other plucks G C E A.',
+          'Chanson ensemble : « Bruder Jakob » avec C. Un groupe gratte C, l’autre pince G C E A.',
         ),
       ],
       sheet: [
@@ -343,9 +353,9 @@ export const UKULELE_COURSE: Course = {
       ],
       piece: {
         text: l(
-          'Im Rhythmus „Nur runter“, langsam: viermal C, viermal Am – immer weiter im Kreis. Dann das Akkord-Spiel mit C und Am.',
-          'With the rhythm “Down only”, slow: four times C, four times Am – round and round. Then the chord game with C and Am.',
-          'Avec le rythme « Seulement vers le bas », lent : quatre fois C, quatre fois Am – en boucle. Puis le jeu des accords avec C et Am.',
+          'Einzählen, dann im Rhythmus „Nur runter“, langsam: viermal C, viermal Am – immer weiter im Kreis. Dann das Akkord-Spiel mit C und Am.',
+          'Count in, then with the rhythm “Only down”, slow: four times C, four times Am – round and round. Then the chord game with C and Am.',
+          'Compte, puis avec le rythme « Que vers le bas », lent : quatre fois C, quatre fois Am – en boucle. Puis le jeu des accords avec C et Am.',
         ),
         play: [{ tool: 'rhythmus', pattern: 'Nur runter' }, { tool: 'spiel', chords: ['C', 'Am'] }],
       },
@@ -402,8 +412,8 @@ export const UKULELE_COURSE: Course = {
       title: l('F-Dur', 'F major', 'Fa majeur'),
       goal: l(
         'Du greifst F mit zwei Fingern und spielst „Bruder Jakob“ in seiner richtigen Tonart.',
-        'You fret F with two fingers and play “Brother John” in its usual key.',
-        'Tu poses F avec deux doigts et tu joues « Frère Jacques » dans sa tonalité habituelle.',
+        'You fret F with two fingers and play “Bruder Jakob” in its usual key.',
+        'Tu poses F avec deux doigts et tu joues « Bruder Jakob » dans sa tonalité habituelle.',
       ),
       chords: ['F'],
       review: l(
@@ -434,15 +444,15 @@ export const UKULELE_COURSE: Course = {
         ),
         l(
           '„Bruder Jakob“ steht eigentlich in F. Die Begleitung wartet bei jedem Akkord, bis du so weit bist.',
-          '“Brother John” is really in F. The backing waits at every chord until you’re ready.',
-          '« Frère Jacques » est en fait en Fa. L’accompagnement attend à chaque accord que tu sois prêt.',
+          '“Bruder Jakob” is really in F. The backing waits at every chord until you’re ready.',
+          '« Bruder Jakob » est en fait en F. L’accompagnement attend à chaque accord que tu sois prêt.',
         ),
       ],
       piece: {
         text: l(
           '„Bruder Jakob“ jetzt in F – bei jedem Schlag runter. Danach das Akkord-Spiel mit C und F.',
-          '“Brother John” now in F – down on every beat. Then the chord game with C and F.',
-          '« Frère Jacques » maintenant en F – vers le bas à chaque temps. Puis le jeu des accords avec C et F.',
+          '“Bruder Jakob” now in F – down on every beat. Then the chord game with C and F.',
+          '« Bruder Jakob » maintenant en F – vers le bas à chaque temps. Puis le jeu des accords avec C et F.',
         ),
         play: [{ song: 'bruder-jakob' }, { tool: 'spiel', chords: ['C', 'F'] }],
       },
@@ -450,11 +460,11 @@ export const UKULELE_COURSE: Course = {
         l('Stimmen, F greifen und jede Saite einzeln prüfen.', 'Tune, fret F and check each string.', 'Accorde, pose F et vérifie chaque corde.'),
         l('Am – F – Am – F: nur den Zeigefinger setzen und heben.', 'Am – F – Am – F: just put down and lift your index finger.', 'Am – F – Am – F : pose et lève juste l’index.'),
         l('Viermal C, viermal F – langsam im Kreis.', 'Four times C, four times F – slowly round and round.', 'Quatre fois C, quatre fois F – lentement en boucle.'),
-        l('**Spaß:** „Bruder Jakob“ in F mit Begleitung spielen.', '**Fun:** play “Brother John” in F with the backing.', '**Pour le plaisir :** joue « Frère Jacques » en F avec l’accompagnement.'),
+        l('**Spaß:** „Bruder Jakob“ in F mit Begleitung spielen.', '**Fun:** play “Bruder Jakob” in F with the backing.', '**Pour le plaisir :** joue « Bruder Jakob » en F avec l’accompagnement.'),
       ],
       done: [
         l('alle vier Saiten bei F klingen', 'all four strings ring with F', 'les quatre cordes sonnent avec F'),
-        l('du „Bruder Jakob“ in F bis zum Ende spielst', 'you play “Brother John” in F to the end', 'tu joues « Frère Jacques » en F jusqu’au bout'),
+        l('du „Bruder Jakob“ in F bis zum Ende spielst', 'you play “Bruder Jakob” in F to the end', 'tu joues « Bruder Jakob » en F jusqu’au bout'),
       ],
       trouble: [
         l(
@@ -481,8 +491,8 @@ export const UKULELE_COURSE: Course = {
         ),
         l(
           'Gemeinsames Lied: „Bruder Jakob“ in F, zuerst einstimmig, dann als Kanon in zwei Gruppen.',
-          'Song together: “Brother John” in F, first in unison, then as a round in two groups.',
-          'Chanson ensemble : « Frère Jacques » en F, d’abord à l’unisson, puis en canon à deux groupes.',
+          'Song together: “Bruder Jakob” in F, first in unison, then as a round in two groups.',
+          'Chanson ensemble : « Bruder Jakob » en F, d’abord à l’unisson, puis en canon à deux groupes.',
         ),
       ],
       sheet: [
@@ -504,8 +514,8 @@ export const UKULELE_COURSE: Course = {
       chords: ['C7'],
       review: l(
         'Spiel „Bruder Jakob“ in F. Klingen alle vier Saiten?',
-        'Play “Brother John” in F. Do all four strings ring?',
-        'Joue « Frère Jacques » en F. Les quatre cordes sonnent ?',
+        'Play “Bruder Jakob” in F. Do all four strings ring?',
+        'Joue « Bruder Jakob » en F. Les quatre cordes sonnent ?',
       ),
       steps: [
         l(
@@ -540,7 +550,7 @@ export const UKULELE_COURSE: Course = {
       homework: [
         l('Stimmen, dann F – C7 – F – C7 ohne Anschlag, zehnmal.', 'Tune, then F – C7 – F – C7 without strumming, ten times.', 'Accorde, puis F – C7 – F – C7 sans gratter, dix fois.'),
         l('Viermal F, viermal C7 – langsam im Kreis.', 'Four times F, four times C7 – slowly round and round.', 'Quatre fois F, quatre fois C7 – lentement en boucle.'),
-        l('„Old MacDonald“ mit „Wartet auf mich“.', '“Old MacDonald” with “Waits for me”.', '« Old MacDonald » avec « M’attend ».'),
+        l('„Old MacDonald“ mit „Wartet auf mich“.', '“Old MacDonald” with “Waits for me”.', '« Old MacDonald » avec « Attends-moi ».'),
         l('**Spaß:** Erfinde neue Tiere für „Old MacDonald“ und sing sie.', '**Fun:** invent new animals for “Old MacDonald” and sing them.', '**Pour le plaisir :** invente de nouveaux animaux pour « Old MacDonald » et chante-les.'),
       ],
       done: [
@@ -627,8 +637,8 @@ export const UKULELE_COURSE: Course = {
       piece: {
         text: l(
           'Erst „Runter-rauf“ mit F im Rhythmus-Werkzeug. Dann „Yankee Doodle“ und „Ode an die Freude“ mit F und C7 – jetzt mit Runter-rauf!',
-          'First “Down-up” with F in the rhythm tool. Then “Yankee Doodle” and “Ode to Joy” with F and C7 – now with down-up!',
-          'D’abord « Bas-haut » avec F dans l’outil rythme. Puis « Yankee Doodle » et « L’Hymne à la joie » avec F et C7 – maintenant en bas-haut !',
+          'First “Down-up” with F in the rhythm tool. Then “Yankee Doodle” and “Ode an die Freude” with F and C7 – now with down-up!',
+          'D’abord « Bas-haut » avec F dans l’outil rythme. Puis « Yankee Doodle » et « Ode an die Freude » avec F et C7 – maintenant en bas-haut !',
         ),
         play: [{ tool: 'rhythmus', pattern: 'Runter-rauf' }, { song: 'yankee-doodle' }, { song: 'ode-an-die-freude' }],
       },
@@ -667,8 +677,8 @@ export const UKULELE_COURSE: Course = {
         ),
         l(
           'Gemeinsames Lied: „Ode an die Freude“ – erst langsam singen, dann mit Runter-rauf begleiten.',
-          'Song together: “Ode to Joy” – sing slowly first, then accompany with down-up.',
-          'Chanson ensemble : « L’Hymne à la joie » – chanter lentement d’abord, puis accompagner en bas-haut.',
+          'Song together: “Ode an die Freude” – sing slowly first, then accompany with down-up.',
+          'Chanson ensemble : « Ode an die Freude » – chanter lentement d’abord, puis accompagner en bas-haut.',
         ),
       ],
       sheet: [
@@ -718,7 +728,7 @@ export const UKULELE_COURSE: Course = {
       piece: {
         text: l(
           '„Hänschen klein“ und „Summ, summ, summ“ mit C und G7. Nimm „Nur runter“ oder schon „Runter-rauf“ – du entscheidest.',
-          '“Hänschen klein” and “Summ, summ, summ” with C and G7. Use “Down only” or already “Down-up” – your choice.',
+          '“Hänschen klein” and “Summ, summ, summ” with C and G7. Use “Only down” or already “Down-up” – your choice.',
           '« Hänschen klein » et « Summ, summ, summ » avec C et G7. En « seulement vers le bas » ou déjà en « bas-haut » – à toi de choisir.',
         ),
         play: [{ song: 'haenschen-klein' }, { song: 'summ-summ' }, { tool: 'spiel', chords: ['C', 'G7'] }],
@@ -726,7 +736,7 @@ export const UKULELE_COURSE: Course = {
       homework: [
         l('G7 greifen, jede Saite prüfen, loslassen – fünfmal.', 'Fret G7, check each string, let go – five times.', 'Pose G7, vérifie chaque corde, relâche – cinq fois.'),
         l('C – G7 – C – G7 langsam, ohne Rhythmus.', 'C – G7 – C – G7 slowly, no rhythm.', 'C – G7 – C – G7 lentement, sans rythme.'),
-        l('„Hänschen klein“ mit „Wartet auf mich“.', '“Hänschen klein” with “Waits for me”.', '« Hänschen klein » avec « M’attend ».'),
+        l('„Hänschen klein“ mit „Wartet auf mich“.', '“Hänschen klein” with “Waits for me”.', '« Hänschen klein » avec « Attends-moi ».'),
         l('**Spaß:** Akkord-Spiel C und G7 – schlag deinen Rekord.', '**Fun:** chord game C and G7 – beat your record.', '**Pour le plaisir :** jeu des accords C et G7 – bats ton record.'),
       ],
       done: [
@@ -960,8 +970,8 @@ export const UKULELE_COURSE: Course = {
       title: l('Walzer im Dreiertakt', 'Waltz in three', 'La valse à trois temps'),
       goal: l(
         'Du spielst im 3/4-Takt und begleitest „Zum Geburtstag viel Glück“.',
-        'You play in 3/4 time and accompany “Happy Birthday”.',
-        'Tu joues à trois temps et tu accompagnes « Joyeux anniversaire ».',
+        'You play in 3/4 time and accompany “Zum Geburtstag viel Glück”.',
+        'Tu joues à trois temps et tu accompagnes « Zum Geburtstag viel Glück ».',
       ),
       review: l(
         'Der Insel-Schlag mit C und F – ist er schon gleichmäßig?',
@@ -986,27 +996,27 @@ export const UKULELE_COURSE: Course = {
         ),
         l(
           '„Zum Geburtstag viel Glück“ braucht C, G7, C7 und F – alle kennst du schon! Es fängt mit einem Auftakt an: Der Gesang beginnt kurz vor der ersten Eins.',
-          '“Happy Birthday” uses C, G7, C7 and F – you know them all! It starts with a pick-up: the singing begins just before the first one.',
-          '« Joyeux anniversaire » utilise C, G7, C7 et F – tu les connais tous ! La chanson commence par une anacrouse : le chant démarre juste avant le premier temps.',
+          '“Zum Geburtstag viel Glück” uses C, G7, C7 and F – you know them all! It starts with a pick-up: the singing begins just before the first one.',
+          '« Zum Geburtstag viel Glück » utilise C, G7, C7 et F – tu les connais tous ! La chanson commence par une anacrouse : le chant démarre juste avant le premier temps.',
         ),
       ],
       piece: {
         text: l(
           '„Zum Geburtstag viel Glück“ im Walzertakt – das kannst du ab jetzt auf jeder Feier spielen! Dazu „Mein Hut, der hat drei Ecken“.',
-          '“Happy Birthday” in waltz time – from now on you can play it at every party! Plus “Mein Hut, der hat drei Ecken”.',
-          '« Joyeux anniversaire » à trois temps – tu pourras le jouer à chaque fête ! Et aussi « Mein Hut, der hat drei Ecken ».',
+          '“Zum Geburtstag viel Glück” in waltz time – from now on you can play it at every party! Plus “Mein Hut, der hat drei Ecken”.',
+          '« Zum Geburtstag viel Glück » à trois temps – tu pourras le jouer à chaque fête ! Et aussi « Mein Hut, der hat drei Ecken ».',
         ),
         play: [{ tool: 'rhythmus', pattern: 'Walzer (3/4)' }, { song: 'geburtstag' }, { song: 'mein-hut' }],
       },
       homework: [
         l('Walzer-Muster mit C, laut „eins, zwei, drei“ zählen.', 'Waltz pattern with C, counting “one, two, three” out loud.', 'Motif de valse avec C, en comptant « un, deux, trois » à voix haute.'),
         l('C – G7 – C7 – F je drei Schläge.', 'C – G7 – C7 – F, three strums each.', 'C – G7 – C7 – F, trois coups chacun.'),
-        l('„Zum Geburtstag viel Glück“ mit Begleitung.', '“Happy Birthday” with the backing.', '« Joyeux anniversaire » avec l’accompagnement.'),
+        l('„Zum Geburtstag viel Glück“ mit Begleitung.', '“Zum Geburtstag viel Glück” with the backing.', '« Zum Geburtstag viel Glück » avec l’accompagnement.'),
         l('**Spaß:** Spiel es beim nächsten Geburtstag in der Familie!', '**Fun:** play it at the next family birthday!', '**Pour le plaisir :** joue-le au prochain anniversaire en famille !'),
       ],
       done: [
         l('du im Dreiertakt spielst und die Eins betonst', 'you play in three and stress the one', 'tu joues à trois temps en accentuant le un'),
-        l('du „Zum Geburtstag viel Glück“ ganz begleitest', 'you accompany all of “Happy Birthday”', 'tu accompagnes « Joyeux anniversaire » en entier'),
+        l('du „Zum Geburtstag viel Glück“ ganz begleitest', 'you accompany all of “Zum Geburtstag viel Glück”', 'tu accompagnes « Zum Geburtstag viel Glück » en entier'),
       ],
       trouble: [
         l(
@@ -1016,7 +1026,7 @@ export const UKULELE_COURSE: Course = {
         ),
         l(
           'Der Auftakt verwirrt dich? Warte mit dem ersten Schlag, bis „Zum Ge-“ gesungen ist – dann kommt die Eins.',
-          'The pick-up confuses you? Wait with the first strum until “Hap-py” is sung – then comes the one.',
+          'The pick-up confuses you? Wait with the first strum until “Zum Ge-” is sung – then comes the one.',
           'L’anacrouse te perturbe ? Attends pour le premier coup que « Joy- » soit chanté – puis vient le un.',
         ),
       ],
@@ -1033,8 +1043,8 @@ export const UKULELE_COURSE: Course = {
         ),
         l(
           'Gemeinsames Lied: „Zum Geburtstag viel Glück“ für ein Kind, das bald Geburtstag hat.',
-          'Song together: “Happy Birthday” for a child whose birthday is coming up.',
-          'Chanson ensemble : « Joyeux anniversaire » pour un enfant dont l’anniversaire approche.',
+          'Song together: “Zum Geburtstag viel Glück” for a child whose birthday is coming up.',
+          'Chanson ensemble : « Zum Geburtstag viel Glück » pour un enfant dont l’anniversaire approche.',
         ),
       ],
       sheet: [
@@ -1055,8 +1065,8 @@ export const UKULELE_COURSE: Course = {
       ),
       review: l(
         'Spiel „Zum Geburtstag viel Glück“ im Walzertakt.',
-        'Play “Happy Birthday” in waltz time.',
-        'Joue « Joyeux anniversaire » à trois temps.',
+        'Play “Zum Geburtstag viel Glück” in waltz time.',
+        'Joue « Zum Geburtstag viel Glück » à trois temps.',
       ),
       steps: [
         l(
@@ -1091,7 +1101,7 @@ export const UKULELE_COURSE: Course = {
       homework: [
         l('C – Am – F – G7, je vier Schläge, dreimal.', 'C – Am – F – G7, four strums each, three times.', 'C – Am – F – G7, quatre coups chacun, trois fois.'),
         l('Die Abkürzungen üben: Am ↔ F und F ↔ G7.', 'Practise the shortcuts: Am ↔ F and F ↔ G7.', 'Entraîne les raccourcis : Am ↔ F et F ↔ G7.'),
-        l('„Am Lagerfeuer“ mit „Wartet auf mich“.', '“Am Lagerfeuer” with “Waits for me”.', '« Am Lagerfeuer » avec « M’attend ».'),
+        l('„Am Lagerfeuer“ mit „Wartet auf mich“.', '“Am Lagerfeuer” with “Waits for me”.', '« Am Lagerfeuer » avec « Attends-moi ».'),
         l('**Spaß:** Sing eine eigene Melodie über die vier Akkorde.', '**Fun:** sing your own tune over the four chords.', '**Pour le plaisir :** chante ta propre mélodie sur les quatre accords.'),
       ],
       done: [
@@ -1157,7 +1167,7 @@ export const UKULELE_COURSE: Course = {
         l(
           'Das Muster „Schaukeln (6/8)“: runter … rauf, runter … rauf. Die Eins und die Vier sind die Hauptschläge.',
           'The “Rocking (6/8)” pattern: down … up, down … up. One and four are the main beats.',
-          'Le motif « Balancement (6/8) » : bas … haut, bas … haut. Le un et le quatre sont les temps forts.',
+          'Le motif « Balancé (6/8) » : bas … haut, bas … haut. Le un et le quatre sont les temps forts.',
         ),
         l(
           'Wiege dich beim Spielen leicht mit – wie ein Boot auf den Wellen. Dann kommt das Gefühl von allein.',
@@ -1166,23 +1176,23 @@ export const UKULELE_COURSE: Course = {
         ),
         l(
           'Übe erst im [Rhythmus](tool:rhythmus) mit C, dann im Lied. „Stille Nacht“ ist ebenfalls ein 6/8-Lied – ganz ruhig gespielt.',
-          'Practise first in [Rhythm](tool:rhythmus) with C, then in the song. “Silent Night” is also a 6/8 song – played very calmly.',
-          'Entraîne-toi d’abord dans [Rythme](tool:rhythmus) avec C, puis dans la chanson. « Douce nuit » est aussi en 6/8 – jouée très calmement.',
+          'Practise first in [Rhythm](tool:rhythmus) with C, then in the song. “Stille Nacht” is also a 6/8 song – played very calmly.',
+          'Entraîne-toi d’abord dans [Rythme](tool:rhythmus) avec C, puis dans la chanson. « Stille Nacht » est aussi en 6/8 – jouée très calmement.',
         ),
       ],
       piece: {
         text: l(
           '„Ich geh mit meiner Laterne“ mit C und G7 im Schaukeltakt. Für ruhige Momente: „Stille Nacht“ mit C, G7 und F.',
-          '“Ich geh mit meiner Laterne” with C and G7 in rocking time. For quiet moments: “Silent Night” with C, G7 and F.',
-          '« Ich geh mit meiner Laterne » avec C et G7 en balancement. Pour les moments calmes : « Douce nuit » avec C, G7 et F.',
+          '“Ich geh mit meiner Laterne” with C and G7 in rocking time. For quiet moments: “Stille Nacht” with C, G7 and F.',
+          '« Ich geh mit meiner Laterne » avec C et G7 en balancement. Pour les moments calmes : « Stille Nacht » avec C, G7 et F.',
         ),
         play: [{ tool: 'rhythmus', pattern: 'Schaukeln (6/8)' }, { song: 'ich-geh-mit-meiner-laterne' }, { song: 'stille-nacht' }],
       },
       homework: [
         l('Bis sechs zählen und bei 1 und 4 klatschen.', 'Count to six and clap on 1 and 4.', 'Compte jusqu’à six et frappe dans tes mains sur 1 et 4.'),
         l('Schaukel-Muster mit C, zwei Minuten.', 'Rocking pattern with C, two minutes.', 'Motif de balancement avec C, deux minutes.'),
-        l('Laternenlied mit „Wartet auf mich“.', 'Lantern song with “Waits for me”.', 'Chanson de lanterne avec « M’attend ».'),
-        l('**Spaß:** Spiel abends „Stille Nacht“ ganz leise.', '**Fun:** play “Silent Night” very softly in the evening.', '**Pour le plaisir :** joue « Douce nuit » tout doucement le soir.'),
+        l('Laternenlied mit „Wartet auf mich“.', 'Lantern song with “Waits for me”.', 'Chanson de lanterne avec « Attends-moi ».'),
+        l('**Spaß:** Spiel abends „Stille Nacht“ ganz leise.', '**Fun:** play “Stille Nacht” very softly in the evening.', '**Pour le plaisir :** joue « Stille Nacht » tout doucement le soir.'),
       ],
       done: [
         l('du das Schaukeln gleichmäßig spielst', 'you play the rocking pattern evenly', 'tu joues le balancement régulièrement'),
@@ -1245,9 +1255,9 @@ export const UKULELE_COURSE: Course = {
           'Pour pincer, chaque doigt a sa corde : **pouce** cordes G et C, **index** corde E, **majeur** corde A.',
         ),
         l(
-          'Erstes Muster: Daumen (C-Saite) – Zeige – Mittel – Zeige. Immer wieder, ganz gleichmäßig.',
-          'First pattern: thumb (C string) – index – middle – index. Over and over, nice and even.',
-          'Premier motif : pouce (corde C) – index – majeur – index. Encore et encore, bien régulier.',
+          'Erstes Muster im Dreiertakt: Daumen (C-Saite) – Zeige – Mittel, einmal pro Takt: „eins, zwei, drei“. Immer wieder, ganz gleichmäßig.',
+          'First pattern, in three: thumb (C string) – index – middle, once per bar: “one, two, three”. Over and over, nice and even.',
+          'Premier motif, à trois temps : pouce (corde C) – index – majeur, une fois par mesure : « un, deux, trois ». Encore et encore, bien régulier.',
         ),
         l(
           'Die linke Hand greift ganz normal den Akkord. Nur die rechte Hand macht etwas Neues.',
@@ -1269,7 +1279,7 @@ export const UKULELE_COURSE: Course = {
         play: [{ song: 'kein-schoener-land' }, { song: 'clementine' }],
       },
       homework: [
-        l('Ohne Akkord: Daumen – Zeige – Mittel – Zeige, zwei Minuten.', 'No chord: thumb – index – middle – index, two minutes.', 'Sans accord : pouce – index – majeur – index, deux minutes.'),
+        l('Ohne Akkord: Daumen – Zeige – Mittel, zwei Minuten.', 'No chord: thumb – index – middle, two minutes.', 'Sans accord : pouce – index – majeur, deux minutes.'),
         l('Das Muster mit C, dann mit G7.', 'The pattern with C, then with G7.', 'Le motif avec C, puis avec G7.'),
         l('„Kein schöner Land“ gezupft.', '“Kein schöner Land” picked.', '« Kein schöner Land » en pinçant.'),
         l('**Spaß:** Zupf ein Gute-Nacht-Lied für jemanden.', '**Fun:** pick a goodnight song for someone.', '**Pour le plaisir :** pince une berceuse pour quelqu’un.'),
@@ -1309,7 +1319,7 @@ export const UKULELE_COURSE: Course = {
       ],
       sheet: [
         l('Daumen: G/C-Saite · Zeige: E-Saite · Mittel: A-Saite.', 'Thumb: G/C string · index: E string · middle: A string.', 'Pouce : corde G/C · index : corde E · majeur : corde A.'),
-        l('Muster: Daumen – Zeige – Mittel – Zeige.', 'Pattern: thumb – index – middle – index.', 'Motif : pouce – index – majeur – index.'),
+        l('Muster: Daumen – Zeige – Mittel (eins, zwei, drei).', 'Pattern: thumb – index – middle (one, two, three).', 'Motif : pouce – index – majeur (un, deux, trois).'),
         l('Links ganz normal den Akkord greifen.', 'Left hand frets the chord as usual.', 'Main gauche : accord comme d’habitude.'),
       ],
       wissen: ['ukulele-zupfen'],
@@ -1362,7 +1372,7 @@ export const UKULELE_COURSE: Course = {
       homework: [
         l('F greifen, Ringfinger dazu: Dm! Zehnmal hin und zurück.', 'Fret F, add the ring finger: Dm! Ten times back and forth.', 'Pose F, ajoute l’annulaire : Dm ! Dix allers-retours.'),
         l('Dm – C – Dm – C, je vier Schläge.', 'Dm – C – Dm – C, four strums each.', 'Dm – C – Dm – C, quatre coups chacun.'),
-        l('„Drunken Sailor“ mit „Wartet auf mich“.', '“Drunken Sailor” with “Waits for me”.', '« Drunken Sailor » avec « M’attend ».'),
+        l('„Drunken Sailor“ mit „Wartet auf mich“.', '“Drunken Sailor” with “Waits for me”.', '« Drunken Sailor » avec « Attends-moi ».'),
         l('**Spaß:** Sing den Refrain „Hooray and up she rises“ ganz laut.', '**Fun:** sing the chorus “Hooray and up she rises” really loud.', '**Pour le plaisir :** chante très fort le refrain « Hooray and up she rises ».'),
       ],
       done: [
@@ -1521,6 +1531,11 @@ export const UKULELE_COURSE: Course = {
           'Valeurs : une **noire** dure un temps, une **blanche** deux, une **ronde** quatre. Une **croche** dure la moitié d’une noire – comme en bas-haut.',
         ),
         l(
+          'Auch Pausen zählen mit: Leg die Handfläche der Anschlaghand sanft auf die Saiten – sie verstummen. Probier: zweimal C anschlagen, dann zwei Schläge Pause mit der Hand auf den Saiten.',
+          'Rests count too: lay the palm of your strumming hand gently on the strings – they go quiet. Try it: strum C twice, then two beats of rest with your hand on the strings.',
+          'Les silences comptent aussi : pose doucement la paume de la main qui gratte sur les cordes – elles se taisent. Essaie : deux coups sur C, puis deux temps de silence, la main sur les cordes.',
+        ),
+        l(
           'Spiel mit C: viermal Viertel (4 Schläge), zweimal Halbe (Schlag, klingen lassen), eine Ganze (einmal anschlagen, bis vier zählen).',
           'Play with C: four quarters (4 strums), two halves (strum, let it ring), one whole (strum once, count to four).',
           'Joue avec C : quatre noires (4 coups), deux blanches (un coup, laisse sonner), une ronde (un coup, compte jusqu’à quatre).',
@@ -1606,9 +1621,9 @@ export const UKULELE_COURSE: Course = {
           'En Do majeur, les accords principaux sont **C**, **F** et **G**. Les musiciens les appellent degrés **I**, **IV** et **V** – compte depuis Do : Do (1), Ré, Mi, Fa (4), Sol (5).',
         ),
         l(
-          'Der Blues hat 12 Takte: **C C C C | F F C C | G F C C**. Danach geht es von vorne los.',
-          'The blues has 12 bars: **C C C C | F F C C | G F C C**. Then it starts again.',
-          'Le blues a 12 mesures : **C C C C | F F C C | G F C C**. Puis on recommence.',
+          'Der Blues hat 12 Takte: **C C C C | F F C C | G F C G7**. Der letzte Takt führt zurück zum Anfang. Die Band spielt alle drei als Septakkorde (C7, F7, G7).',
+          'The blues has 12 bars: **C C C C | F F C C | G F C G7**. The last bar leads back to the start. The band plays all three as seventh chords (C7, F7, G7).',
+          'Le blues a 12 mesures : **C C C C | F F C C | G F C G7**. La dernière mesure ramène au début. Le groupe joue les trois en accords de septième (C7, F7, G7).',
         ),
         l(
           'Stufe 2 im [Blues](tool:blues): Grundton und Quinte. Zu C sind das C und G – zwei leere Saiten!',
@@ -1637,7 +1652,7 @@ export const UKULELE_COURSE: Course = {
       ],
       done: [
         l('du die 12 Takte einmal ohne Anhalten mitspielst', 'you play along with all 12 bars once without stopping', 'tu joues les 12 mesures une fois sans t’arrêter'),
-        l('du sagen kannst, welche Akkorde Stufe I, IV und V in C sind', 'you can say which chords are steps I, IV and V in C', 'tu sais quels accords sont les degrés I, IV et V en Do'),
+        l('du sagen kannst, welche Akkorde Stufe I, IV und V in C sind', 'you can say which chords are steps I, IV and V in C', 'tu sais quels accords sont les degrés I, IV et V en C'),
       ],
       trouble: [
         l(
@@ -1669,8 +1684,8 @@ export const UKULELE_COURSE: Course = {
         ),
       ],
       sheet: [
-        l('Stufen in C: **I = C, IV = F, V = G**.', 'Steps in C: **I = C, IV = F, V = G**.', 'Degrés en Do : **I = C, IV = F, V = G**.'),
-        l('Blues: C C C C | F F C C | G F C C', 'Blues: C C C C | F F C C | G F C C', 'Blues : C C C C | F F C C | G F C C'),
+        l('Stufen in C: **I = C, IV = F, V = G**.', 'Steps in C: **I = C, IV = F, V = G**.', 'Degrés en C : **I = C, IV = F, V = G**.'),
+        l('Blues: C C C C | F F C C | G F C G7', 'Blues: C C C C | F F C C | G F C G7', 'Blues : C C C C | F F C C | G F C G7'),
         l('Boogie über C: leere Saiten C, E, G, A.', 'Boogie over C: open strings C, E, G, A.', 'Boogie sur C : cordes à vide Do, Mi, Sol, La.'),
       ],
       wissen: ['zwoelf-takt-blues'],
@@ -1814,7 +1829,7 @@ export const UKULELE_COURSE: Course = {
       homework: [
         l('A7 und D7 je fünfmal greifen und prüfen.', 'Fret and check A7 and D7 five times each.', 'Pose et vérifie A7 et D7 cinq fois chacun.'),
         l('D7 → G7 → C langsam im Kreis.', 'D7 → G7 → C slowly round and round.', 'D7 → G7 → C lentement en boucle.'),
-        l('„My Bonnie“ mit „Wartet auf mich“.', '“My Bonnie” with “Waits for me”.', '« My Bonnie » avec « M’attend ».'),
+        l('„My Bonnie“ mit „Wartet auf mich“.', '“My Bonnie” with “Waits for me”.', '« My Bonnie » avec « Attends-moi ».'),
         l('**Spaß:** Zähl abends Sterne und spiel das Sternlein-Lied.', '**Fun:** count stars in the evening and play the star song.', '**Pour le plaisir :** compte les étoiles le soir et joue la chanson des étoiles.'),
       ],
       done: [
@@ -1896,11 +1911,11 @@ export const UKULELE_COURSE: Course = {
       ],
       piece: {
         text: l(
-          '„Am Lagerfeuer“ jetzt in G mit G, Em, C und D7 – klingt tiefer und wärmer. Dazu „Hänschen klein“ in G mit G und D7.',
-          '“Am Lagerfeuer” now in G with G, Em, C and D7 – it sounds lower and warmer. Plus “Hänschen klein” in G with G and D7.',
-          '« Am Lagerfeuer » maintenant en G avec G, Em, C et D7 – ça sonne plus grave et plus chaud. Et « Hänschen klein » en G avec G et D7.',
+          '„Hänschen klein“ in G mit G und D7 – das kennst du schon, nur mit neuen Griffen. Dann „Am Lagerfeuer“ in G mit G, Em, C und D7 – es klingt anders als in C.',
+          '“Hänschen klein” in G with G and D7 – you know it already, just with new chords. Then “Am Lagerfeuer” in G with G, Em, C and D7 – it sounds different from C.',
+          '« Hänschen klein » en G avec G et D7 – tu la connais déjà, mais avec de nouveaux accords. Puis « Am Lagerfeuer » en G avec G, Em, C et D7 – ça sonne autrement qu’en C.',
         ),
-        play: [{ song: 'lagerfeuer', key: 'G' }, { song: 'haenschen-klein', key: 'G' }],
+        play: [{ song: 'haenschen-klein', key: 'G' }, { song: 'lagerfeuer', key: 'G' }],
       },
       homework: [
         l('Em greifen, jede Saite prüfen – fünfmal.', 'Fret Em, check each string – five times.', 'Pose Em, vérifie chaque corde – cinq fois.'),
@@ -1974,21 +1989,26 @@ export const UKULELE_COURSE: Course = {
           'Joue-la lentement en montant puis en descendant. Chante les noms. Plus d’infos : [Les noms des notes](wissen:toene-und-notennamen).',
         ),
         l(
-          '**Tabulatur** zeigt dir, auf welcher Saite und in welchem Bund ein Ton liegt: Die Zahl ist der Bund, 0 heißt leere Saite. Mehr: [Tabulatur lesen](wissen:tabulatur-lesen).',
-          '**Tablature** shows which string and fret a note is on: the number is the fret, 0 means open string. More: [Reading tabs](wissen:tabulatur-lesen).',
-          'La **tablature** indique la corde et la case de chaque note : le chiffre est la case, 0 veut dire corde à vide. Plus d’infos : [Lire une tablature](wissen:tabulatur-lesen).',
+          '**Tabulatur** zeigt dir, auf welcher Saite und in welchem Bund ein Ton liegt. Im Lied steht unter jeder Silbe ein Kürzel wie **A3**: Buchstabe = Saite, Zahl = Bund, 0 = leere Saite. Mehr: [Tabulatur lesen](wissen:tabulatur-lesen).',
+          '**Tablature** shows which string and fret a note is on. In the song, each syllable gets a short code like **A3**: letter = string, number = fret, 0 = open string. More: [Reading tabs](wissen:tabulatur-lesen).',
+          'La **tablature** indique la corde et la case de chaque note. Dans la chanson, chaque syllabe a un code comme **A3** : lettre = corde, chiffre = case, 0 = corde à vide. Plus d’infos : [Lire une tablature](wissen:tabulatur-lesen).',
         ),
         l(
-          'Öffne „Alle meine Entchen“ und schalte „Tab“ ein. Jetzt siehst du die Melodie als Zahlen unter dem Text – und zupfst sie mit.',
+          'Öffne „Alle meine Entchen“ und schalte „Tabulatur“ ein. Jetzt siehst du die Melodie als Zahlen unter dem Text – und zupfst sie mit.',
           'Open “Alle meine Entchen” and switch on “Tab”. Now you see the melody as numbers under the words – pick it along.',
-          'Ouvre « Alle meine Entchen » et active « Tab ». Tu vois la mélodie en chiffres sous les paroles – pince-la en même temps.',
+          'Ouvre « Alle meine Entchen » et active « Tablature ». Tu vois la mélodie en chiffres sous les paroles – pince-la en même temps.',
+        ),
+        l(
+          'Zwei Töne schnell hintereinander auf derselben Saite? Zupf abwechselnd mit Zeige- und Mittelfinger – das ist der Wechselschlag.',
+          'Two quick notes in a row on the same string? Alternate index and middle finger – that’s alternate picking.',
+          'Deux notes rapides de suite sur la même corde ? Alterne index et majeur – c’est le jeu en alternance.',
         ),
       ],
       piece: {
         text: l(
-          '„Alle meine Entchen“ als Melodie: Tab einschalten und Ton für Ton mitzupfen. Wenn es klappt: einmal Melodie, einmal Akkorde.',
+          '„Alle meine Entchen“ als Melodie: Tabulatur einschalten und Ton für Ton mitzupfen. Wenn es klappt: einmal Melodie, einmal Akkorde.',
           '“Alle meine Entchen” as a melody: switch on Tab and pick note by note. Once it works: once melody, once chords.',
-          '« Alle meine Entchen » en mélodie : active Tab et pince note par note. Quand ça marche : une fois la mélodie, une fois les accords.',
+          '« Alle meine Entchen » en mélodie : active Tablature et pince note par note. Quand ça marche : une fois la mélodie, une fois les accords.',
         ),
         play: [{ song: 'alle-meine-entchen' }],
       },
@@ -2006,12 +2026,12 @@ export const UKULELE_COURSE: Course = {
         l(
           'Du findest die Töne nicht schnell genug? Stell die Begleitung langsamer und nutze „Wartet auf mich“.',
           'You can’t find the notes fast enough? Slow the backing down and use “Waits for me”.',
-          'Tu ne trouves pas les notes assez vite ? Ralentis l’accompagnement et utilise « M’attend ».',
+          'Tu ne trouves pas les notes assez vite ? Ralentis l’accompagnement et utilise « Attends-moi ».',
         ),
         l(
-          'Die Saiten in der Tabulatur verwirren dich? Die oberste Linie ist die A-Saite – die Saite, die beim Halten unten liegt.',
-          'The strings in the tab confuse you? The top line is the A string – the one that is at the bottom when you hold the ukulele.',
-          'Les cordes de la tablature te perdent ? La ligne du haut est la corde A – celle qui est en bas quand tu tiens le ukulélé.',
+          'Du findest die Saite nicht? Der Buchstabe im Kürzel ist der Saitenname: **A3** heißt A-Saite (beim Halten die unterste), 3. Bund.',
+          'Can’t find the string? The letter in the code is the string name: **A3** means A string (the bottom one when you hold the ukulele), 3rd fret.',
+          'Tu ne trouves pas la corde ? La lettre du code est le nom de la corde : **A3** veut dire corde A (celle du bas quand tu tiens le ukulélé), case 3.',
         ),
       ],
       teacher: [
@@ -2041,19 +2061,24 @@ export const UKULELE_COURSE: Course = {
     // ---------- 23 ----------
     {
       n: 23,
-      title: l('Schwierige Griffe: D, E7 und Bb', 'Tricky chords: D, E7 and Bb', 'Accords difficiles : D, E7 et Bb'),
+      title: l('Neue Griffe: D, A und E7', 'New chords: D, A and E7', 'Nouveaux accords : D, A et E7'),
       goal: l(
-        'Du lernst D, E7 und Bb und spielst ein Lied in der Tonart D.',
-        'You learn D, E7 and Bb and play a song in the key of D.',
-        'Tu apprends D, E7 et Bb et tu joues une chanson dans la tonalité de D.',
+        'Du lernst D, A und E7 und spielst ein Lied in A und in D.',
+        'You learn D, A and E7 and play a song in A and in D.',
+        'Tu apprends D, A et E7 et tu joues une chanson en A et en D.',
       ),
-      chords: ['D', 'E7', 'Bb'],
+      chords: ['A', 'D', 'E7', 'Bb'],
       review: l(
         'Spiel die C-Dur-Tonleiter einmal hinauf und hinunter.',
         'Play the C major scale up and down once.',
         'Joue une fois la gamme de Do majeur en montant et en descendant.',
       ),
       steps: [
+        l(
+          '**A**: Mittelfinger G-Saite 2. Bund, Zeigefinger C-Saite 1. Bund. E- und A-Saite bleiben frei. Griffbild: [A](chord:A).',
+          '**A**: middle finger G string fret 2, index C string fret 1. The E and A strings stay open. Chart: [A](chord:A).',
+          '**A** : majeur corde G case 2, index corde C case 1. Les cordes E et A restent libres. Diagramme : [A](chord:A).',
+        ),
         l(
           '**D**: Zeige-, Mittel- und Ringfinger nebeneinander im 2. Bund auf G-, C- und E-Saite. Die A-Saite bleibt frei. Griffbild: [D](chord:D).',
           '**D**: index, middle and ring fingers side by side at fret 2 on the G, C and E strings. The A string stays open. Chart: [D](chord:D).',
@@ -2065,44 +2090,44 @@ export const UKULELE_COURSE: Course = {
           '**E7** : index corde G case 1, majeur corde C case 2, annulaire corde A case 2. Diagramme : [E7](chord:E7).',
         ),
         l(
-          '**Bb**: Zeigefinger quer über E- und A-Saite im 1. Bund, Mittelfinger C-Saite 2. Bund, Ringfinger G-Saite 3. Bund. Das ist ein echter kleiner Barré. Griffbild: [Bb](chord:Bb).',
-          '**Bb**: index across the E and A strings at fret 1, middle C string fret 2, ring G string fret 3. That’s a real little barre. Chart: [Bb](chord:Bb).',
-          '**Bb** : index en travers des cordes E et A en case 1, majeur corde C case 2, annulaire corde G case 3. C’est un vrai petit barré. Diagramme : [Bb](chord:Bb).',
+          'In A brauchst du A, D und E7 – in D brauchst du D, G und A7. So spielst du dasselbe Lied in zwei neuen Tonarten.',
+          'In A you need A, D and E7 – in D you need D, G and A7. That way you play the same song in two new keys.',
+          'En A, il te faut A, D et E7 – en D, il te faut D, G et A7. Ainsi, tu joues la même chanson dans deux nouvelles tonalités.',
         ),
         l(
-          'Diese Griffe brauchen Zeit – nimm dir jeden Tag nur einen vor. Tipps und leichtere Wege: [Schwierige Ukulele-Akkorde](wissen:ukulele-schwierige-akkorde).',
-          'These chords take time – focus on just one each day. Tips and easier ways: [Tricky ukulele chords](wissen:ukulele-schwierige-akkorde).',
-          'Ces accords demandent du temps – travailles-en un seul par jour. Astuces et versions plus simples : [Accords de ukulélé difficiles](wissen:ukulele-schwierige-akkorde).',
+          'Ausblick für Mutige: **Bb** – Zeigefinger quer über E- und A-Saite im 1. Bund, Mittelfinger C-Saite 2. Bund, Ringfinger G-Saite 3. Bund. Ein echter kleiner Barré, er braucht Wochen. Tipps: [Schwierige Ukulele-Akkorde](wissen:ukulele-schwierige-akkorde).',
+          'A preview for the brave: **Bb** – index across the E and A strings at fret 1, middle C string fret 2, ring G string fret 3. A real little barre that takes weeks. Tips: [Tricky ukulele chords](wissen:ukulele-schwierige-akkorde).',
+          'Pour les courageux : **Bb** – index en travers des cordes E et A en case 1, majeur corde C case 2, annulaire corde G case 3. Un vrai petit barré qui demande des semaines. Astuces : [Accords de ukulélé difficiles](wissen:ukulele-schwierige-akkorde).',
         ),
       ],
       piece: {
         text: l(
-          '„Alle meine Entchen“ in D: mit D, G und A7. Die Melodie klingt höher, die Griffe sind neu – ein schöner Test für deinen D-Griff.',
-          '“Alle meine Entchen” in D: with D, G and A7. The tune sounds higher, the chords are new – a nice test for your D chord.',
-          '« Alle meine Entchen » en D : avec D, G et A7. La mélodie est plus aiguë, les accords sont nouveaux – un bon test pour ton D.',
+          '„Alle meine Entchen“ in A mit A, D und E7 – dann in D mit D, G und A7. Dieselbe Melodie, zwei neue Klangfarben.',
+          '“Alle meine Entchen” in A with A, D and E7 – then in D with D, G and A7. The same tune in two new colours.',
+          '« Alle meine Entchen » en A avec A, D et E7 – puis en D avec D, G et A7. La même mélodie, deux nouvelles couleurs.',
         ),
-        play: [{ song: 'alle-meine-entchen', key: 'D' }],
+        play: [{ song: 'alle-meine-entchen', key: 'A' }, { song: 'alle-meine-entchen', key: 'D' }],
       },
       homework: [
-        l('Tag 1–2: D greifen und prüfen, D ↔ A7.', 'Days 1–2: fret and check D, D ↔ A7.', 'Jours 1–2 : pose et vérifie D, D ↔ A7.'),
-        l('Tag 3: E7 greifen und prüfen.', 'Day 3: fret and check E7.', 'Jour 3 : pose et vérifie E7.'),
-        l('Tag 4: Bb – erst nur den Zeigefinger quer.', 'Day 4: Bb – just the index across at first.', 'Jour 4 : Bb – d’abord juste l’index en travers.'),
-        l('**Spaß:** „Alle meine Entchen“ in D jemandem vorspielen.', '**Fun:** play “Alle meine Entchen” in D for someone.', '**Pour le plaisir :** joue « Alle meine Entchen » en D pour quelqu’un.'),
+        l('Tag 1: A greifen und prüfen, A ↔ D.', 'Day 1: fret and check A, A ↔ D.', 'Jour 1 : pose et vérifie A, A ↔ D.'),
+        l('Tag 2–3: E7 dazu, dann „Alle meine Entchen“ in A.', 'Days 2–3: add E7, then “Alle meine Entchen” in A.', 'Jours 2–3 : ajoute E7, puis « Alle meine Entchen » en A.'),
+        l('Tag 4–5: dasselbe Lied in D mit D, G und A7.', 'Days 4–5: the same song in D with D, G and A7.', 'Jours 4–5 : la même chanson en D avec D, G et A7.'),
+        l('**Spaß:** Lass jemanden raten, in welcher Tonart du spielst.', '**Fun:** let someone guess which key you are playing in.', '**Pour le plaisir :** fais deviner à quelqu’un dans quelle tonalité tu joues.'),
       ],
       done: [
-        l('dein D klar klingt und du von D zu A7 wechselst', 'your D rings clearly and you can change from D to A7', 'ton D sonne clair et tu passes de D à A7'),
-        l('du E7 und Bb einmal sauber greifen kannst', 'you can fret E7 and Bb cleanly once', 'tu sais poser E7 et Bb proprement une fois'),
+        l('dein A und dein D klar klingen', 'your A and your D ring clearly', 'ton A et ton D sonnent clair'),
+        l('du „Alle meine Entchen“ in A einmal ganz begleitest', 'you accompany all of “Alle meine Entchen” in A once', 'tu accompagnes une fois « Alle meine Entchen » en A en entier'),
       ],
       trouble: [
         l(
-          'Beim D passen drei Finger nicht in den 2. Bund? Stell sie leicht schräg hintereinander – oder nimm nur Zeigefinger quer über drei Saiten.',
+          'Beim D passen drei Finger nicht in den 2. Bund? Stell sie leicht schräg hintereinander – oder leg nur den Zeigefinger quer über drei Saiten.',
           'Three fingers won’t fit in fret 2 for D? Angle them slightly one behind the other – or lay just your index across three strings.',
           'Trois doigts ne tiennent pas en case 2 pour D ? Place-les un peu en biais l’un derrière l’autre – ou couche juste l’index sur trois cordes.',
         ),
         l(
-          'Bb klappt noch nicht? Das ist einer der schwersten Ukulele-Griffe. Übe ihn kurz jeden Tag – nach ein paar Wochen klingt er.',
-          'Bb doesn’t work yet? It’s one of the hardest ukulele chords. Practise it briefly every day – after a few weeks it will ring.',
-          'Bb ne marche pas encore ? C’est un des accords les plus durs du ukulélé. Entraîne-le un peu chaque jour – dans quelques semaines, il sonnera.',
+          'Der Wechsel A – E7 hakt? Der Mittelfinger rutscht von der G- auf die C-Saite und bleibt im 2. Bund – lass ihn dabei auf dem Holz entlanggleiten.',
+          'The A – E7 change sticks? Your middle finger moves from the G to the C string and stays at fret 2 – let it glide along the neck.',
+          'Le passage A – E7 coince ? Le majeur passe de la corde G à la corde C et reste en case 2 – fais-le glisser le long du manche.',
         ),
       ],
       teacher: [
@@ -2112,21 +2137,21 @@ export const UKULELE_COURSE: Course = {
           'Entrée : gymnastique des doigts – taper les doigts un par un sur le manche, puis trois côte à côte en case 2.',
         ),
         l(
-          'Übung: Drei Stationen (D, E7, Bb), jede fünf Minuten, Partner prüfen gegenseitig.',
-          'Practice: three stations (D, E7, Bb), five minutes each, partners check each other.',
-          'Exercice : trois ateliers (D, E7, Bb), cinq minutes chacun, les binômes se vérifient.',
+          'Übung: Drei Stationen (A, D, E7), Partner prüfen gegenseitig. Wer fertig ist, versucht Bb.',
+          'Practice: three stations (A, D, E7), partners check each other. Anyone who is done tries Bb.',
+          'Exercice : trois ateliers (A, D, E7), les binômes se vérifient. Qui a fini essaie Bb.',
         ),
         l(
-          'Gemeinsames Lied: „Alle meine Entchen“ in D – und zum Vergleich in C.',
-          'Song together: “Alle meine Entchen” in D – and in C for comparison.',
-          'Chanson ensemble : « Alle meine Entchen » en D – puis en C pour comparer.',
+          'Gemeinsames Lied: „Alle meine Entchen“ in C, in A und in D – die Klasse hört, wie sich die Tonart ändert.',
+          'Song together: “Alle meine Entchen” in C, in A and in D – the class hears how the key changes.',
+          'Chanson ensemble : « Alle meine Entchen » en C, en A et en D – la classe entend la tonalité changer.',
         ),
       ],
       sheet: [
+        l('**A:** Mittel G-Saite 2, Zeige C-Saite 1.', '**A:** middle G string 2, index C string 1.', '**A :** majeur corde G 2, index corde C 1.'),
         l('**D:** drei Finger im 2. Bund auf G, C, E.', '**D:** three fingers at fret 2 on G, C, E.', '**D :** trois doigts en case 2 sur G, C, E.'),
         l('**E7:** Zeige G-Saite 1, Mittel C-Saite 2, Ring A-Saite 2.', '**E7:** index G string 1, middle C string 2, ring A string 2.', '**E7 :** index corde G 1, majeur corde C 2, annulaire corde A 2.'),
-        l('**Bb:** Zeige quer E+A 1, Mittel C 2, Ring G 3.', '**Bb:** index across E+A 1, middle C 2, ring G 3.', '**Bb :** index en travers E+A 1, majeur C 2, annulaire G 3.'),
-        l('Jeden Tag nur einen neuen Griff.', 'Only one new chord a day.', 'Un seul nouvel accord par jour.'),
+        l('**Bb** ist der Ausblick – jeden Tag kurz probieren.', '**Bb** is a preview – try it briefly every day.', '**Bb** est un aperçu – essaie-le un peu chaque jour.'),
       ],
       wissen: ['ukulele-schwierige-akkorde', 'saubere-griffe'],
     },
@@ -2161,9 +2186,9 @@ export const UKULELE_COURSE: Course = {
           'Entraîne le déroulement : accorder, annoncer (« Je vais jouer … »), jouer, saluer. Continue simplement après une petite erreur – le public le remarque à peine.',
         ),
         l(
-          'Schau zurück: Du kannst jetzt über 13 Akkorde, viele Schlagmuster, Zupfen, Blues und Melodie. Toll gemacht!',
-          'Look back: you now know more than 13 chords, several strumming patterns, picking, blues and melody. Well done!',
-          'Regarde le chemin parcouru : tu connais plus de 13 accords, plusieurs rythmes, le picking, le blues et la mélodie. Bravo !',
+          'Schau zurück: Du kannst jetzt 14 Akkorde, viele Schlagmuster, Zupfen, Blues und Melodie. Toll gemacht!',
+          'Look back: you now know 14 chords, several strumming patterns, picking, blues and melody. Well done!',
+          'Regarde le chemin parcouru : tu connais 14 accords, plusieurs rythmes, le picking, le blues et la mélodie. Bravo !',
         ),
       ],
       piece: {

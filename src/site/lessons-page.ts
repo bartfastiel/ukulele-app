@@ -210,6 +210,9 @@ function paperDiagram(ch: Chord): Node {
   return s('svg', { viewBox: `0 0 ${w} ${hgt}`, class: 'sheet-diagram', role: 'img', 'aria-label': ch.name }, ...parts);
 }
 
+/** Ablauf einer Stunde (45 Minuten): Einstieg mit Stimmen und Wiederholung, Übung in der Gruppe, gemeinsames Lied. */
+const TEACHER_MINUTES = [10, 15, 20];
+
 const WEEKDAYS = () => [t('Mo'), t('Di'), t('Mi'), t('Do'), t('Fr')];
 
 /** Druckblatt: eine A4-Seite, schwarz auf weiß. */
@@ -301,7 +304,8 @@ export function lessonPage(course: Course, lesson: Lesson, ctx: LessonCtx, l: La
         'details',
         { class: 'card article lesson-teacher' },
         h('summary', null, t('Für Lehrkräfte: Ablauf in der Stunde')),
-        list('ol', lesson.teacher, ctx, l),
+        h('ol', null, ...lesson.teacher.map((x, i) => h('li', null, h('strong', null, t('≈ {n} Min.', { n: TEACHER_MINUTES[i] || 10 }), ' '), ...ctx.inline(x[l], l)))),
+        h('p', null, t('Differenzierung: Wer schon sicher ist, spielt das Stück mit Runter-rauf oder hilft einem Partner; wer noch Zeit braucht, schlägt nur auf der Eins jedes Taktes an.')),
         h('p', { class: 'small' }, t('An die Tafel: {url}', { url: hostAndPath(ctx.publicUrl(`lektion/${lesson.n}`, l)) })),
       ),
       related.length

@@ -26,9 +26,9 @@ export const GITARRE_COURSE: Course = {
       chords: ['Em'],
       steps: [
         L(
-          'Setz dich vorn auf die Stuhlkante. Die Gitarre liegt auf dem rechten Bein, der Hals zeigt leicht nach oben. Schultern locker! Mehr in [Gitarre richtig halten](wissen:gitarre-halten).',
-          'Sit near the front edge of your chair. The guitar rests on your right leg, the neck points slightly up. Keep your shoulders loose! More in [Holding the guitar](wissen:gitarre-halten).',
-          'Assieds-toi au bord de la chaise. La guitare repose sur ta jambe droite, le manche monte un peu. Épaules détendues ! Plus de détails : [Tenir la guitare](wissen:gitarre-halten).',
+          'Setz dich vorn auf die Stuhlkante. Die Gitarre liegt auf dem rechten Bein, der Hals zeigt leicht nach oben. Schultern locker! Oder klassisch auf dem linken Bein mit Fußbank – wie deine Lehrkraft es zeigt. Mehr in [Gitarre richtig halten](wissen:gitarre-halten).',
+          'Sit near the front edge of your chair. The guitar rests on your right leg, the neck points slightly up. Keep your shoulders loose! Or classical style on your left leg with a footstool – as your teacher shows you. More in [Holding the guitar](wissen:gitarre-halten).',
+          'Assieds-toi au bord de la chaise. La guitare repose sur ta jambe droite, le manche monte un peu. Épaules détendues ! Ou en position classique sur la jambe gauche avec un repose-pied – comme ton enseignant te le montre. Plus de détails : [Tenir la guitare](wissen:gitarre-halten).',
         ),
         L(
           'Zupf nur die dickste Saite, die tiefe E-Saite, mit dem Daumen. Lass sie klingen, bis sie leise wird. Dann zupf die dünnste, die hohe e-Saite.',
@@ -36,14 +36,19 @@ export const GITARRE_COURSE: Course = {
           'Pince seulement la corde la plus grosse, la corde E grave, avec le pouce. Laisse-la sonner jusqu’au silence. Puis la plus fine, la corde e aiguë.',
         ),
         L(
-          'Jetzt einmal über alle sechs Saiten: mit dem Daumen oder dem Nagel des Zeigefingers von oben nach unten streichen – ruhig, gleichmäßig, nicht zu hart.',
-          'Now sweep across all six strings once: with your thumb or index fingernail, from top to bottom – calm, even, not too hard.',
-          'Balaie maintenant les six cordes d’un coup : avec le pouce ou l’ongle de l’index, de haut en bas – calmement, régulièrement, sans taper.',
+          'Jetzt einmal über alle sechs Saiten: mit dem Daumen, dem Nagel des Zeigefingers oder einem Plektrum – wie deine Lehrkraft es zeigt – von oben nach unten streichen, ruhig, gleichmäßig, nicht zu hart.',
+          'Now sweep across all six strings once: with your thumb, index fingernail or a pick – as your teacher shows you – from top to bottom, calm, even, not too hard.',
+          'Balaie maintenant les six cordes d’un coup : avec le pouce, l’ongle de l’index ou un médiator – comme ton enseignant te le montre – de haut en bas, calmement, régulièrement, sans taper.',
         ),
         L(
           'Dein erster Akkord [Em](chord:Em): Mittelfinger auf die A-Saite, Ringfinger auf die D-Saite, beide im 2. Bund. Alle sechs Saiten dürfen klingen.',
           'Your first chord, [Em](chord:Em): middle finger on the A string, ring finger on the D string, both at the 2nd fret. All six strings may ring.',
           'Ton premier accord, [Em](chord:Em) : majeur sur la corde A, annulaire sur la corde D, tous deux en case 2. Les six cordes peuvent sonner.',
+        ),
+        L(
+          'So liest du ein Griffbild: Die senkrechten Linien sind die Saiten (links die tiefe E-, rechts die hohe e-Saite), die waagrechten die Bundstäbchen. Ein Punkt zeigt, wo ein Finger drückt – die Zahl darin, welcher: 1 Zeige-, 2 Mittel-, 3 Ring-, 4 kleiner Finger. „o“ heißt leer anschlagen, „x“ nicht anschlagen.',
+          'How to read a chord chart: the vertical lines are the strings (low E on the left, high e on the right), the horizontal ones are the frets. A dot shows where a finger presses – the number says which one: 1 index, 2 middle, 3 ring, 4 little finger. “o” means play the open string, “x” means don’t play it.',
+          'Lire un diagramme : les lignes verticales sont les cordes (E grave à gauche, e aiguë à droite), les lignes horizontales les frettes. Un point montre où un doigt appuie – le chiffre dit lequel : 1 index, 2 majeur, 3 annulaire, 4 auriculaire. « o » : corde à vide, « x » : ne pas jouer la corde.',
         ),
         L(
           'Tippe auf der Akkordseite auf das Mikrofon: Die App hört zu und sagt dir, ob alle Saiten klingen. Mehr Tipps: [Die ersten Akkorde](wissen:gitarre-erste-akkorde).',
@@ -53,9 +58,9 @@ export const GITARRE_COURSE: Course = {
       ],
       piece: {
         text: L(
-          'Viermal Em anschlagen, dann viermal alle Saiten leer – und immer im Kreis. Im Rhythmus „Nur runter“ wählen, Akkord Em, Tempo langsam: Das Metronom zählt mit.',
-          'Strum Em four times, then all open strings four times – round and round. In the rhythm tool choose “Only down”, chord Em, slow tempo: the metronome counts along.',
-          'Gratte quatre fois Em, puis quatre fois les cordes à vide – et on recommence. Dans le rythme, choisis « Que vers le bas », accord Em, tempo lent : le métronome compte avec toi.',
+          'Einzählen („eins, zwei, drei, vier“), dann viermal Em anschlagen, viermal alle Saiten leer – und immer im Kreis. Im Rhythmus „Nur runter“ wählen, Akkord Em, Tempo langsam: Das Metronom zählt mit.',
+          'Count in (“one, two, three, four”), then strum Em four times, all open strings four times – round and round. In the rhythm tool choose “Only down”, chord Em, slow tempo: the metronome counts along.',
+          'Compte (« un, deux, trois, quatre »), puis gratte quatre fois Em, quatre fois les cordes à vide – et on recommence. Dans le rythme, choisis « Que vers le bas », accord Em, tempo lent : le métronome compte avec toi.',
         ),
         play: [{ tool: 'rhythmus', pattern: 'Nur runter' }],
       },
@@ -146,6 +151,11 @@ export const GITARRE_COURSE: Course = {
           'Hör den Unterschied: Spiel [Em](chord:Em) vor und nach dem Stimmen. Gestimmt klingt der Akkord viel klarer.',
           'Hear the difference: play [Em](chord:Em) before and after tuning. In tune, the chord sounds much clearer.',
           'Écoute la différence : joue [Em](chord:Em) avant et après l’accordage. Accordé, l’accord sonne bien plus clair.',
+        ),
+        L(
+          'Pflege: Wisch nach dem Üben die Saiten kurz mit einem trockenen Tuch ab und stell die Gitarre in ihre Tasche oder auf einen Ständer – nicht an die Heizung und nicht in die pralle Sonne.',
+          'Care: after practising, wipe the strings with a dry cloth and put the guitar in its bag or on a stand – not next to the heater and not in bright sun.',
+          'Entretien : après avoir joué, essuie les cordes avec un chiffon sec et range la guitare dans sa housse ou sur un support – pas près du radiateur ni en plein soleil.',
         ),
       ],
       piece: {
@@ -248,7 +258,7 @@ export const GITARRE_COURSE: Course = {
         text: L(
           'Blues mit Band in E, Stufe 1 · Grundton: In jedem Takt viermal den Grundton zupfen – E, A oder B. Die Band spielt dazu, du gibst den Bass!',
           'Blues with the band in E, level 1 · Root note: pluck the root four times in every bar – E, A or B. The band plays along, you are the bass!',
-          'Blues avec le groupe en Mi, niveau 1 · Fondamentale : dans chaque mesure, pince quatre fois la fondamentale – Mi, La ou Si. Le groupe joue, toi tu fais la basse !',
+          'Blues avec le groupe en E, niveau 1 · Fondamentale : dans chaque mesure, pince quatre fois la fondamentale – Mi, La ou Si. Le groupe joue, toi tu fais la basse !',
         ),
         play: [{ tool: 'blues', level: 1, key: 'E' }],
       },
@@ -343,15 +353,15 @@ export const GITARRE_COURSE: Course = {
         ),
         L(
           'Lied ab: [Bruder Jakob](lied:bruder-jakob) in E braucht nur einen Akkord. Die Begleitung wartet auf dich.',
-          'Song time: [Frère Jacques](lied:bruder-jakob) in E needs only one chord. The backing waits for you.',
-          'À toi : [Frère Jacques](lied:bruder-jakob) en Mi n’a besoin que d’un accord. L’accompagnement t’attend.',
+          'Song time: [Bruder Jakob](lied:bruder-jakob) in E needs only one chord. The backing waits for you.',
+          'À toi : [Bruder Jakob](lied:bruder-jakob) en E n’a besoin que d’un accord. L’accompagnement t’attend.',
         ),
       ],
       piece: {
         text: L(
           'Bruder Jakob in E – nur E-Dur, viermal pro Takt nach unten. Danach im Rhythmus: viermal Em, viermal E, im Kreis.',
-          'Frère Jacques in E – only E major, four downstrokes per bar. Then in the rhythm tool: four times Em, four times E, round and round.',
-          'Frère Jacques en Mi – seulement E, quatre coups vers le bas par mesure. Puis dans le rythme : quatre fois Em, quatre fois E, en boucle.',
+          'Bruder Jakob in E – only E major, four downstrokes per bar. Then in the rhythm tool: four times Em, four times E, round and round.',
+          'Bruder Jakob en E – seulement E, quatre coups vers le bas par mesure. Puis dans le rythme : quatre fois Em, quatre fois E, en boucle.',
         ),
         play: [{ song: 'bruder-jakob', key: 'E' }, { tool: 'rhythmus', pattern: 'Nur runter' }],
       },
@@ -359,13 +369,13 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: E greifen, Saiten einzeln zupfen – klingen alle sechs?', 'Days 1–2: play E, pluck the strings one by one – do all six ring?', 'Jours 1–2 : pose E, pince les cordes une à une – les six sonnent-elles ?'),
         L('Tag 3–4: Em – E – Em – E, nur der Zeigefinger bewegt sich.', 'Days 3–4: Em – E – Em – E, only the index finger moves.', 'Jours 3–4 : Em – E – Em – E, seul l’index bouge.'),
-        L('Tag 5: Bruder Jakob in E mitspielen.', 'Day 5: play along with Frère Jacques in E.', 'Jour 5 : joue Frère Jacques en Mi.'),
-        L('Spaß: Sing Bruder Jakob mit, während du spielst!', 'Fun: sing Frère Jacques while you play!', 'Pour le plaisir : chante Frère Jacques en jouant !'),
+        L('Tag 5: Bruder Jakob in E mitspielen.', 'Day 5: play along with Bruder Jakob in E.', 'Jour 5 : joue Bruder Jakob en E.'),
+        L('Spaß: Sing Bruder Jakob mit, während du spielst!', 'Fun: sing Bruder Jakob while you play!', 'Pour le plaisir : chante Bruder Jakob en jouant !'),
       ],
       done: [
         L('bei E alle sechs Saiten klingen', 'all six strings ring when you play E', 'les six cordes sonnent quand tu joues E'),
         L('du Em und E im Takt wechseln kannst', 'you can switch between Em and E in time', 'tu passes de Em à E en rythme'),
-        L('du Bruder Jakob einmal ganz durchspielst', 'you play Frère Jacques all the way through once', 'tu joues Frère Jacques une fois en entier'),
+        L('du Bruder Jakob einmal ganz durchspielst', 'you play Bruder Jakob all the way through once', 'tu joues Bruder Jakob une fois en entier'),
       ],
       trouble: [
         L(
@@ -392,8 +402,8 @@ export const GITARRE_COURSE: Course = {
         ),
         L(
           'Gemeinsam: Bruder Jakob in E – zuerst singen alle, dann spielen alle E dazu, zum Schluss als Kanon in zwei Gruppen singen.',
-          'Together: Frère Jacques in E – first everyone sings, then everyone strums E along, finally sing it as a round in two groups.',
-          'Ensemble : Frère Jacques en Mi – d’abord tous chantent, puis tous jouent E, enfin on le chante en canon à deux groupes.',
+          'Together: Bruder Jakob in E – first everyone sings, then everyone strums E along, finally sing it as a round in two groups.',
+          'Ensemble : Bruder Jakob en E – d’abord tous chantent, puis tous jouent E, enfin on le chante en canon à deux groupes.',
         ),
       ],
       sheet: [
@@ -415,8 +425,8 @@ export const GITARRE_COURSE: Course = {
       chords: ['Am'],
       review: L(
         'Letzte Woche: E-Dur. Spiel zum Aufwärmen Bruder Jakob in E.',
-        'Last week: E major. Warm up with Frère Jacques in E.',
-        'La semaine dernière : E (Mi majeur). Échauffe-toi avec Frère Jacques en Mi.',
+        'Last week: E major. Warm up with Bruder Jakob in E.',
+        'La semaine dernière : E (Mi majeur). Échauffe-toi avec Bruder Jakob en E.',
       ),
       steps: [
         L(
@@ -534,14 +544,14 @@ export const GITARRE_COURSE: Course = {
         L(
           'Wechsel A – E7 langsam üben. Dann [Hänschen klein](lied:haenschen-klein) in A: Die Begleitung wartet bei jedem Wechsel auf dich.',
           'Practise switching A – E7 slowly. Then [Hänschen klein](lied:haenschen-klein) in A: the backing waits for you at every change.',
-          'Entraîne lentement A – E7. Puis [Hänschen klein](lied:haenschen-klein) en La : l’accompagnement t’attend à chaque changement.',
+          'Entraîne lentement A – E7. Puis [Hänschen klein](lied:haenschen-klein) en A : l’accompagnement t’attend à chaque changement.',
         ),
       ],
       piece: {
         text: L(
           'Dein erstes Lied: Hänschen klein in A – nur A und E7, Anschlag nur runter. Klappt es, dann Summ, summ, summ in A.',
           'Your first song: Hänschen klein in A – only A and E7, downstrokes only. When it works, try Summ, summ, summ in A.',
-          'Ta première chanson : Hänschen klein en La – seulement A et E7, que vers le bas. Quand ça marche, Summ, summ, summ en La.',
+          'Ta première chanson : Hänschen klein en A – seulement A et E7, que vers le bas. Quand ça marche, Summ, summ, summ en A.',
         ),
         play: [{ song: 'haenschen-klein', key: 'A' }, { song: 'summ-summ', key: 'A' }, { tool: 'spiel', chords: ['E', 'A'] }],
       },
@@ -549,7 +559,7 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1: A greifen – klingt die hohe e-Saite frei?', 'Day 1: play A – does the high e string ring freely?', 'Jour 1 : pose A – la corde e aiguë sonne-t-elle ?'),
         L('Tag 2–3: A – E7 – A – E7 langsam wechseln.', 'Days 2–3: switch A – E7 – A – E7 slowly.', 'Jours 2–3 : change lentement A – E7 – A – E7.'),
-        L('Tag 4–5: Hänschen klein in A mitspielen.', 'Days 4–5: play along with Hänschen klein in A.', 'Jours 4–5 : joue Hänschen klein en La.'),
+        L('Tag 4–5: Hänschen klein in A mitspielen.', 'Days 4–5: play along with Hänschen klein in A.', 'Jours 4–5 : joue Hänschen klein en A.'),
         L('Spaß: Akkord-Spiel „E und A“ – wie viele schaffst du?', 'Fun: chord game “E and A” – how many can you do?', 'Pour le plaisir : jeu « E et A » – combien en fais-tu ?'),
       ],
       done: [
@@ -580,15 +590,15 @@ export const GITARRE_COURSE: Course = {
           'Exercice : A – E7 en boucle, quatre temps chacun. Qui change sans lâcher le manche ?',
         ),
         L(
-          'Gemeinsam: Hänschen klein in A – erst singen, dann singen und spielen. Ein Kind zeigt die Wechsel an.',
-          'Together: Hänschen klein in A – first sing, then sing and play. One child shows when to change.',
-          'Ensemble : Hänschen klein en La – d’abord chanter, puis chanter et jouer. Un enfant indique les changements.',
+          'Gemeinsam: Hänschen klein in A – erst singen, dann singen und spielen. Ein Kind zeigt die Wechsel an. Liegt eine Tonart zum Singen ungünstig, im Lied die Tonart ★ wählen oder mit Kapodaster spielen.',
+          'Together: Hänschen klein in A – first sing, then sing and play. One child shows when to change. If a key is awkward for singing, choose the ★ key in the song or play with a capo.',
+          'Ensemble : Hänschen klein en A – d’abord chanter, puis chanter et jouer. Un enfant indique les changements. Si une tonalité est peu pratique pour chanter, choisir la tonalité ★ dans la chanson ou jouer avec un capodastre.',
         ),
       ],
       sheet: [
         L('**A:** drei Finger im 2. Bund auf D-, G- und B-Saite.', '**A:** three fingers at fret 2 on the D, G and B strings.', '**A :** trois doigts en case 2 sur les cordes D, G et B.'),
         L('**E7:** wie E, nur ohne Ringfinger.', '**E7:** like E, just without the ring finger.', '**E7 :** comme E, mais sans l’annulaire.'),
-        L('Hänschen klein in A: nur A und E7.', 'Hänschen klein in A: only A and E7.', 'Hänschen klein en La : seulement A et E7.'),
+        L('Hänschen klein in A: nur A und E7.', 'Hänschen klein in A: only A and E7.', 'Hänschen klein en A : seulement A et E7.'),
       ],
       wissen: ['gitarre-erste-akkorde', 'lieder-fuer-anfaenger'],
     },
@@ -604,7 +614,7 @@ export const GITARRE_COURSE: Course = {
       review: L(
         'Letzte Woche: A und E7. Spiel zum Aufwärmen Hänschen klein in A.',
         'Last week: A and E7. Warm up with Hänschen klein in A.',
-        'La semaine dernière : A et E7. Échauffe-toi avec Hänschen klein en La.',
+        'La semaine dernière : A et E7. Échauffe-toi avec Hänschen klein en A.',
       ),
       steps: [
         L(
@@ -632,7 +642,7 @@ export const GITARRE_COURSE: Course = {
         text: L(
           'Row, Row, Row Your Boat in A mit Runter-rauf – ganz gleichmäßig, wie ein Ruderboot. Danach Mary Had a Little Lamb in A.',
           'Row, Row, Row Your Boat in A with down-up – nice and even, like a rowing boat. Then Mary Had a Little Lamb in A.',
-          'Row, Row, Row Your Boat en La avec bas-haut – bien régulier, comme une barque. Puis Mary Had a Little Lamb en La.',
+          'Row, Row, Row Your Boat en A avec bas-haut – bien régulier, comme une barque. Puis Mary Had a Little Lamb en A.',
         ),
         play: [{ tool: 'rhythmus', pattern: 'Runter-rauf' }, { song: 'row-row', key: 'A' }, { song: 'mary-lamb', key: 'A' }],
       },
@@ -640,7 +650,7 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: Runter-rauf mit dem Metronom, nur auf A.', 'Days 1–2: down-up with the metronome, just on A.', 'Jours 1–2 : bas-haut avec le métronome, seulement sur A.'),
         L('Tag 3: Runter-rauf mit A – E7 im Wechsel, je ein Takt.', 'Day 3: down-up switching A – E7, one bar each.', 'Jour 3 : bas-haut en alternant A – E7, une mesure chacun.'),
-        L('Tag 4–5: Row, Row, Row Your Boat in A mitspielen.', 'Days 4–5: play along with Row, Row, Row Your Boat in A.', 'Jours 4–5 : joue Row, Row, Row Your Boat en La.'),
+        L('Tag 4–5: Row, Row, Row Your Boat in A mitspielen.', 'Days 4–5: play along with Row, Row, Row Your Boat in A.', 'Jours 4–5 : joue Row, Row, Row Your Boat en A.'),
         L('Spaß: Spiel das Lied als Kanon mit jemandem, der singt!', 'Fun: play the song as a round with someone singing!', 'Pour le plaisir : joue la chanson en canon avec quelqu’un qui chante !'),
       ],
       done: [
@@ -673,7 +683,7 @@ export const GITARRE_COURSE: Course = {
         L(
           'Gemeinsam: Row, Row, Row Your Boat in A – erst gemeinsam, dann als Kanon in zwei Gruppen.',
           'Together: Row, Row, Row Your Boat in A – first all together, then as a round in two groups.',
-          'Ensemble : Row, Row, Row Your Boat en La – d’abord tous ensemble, puis en canon à deux groupes.',
+          'Ensemble : Row, Row, Row Your Boat en A – d’abord tous ensemble, puis en canon à deux groupes.',
         ),
       ],
       sheet: [
@@ -690,13 +700,13 @@ export const GITARRE_COURSE: Course = {
       goal: L(
         'Du spielst D und A7 und begleitest Lieder in D.',
         'You play D and A7 and accompany songs in D.',
-        'Tu joues D et A7 et tu accompagnes des chansons en Ré.',
+        'Tu joues D et A7 et tu accompagnes des chansons en D.',
       ),
       chords: ['D', 'A7'],
       review: L(
         'Letzte Woche: Runter-rauf. Spiel Row, Row, Row Your Boat in A mit Runter-rauf.',
         'Last week: down-up. Play Row, Row, Row Your Boat in A with down-up.',
-        'La semaine dernière : bas-haut. Joue Row, Row, Row Your Boat en La en bas-haut.',
+        'La semaine dernière : bas-haut. Joue Row, Row, Row Your Boat en A en bas-haut.',
       ),
       steps: [
         L(
@@ -722,14 +732,14 @@ export const GITARRE_COURSE: Course = {
         L(
           'Dann mitspielen: [Old MacDonald](lied:old-macdonald) in D – mit D und A7.',
           'Then play along: [Old MacDonald](lied:old-macdonald) in D – with D and A7.',
-          'Puis joue : [Old MacDonald](lied:old-macdonald) en Ré – avec D et A7.',
+          'Puis joue : [Old MacDonald](lied:old-macdonald) en D – avec D et A7.',
         ),
       ],
       piece: {
         text: L(
           'Old MacDonald in D mit D und A7 – zuerst nur runter, dann Runter-rauf. Klappt es, folgt Yankee Doodle in D.',
           'Old MacDonald in D with D and A7 – first downstrokes only, then down-up. When it works, Yankee Doodle in D comes next.',
-          'Old MacDonald en Ré avec D et A7 – d’abord que vers le bas, puis bas-haut. Quand ça marche, Yankee Doodle en Ré.',
+          'Old MacDonald en D avec D et A7 – d’abord que vers le bas, puis bas-haut. Quand ça marche, Yankee Doodle en D.',
         ),
         play: [{ song: 'old-macdonald', key: 'D' }, { song: 'yankee-doodle', key: 'D' }, { tool: 'spiel', chords: ['D', 'A'] }],
       },
@@ -737,7 +747,7 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1: D greifen, nur vier Saiten anschlagen.', 'Day 1: play D, strum only four strings.', 'Jour 1 : pose D, gratte seulement quatre cordes.'),
         L('Tag 2–3: D – A7 mit Gleitfinger auf der B-Saite.', 'Days 2–3: D – A7 with your guide finger on the B string.', 'Jours 2–3 : D – A7 avec le doigt guide sur la corde B.'),
-        L('Tag 4–5: Old MacDonald in D mitspielen.', 'Days 4–5: play along with Old MacDonald in D.', 'Jours 4–5 : joue Old MacDonald en Ré.'),
+        L('Tag 4–5: Old MacDonald in D mitspielen.', 'Days 4–5: play along with Old MacDonald in D.', 'Jours 4–5 : joue Old MacDonald en D.'),
         L('Spaß: Mach bei „Ee-i-ee-i-o“ die Tiergeräusche!', 'Fun: do the animal noises at “E-I-E-I-O”!', 'Pour le plaisir : fais les cris d’animaux sur « Ee-i-ee-i-o » !'),
       ],
       done: [
@@ -771,7 +781,7 @@ export const GITARRE_COURSE: Course = {
         L(
           'Gemeinsam: Old MacDonald in D – Kinder wählen reihum ein Tier für die nächste Strophe.',
           'Together: Old MacDonald in D – children take turns choosing an animal for the next verse.',
-          'Ensemble : Old MacDonald en Ré – chacun à son tour choisit un animal pour le couplet suivant.',
+          'Ensemble : Old MacDonald en D – chacun à son tour choisit un animal pour le couplet suivant.',
         ),
       ],
       sheet: [
@@ -793,7 +803,7 @@ export const GITARRE_COURSE: Course = {
       review: L(
         'Letzte Woche: D und A7. Spiel zum Aufwärmen Old MacDonald in D.',
         'Last week: D and A7. Warm up with Old MacDonald in D.',
-        'La semaine dernière : D et A7. Échauffe-toi avec Old MacDonald en Ré.',
+        'La semaine dernière : D et A7. Échauffe-toi avec Old MacDonald en D.',
       ),
       steps: [
         L(
@@ -807,29 +817,29 @@ export const GITARRE_COURSE: Course = {
           'Entraîne les changements un par un : A – D, D – E7, E7 – A. Le plus difficile reçoit le plus de temps.',
         ),
         L(
-          'Trick für A – D: Der Zeigefinger muss nur auf der G-Saite bleiben, er rutscht nicht weg. Die anderen Finger springen um ihn herum.',
-          'Trick for A – D: your index finger simply stays on the G string at the 2nd fret. The other fingers jump around it.',
-          'Astuce pour A – D : l’index reste simplement sur la corde G en case 2. Les autres doigts sautent autour.',
+          'Trick für A – D: Der Zeigefinger rutscht im 2. Bund von der D- auf die G-Saite – er bleibt im selben Bund. Die anderen Finger springen um ihn herum.',
+          'Trick for A – D: your index finger slides at the 2nd fret from the D string to the G string – it stays at the same fret. The other fingers jump around it.',
+          'Astuce pour A – D : l’index glisse en case 2 de la corde D à la corde G – il reste dans la même case. Les autres doigts sautent autour.',
         ),
         L(
           'Dann: [Alle meine Entchen](lied:alle-meine-entchen) in A. Wer will, schaltet im Lied die Tabulatur ein und sieht die Melodie.',
           'Then: [Alle meine Entchen](lied:alle-meine-entchen) in A. If you like, switch on the tab in the song to see the melody.',
-          'Ensuite : [Alle meine Entchen](lied:alle-meine-entchen) en La. Si tu veux, active la tablature pour voir la mélodie.',
+          'Ensuite : [Alle meine Entchen](lied:alle-meine-entchen) en A. Si tu veux, active la tablature pour voir la mélodie.',
         ),
       ],
       piece: {
         text: L(
           'Alle meine Entchen in A mit A, D und E7 – mit Runter-rauf. Dann Twinkle, Twinkle, Little Star in A. Zwei Lieder, drei Akkorde!',
           'Alle meine Entchen in A with A, D and E7 – with down-up. Then Twinkle, Twinkle, Little Star in A. Two songs, three chords!',
-          'Alle meine Entchen en La avec A, D et E7 – en bas-haut. Puis Twinkle, Twinkle, Little Star en La. Deux chansons, trois accords !',
+          'Alle meine Entchen en A avec A, D et E7 – en bas-haut. Puis Twinkle, Twinkle, Little Star en A. Deux chansons, trois accords !',
         ),
         play: [{ song: 'alle-meine-entchen', key: 'A' }, { song: 'twinkle', key: 'A' }, { tool: 'spiel', chords: ['A', 'D', 'E'] }],
       },
       homework: [
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1: A – D und D – E7 je zehnmal wechseln.', 'Day 1: switch A – D and D – E7 ten times each.', 'Jour 1 : change A – D et D – E7 dix fois chacun.'),
-        L('Tag 2–3: Alle meine Entchen in A mitspielen.', 'Days 2–3: play along with Alle meine Entchen in A.', 'Jours 2–3 : joue Alle meine Entchen en La.'),
-        L('Tag 4–5: Twinkle, Twinkle, Little Star in A.', 'Days 4–5: Twinkle, Twinkle, Little Star in A.', 'Jours 4–5 : Twinkle, Twinkle, Little Star en La.'),
+        L('Tag 2–3: Alle meine Entchen in A mitspielen.', 'Days 2–3: play along with Alle meine Entchen in A.', 'Jours 2–3 : joue Alle meine Entchen en A.'),
+        L('Tag 4–5: Twinkle, Twinkle, Little Star in A.', 'Days 4–5: Twinkle, Twinkle, Little Star in A.', 'Jours 4–5 : Twinkle, Twinkle, Little Star en A.'),
         L('Spaß: Akkord-Spiel „A, D, E“ – notier deinen Rekord.', 'Fun: chord game “A, D, E” – write down your record.', 'Pour le plaisir : jeu « A, D, E » – note ton record.'),
       ],
       done: [
@@ -862,13 +872,13 @@ export const GITARRE_COURSE: Course = {
         L(
           'Gemeinsam: Twinkle, Twinkle, Little Star in A – alle spielen, ein paar Kinder singen dazu.',
           'Together: Twinkle, Twinkle, Little Star in A – everyone plays, a few children sing.',
-          'Ensemble : Twinkle, Twinkle, Little Star en La – tout le monde joue, quelques enfants chantent.',
+          'Ensemble : Twinkle, Twinkle, Little Star en A – tout le monde joue, quelques enfants chantent.',
         ),
       ],
       sheet: [
         L('In A: **A, D, E7** – damit klappen viele Lieder.', 'In A: **A, D, E7** – that opens up lots of songs.', 'En La : **A, D, E7** – de quoi jouer plein de chansons.'),
         L('Wechsel einzeln üben: A – D, D – E7, E7 – A.', 'Practise the changes on their own: A – D, D – E7, E7 – A.', 'Entraîne chaque changement : A – D, D – E7, E7 – A.'),
-        L('A → D: Zeigefinger bleibt auf der G-Saite.', 'A → D: index finger stays on the G string.', 'A → D : l’index reste sur la corde G.'),
+        L('A → D: Zeigefinger rutscht im 2. Bund von der D- auf die G-Saite.', 'A → D: index slides at fret 2 from the D to the G string.', 'A → D : l’index glisse en case 2 de la corde D à la corde G.'),
       ],
       wissen: ['lieder-fuer-anfaenger', 'akkordwechsel-schneller'],
     },
@@ -884,7 +894,7 @@ export const GITARRE_COURSE: Course = {
       review: L(
         'Letzte Woche: A, D und E7. Spiel Alle meine Entchen in A mit Runter-rauf.',
         'Last week: A, D and E7. Play Alle meine Entchen in A with down-up.',
-        'La semaine dernière : A, D et E7. Joue Alle meine Entchen en La en bas-haut.',
+        'La semaine dernière : A, D et E7. Joue Alle meine Entchen en A en bas-haut.',
       ),
       steps: [
         L(
@@ -912,7 +922,7 @@ export const GITARRE_COURSE: Course = {
         text: L(
           'Michael, Row the Boat Ashore in A mit dem Insel-Schlag – A, D und E7. Wenn es rollt: Swing Low, Sweet Chariot in A.',
           'Michael, Row the Boat Ashore in A with the island strum – A, D and E7. Once it flows: Swing Low, Sweet Chariot in A.',
-          'Michael, Row the Boat Ashore en La avec le rythme des îles – A, D et E7. Quand ça roule : Swing Low, Sweet Chariot en La.',
+          'Michael, Row the Boat Ashore en A avec le rythme des îles – A, D et E7. Quand ça roule : Swing Low, Sweet Chariot en A.',
         ),
         play: [{ tool: 'rhythmus', pattern: 'Runter, runter, rauf, rauf, runter, rauf' }, { song: 'michael-row', key: 'A' }, { song: 'swing-low', key: 'A' }],
       },
@@ -920,7 +930,7 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: Muster ohne Akkord, Saiten leicht abdämpfen.', 'Days 1–2: the pattern without a chord, strings lightly muted.', 'Jours 1–2 : la rythmique sans accord, cordes légèrement étouffées.'),
         L('Tag 3: Muster auf A, dann auf D, mit dem Metronom.', 'Day 3: the pattern on A, then on D, with the metronome.', 'Jour 3 : la rythmique sur A, puis sur D, avec le métronome.'),
-        L('Tag 4–5: Michael, Row the Boat Ashore in A.', 'Days 4–5: Michael, Row the Boat Ashore in A.', 'Jours 4–5 : Michael, Row the Boat Ashore en La.'),
+        L('Tag 4–5: Michael, Row the Boat Ashore in A.', 'Days 4–5: Michael, Row the Boat Ashore in A.', 'Jours 4–5 : Michael, Row the Boat Ashore en A.'),
         L('Spaß: Sprich das Muster als Quatschwort-Reim mit!', 'Fun: say the pattern as a silly rhyme while you play!', 'Pour le plaisir : dis la rythmique comme une comptine rigolote !'),
       ],
       done: [
@@ -996,21 +1006,21 @@ export const GITARRE_COURSE: Course = {
         L(
           '[What Shall We Do with the Drunken Sailor](lied:drunken-sailor) in Em ist ein altes Seemannslied. Kräftig und gleichmäßig spielen – wie Matrosen beim Seilziehen.',
           '[What Shall We Do with the Drunken Sailor](lied:drunken-sailor) in Em is an old sea shanty. Play it strong and steady – like sailors hauling a rope.',
-          '[What Shall We Do with the Drunken Sailor](lied:drunken-sailor) en Mi mineur est un vieux chant de marins. Joue fort et régulier – comme des marins qui tirent une corde.',
+          '[What Shall We Do with the Drunken Sailor](lied:drunken-sailor) en Em est un vieux chant de marins. Joue fort et régulier – comme des marins qui tirent une corde.',
         ),
       ],
       piece: {
         text: L(
           'Drunken Sailor in Em – nur Em und D, kräftig mit Runter-rauf. Beim Refrain „Way hay and up she rises“ darfst du laut werden!',
           'Drunken Sailor in Em – only Em and D, strong with down-up. In the chorus “Way hay and up she rises” you can play loud!',
-          'Drunken Sailor en Mi mineur – seulement Em et D, fort en bas-haut. Au refrain « Way hay and up she rises », tu peux jouer fort !',
+          'Drunken Sailor en Em – seulement Em et D, fort en bas-haut. Au refrain « Way hay and up she rises », tu peux jouer fort !',
         ),
         play: [{ song: 'drunken-sailor', key: 'Em' }],
       },
       homework: [
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: Em – D zehnmal wechseln, langsam.', 'Days 1–2: switch Em – D ten times, slowly.', 'Jours 1–2 : change Em – D dix fois, lentement.'),
-        L('Tag 3–4: Drunken Sailor in Em mitspielen.', 'Days 3–4: play along with Drunken Sailor in Em.', 'Jours 3–4 : joue Drunken Sailor en Mi mineur.'),
+        L('Tag 3–4: Drunken Sailor in Em mitspielen.', 'Days 3–4: play along with Drunken Sailor in Em.', 'Jours 3–4 : joue Drunken Sailor en Em.'),
         L('Tag 5: das Lied mit Runter-rauf, ein bisschen schneller.', 'Day 5: the song with down-up, a little faster.', 'Jour 5 : la chanson en bas-haut, un peu plus vite.'),
         L('Spaß: Stampf beim Spielen im Takt mit dem Fuß!', 'Fun: stamp your foot to the beat while you play!', 'Pour le plaisir : tape du pied en rythme en jouant !'),
       ],
@@ -1061,7 +1071,7 @@ export const GITARRE_COURSE: Course = {
       goal: L(
         'Du spielst G und D7 und begleitest Lieder in G.',
         'You play G and D7 and accompany songs in G.',
-        'Tu joues G et D7 et tu accompagnes des chansons en Sol.',
+        'Tu joues G et D7 et tu accompagnes des chansons en G.',
       ),
       chords: ['G', 'D7'],
       review: L(
@@ -1088,14 +1098,14 @@ export const GITARRE_COURSE: Course = {
         L(
           'Dann mitspielen: [Hänschen klein](lied:haenschen-klein) in G – dasselbe Lied wie in Lektion 6, nur mit neuen Griffen.',
           'Then play along: [Hänschen klein](lied:haenschen-klein) in G – the same song as in lesson 6, just with new chords.',
-          'Puis joue : [Hänschen klein](lied:haenschen-klein) en Sol – la même chanson qu’en leçon 6, avec de nouveaux accords.',
+          'Puis joue : [Hänschen klein](lied:haenschen-klein) en G – la même chanson qu’en leçon 6, avec de nouveaux accords.',
         ),
       ],
       piece: {
         text: L(
           'Hänschen klein in G mit G und D7. Kennst du schon – klingt jetzt tiefer und voller! Danach das Abendlied Kein schöner Land in G, ruhig und langsam.',
           'Hänschen klein in G with G and D7. You already know it – now it sounds lower and fuller! Then the evening song Kein schöner Land in G, calm and slow.',
-          'Hänschen klein en Sol avec G et D7. Tu la connais – elle sonne maintenant plus grave et plus pleine ! Puis Kein schöner Land en Sol, calme et lent.',
+          'Hänschen klein en G avec G et D7. Tu la connais – elle sonne maintenant plus grave et plus pleine ! Puis Kein schöner Land en G, calme et lent.',
         ),
         play: [{ song: 'haenschen-klein', key: 'G' }, { song: 'kein-schoener-land', key: 'G' }],
       },
@@ -1103,8 +1113,8 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1: G greifen, Saiten einzeln zupfen – klingen alle?', 'Day 1: play G, pluck the strings one by one – do they all ring?', 'Jour 1 : pose G, pince les cordes une à une – sonnent-elles toutes ?'),
         L('Tag 2–3: G – D7 zehnmal langsam wechseln.', 'Days 2–3: switch G – D7 ten times slowly.', 'Jours 2–3 : change G – D7 dix fois lentement.'),
-        L('Tag 4–5: Hänschen klein in G, dann Kein schöner Land.', 'Days 4–5: Hänschen klein in G, then Kein schöner Land.', 'Jours 4–5 : Hänschen klein en Sol, puis Kein schöner Land.'),
-        L('Spaß: Spiel Hänschen klein in A und in G – was klingt dir besser?', 'Fun: play Hänschen klein in A and in G – which do you like better?', 'Pour le plaisir : joue Hänschen klein en La et en Sol – lequel préfères-tu ?'),
+        L('Tag 4–5: Hänschen klein in G, dann Kein schöner Land.', 'Days 4–5: Hänschen klein in G, then Kein schöner Land.', 'Jours 4–5 : Hänschen klein en G, puis Kein schöner Land.'),
+        L('Spaß: Spiel Hänschen klein in A und in G – was klingt dir besser?', 'Fun: play Hänschen klein in A and in G – which do you like better?', 'Pour le plaisir : joue Hänschen klein en A et en G – lequel préfères-tu ?'),
       ],
       done: [
         L('G mit allen sechs Saiten klingt', 'G rings on all six strings', 'G sonne sur les six cordes'),
@@ -1126,7 +1136,7 @@ export const GITARRE_COURSE: Course = {
         L(
           'Einstieg: Hänschen klein in A (Lektion 6) und in G vorspielen – die Gruppe hört: gleiches Lied, andere Tonart.',
           'Warm-up: play Hänschen klein in A (lesson 6) and in G – the group hears: same song, different key.',
-          'Mise en route : jouer Hänschen klein en La (leçon 6) puis en Sol – le groupe entend : même chanson, autre tonalité.',
+          'Mise en route : jouer Hänschen klein en A (leçon 6) puis en G – le groupe entend : même chanson, autre tonalité.',
         ),
         L(
           'Übung: G – D7 im Kreis, je zwei Takte. Kinder helfen sich gegenseitig, die G-Finger richtig zu setzen.',
@@ -1136,7 +1146,7 @@ export const GITARRE_COURSE: Course = {
         L(
           'Gemeinsam: Kein schöner Land in G – langsam und leise, als Abschluss der Stunde.',
           'Together: Kein schöner Land in G – slow and soft, to end the lesson.',
-          'Ensemble : Kein schöner Land en Sol – lent et doux, pour finir le cours.',
+          'Ensemble : Kein schöner Land en G – lent et doux, pour finir le cours.',
         ),
       ],
       sheet: [
@@ -1153,13 +1163,13 @@ export const GITARRE_COURSE: Course = {
       goal: L(
         'Du spielst C und begleitest Lieder in G mit G, C und D7.',
         'You play C and accompany songs in G with G, C and D7.',
-        'Tu joues C et tu accompagnes des chansons en Sol avec G, C et D7.',
+        'Tu joues C et tu accompagnes des chansons en G avec G, C et D7.',
       ),
       chords: ['C'],
       review: L(
         'Letzte Woche: G und D7. Spiel Hänschen klein in G zum Aufwärmen.',
         'Last week: G and D7. Warm up with Hänschen klein in G.',
-        'La semaine dernière : G et D7. Échauffe-toi avec Hänschen klein en Sol.',
+        'La semaine dernière : G et D7. Échauffe-toi avec Hänschen klein en G.',
       ),
       steps: [
         L(
@@ -1180,14 +1190,14 @@ export const GITARRE_COURSE: Course = {
         L(
           'Mit G, C und D7 hast du die drei wichtigsten Akkorde in G. [Alle meine Entchen](lied:alle-meine-entchen) in G passt genau dazu.',
           'With G, C and D7 you have the three most important chords in G. [Alle meine Entchen](lied:alle-meine-entchen) in G fits perfectly.',
-          'Avec G, C et D7, tu as les trois accords les plus importants en Sol. [Alle meine Entchen](lied:alle-meine-entchen) en Sol va parfaitement.',
+          'Avec G, C et D7, tu as les trois accords les plus importants en G. [Alle meine Entchen](lied:alle-meine-entchen) en G va parfaitement.',
         ),
       ],
       piece: {
         text: L(
           'Alle meine Entchen in G mit G, C und D7. Dann Jingle Bells in G mit Runter-rauf – fröhlich und schwungvoll!',
           'Alle meine Entchen in G with G, C and D7. Then Jingle Bells in G with down-up – bright and bouncy!',
-          'Alle meine Entchen en Sol avec G, C et D7. Puis Jingle Bells en Sol en bas-haut – joyeux et entraînant !',
+          'Alle meine Entchen en G avec G, C et D7. Puis Jingle Bells en G en bas-haut – joyeux et entraînant !',
         ),
         play: [{ song: 'alle-meine-entchen', key: 'G' }, { song: 'jingle-bells', key: 'G' }, { tool: 'spiel', chords: ['G', 'C'] }],
       },
@@ -1195,7 +1205,7 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1: C greifen – klingen G- und e-Saite frei?', 'Day 1: play C – do the G and e strings ring freely?', 'Jour 1 : pose C – les cordes G et e sonnent-elles ?'),
         L('Tag 2–3: G – C zehnmal wechseln, dann Akkord-Spiel „G und C“.', 'Days 2–3: switch G – C ten times, then chord game “G and C”.', 'Jours 2–3 : change G – C dix fois, puis jeu « G et C ».'),
-        L('Tag 4–5: Alle meine Entchen und Jingle Bells in G.', 'Days 4–5: Alle meine Entchen and Jingle Bells in G.', 'Jours 4–5 : Alle meine Entchen et Jingle Bells en Sol.'),
+        L('Tag 4–5: Alle meine Entchen und Jingle Bells in G.', 'Days 4–5: Alle meine Entchen and Jingle Bells in G.', 'Jours 4–5 : Alle meine Entchen et Jingle Bells en G.'),
         L('Spaß: Spiel Jingle Bells jemandem vor – egal, welche Jahreszeit!', 'Fun: play Jingle Bells for someone – whatever the season!', 'Pour le plaisir : joue Jingle Bells à quelqu’un – peu importe la saison !'),
       ],
       done: [
@@ -1228,7 +1238,7 @@ export const GITARRE_COURSE: Course = {
         L(
           'Gemeinsam: Jingle Bells in G – mit Glöckchen oder Klatschen auf „Jingle bells“.',
           'Together: Jingle Bells in G – with little bells or claps on “Jingle bells”.',
-          'Ensemble : Jingle Bells en Sol – avec des clochettes ou des claquements de mains sur « Jingle bells ».',
+          'Ensemble : Jingle Bells en G – avec des clochettes ou des claquements de mains sur « Jingle bells ».',
         ),
       ],
       sheet: [
@@ -1245,12 +1255,12 @@ export const GITARRE_COURSE: Course = {
       goal: L(
         'Du spielst im Dreiertakt und begleitest Walzerlieder in G.',
         'You play in three-four time and accompany waltz songs in G.',
-        'Tu joues à trois temps et tu accompagnes des valses en Sol.',
+        'Tu joues à trois temps et tu accompagnes des valses en G.',
       ),
       review: L(
         'Letzte Woche: C-Dur. Spiel Alle meine Entchen in G mit G, C und D7.',
         'Last week: C major. Play Alle meine Entchen in G with G, C and D7.',
-        'La semaine dernière : C. Joue Alle meine Entchen en Sol avec G, C et D7.',
+        'La semaine dernière : C. Joue Alle meine Entchen en G avec G, C et D7.',
       ),
       steps: [
         L(
@@ -1271,22 +1281,22 @@ export const GITARRE_COURSE: Course = {
         L(
           'Mehr über Taktarten erfährst du in [Takt und Taktarten](wissen:takt-und-taktarten). Dann: [Die Gedanken sind frei](lied:gedanken-sind-frei) in G.',
           'Learn more about time signatures in [Time signatures](wissen:takt-und-taktarten). Then: [Die Gedanken sind frei](lied:gedanken-sind-frei) in G.',
-          'Pour en savoir plus sur les mesures : [Mesures](wissen:takt-und-taktarten). Ensuite : [Die Gedanken sind frei](lied:gedanken-sind-frei) en Sol.',
+          'Pour en savoir plus sur les mesures : [Mesures](wissen:takt-und-taktarten). Ensuite : [Die Gedanken sind frei](lied:gedanken-sind-frei) en G.',
         ),
       ],
       piece: {
         text: L(
           'Die Gedanken sind frei in G im Walzer: G, D7 und C, betont auf der Eins. Danach das lustige Mein Hut, der hat drei Ecken in G.',
           'Die Gedanken sind frei in G as a waltz: G, D7 and C, stressing beat one. Then the funny Mein Hut, der hat drei Ecken in G.',
-          'Die Gedanken sind frei en Sol en valse : G, D7 et C, avec le 1 appuyé. Puis la drôle Mein Hut, der hat drei Ecken en Sol.',
+          'Die Gedanken sind frei en G en valse : G, D7 et C, avec le 1 appuyé. Puis la drôle Mein Hut, der hat drei Ecken en G.',
         ),
         play: [{ tool: 'rhythmus', pattern: 'Walzer (3/4)' }, { song: 'gedanken-sind-frei', key: 'G' }, { song: 'mein-hut', key: 'G' }],
       },
       homework: [
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: Walzer-Muster auf G mit dem Metronom, „1 2 3“ zählen.', 'Days 1–2: the waltz pattern on G with the metronome, counting “1 2 3”.', 'Jours 1–2 : la valse sur G avec le métronome, en comptant « 1 2 3 ».'),
-        L('Tag 3–4: Die Gedanken sind frei in G.', 'Days 3–4: Die Gedanken sind frei in G.', 'Jours 3–4 : Die Gedanken sind frei en Sol.'),
-        L('Tag 5: Mein Hut, der hat drei Ecken in G.', 'Day 5: Mein Hut, der hat drei Ecken in G.', 'Jour 5 : Mein Hut, der hat drei Ecken en Sol.'),
+        L('Tag 3–4: Die Gedanken sind frei in G.', 'Days 3–4: Die Gedanken sind frei in G.', 'Jours 3–4 : Die Gedanken sind frei en G.'),
+        L('Tag 5: Mein Hut, der hat drei Ecken in G.', 'Day 5: Mein Hut, der hat drei Ecken in G.', 'Jour 5 : Mein Hut, der hat drei Ecken en G.'),
         L('Spaß: Lass jemanden zu deinem Walzer tanzen!', 'Fun: get someone to dance to your waltz!', 'Pour le plaisir : fais danser quelqu’un sur ta valse !'),
       ],
       done: [
@@ -1350,9 +1360,9 @@ export const GITARRE_COURSE: Course = {
           'La suite : [G](chord:G) – [Em](chord:Em) – [C](chord:C) – [D7](chord:D7). Chaque accord dure une mesure, puis on recommence.',
         ),
         L(
-          'Übe zuerst die neuen Paare: G – Em und Em – C. Bei Em – C rücken Mittel- und Ringfinger je eine Saite weiter, der Zeigefinger kommt auf die B-Saite dazu.',
-          'First practise the new pairs: G – Em and Em – C. For Em – C, middle and ring fingers each move one string over and the index finger joins on the B string.',
-          'Entraîne d’abord les nouvelles paires : G – Em et Em – C. Pour Em – C, majeur et annulaire se décalent d’une corde et l’index s’ajoute sur la corde B.',
+          'Übe zuerst die neuen Paare: G – Em und Em – C. Bei Em – C rutscht der Mittelfinger von der A- auf die D-Saite (bleibt im 2. Bund), der Ringfinger springt auf die A-Saite in den 3. Bund, der Zeigefinger kommt auf die B-Saite in den 1. Bund.',
+          'First practise the new pairs: G – Em and Em – C. For Em – C, the middle finger slides from the A to the D string (staying at fret 2), the ring finger jumps to the A string at fret 3, and the index finger joins on the B string at fret 1.',
+          'Entraîne d’abord les nouvelles paires : G – Em et Em – C. Pour Em – C, le majeur glisse de la corde A à la corde D (il reste en case 2), l’annulaire saute sur la corde A en case 3 et l’index s’ajoute sur la corde B en case 1.',
         ),
         L(
           'Dann alle vier im Kreis, langsam mit „Nur runter“. Klappt das, nimm Runter-rauf oder den Insel-Schlag.',
@@ -1362,14 +1372,14 @@ export const GITARRE_COURSE: Course = {
         L(
           'Das Lied [Am Lagerfeuer](lied:lagerfeuer) in G benutzt genau diese vier Akkorde.',
           'The song [Am Lagerfeuer](lied:lagerfeuer) in G uses exactly these four chords.',
-          'La chanson [Am Lagerfeuer](lied:lagerfeuer) en Sol utilise exactement ces quatre accords.',
+          'La chanson [Am Lagerfeuer](lied:lagerfeuer) en G utilise exactement ces quatre accords.',
         ),
       ],
       piece: {
         text: L(
           'Am Lagerfeuer in G: G, Em, C, D7 – immer im Kreis. Fang mit „Nur runter“ an und steiger dich zum Insel-Schlag. Das klingt nach richtiger Band!',
           'Am Lagerfeuer in G: G, Em, C, D7 – round and round. Start with “Only down” and build up to the island strum. That sounds like a real band!',
-          'Am Lagerfeuer en Sol : G, Em, C, D7 – en boucle. Commence par « Que vers le bas » et monte jusqu’au rythme des îles. On dirait un vrai groupe !',
+          'Am Lagerfeuer en G : G, Em, C, D7 – en boucle. Commence par « Que vers le bas » et monte jusqu’au rythme des îles. On dirait un vrai groupe !',
         ),
         play: [{ song: 'lagerfeuer', key: 'G' }, { tool: 'spiel', chords: ['G', 'Em', 'C', 'D'] }],
       },
@@ -1377,7 +1387,7 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1: G – Em und Em – C je zehnmal wechseln.', 'Day 1: switch G – Em and Em – C ten times each.', 'Jour 1 : change G – Em et Em – C dix fois chacun.'),
         L('Tag 2–3: alle vier im Kreis, je ein Takt, mit Metronom.', 'Days 2–3: all four in a loop, one bar each, with the metronome.', 'Jours 2–3 : les quatre en boucle, une mesure chacun, avec métronome.'),
-        L('Tag 4–5: Am Lagerfeuer in G mitspielen.', 'Days 4–5: play along with Am Lagerfeuer in G.', 'Jours 4–5 : joue Am Lagerfeuer en Sol.'),
+        L('Tag 4–5: Am Lagerfeuer in G mitspielen.', 'Days 4–5: play along with Am Lagerfeuer in G.', 'Jours 4–5 : joue Am Lagerfeuer en G.'),
         L('Spaß: Summ eine eigene Melodie über die vier Akkorde!', 'Fun: hum your own melody over the four chords!', 'Pour le plaisir : fredonne ta propre mélodie sur les quatre accords !'),
       ],
       done: [
@@ -1432,7 +1442,7 @@ export const GITARRE_COURSE: Course = {
       review: L(
         'Letzte Woche: G, Em, C, D7. Spiel Am Lagerfeuer in G – das brauchst du heute wieder.',
         'Last week: G, Em, C, D7. Play Am Lagerfeuer in G – you need it again today.',
-        'La semaine dernière : G, Em, C, D7. Joue Am Lagerfeuer en Sol – tu en auras besoin aujourd’hui.',
+        'La semaine dernière : G, Em, C, D7. Joue Am Lagerfeuer en G – tu en auras besoin aujourd’hui.',
       ),
       steps: [
         L(
@@ -1441,9 +1451,9 @@ export const GITARRE_COURSE: Course = {
           'Un capodastre est une pince qui appuie toutes les cordes sur une case – comme un index qui ne se fatigue jamais. Plus d’infos : [Le capodastre](wissen:gitarre-kapodaster).',
         ),
         L(
-          'Setz ihn in den 2. Bund, ganz nah hinter das Bundstäbchen und gerade. Danach mit dem [Stimmgerät](tool:stimmen) prüfen: Der Kapo zieht die Saiten oft etwas höher.',
-          'Put it at the 2nd fret, right behind the fret wire and straight. Then check with the [tuner](tool:stimmen): a capo often pulls the strings slightly sharp.',
-          'Place-le en case 2, tout près de la frette et bien droit. Puis vérifie avec l’[accordeur](tool:stimmen) : le capodastre fait souvent monter un peu les cordes.',
+          'Setz ihn in den 2. Bund, kurz vor das Bundstäbchen und gerade. Danach mit dem [Stimmgerät](tool:stimmen) prüfen: Der Kapo zieht die Saiten oft etwas höher.',
+          'Put it at the 2nd fret, just behind the fret wire and straight. Then check with the [tuner](tool:stimmen): a capo often pulls the strings slightly sharp.',
+          'Place-le en case 2, juste avant la frette et bien droit. Puis vérifie avec l’[accordeur](tool:stimmen) : le capodastre fait souvent monter un peu les cordes.',
         ),
         L(
           'Jetzt greifst du wie gewohnt G, Em, C und D7 – es klingt aber zwei Halbtöne höher: A, F#m, D und E7. Neue Tonart, keine neuen Griffe!',
@@ -1453,22 +1463,22 @@ export const GITARRE_COURSE: Course = {
         L(
           'Im Lied [Am Lagerfeuer](lied:lagerfeuer) in A zeigt die App „Kapo 2, greif wie G“. Über dem Text stehen die klingenden Akkorde – du greifst die aus G. Mehr in [Transponieren](wissen:transponieren).',
           'In the song [Am Lagerfeuer](lied:lagerfeuer) in A, the app shows “Capo 2, play as G”. Above the lyrics you see the sounding chords – you play the ones from G. More in [Transposing](wissen:transponieren).',
-          'Dans la chanson [Am Lagerfeuer](lied:lagerfeuer) en La, l’appli indique le capodastre en case 2 avec les accords de G. Au-dessus du texte, ce sont les accords entendus – toi, tu joues ceux de Sol. Plus d’infos : [Transposer](wissen:transponieren).',
+          'Dans la chanson [Am Lagerfeuer](lied:lagerfeuer) en A, l’appli indique le capodastre en case 2 avec les accords de G. Au-dessus du texte, ce sont les accords entendus – toi, tu joues ceux de Sol. Plus d’infos : [Transposer](wissen:transponieren).',
         ),
       ],
       piece: {
         text: L(
           'Am Lagerfeuer in A mit Kapo im 2. Bund: Du greifst G, Em, C, D7 wie letzte Woche – und es klingt heller. Vergleich: einmal ohne, einmal mit Kapo.',
           'Am Lagerfeuer in A with the capo at fret 2: you play G, Em, C, D7 like last week – and it sounds brighter. Compare: once without, once with the capo.',
-          'Am Lagerfeuer en La avec le capodastre en case 2 : tu joues G, Em, C, D7 comme la semaine dernière – et ça sonne plus clair. Compare sans et avec capodastre.',
+          'Am Lagerfeuer en A avec le capodastre en case 2 : tu joues G, Em, C, D7 comme la semaine dernière – et ça sonne plus clair. Compare sans et avec capodastre.',
         ),
         play: [{ song: 'lagerfeuer', key: 'A', capo: 2 }, { tool: 'stimmen' }],
       },
       homework: [
         L('Jeden Tag: Kapo setzen, dann nachstimmen.', 'Every day: put the capo on, then retune.', 'Chaque jour : pose le capodastre, puis réaccorde.'),
         L('Tag 1–2: Kapo in Bund 1, 2, 3 – G anschlagen und hören.', 'Days 1–2: capo at fret 1, 2, 3 – strum G and listen.', 'Jours 1–2 : capodastre en case 1, 2, 3 – gratte G et écoute.'),
-        L('Tag 3–4: Am Lagerfeuer in A mit Kapo 2.', 'Days 3–4: Am Lagerfeuer in A with capo 2.', 'Jours 3–4 : Am Lagerfeuer en La avec capodastre en case 2.'),
-        L('Tag 5: dasselbe Lied ohne Kapo in G – hörst du den Unterschied?', 'Day 5: the same song without capo in G – can you hear the difference?', 'Jour 5 : la même chanson sans capodastre en Sol – entends-tu la différence ?'),
+        L('Tag 3–4: Am Lagerfeuer in A mit Kapo 2.', 'Days 3–4: Am Lagerfeuer in A with capo 2.', 'Jours 3–4 : Am Lagerfeuer en A avec capodastre en case 2.'),
+        L('Tag 5: dasselbe Lied ohne Kapo in G – hörst du den Unterschied?', 'Day 5: the same song without capo in G – can you hear the difference?', 'Jour 5 : la même chanson sans capodastre en G – entends-tu la différence ?'),
         L('Spaß: Find die Kapo-Lage, in der du am besten mitsingen kannst!', 'Fun: find the capo position where singing along feels best!', 'Pour le plaisir : trouve la case de capodastre où tu chantes le mieux !'),
       ],
       done: [
@@ -1484,14 +1494,14 @@ export const GITARRE_COURSE: Course = {
         L(
           'Kein Kapodaster zur Hand? Spiel das Lied in G – oder probier in der App eine andere Tonart mit „−“ und „+“.',
           'No capo at hand? Play the song in G – or try another key in the app with “−” and “+”.',
-          'Pas de capodastre sous la main ? Joue la chanson en Sol – ou essaie une autre tonalité dans l’appli avec « − » et « + ».',
+          'Pas de capodastre sous la main ? Joue la chanson en G – ou essaie une autre tonalité dans l’appli avec « − » et « + ».',
         ),
       ],
       teacher: [
         L(
-          'Einstieg: Die Lehrkraft spielt dasselbe G mit Kapo im 0., 2. und 5. Bund – die Gruppe hört, wie es höher wird.',
-          'Warm-up: the teacher plays the same G with the capo at fret 0, 2 and 5 – the group hears it getting higher.',
-          'Mise en route : l’enseignant joue le même G avec capodastre en case 0, 2 et 5 – le groupe entend que ça monte.',
+          'Einstieg: Die Lehrkraft spielt dasselbe G ohne Kapo, dann mit Kapo 2 und Kapo 5 – die Gruppe hört, wie es höher wird.',
+          'Warm-up: the teacher plays the same G without a capo, then with capo 2 and capo 5 – the group hears it getting higher.',
+          'Mise en route : l’enseignant joue le même G sans capodastre, puis avec capodastre en case 2 et en case 5 – le groupe entend que ça monte.',
         ),
         L(
           'Übung: Kapo setzen und nachstimmen in Paaren; die Lehrkraft geht herum und prüft den Sitz.',
@@ -1501,13 +1511,13 @@ export const GITARRE_COURSE: Course = {
         L(
           'Gemeinsam: Am Lagerfeuer – die Hälfte mit Kapo 2 (greift G), die andere ohne Kapo in A (greift A, F#m …), wer schon kann.',
           'Together: Am Lagerfeuer – half the group with capo 2 (playing G shapes), the more advanced without capo in A (A, F#m …).',
-          'Ensemble : Am Lagerfeuer – une moitié avec capodastre en case 2 (formes de G), les plus avancés sans capodastre en La (A, F#m …).',
+          'Ensemble : Am Lagerfeuer – une moitié avec capodastre en case 2 (formes de G), les plus avancés sans capodastre en A (A, F#m …).',
         ),
       ],
       sheet: [
-        L('Kapo gerade, ganz nah hinter das Bundstäbchen.', 'Capo straight, right behind the fret wire.', 'Capodastre droit, tout près de la frette.'),
+        L('Kapo gerade, kurz vor das Bundstäbchen.', 'Capo straight, just behind the fret wire.', 'Capodastre droit, juste avant la frette.'),
         L('Nach dem Aufsetzen immer nachstimmen.', 'Always retune after putting it on.', 'Toujours réaccorder après l’avoir posé.'),
-        L('Kapo 2 + Griffe aus G = klingt in A.', 'Capo 2 + G shapes = sounds in A.', 'Capodastre case 2 + formes de Sol = sonne en La.'),
+        L('Kapo 2 + Griffe aus G = klingt in A.', 'Capo 2 + G shapes = sounds in A.', 'Capodastre case 2 + formes de G = sonne en A.'),
       ],
       wissen: ['gitarre-kapodaster', 'transponieren'],
     },
@@ -1548,15 +1558,15 @@ export const GITARRE_COURSE: Course = {
         ),
         L(
           'Dann: [Stille Nacht](lied:stille-nacht) in G, ganz ruhig gezupft.',
-          'Then: [Silent Night](lied:stille-nacht) in G, picked very calmly.',
-          'Ensuite : [Douce nuit](lied:stille-nacht) en Sol, arpégé tout en douceur.',
+          'Then: [Stille Nacht](lied:stille-nacht) in G, picked very calmly.',
+          'Ensuite : [Stille Nacht](lied:stille-nacht) en G, arpégé tout en douceur.',
         ),
       ],
       piece: {
         text: L(
           'Stille Nacht in G gezupft: pro Takt einmal Daumen – Zeige – Mittel – Ring – Mittel – Zeige. G, D7 und C – leise und schön.',
-          'Silent Night in G, picked: once per bar thumb – index – middle – ring – middle – index. G, D7 and C – soft and beautiful.',
-          'Douce nuit en Sol, en arpège : une fois par mesure pouce – index – majeur – annulaire – majeur – index. G, D7 et C – doux et beau.',
+          'Stille Nacht in G, picked: once per bar thumb – index – middle – ring – middle – index. G, D7 and C – soft and beautiful.',
+          'Stille Nacht en G, en arpège : une fois par mesure pouce – index – majeur – annulaire – majeur – index. G, D7 et C – doux et beau.',
         ),
         play: [{ tool: 'rhythmus', pattern: 'Schaukeln (6/8)' }, { song: 'stille-nacht', key: 'G' }],
       },
@@ -1564,7 +1574,7 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: Muster auf leeren Saiten, Daumen auf der tiefen E-Saite.', 'Days 1–2: the pattern on open strings, thumb on the low E string.', 'Jours 1–2 : la formule sur cordes à vide, pouce sur la corde E grave.'),
         L('Tag 3: Muster auf G, C und D7 – Daumen sucht den Grundton.', 'Day 3: the pattern on G, C and D7 – the thumb finds the root.', 'Jour 3 : la formule sur G, C et D7 – le pouce cherche la fondamentale.'),
-        L('Tag 4–5: Stille Nacht in G zupfen.', 'Days 4–5: pick Silent Night in G.', 'Jours 4–5 : Douce nuit en Sol en arpège.'),
+        L('Tag 4–5: Stille Nacht in G zupfen.', 'Days 4–5: pick Stille Nacht in G.', 'Jours 4–5 : Stille Nacht en G en arpège.'),
         L('Spaß: Zupf ein Gute-Nacht-Lied für jemanden in deiner Familie.', 'Fun: pick a goodnight song for someone in your family.', 'Pour le plaisir : joue une berceuse en arpège pour quelqu’un de ta famille.'),
       ],
       done: [
@@ -1596,8 +1606,8 @@ export const GITARRE_COURSE: Course = {
         ),
         L(
           'Gemeinsam: Stille Nacht – eine Gruppe zupft, eine schlägt leise „Nur runter“, alle summen die Melodie.',
-          'Together: Silent Night – one group picks, one strums softly “Only down”, everyone hums the melody.',
-          'Ensemble : Douce nuit – un groupe joue en arpège, un autre gratte doucement vers le bas, tout le monde fredonne la mélodie.',
+          'Together: Stille Nacht – one group picks, one strums softly “Only down”, everyone hums the melody.',
+          'Ensemble : Stille Nacht – un groupe joue en arpège, un autre gratte doucement vers le bas, tout le monde fredonne la mélodie.',
         ),
       ],
       sheet: [
@@ -1618,8 +1628,8 @@ export const GITARRE_COURSE: Course = {
       ),
       review: L(
         'Letzte Woche: Zupfen. Zupf einmal Stille Nacht – und dann E und Em gezupft.',
-        'Last week: picking. Pick Silent Night once – then E and Em, picked.',
-        'La semaine dernière : les arpèges. Joue Douce nuit en arpège – puis E et Em en arpège.',
+        'Last week: picking. Pick Stille Nacht once – then E and Em, picked.',
+        'La semaine dernière : les arpèges. Joue Stille Nacht en arpège – puis E et Em en arpège.',
       ),
       steps: [
         L(
@@ -1647,7 +1657,7 @@ export const GITARRE_COURSE: Course = {
         text: L(
           'Amazing Grace in G: G, C und D7 in Dur – und an einer Stelle Em. Hörst du, wie der Moll-Akkord die Stimmung kurz verändert?',
           'Amazing Grace in G: G, C and D7 in major – and Em in one spot. Can you hear how the minor chord briefly changes the mood?',
-          'Amazing Grace en Sol : G, C et D7 en majeur – et Em à un endroit. Entends-tu comme l’accord mineur change un instant l’ambiance ?',
+          'Amazing Grace en G : G, C et D7 en majeur – et Em à un endroit. Entends-tu comme l’accord mineur change un instant l’ambiance ?',
         ),
         play: [{ song: 'amazing-grace', key: 'G' }, { tool: 'detektiv' }],
       },
@@ -1655,7 +1665,7 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: E – Em und A – Am im Wechsel, genau hinhören.', 'Days 1–2: alternate E – Em and A – Am, listen closely.', 'Jours 1–2 : alterne E – Em et A – Am, écoute bien.'),
         L('Tag 3: dem Akkord-Detektiv fünf Akkorde vorspielen.', 'Day 3: play five chords for the chord detective.', 'Jour 3 : joue cinq accords au détective des accords.'),
-        L('Tag 4–5: Amazing Grace in G.', 'Days 4–5: Amazing Grace in G.', 'Jours 4–5 : Amazing Grace en Sol.'),
+        L('Tag 4–5: Amazing Grace in G.', 'Days 4–5: Amazing Grace in G.', 'Jours 4–5 : Amazing Grace en G.'),
         L('Spaß: Spiel jemandem Dur und Moll vor – errät er es?', 'Fun: play major and minor for someone – can they guess?', 'Pour le plaisir : joue majeur et mineur à quelqu’un – devine-t-il ?'),
       ],
       done: [
@@ -1731,14 +1741,14 @@ export const GITARRE_COURSE: Course = {
         L(
           'Im [Rhythmus](tool:rhythmus) „Marsch (2/4)“ wählen: runter, runter-rauf. Gezählt: „1, 2 und“. Dann [Ein Jäger aus Kurpfalz](lied:jaeger-aus-kurpfalz) in A.',
           'In the [rhythm tool](tool:rhythmus) choose “March (2/4)”: down, down-up. Counted: “1, 2 and”. Then [Ein Jäger aus Kurpfalz](lied:jaeger-aus-kurpfalz) in A.',
-          'Dans le [rythme](tool:rhythmus), choisis « Marche (2/4) » : bas, bas-haut. En comptant : « 1, 2 et ». Puis [Ein Jäger aus Kurpfalz](lied:jaeger-aus-kurpfalz) en La.',
+          'Dans le [rythme](tool:rhythmus), choisis « Marche (2/4) » : bas, bas-haut. En comptant : « 1, 2 et ». Puis [Ein Jäger aus Kurpfalz](lied:jaeger-aus-kurpfalz) en A.',
         ),
       ],
       piece: {
         text: L(
           'Ein Jäger aus Kurpfalz in A mit A und E7 – im Marsch-Muster „runter, runter-rauf“. Flott und munter, wie zu Pferd!',
           'Ein Jäger aus Kurpfalz in A with A and E7 – in the march pattern “down, down-up”. Brisk and lively, like riding a horse!',
-          'Ein Jäger aus Kurpfalz en La avec A et E7 – en rythmique de marche « bas, bas-haut ». Vif et joyeux, comme à cheval !',
+          'Ein Jäger aus Kurpfalz en A avec A et E7 – en rythmique de marche « bas, bas-haut ». Vif et joyeux, comme à cheval !',
         ),
         play: [{ tool: 'rhythmus', pattern: 'Marsch (2/4)' }, { song: 'jaeger-aus-kurpfalz', key: 'A' }],
       },
@@ -1746,7 +1756,7 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: Ganze, Halbe, Viertel, Achtel auf A – laut zählen.', 'Days 1–2: whole, half, quarter, eighth on A – count out loud.', 'Jours 1–2 : rondes, blanches, noires, croches sur A – compte à voix haute.'),
         L('Tag 3: Marsch-Muster mit Metronom, A und E7 im Wechsel.', 'Day 3: march pattern with metronome, alternating A and E7.', 'Jour 3 : rythmique de marche avec métronome, A et E7 en alternance.'),
-        L('Tag 4–5: Ein Jäger aus Kurpfalz in A.', 'Days 4–5: Ein Jäger aus Kurpfalz in A.', 'Jours 4–5 : Ein Jäger aus Kurpfalz en La.'),
+        L('Tag 4–5: Ein Jäger aus Kurpfalz in A.', 'Days 4–5: Ein Jäger aus Kurpfalz in A.', 'Jours 4–5 : Ein Jäger aus Kurpfalz en A.'),
         L('Spaß: Marschier beim Zählen durchs Zimmer!', 'Fun: march around the room while you count!', 'Pour le plaisir : marche dans la pièce en comptant !'),
       ],
       done: [
@@ -1792,7 +1802,7 @@ export const GITARRE_COURSE: Course = {
     // ---------- 20 ----------
     {
       n: 20,
-      title: L('Der 12-Takt-Blues in E', 'The 12-bar blues in E', 'Le blues en 12 mesures en Mi'),
+      title: L('Der 12-Takt-Blues in E', 'The 12-bar blues in E', 'Le blues en 12 mesures en E'),
       goal: L(
         'Du kennst das Blues-Schema mit E, A und B7 und spielst mit der Band.',
         'You know the blues pattern with E, A and B7 and play with the band.',
@@ -1813,24 +1823,24 @@ export const GITARRE_COURSE: Course = {
         L(
           'Im Blues in E sind E, A und B7 die Stufen **I, IV und V**: der erste, vierte und fünfte Ton der E-Dur-Tonleiter.',
           'In the blues in E, E, A and B7 are degrees **I, IV and V**: the first, fourth and fifth notes of the E major scale.',
-          'Dans le blues en Mi, E, A et B7 sont les degrés **I, IV et V** : les premier, quatrième et cinquième degrés de la gamme de Mi majeur.',
+          'Dans le blues en E, E, A et B7 sont les degrés **I, IV et V** : les premier, quatrième et cinquième degrés de la gamme de Mi majeur.',
         ),
         L(
-          'Das Grundschema: Takt 1–4 E, Takt 5–6 A, Takt 7–8 E, Takt 9 B7, Takt 10 A, Takt 11–12 E. Mehr in [12-Takt-Blues](wissen:zwoelf-takt-blues).',
-          'The basic pattern: bars 1–4 E, bars 5–6 A, bars 7–8 E, bar 9 B7, bar 10 A, bars 11–12 E. More in [12-bar blues](wissen:zwoelf-takt-blues).',
-          'La grille de base : mesures 1–4 E, 5–6 A, 7–8 E, 9 B7, 10 A, 11–12 E. Plus d’infos : [Blues en 12 mesures](wissen:zwoelf-takt-blues).',
+          'Das Grundschema: Takt 1–4 E, Takt 5–6 A, Takt 7–8 E, Takt 9 B7, Takt 10 A, Takt 11 E, Takt 12 B7 – der führt zurück zum Anfang. Die Band spielt alle drei als Septakkorde. Mehr in [12-Takt-Blues](wissen:zwoelf-takt-blues).',
+          'The basic pattern: bars 1–4 E, bars 5–6 A, bars 7–8 E, bar 9 B7, bar 10 A, bar 11 E, bar 12 B7 – it leads back to the start. The band plays all three as seventh chords. More in [12-bar blues](wissen:zwoelf-takt-blues).',
+          'La grille de base : mesures 1–4 E, 5–6 A, 7–8 E, 9 B7, 10 A, 11 E, 12 B7 – elle ramène au début. Le groupe joue les trois en accords de septième. Plus d’infos : [Blues en 12 mesures](wissen:zwoelf-takt-blues).',
         ),
         L(
           'Im [Blues](tool:blues) wählst du Tonart E. Die App zeigt dir, welcher Akkord gerade dran ist. Auf Stufe 3 spielst du das Boogie-Riff auf den beiden tiefsten Saiten.',
           'In the [blues](tool:blues) choose the key of E. The app shows you which chord is up. On level 3 you play the boogie riff on the two lowest strings.',
-          'Dans le [blues](tool:blues), choisis la tonalité Mi. L’appli montre quel accord vient. Au niveau 3, tu joues le riff boogie sur les deux cordes les plus graves.',
+          'Dans le [blues](tool:blues), choisis la tonalité E. L’appli montre quel accord vient. Au niveau 3, tu joues le riff boogie sur les deux cordes les plus graves.',
         ),
       ],
       piece: {
         text: L(
           'Blues in E mit der Band: erst die Akkorde E, A und B7 im Schema schlagen, dann auf Stufe 3 das Boogie-Riff. Zwölf Takte – und noch einmal!',
           'Blues in E with the band: first strum E, A and B7 through the pattern, then the boogie riff on level 3. Twelve bars – and again!',
-          'Blues en Mi avec le groupe : d’abord gratte E, A et B7 sur la grille, puis le riff boogie au niveau 3. Douze mesures – et on recommence !',
+          'Blues en E avec le groupe : d’abord gratte E, A et B7 sur la grille, puis le riff boogie au niveau 3. Douze mesures – et on recommence !',
         ),
         play: [{ tool: 'blues', level: 3, key: 'E' }],
       },
@@ -1876,8 +1886,8 @@ export const GITARRE_COURSE: Course = {
       ],
       sheet: [
         L('**B7:** A 2, D 1, G 2, B leer, e 2 – tiefe E-Saite nicht.', '**B7:** A 2, D 1, G 2, B open, e 2 – no low E string.', '**B7 :** A 2, D 1, G 2, B à vide, e 2 – pas de corde E grave.'),
-        L('Stufen in E: I = E, IV = A, V = B7.', 'Degrees in E: I = E, IV = A, V = B7.', 'Degrés en Mi : I = E, IV = A, V = B7.'),
-        L('Schema: E E E E | A A E E | B7 A E E', 'Pattern: E E E E | A A E E | B7 A E E', 'Grille : E E E E | A A E E | B7 A E E'),
+        L('Stufen in E: I = E, IV = A, V = B7.', 'Degrees in E: I = E, IV = A, V = B7.', 'Degrés en E : I = E, IV = A, V = B7.'),
+        L('Schema: E E E E | A A E E | B7 A E B7', 'Pattern: E E E E | A A E E | B7 A E B7', 'Grille : E E E E | A A E E | B7 A E B7'),
       ],
       wissen: ['zwoelf-takt-blues'],
     },
@@ -1922,7 +1932,7 @@ export const GITARRE_COURSE: Course = {
         text: L(
           'Blues in E mit der Band – statt einzelner Grundtöne spielst du E5 und A5, kurz und gedämpft in Achteln. Beim B bleibst du beim Einzelton auf der A-Saite im 2. Bund.',
           'Blues in E with the band – instead of single roots, play E5 and A5, short and muted in eighths. On B, keep the single note on the A string at the 2nd fret.',
-          'Blues en Mi avec le groupe – au lieu des fondamentales seules, joue E5 et A5, courts et étouffés en croches. Sur le Si, garde la note seule sur la corde A en case 2.',
+          'Blues en E avec le groupe – au lieu des fondamentales seules, joue E5 et A5, courts et étouffés en croches. Sur le Si, garde la note seule sur la corde A en case 2.',
         ),
         play: [{ tool: 'powerchords' }, { tool: 'blues', level: 1, key: 'E' }],
       },
@@ -1930,7 +1940,7 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: E5, A5, D5 – nur drei Saiten, Rest gedämpft.', 'Days 1–2: E5, A5, D5 – only three strings, the rest muted.', 'Jours 1–2 : E5, A5, D5 – trois cordes seulement, le reste étouffé.'),
         L('Tag 3: E5 – A5 – E5 – D5 in Achteln mit Metronom.', 'Day 3: E5 – A5 – E5 – D5 in eighths with the metronome.', 'Jour 3 : E5 – A5 – E5 – D5 en croches avec le métronome.'),
-        L('Tag 4–5: Blues in E mit Powerchords.', 'Days 4–5: blues in E with power chords.', 'Jours 4–5 : blues en Mi avec power chords.'),
+        L('Tag 4–5: Blues in E mit Powerchords.', 'Days 4–5: blues in E with power chords.', 'Jours 4–5 : blues en E avec power chords.'),
         L('Spaß: Erfinde dein eigenes Rock-Riff aus E5, A5 und D5!', 'Fun: invent your own rock riff from E5, A5 and D5!', 'Pour le plaisir : invente ton propre riff rock avec E5, A5 et D5 !'),
       ],
       done: [
@@ -1963,7 +1973,7 @@ export const GITARRE_COURSE: Course = {
         L(
           'Gemeinsam: Blues in E – die eine Hälfte spielt Powerchords, die andere das Boogie-Riff aus Lektion 20.',
           'Together: blues in E – half the group plays power chords, the other half the boogie riff from lesson 20.',
-          'Ensemble : blues en Mi – une moitié joue les power chords, l’autre le riff boogie de la leçon 20.',
+          'Ensemble : blues en E – une moitié joue les power chords, l’autre le riff boogie de la leçon 20.',
         ),
       ],
       sheet: [
@@ -1999,21 +2009,26 @@ export const GITARRE_COURSE: Course = {
           'Sur la guitare : corde A case 3 (Do) · corde D à vide, cases 2 et 3 (Ré, Mi, Fa) · corde G à vide, case 2 (Sol, La) · corde B à vide, case 1 (Si, Do).',
         ),
         L(
-          'Tabulatur liest du so: Jede Linie ist eine Saite, die Zahl ist der Bund, 0 = leer. Mehr in [Tabulatur lesen](wissen:tabulatur-lesen).',
-          'Reading tab: each line is a string, the number is the fret, 0 = open. More in [Reading tab](wissen:tabulatur-lesen).',
-          'Lire une tablature : chaque ligne est une corde, le chiffre est la case, 0 = à vide. Plus d’infos : [Lire une tablature](wissen:tabulatur-lesen).',
+          'Tabulatur liest du so: Im Lied steht unter jeder Silbe ein Kürzel wie **G2** – Buchstabe = Saite, Zahl = Bund, 0 = leer. Mehr in [Tabulatur lesen](wissen:tabulatur-lesen).',
+          'Reading tab: in the song, each syllable gets a short code like **G2** – letter = string, number = fret, 0 = open. More in [Reading tab](wissen:tabulatur-lesen).',
+          'Lire une tablature : dans la chanson, chaque syllabe a un code comme **G2** – lettre = corde, chiffre = case, 0 = à vide. Plus d’infos : [Lire une tablature](wissen:tabulatur-lesen).',
         ),
         L(
-          'Öffne [Alle meine Entchen](lied:alle-meine-entchen) in G und schalte die Tabulatur ein. Die Melodie liegt auf G-, B- und e-Saite. Erst zupfen, dann begleiten.',
-          'Open [Alle meine Entchen](lied:alle-meine-entchen) in G and switch on the tab. The melody lies on the G, B and e strings. First pick it, then accompany.',
-          'Ouvre [Alle meine Entchen](lied:alle-meine-entchen) en Sol et active la tablature. La mélodie est sur les cordes G, B et e. D’abord la jouer, puis accompagner.',
+          'Öffne [Alle meine Entchen](lied:alle-meine-entchen) in G und schalte die Tabulatur ein. Die Melodie liegt auf G-, B- und e-Saite und braucht nur G, A, B, C, D und E – alles Töne aus deiner Tonleiter. Erst zupfen, dann begleiten.',
+          'Open [Alle meine Entchen](lied:alle-meine-entchen) in G and switch on the tab. The melody lies on the G, B and e strings and only needs G, A, B, C, D and E – all notes from your scale. First pick it, then accompany.',
+          'Ouvre [Alle meine Entchen](lied:alle-meine-entchen) en G et active la tablature. La mélodie est sur les cordes G, B et e et n’utilise que Sol, La, Si, Do, Ré et Mi – toutes des notes de ta gamme. D’abord la jouer, puis accompagner.',
+        ),
+        L(
+          'Schnelle Töne hintereinander spielst du im Wechselschlag: mit dem Plektrum runter, rauf, runter, rauf – mit den Fingern abwechselnd Zeige- und Mittelfinger.',
+          'Play quick notes in a row with alternate picking: with a pick down, up, down, up – with your fingers, alternate index and middle.',
+          'Les notes rapides se jouent en alternance : au médiator bas, haut, bas, haut – aux doigts, index et majeur l’un après l’autre.',
         ),
       ],
       piece: {
         text: L(
           'Alle meine Entchen in G: zuerst die Melodie aus der Tabulatur zupfen, Ton für Ton. Dann die Akkorde G, C und D7 dazu spielen – oder zu zweit: einer Melodie, einer Akkorde!',
           'Alle meine Entchen in G: first pick the melody from the tab, note by note. Then play the chords G, C and D7 – or in pairs: one plays melody, one chords!',
-          'Alle meine Entchen en Sol : d’abord la mélodie d’après la tablature, note par note. Puis les accords G, C et D7 – ou à deux : l’un la mélodie, l’autre les accords !',
+          'Alle meine Entchen en G : d’abord la mélodie d’après la tablature, note par note. Puis les accords G, C et D7 – ou à deux : l’un la mélodie, l’autre les accords !',
         ),
         play: [{ song: 'alle-meine-entchen', key: 'G' }],
       },
@@ -2071,7 +2086,7 @@ export const GITARRE_COURSE: Course = {
       goal: L(
         'Du spielst das kleine F und G7 und begleitest Lieder in C.',
         'You play the small F and G7 and accompany songs in C.',
-        'Tu joues le petit F et G7 et tu accompagnes des chansons en Do.',
+        'Tu joues le petit F et G7 et tu accompagnes des chansons en C.',
       ),
       chords: ['F', 'G7'],
       review: L(
@@ -2098,14 +2113,14 @@ export const GITARRE_COURSE: Course = {
         L(
           'Mit [C](chord:C), F und G7 spielst du jetzt Lieder in C – wie [Alle meine Entchen](lied:alle-meine-entchen) im Original.',
           'With [C](chord:C), F and G7 you can now play songs in C – like [Alle meine Entchen](lied:alle-meine-entchen) in its original key.',
-          'Avec [C](chord:C), F et G7, tu joues maintenant des chansons en Do – comme [Alle meine Entchen](lied:alle-meine-entchen) dans sa tonalité d’origine.',
+          'Avec [C](chord:C), F et G7, tu joues maintenant des chansons en C – comme [Alle meine Entchen](lied:alle-meine-entchen) dans sa tonalité d’origine.',
         ),
       ],
       piece: {
         text: L(
           'Alle meine Entchen in C mit C, F und G7 – dasselbe Lied in einer neuen Tonart. Klappt es: Muss i denn zum Städtele hinaus.',
           'Alle meine Entchen in C with C, F and G7 – the same song in a new key. When it works: Muss i denn zum Städtele hinaus.',
-          'Alle meine Entchen en Do avec C, F et G7 – la même chanson dans une nouvelle tonalité. Quand ça marche : Muss i denn zum Städtele hinaus.',
+          'Alle meine Entchen en C avec C, F et G7 – la même chanson dans une nouvelle tonalité. Quand ça marche : Muss i denn zum Städtele hinaus.',
         ),
         play: [{ song: 'alle-meine-entchen' }, { song: 'muss-i-denn' }],
       },
@@ -2113,12 +2128,12 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: F greifen – klingen B- und e-Saite unter dem Zeigefinger?', 'Days 1–2: play F – do the B and e strings ring under your index?', 'Jours 1–2 : pose F – les cordes B et e sonnent-elles sous l’index ?'),
         L('Tag 3: C – F und G7 – C je zehnmal wechseln.', 'Day 3: switch C – F and G7 – C ten times each.', 'Jour 3 : change C – F et G7 – C dix fois chacun.'),
-        L('Tag 4–5: Alle meine Entchen in C, dann Muss i denn.', 'Days 4–5: Alle meine Entchen in C, then Muss i denn.', 'Jours 4–5 : Alle meine Entchen en Do, puis Muss i denn.'),
-        L('Spaß: Spiel Alle meine Entchen in A, G und C – welche Tonart magst du?', 'Fun: play Alle meine Entchen in A, G and C – which key do you like?', 'Pour le plaisir : joue Alle meine Entchen en La, Sol et Do – quelle tonalité préfères-tu ?'),
+        L('Tag 4–5: Alle meine Entchen in C, dann Muss i denn.', 'Days 4–5: Alle meine Entchen in C, then Muss i denn.', 'Jours 4–5 : Alle meine Entchen en C, puis Muss i denn.'),
+        L('Spaß: Spiel Alle meine Entchen in A, G und C – welche Tonart magst du?', 'Fun: play Alle meine Entchen in A, G and C – which key do you like?', 'Pour le plaisir : joue Alle meine Entchen en A, Sol et Do – quelle tonalité préfères-tu ?'),
       ],
       done: [
         L('beim kleinen F alle vier Saiten klingen', 'all four strings ring on the small F', 'les quatre cordes sonnent avec le petit F'),
-        L('du ein Lied in C mit C, F und G7 schaffst', 'you get through a song in C with C, F and G7', 'tu joues une chanson en Do avec C, F et G7'),
+        L('du ein Lied in C mit C, F und G7 schaffst', 'you get through a song in C with C, F and G7', 'tu joues une chanson en C avec C, F et G7'),
       ],
       trouble: [
         L(
@@ -2163,7 +2178,7 @@ export const GITARRE_COURSE: Course = {
       goal: L(
         'Du spielst deinen ersten großen Barré-Griff, Bm, und begleitest ein Lied in D.',
         'You play your first full barre chord, Bm, and accompany a song in D.',
-        'Tu joues ton premier grand barré, Bm, et tu accompagnes une chanson en Ré.',
+        'Tu joues ton premier grand barré, Bm, et tu accompagnes une chanson en D.',
       ),
       chords: ['Bm'],
       review: L(
@@ -2195,14 +2210,14 @@ export const GITARRE_COURSE: Course = {
         L(
           'Dann [Am Lagerfeuer](lied:lagerfeuer) in D: D, Bm, G und A7.',
           'Then [Am Lagerfeuer](lied:lagerfeuer) in D: D, Bm, G and A7.',
-          'Puis [Am Lagerfeuer](lied:lagerfeuer) en Ré : D, Bm, G et A7.',
+          'Puis [Am Lagerfeuer](lied:lagerfeuer) en D : D, Bm, G et A7.',
         ),
       ],
       piece: {
         text: L(
           'Am Lagerfeuer in D: D, Bm, G, A7 im Kreis. Wenn Bm noch hakt, schlag dort nur die vier dünnen Saiten an – das klingt auch schon gut.',
           'Am Lagerfeuer in D: D, Bm, G, A7 round and round. If Bm still sticks, strum only the four thin strings there – that already sounds good.',
-          'Am Lagerfeuer en Ré : D, Bm, G, A7 en boucle. Si Bm coince encore, gratte seulement les quatre cordes fines – ça sonne déjà bien.',
+          'Am Lagerfeuer en D : D, Bm, G, A7 en boucle. Si Bm coince encore, gratte seulement les quatre cordes fines – ça sonne déjà bien.',
         ),
         play: [{ song: 'lagerfeuer', key: 'D' }],
       },
@@ -2210,12 +2225,12 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: nur den Zeigefinger quer im 2. Bund – Saiten einzeln zupfen.', 'Days 1–2: just the index finger across fret 2 – pluck each string.', 'Jours 1–2 : seulement l’index en barré case 2 – pince chaque corde.'),
         L('Tag 3: ganzer Bm-Griff, aufsetzen und lösen, zehnmal.', 'Day 3: the whole Bm chord, place and release, ten times.', 'Jour 3 : l’accord Bm entier, poser et relâcher, dix fois.'),
-        L('Tag 4–5: Am Lagerfeuer in D.', 'Days 4–5: Am Lagerfeuer in D.', 'Jours 4–5 : Am Lagerfeuer en Ré.'),
+        L('Tag 4–5: Am Lagerfeuer in D.', 'Days 4–5: Am Lagerfeuer in D.', 'Jours 4–5 : Am Lagerfeuer en D.'),
         L('Spaß: Mach ein Foto von deinem ersten sauberen Bm!', 'Fun: take a photo of your first clean Bm!', 'Pour le plaisir : prends en photo ton premier Bm bien net !'),
       ],
       done: [
         L('bei Bm mindestens vier Saiten klar klingen', 'at least four strings ring clearly on Bm', 'au moins quatre cordes sonnent clair avec Bm'),
-        L('du Am Lagerfeuer in D einmal durchspielst', 'you play Am Lagerfeuer in D once through', 'tu joues Am Lagerfeuer en Ré une fois en entier'),
+        L('du Am Lagerfeuer in D einmal durchspielst', 'you play Am Lagerfeuer in D once through', 'tu joues Am Lagerfeuer en D une fois en entier'),
       ],
       trouble: [
         L(
@@ -2243,7 +2258,7 @@ export const GITARRE_COURSE: Course = {
         L(
           'Gemeinsam: Am Lagerfeuer in D – wer Bm noch nicht schafft, spielt dort nur die vier dünnen Saiten.',
           'Together: Am Lagerfeuer in D – anyone not ready for Bm plays only the four thin strings there.',
-          'Ensemble : Am Lagerfeuer en Ré – qui n’a pas encore Bm ne joue que les quatre cordes fines à cet endroit.',
+          'Ensemble : Am Lagerfeuer en D – qui n’a pas encore Bm ne joue que les quatre cordes fines à cet endroit.',
         ),
       ],
       sheet: [
@@ -2260,7 +2275,7 @@ export const GITARRE_COURSE: Course = {
       goal: L(
         'Du spielst F#m als Barré über alle sechs Saiten und begleitest ein Lied in A ohne Kapo.',
         'You play F#m as a barre across all six strings and accompany a song in A without a capo.',
-        'Tu joues F#m en barré sur les six cordes et tu accompagnes une chanson en La sans capodastre.',
+        'Tu joues F#m en barré sur les six cordes et tu accompagnes une chanson en A sans capodastre.',
       ),
       chords: ['F#m'],
       review: L(
@@ -2285,16 +2300,16 @@ export const GITARRE_COURSE: Course = {
           'Tu te souviens de la leçon 16 ? Avec le capodastre en case 2, tu jouais Em et tu entendais F#m. Maintenant, ton index est le capodastre !',
         ),
         L(
-          'Dann [Am Lagerfeuer](lied:lagerfeuer) in A – diesmal ohne Kapo: A, F#m, D und E7. Mehr in [Barré-Griffe](wissen:gitarre-barre).',
-          'Then [Am Lagerfeuer](lied:lagerfeuer) in A – this time without a capo: A, F#m, D and E7. More in [Barre chords](wissen:gitarre-barre).',
-          'Puis [Am Lagerfeuer](lied:lagerfeuer) en La – cette fois sans capodastre : A, F#m, D et E7. Plus d’infos : [Les barrés](wissen:gitarre-barre).',
+          'Dann [Am Lagerfeuer](lied:lagerfeuer) in A – diesmal ohne Kapo: A, F#m, D und E7. Den Kapo-Vorschlag der App lässt du heute einfach links liegen. Mehr in [Barré-Griffe](wissen:gitarre-barre).',
+          'Then [Am Lagerfeuer](lied:lagerfeuer) in A – this time without a capo: A, F#m, D and E7. Just ignore the app’s capo suggestion today. More in [Barre chords](wissen:gitarre-barre).',
+          'Puis [Am Lagerfeuer](lied:lagerfeuer) en A – cette fois sans capodastre : A, F#m, D et E7. Aujourd’hui, ignore simplement la suggestion de capodastre de l’appli. Plus d’infos : [Les barrés](wissen:gitarre-barre).',
         ),
       ],
       piece: {
         text: L(
           'Am Lagerfeuer in A ohne Kapo: A, F#m, D, E7. Es klingt genau wie in Lektion 16 – aber jetzt mit echten Griffen. Wenn F#m hakt, kurz Kapo-Version spielen.',
           'Am Lagerfeuer in A without capo: A, F#m, D, E7. It sounds just like lesson 16 – but now with real chords. If F#m sticks, switch to the capo version for a bit.',
-          'Am Lagerfeuer en La sans capodastre : A, F#m, D, E7. Ça sonne comme en leçon 16 – mais avec de vrais accords. Si F#m coince, reviens un moment à la version capodastre.',
+          'Am Lagerfeuer en A sans capodastre : A, F#m, D, E7. Ça sonne comme en leçon 16 – mais avec de vrais accords. Si F#m coince, reviens un moment à la version capodastre.',
         ),
         play: [{ song: 'lagerfeuer', key: 'A' }],
       },
@@ -2302,12 +2317,12 @@ export const GITARRE_COURSE: Course = {
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
         L('Tag 1–2: Zeigefinger quer über alle sechs Saiten – jede einzeln zupfen.', 'Days 1–2: index across all six strings – pluck each one.', 'Jours 1–2 : index en travers des six cordes – pince chacune.'),
         L('Tag 3: F#m und A im Wechsel, langsam.', 'Day 3: switch F#m and A slowly.', 'Jour 3 : alterne F#m et A, lentement.'),
-        L('Tag 4–5: Am Lagerfeuer in A ohne Kapo.', 'Days 4–5: Am Lagerfeuer in A without capo.', 'Jours 4–5 : Am Lagerfeuer en La sans capodastre.'),
+        L('Tag 4–5: Am Lagerfeuer in A ohne Kapo.', 'Days 4–5: Am Lagerfeuer in A without capo.', 'Jours 4–5 : Am Lagerfeuer en A sans capodastre.'),
         L('Spaß: Schieb die F#m-Form in den 3. und 5. Bund – wie klingt es?', 'Fun: slide the F#m shape to fret 3 and 5 – how does it sound?', 'Pour le plaisir : glisse la forme de F#m en case 3 et 5 – comment ça sonne ?'),
       ],
       done: [
         L('bei F#m mindestens fünf Saiten klar klingen', 'at least five strings ring clearly on F#m', 'au moins cinq cordes sonnent clair avec F#m'),
-        L('du Am Lagerfeuer in A ohne Kapo schaffst', 'you get through Am Lagerfeuer in A without capo', 'tu joues Am Lagerfeuer en La sans capodastre'),
+        L('du Am Lagerfeuer in A ohne Kapo schaffst', 'you get through Am Lagerfeuer in A without capo', 'tu joues Am Lagerfeuer en A sans capodastre'),
       ],
       trouble: [
         L(
@@ -2335,7 +2350,7 @@ export const GITARRE_COURSE: Course = {
         L(
           'Gemeinsam: Am Lagerfeuer in A – Barré-Gruppe ohne Kapo und Kapo-Gruppe spielen gleichzeitig. Es passt zusammen!',
           'Together: Am Lagerfeuer in A – the barre group without capo and the capo group play at the same time. It fits together!',
-          'Ensemble : Am Lagerfeuer en La – le groupe barré sans capodastre et le groupe avec capodastre jouent en même temps. Ça s’accorde !',
+          'Ensemble : Am Lagerfeuer en A – le groupe barré sans capodastre et le groupe avec capodastre jouent en même temps. Ça s’accorde !',
         ),
       ],
       sheet: [
@@ -2352,12 +2367,12 @@ export const GITARRE_COURSE: Course = {
       goal: L(
         'Du findest in G, D und A die drei Hauptakkorde und spielst ein Lied in drei Tonarten.',
         'You find the three main chords in G, D and A and play one song in three keys.',
-        'Tu trouves les trois accords principaux en Sol, Ré et La et tu joues une chanson dans trois tonalités.',
+        'Tu trouves les trois accords principaux en G, Ré et La et tu joues une chanson dans trois tonalités.',
       ),
       review: L(
         'Letzte Woche: F#m. Spiel Am Lagerfeuer in A – einmal mit Barré, einmal mit Kapo.',
         'Last week: F#m. Play Am Lagerfeuer in A – once with the barre, once with the capo.',
-        'La semaine dernière : F#m. Joue Am Lagerfeuer en La – une fois en barré, une fois avec capodastre.',
+        'La semaine dernière : F#m. Joue Am Lagerfeuer en A – une fois en barré, une fois avec capodastre.',
       ),
       steps: [
         L(
@@ -2378,7 +2393,7 @@ export const GITARRE_COURSE: Course = {
         L(
           'In der App wechselst du die Tonart im Lied mit „−“ und „+“. Probier [Michael, Row the Boat Ashore](lied:michael-row) in G, D und A.',
           'In the app you change a song’s key with “−” and “+”. Try [Michael, Row the Boat Ashore](lied:michael-row) in G, D and A.',
-          'Dans l’appli, tu changes la tonalité d’une chanson avec « − » et « + ». Essaie [Michael, Row the Boat Ashore](lied:michael-row) en Sol, Ré et La.',
+          'Dans l’appli, tu changes la tonalité d’une chanson avec « − » et « + ». Essaie [Michael, Row the Boat Ashore](lied:michael-row) en G, Ré et La.',
         ),
       ],
       piece: {
@@ -2395,13 +2410,13 @@ export const GITARRE_COURSE: Course = {
       },
       homework: [
         L('Jeden Tag zuerst stimmen.', 'Tune first every day.', 'Chaque jour, accorde d’abord.'),
-        L('Tag 1: I, IV, V in G, D und A aufschreiben.', 'Day 1: write down I, IV, V in G, D and A.', 'Jour 1 : écris I, IV, V en Sol, Ré et La.'),
-        L('Tag 2–4: Michael, Row the Boat in G, dann D, dann A.', 'Days 2–4: Michael, Row the Boat in G, then D, then A.', 'Jours 2–4 : Michael, Row the Boat en Sol, puis Ré, puis La.'),
+        L('Tag 1: I, IV, V in G, D und A aufschreiben.', 'Day 1: write down I, IV, V in G, D and A.', 'Jour 1 : écris I, IV, V en G, Ré et La.'),
+        L('Tag 2–4: Michael, Row the Boat in G, dann D, dann A.', 'Days 2–4: Michael, Row the Boat in G, then D, then A.', 'Jours 2–4 : Michael, Row the Boat en G, puis Ré, puis La.'),
         L('Tag 5: ein anderes Lied in deine Lieblingstonart bringen.', 'Day 5: move another song into your favourite key.', 'Jour 5 : passe une autre chanson dans ta tonalité préférée.'),
         L('Spaß: Sing mit und find die Tonart, in der deine Stimme am besten klingt!', 'Fun: sing along and find the key where your voice sounds best!', 'Pour le plaisir : chante et trouve la tonalité où ta voix sonne le mieux !'),
       ],
       done: [
-        L('du I, IV und V in G, D und A nennen kannst', 'you can name I, IV and V in G, D and A', 'tu sais nommer I, IV et V en Sol, Ré et La'),
+        L('du I, IV und V in G, D und A nennen kannst', 'you can name I, IV and V in G, D and A', 'tu sais nommer I, IV et V en G, Ré et La'),
         L('du ein Lied in zwei Tonarten spielst', 'you play one song in two keys', 'tu joues une chanson dans deux tonalités'),
       ],
       trouble: [
@@ -2430,7 +2445,7 @@ export const GITARRE_COURSE: Course = {
         L(
           'Gemeinsam: Michael, Row the Boat Ashore nacheinander in G, D und A – die Gruppe stimmt ab, welche am besten zum Singen passt.',
           'Together: Michael, Row the Boat Ashore in G, D and A in turn – the group votes for the best key to sing in.',
-          'Ensemble : Michael, Row the Boat Ashore en Sol, Ré puis La – le groupe vote pour la meilleure tonalité pour chanter.',
+          'Ensemble : Michael, Row the Boat Ashore en G, Ré puis La – le groupe vote pour la meilleure tonalité pour chanter.',
         ),
       ],
       sheet: [
@@ -2480,7 +2495,7 @@ export const GITARRE_COURSE: Course = {
         text: L(
           'Dein Programm, zum Beispiel: Auld Lang Syne in G, Freut euch des Lebens in G (im Walzer!) und dein Lieblingslied aus dem Kurs. Applaus!',
           'Your programme, for example: Auld Lang Syne in G, Freut euch des Lebens in G (as a waltz!) and your favourite song from the course. Applause!',
-          'Ton programme, par exemple : Auld Lang Syne en Sol, Freut euch des Lebens en Sol (en valse !) et ta chanson préférée du cours. Bravo !',
+          'Ton programme, par exemple : Auld Lang Syne en G, Freut euch des Lebens en G (en valse !) et ta chanson préférée du cours. Bravo !',
         ),
         play: [{ song: 'auld-lang-syne', key: 'G' }, { song: 'freut-euch-des-lebens', key: 'G' }, { tool: 'eigenes-lied' }],
       },

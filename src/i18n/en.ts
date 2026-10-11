@@ -916,6 +916,8 @@ export const EN: Record<string, string> = {
   'Lernen in Lektionen – eine pro Woche': 'Learn in lessons – one per week',
   'Für Musikunterricht und Zuhause: aufeinander aufbauende Lektionen mit Stück zum Mitspielen, Hausaufgabe und Blatt zum Ausdrucken.': 'For music class and home: lessons that build on each other, with a piece to play along, homework and a sheet to print.',
   'Schritt für Schritt – jede Woche eine': 'Step by step – one a week',
+  '≈ {n} Min.': '≈ {n} min',
+  'Differenzierung: Wer schon sicher ist, spielt das Stück mit Runter-rauf oder hilft einem Partner; wer noch Zeit braucht, schlägt nur auf der Eins jedes Taktes an.': 'Differentiation: those who are confident play the piece with down-up or help a partner; those who need more time strum only on beat one of each bar.',
   // src/site/relatives.ts
   'Du spielst Bariton-Ukulele? Dort greifst du {chord} anders': 'Playing a baritone ukulele? {chord} is fingered differently there',
   'Du spielst Bariton-Ukulele? Die wird tiefer gestimmt: D G B E': 'Playing a baritone ukulele? It’s tuned lower: D G B E',

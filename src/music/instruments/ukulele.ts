@@ -64,7 +64,7 @@ export const UKULELE: Instrument = {
     boogie: tk('Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In C sind das alles leere Saiten: C, E, G, A!'),
   },
   game: [['C', 'Am'], ['C', 'F'], ['C', 'G7'], ['F', 'C7'], ['C', 'Am', 'F', 'G7'], ['C', 'F', 'G7']],
-  rhythmChords: ['C', 'Am', 'F', 'G7'],
+  rhythmChords: ['C', 'Am', 'F', 'G7', 'C7'],
   recordChords: ['C', 'Am', 'F', 'G7', 'C7', 'A7', 'G', 'Dm', 'Em', 'D7'],
   tunings: [
     {

@@ -47,6 +47,7 @@ async function pdfPages(page: Page): Promise<number> {
 test('Druck: jede Lektion passt auf genau eine A4-Seite (alle Sprachen)', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop', 'PDF nur in Chromium');
   test.setTimeout(600000);
+  const tooLong: string[] = [];
   for (const site of ['ukulele', 'gitarre'])
     for (const prefix of ['', 'en/', 'fr/']) {
       const lessons = prefix === '' ? 'lektionen' : prefix === 'en/' ? 'lessons' : 'lecons';
@@ -55,7 +56,9 @@ test('Druck: jede Lektion passt auf genau eine A4-Seite (alle Sprachen)', async 
       expect(hrefs.length).toBeGreaterThan(19);
       for (const href of hrefs) {
         await page.goto(href);
-        expect(await pdfPages(page), href).toBe(1);
+        const n = await pdfPages(page);
+        if (n !== 1) tooLong.push(`${href}: ${n} Seiten`);
       }
     }
+  expect(tooLong).toEqual([]);
 });

@@ -919,6 +919,8 @@ export const FR: Record<string, string> = {
   'Lernen in Lektionen – eine pro Woche': 'Apprendre en leçons – une par semaine',
   'Für Musikunterricht und Zuhause: aufeinander aufbauende Lektionen mit Stück zum Mitspielen, Hausaufgabe und Blatt zum Ausdrucken.': 'Pour le cours de musique et la maison : des leçons progressives avec morceau à jouer, devoirs et fiche à imprimer.',
   'Schritt für Schritt – jede Woche eine': 'Pas à pas – une par semaine',
+  '≈ {n} Min.': '≈ {n} min',
+  'Differenzierung: Wer schon sicher ist, spielt das Stück mit Runter-rauf oder hilft einem Partner; wer noch Zeit braucht, schlägt nur auf der Eins jedes Taktes an.': 'Différenciation : ceux qui sont à l’aise jouent le morceau en bas-haut ou aident un camarade ; ceux qui ont besoin de temps grattent seulement sur le premier temps de chaque mesure.',
   // src/site/relatives.ts
   'Du spielst Bariton-Ukulele? Dort greifst du {chord} anders': 'Tu joues du ukulélé baryton ? Là-bas, {chord} se joue autrement',
   'Du spielst Bariton-Ukulele? Die wird tiefer gestimmt: D G B E': 'Tu joues du ukulélé baryton ? Il s’accorde plus grave : D G B E',

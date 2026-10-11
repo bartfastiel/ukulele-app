@@ -2998,7 +2998,7 @@ html[data-instrument='bass'] .card {
   html[data-page='lektion'] body,
   html[data-page='lektionen'] body {
     padding: 0;
-    font-size: 12pt;
+    font-size: 13.5pt;
     line-height: 1.32;
     color: #000;
     background: #fff;
@@ -3051,7 +3051,7 @@ html[data-instrument='bass'] .card {
   }
   .lesson-sheet .sheet-head h2 {
     margin: 1mm 0 1.5mm;
-    font-size: 20pt;
+    font-size: 22pt;
   }
   .sheet-goal {
     margin: 0;
@@ -3081,7 +3081,7 @@ html[data-instrument='bass'] .card {
   }
   .lesson-sheet h3 {
     margin: 0 0 1mm;
-    font-size: 13pt;
+    font-size: 15pt;
   }
   .sheet-block p {
     margin: 0;
@@ -3117,8 +3117,8 @@ html[data-instrument='bass'] .card {
   }
   .sheet-chord {
     display: inline-block;
-    width: 32mm;
-    margin-right: 5mm;
+    width: 40mm;
+    margin-right: 6mm;
     text-align: center;
     vertical-align: top;
   }
@@ -3129,7 +3129,7 @@ html[data-instrument='bass'] .card {
   }
   .sheet-chord b {
     display: block;
-    font-size: 13pt;
+    font-size: 16pt;
   }
   .course-sheet {
     display: block;
