@@ -329,13 +329,21 @@ function music(t: Tok[], ctx: Ctx, out: LyNote[]): void {
       const notes: string[] = [];
       while (j < t.length && t[j] !== '>') notes.push(t[j++]);
       const durTok = t[j + 1] && /^\d/.test(t[j + 1]) ? t[j + 1] : '';
-      const head = notes[0] || '';
-      const m = /^([a-h](?:is|es|s)*)([',]*)/.exec(head);
-      if (m) {
-        const p = parsePitchName(m[1], ctx.lang)!;
+      // relativ notiert: jeder Akkordton bezieht sich auf den vorigen, danach gilt wieder der erste als Bezug
+      let top: number | null = null;
+      let after: Ctx['rel'] = ctx.rel;
+      notes.forEach((n, k) => {
+        const m = /^([a-h](?:is|es|s)*)([',]*)/.exec(n);
+        const p = m ? parsePitchName(m[1], ctx.lang) : null;
+        if (!m || !p) return;
         const midi = absPitch(ctx, p.step, p.pc, m[2]);
+        if (k === 0) after = ctx.rel;
+        if (top === null || midi > top) top = midi;
+      });
+      ctx.rel = after;
+      if (top !== null) {
         if (durTok) parseDuration(ctx, durTok);
-        out.push({ midi, dur: ctx.dur * ctx.scale, tie: false, slurStart: false, slurEnd: false });
+        out.push({ midi: top, dur: ctx.dur * ctx.scale, tie: false, slurStart: false, slurEnd: false });
       }
       i = durTok ? j + 1 : j;
     } else {

@@ -39,6 +39,8 @@ export interface SongSource {
    * einen Takt lang, `[G7:2]` zwei Schläge. Akkorde mitten im Wort sind erlaubt: `ein[C]spannt`.
    */
   chordpro?: string;
+  /** Lied mit importierter Melodie (nur 1. Strophe): der ganze Text mit Akkorden im ChordPro-Stil, alle Strophen. */
+  lyrics?: string;
 }
 
 export interface SongEvent {

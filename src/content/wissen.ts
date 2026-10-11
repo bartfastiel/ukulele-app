@@ -13,6 +13,7 @@ import { LAGERFEUER_ARTICLES } from './wissen-lagerfeuer.ts';
 import { FRAGEN_UKULELE_GITARRE } from './wissen-fragen-ukulele-gitarre.ts';
 import { FRAGEN_BANJO_MANDOLINE_BASS } from './wissen-fragen-banjo-mandoline-bass.ts';
 import { FRAGEN_ALLGEMEIN } from './wissen-fragen-allgemein.ts';
+import { WEIHNACHTEN_ARTICLES } from './wissen-weihnachten.ts';
 
 export const ARTICLES: Article[] = UKULELE_ARTICLES.concat(
   GITARRE_ARTICLES,
@@ -28,6 +29,7 @@ export const ARTICLES: Article[] = UKULELE_ARTICLES.concat(
   FRAGEN_UKULELE_GITARRE,
   FRAGEN_BANJO_MANDOLINE_BASS,
   FRAGEN_ALLGEMEIN,
+  WEIHNACHTEN_ARTICLES,
 );
 
 export function article(id: string): Article | undefined {

@@ -10,6 +10,7 @@ import { parseAbc } from './abc.ts';
 import { CHORD_SONGS } from '../../src/music/songs-chordpro.ts';
 import { KINDER_SONGS } from '../../src/music/songs-kinder.ts';
 import { ENGLISH_SONGS } from '../../src/music/songs-english.ts';
+import { CHRISTMAS_SONGS } from '../../src/music/songs-weihnachten.ts';
 import { parseSong, type Song } from '../../src/music/song.ts';
 import { songKey, shiftBetween } from '../../src/music/transpose.ts';
 import { ROOTS, chord, chordMidis } from '../../src/music/chords.ts';
@@ -22,12 +23,23 @@ const EXCLUDE: Record<string, string> = {
   'im-maerzen-der-bauer': 'Notentext ist die Fassung von Walther Hensel (1923), geschützt bis Ende 2026',
   'wandern-muellers-lust': 'Notenbeispiel ist der vierstimmige Chorsatz mit Textwiederholungen, nicht die Liedfassung',
   'wohlauf-gottes-welt': 'Notentext mit „lebe wohl“ und „lalala“, im Text von Rodenberg (1864) nicht belegt',
+  'angels-we-have-heard': 'Notenbeispiel ist der Satz von Edward Shippen Barnes (gest. 1958), geschützt',
+  'vom-himmel-hoch': 'Notenbeispiel ist ein mehrstimmiger Satz, die Oberstimme lässt sich nicht sicher herauslösen',
+  'joy-to-the-world': 'Notentext verteilt die Silben anders als der Liedtext (letztes „sing“ fehlt)',
+  'tochter-zion': 'Notenbeispiel ist Händels Chorsatz mit Verzierungen und Ausweichung nach Moll, nicht die einfache Liedfassung',
+  'les-anges': 'Notenbeispiele zeigen den Satz von Edward Shippen Barnes (gest. 1958), geschützt',
+  'mon-beau-sapin': 'Notenbeispiele tragen den deutschen oder englischen Text, nicht Delcassos französischen',
+};
+
+/** Akkorde aus dem Notenbeispiel, die wir als leichteren Griff gleicher Funktion setzen (Dominante G7 statt G). */
+const CHORD_MAP: Record<string, Record<string, string>> = {
+  'il-est-ne': { G: 'G7' },
 };
 
 const dirs = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const write = process.argv.includes('--write');
 const songs = new Map<string, Song>();
-for (const s of CHORD_SONGS.concat(KINDER_SONGS, ENGLISH_SONGS)) songs.set(s.id, parseSong(s));
+for (const s of CHORD_SONGS.concat(KINDER_SONGS, ENGLISH_SONGS, CHRISTMAS_SONGS)) songs.set(s.id, parseSong(s));
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-zäöüß]/g, '');
 
@@ -164,7 +176,9 @@ function convert(id: string, sc: LyScore, file: string, syl: LySyllable[], sourc
   const pickup = (pickupQ < 1e-6 || barQ - pickupQ < 1e-6 ? 0 : pickupQ) * factor;
   // Tonart: in die einfache Tonart unseres Liedes, Oktave so, dass die Melodie auf der Ukulele (ab C4) liegt
   const ours = songKey(song);
-  const shift = shiftBetween(sc.keyTonic, ours.root);
+  // Moll-Notenbeispiel, unser Lied endet in Dur (z. B. Strophe in e-Moll, Kehrreim in G-Dur): auf die Paralleltonart
+  const target = sc.minor && !ours.minor ? ours.root + 9 : !sc.minor && ours.minor ? ours.root + 3 : ours.root;
+  const shift = shiftBetween(sc.keyTonic, target);
   const pitches = ev.flatMap((e) => (e.midi === null ? [] : [e.midi + shift]));
   let best = 0;
   let bestScore = -Infinity;
@@ -245,6 +259,8 @@ function convert(id: string, sc: LyScore, file: string, syl: LySyllable[], sourc
       chordSource = 'Harmonisierung';
     }
   }
+  const map = CHORD_MAP[id];
+  if (map) chordAt.forEach((c, i) => (chordAt[i] = map[c] || c));
   const firstChord = chordAt.find((c) => c) || 'C';
   // Ähnlichkeit des Notentexts mit unserem geprüften Text (nur die erste Strophe zählt)
   const scoreText = norm(ev.map((e) => e.syllable).join(''));
@@ -261,7 +277,7 @@ function convert(id: string, sc: LyScore, file: string, syl: LySyllable[], sourc
     const prefix = chord !== last || i === 0 ? `[${chord}]` : '';
     last = chord;
     const pitch = e.midi === null ? 'R' : pitchName(e.midi);
-    const syl = e.midi === null ? '_' : e.hold || !e.syllable ? '~' : e.syllable.replace(/[:|[\]]+/g, '').replace(/\s+/g, '\u203f') + (e.joinNext ? '-' : '');
+    const syl = e.midi === null ? '_' : e.hold || !e.syllable ? '~' : e.syllable.replace(/[:|[\]\\"“”„]+/g, '').replace(/\s+/g, '\u203f') + (e.joinNext ? '-' : '');
     // Melisma ohne vorherige Silbe ist nicht darstellbar – dann als eigene, stumme Silbe
     const token = `${prefix}${syl === '~' && !line.length && !lines.length ? '_' : syl}:${syl === '_' && e.midi !== null ? pitchName(e.midi) : pitch}${e.dur === 1 ? '' : ':' + durText(e.dur)}`;
     line.push(token);

@@ -2518,6 +2518,30 @@ summary:focus-visible {
   color: var(--cherry);
 }
 
+/* Weihnachtslieder auf einer Saite: Bundzahl über der Silbe */
+.os-song h3 {
+  margin: 16px 0 4px;
+  font-size: 1.1em;
+}
+
+.os-line {
+  margin: 0.3em 0;
+  line-height: 1.25;
+}
+
+.os-note {
+  display: inline-block;
+  margin: 0 0.45em 0.35em 0;
+  text-align: center;
+  vertical-align: top;
+}
+
+.os-note b {
+  display: block;
+  color: var(--cherry);
+  font-size: 1.15em;
+}
+
 .seo-card a,
 .article a,
 .wissen-list a,

@@ -4,7 +4,8 @@ import { load, totalStars } from '../store.ts';
 import { t } from '../i18n.ts';
 import { baseInstrument, instrument, notesOnly } from '../music/instrument.ts';
 import { langSwitch } from '../ui/lang-switch.ts';
-import { findSong } from '../music/library.ts';
+import { allSongs, findSong } from '../music/library.ts';
+import { christmasNow } from '../site/season.ts';
 import type { View } from '../ui/screen.ts';
 import { link } from '../site/nav.ts';
 import { COURSE_INSTRUMENTS } from '../content/kurse.ts';
@@ -16,6 +17,13 @@ function tile(href: string, ic: string, title: string, sub: string, cls = ''): H
     h('span', { class: 'tile-icon' }, icon(ic)),
     h('span', { class: 'tile-text' }, h('span', { class: 'tile-title' }, title), h('span', { class: 'tile-sub' }, sub)),
   );
+}
+
+/** Vom 1. November bis 6. Januar: Weihnachtslieder ganz oben (nur im Browser, nach dessen Datum). */
+function seasonTile(): HTMLElement | null {
+  if (!christmasNow()) return null;
+  const n = allSongs().filter((s) => s.category === 'weihnachten').length;
+  return tile(link('weihnachten'), 'star', t('Weihnachtslieder'), t('{n} Lieder für die Weihnachtszeit', { n }), 'tile-wide theme-cherry tile-season');
 }
 
 export const home: View = (root) => {
@@ -56,6 +64,7 @@ export const home: View = (root) => {
         ? h(
             'nav',
             { class: 'tiles', 'aria-label': t('Bereiche') },
+            seasonTile(),
             last ? tile(link(`lied/${last.id}`), 'play', t('Weiterspielen'), last.title, 'tile-wide theme-pearl') : null,
             tile(link('lieder'), 'songs', t('Lieder spielen'), t('Basstöne zum Mitspielen'), 'tile-big theme-brass'),
             tile(link('blues'), 'blues', t('Blues'), t('Walking Bass mit der Band'), 'theme-teal'),
@@ -70,6 +79,7 @@ export const home: View = (root) => {
         : h(
             'nav',
             { class: 'tiles', 'aria-label': t('Bereiche') },
+            seasonTile(),
             last ? tile(link(`lied/${last.id}`), 'play', t('Weiterspielen'), last.title, 'tile-wide theme-pearl') : null,
             course,
             tile(link('lieder'), 'songs', t('Lieder spielen'), t('Karaoke zum Mitspielen'), 'tile-big theme-brass'),

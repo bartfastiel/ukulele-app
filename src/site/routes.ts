@@ -32,6 +32,7 @@ export const SEGMENTS: Record<string, Record<Lang, string>> = {
   liedblatt: { de: 'liedblatt', en: 'song-sheet', fr: 'fiche-chanson' },
   'griffe-drucken': { de: 'griffe-drucken', en: 'chord-chart', fr: 'tableau-des-accords' },
   hals: { de: 'griffbrett', en: 'fretboard', fr: 'manche' },
+  weihnachten: { de: 'weihnachtslieder', en: 'christmas-songs', fr: 'chants-de-noel' },
   // Griffe in einer anderen Stimmung: „stimmung/open-g“
   stimmung: { de: 'stimmung', en: 'tuning', fr: 'accordage' },
   // Lernweg: Übersicht und „lektion/4“ – die Nummer steht an der Tafel und bleibt fest
