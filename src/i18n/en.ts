@@ -269,6 +269,125 @@ export const EN: Record<string, string> = {
   'Akkord {chord}': 'Chord {chord}',
   'Anhören': 'Listen',
   'Andere Akkorde': 'More chords',
+  // leichte Griffe (src/music/easy-grips.ts, src/views/chords.ts, src/views/player.ts)
+  '{title} anhören': 'Listen to {title}',
+  '{title} prüfen lassen': 'Check {title}',
+  'C-add-Neun': 'C add nine',
+  'h-Moll-Sieben (international Bm7)': 'B minor seven',
+  'B-Major-Sieben (international Bbmaj7)': 'B flat major seven',
+  'Leichter greifen': 'Easier ways to play it',
+  'Andere Wege zu {chord}: Manche sind leichter, manche ein Trick für schnelle Wechsel. Was anders klingt, steht immer dabei.':
+    'Other ways to play {chord}: some are easier, some are a trick for quick changes. Anything that sounds different is always marked.',
+  'Dein leichter Griff klingt richtig gut!': 'Your easy shape sounds really good!',
+  'Mit „Einfache Griffe“ zeigt die App leichtere Griffbilder für {list} – schlag dann nur die Saiten an, die das Bild zeigt.': 'With “Easy chords” the app shows easier shapes for {list} – then strum only the strings the diagram shows.',
+  'eigentlich {chord}': 'actually {chord}',
+  'ohne Grundton {note}': 'no root note {note}',
+  'gleiche Töne, anderer Fingersatz': 'same notes, different fingering',
+  'alle Töne von {chord}': 'all the notes of {chord}',
+  'nur {n} Saiten anschlagen': 'strum only {n} strings',
+  'tiefster Ton {note}': 'lowest note {note}',
+  'mit dem Daumen': 'uses your thumb',
+  'deinen Daumen': 'your thumb',
+  'D mit einem Finger': 'D with one finger',
+  'Leg den Zeigefinger flach über G-, C- und E-Saite im 2. Bund. Die A-Saite muss frei klingen – knick dafür die Fingerspitze etwas ab.':
+    'Lay your index finger flat across the G, C and E strings at the 2nd fret. The A string has to ring freely – bend the tip of your finger a little for that.',
+  'Wenn drei Finger im 2. Bund nicht nebeneinander passen.': 'When three fingers don’t fit side by side at the 2nd fret.',
+  'Leichtes D7': 'Easy D7',
+  'Zeigefinger auf die G-Saite, Mittelfinger auf die E-Saite, beide im 2. Bund. C- und A-Saite bleiben leer.':
+    'Index finger on the G string, middle finger on the E string, both at the 2nd fret. The C and A strings stay open.',
+  'Wenn im Lied auch D7 passt, zum Beispiel kurz vor G.': 'When D7 fits the song too, for example just before G.',
+  'E7 statt E': 'E7 instead of E',
+  'Zeigefinger auf die G-Saite im 1. Bund, Mittelfinger auf die C-Saite und Ringfinger auf die A-Saite im 2. Bund. Die E-Saite bleibt leer.':
+    'Index finger on the G string at the 1st fret, middle finger on the C string and ring finger on the A string at the 2nd fret. The E string stays open.',
+  'In den meisten Liedern klingt E7 an dieser Stelle fast genauso gut.': 'In most songs E7 sounds almost as good in that spot.',
+  'E mit drei Fingern': 'E with three fingers',
+  'Zeigefinger auf die G-Saite im 1. Bund, Mittelfinger auf die A-Saite im 2. Bund, Ringfinger auf die C-Saite im 4. Bund. Die E-Saite bleibt leer.':
+    'Index finger on the G string at the 1st fret, middle finger on the A string at the 2nd fret, ring finger on the C string at the 4th fret. The E string stays open.',
+  'Ein echtes E mit nur drei Fingern – dafür musst du sie weit spreizen.': 'A real E with only three fingers – but you have to stretch them wide.',
+  'G7 als Wechselhilfe': 'G7 for easier changes',
+  'Von F zu G7 bleibt der Zeigefinger auf der E-Saite im 1. Bund liegen – nur zwei Finger wandern.':
+    'From F to G7 your index finger stays on the E string at the 1st fret – only two fingers move.',
+  'Wenn der Wechsel zu G zu lange dauert und G7 ins Lied passt, besonders vor C.': 'When changing to G takes too long and G7 fits the song, especially before C.',
+  'Bbmaj7 ohne Querbalken': 'Bbmaj7 without a barre',
+  'Ringfinger auf die G-Saite im 3. Bund, Mittelfinger auf die C-Saite im 2. Bund, Zeigefinger auf die E-Saite im 1. Bund. Die A-Saite bleibt leer.':
+    'Ring finger on the G string at the 3rd fret, middle finger on the C string at the 2nd fret, index finger on the E string at the 1st fret. The A string stays open.',
+  'Wenn der kleine Barré noch nicht klappt. Klingt weicher als Bb, passt aber in vielen Liedern.': 'When the little barre doesn’t work yet. It sounds softer than Bb but fits lots of songs.',
+  'Em7 mit zwei Fingern': 'Em7 with two fingers',
+  'Zeigefinger auf die C-Saite, Mittelfinger auf die A-Saite, beide im 2. Bund. G- und E-Saite bleiben leer.':
+    'Index finger on the C string, middle finger on the A string, both at the 2nd fret. The G and E strings stay open.',
+  'Klingt fast wie Em und passt fast immer – viel leichter als drei Finger in drei Bünden.': 'Sounds almost like Em and nearly always fits – much easier than three fingers on three frets.',
+  'Fmaj7 ohne Barré': 'Fmaj7 without a barre',
+  'Ringfinger auf die D-Saite im 3. Bund, Mittelfinger auf die G-Saite im 2. Bund, Zeigefinger auf die B-Saite im 1. Bund. Die hohe e-Saite bleibt leer, die zwei tiefen Saiten schlägst du nicht an.':
+    'Ring finger on the D string at the 3rd fret, middle finger on the G string at the 2nd fret, index finger on the B string at the 1st fret. The high E string stays open; don’t strum the two low strings.',
+  'Der leichteste Einstieg statt F: klingt weicher und passt fast immer.': 'The easiest way in instead of F: it sounds softer and nearly always fits.',
+  'Mini-G mit einem Finger': 'Mini G with one finger',
+  'Ringfinger auf die hohe e-Saite im 3. Bund. Nur die vier dünnen Saiten anschlagen.': 'Ring finger on the high E string at the 3rd fret. Strum only the four thin strings.',
+  'Für den Anfang und für schnelle Wechsel – zusammen mit Mini-C und D.': 'For starting out and for quick changes – together with mini C and D.',
+  'Daumen-G': 'Thumb G',
+  'Der Daumen drückt über den Hals die tiefe E-Saite im 3. Bund und dämpft mit seiner Spitze die A-Saite. Der Ringfinger kommt auf die hohe e-Saite im 3. Bund.':
+    'Your thumb reaches over the neck, presses the low E string at the 3rd fret and mutes the A string with its tip. Your ring finger goes on the high E string at the 3rd fret.',
+  'Ein volles G mit tiefem Grundton, aber nur zwei Fingern.': 'A full G with a deep root note, but only two fingers.',
+  'Rock-G für schnelle Wechsel': 'Rock G for quick changes',
+  'Mittelfinger auf die tiefe E-Saite und Ringfinger auf die B-Saite, kleiner Finger auf die e-Saite – alle im 3. Bund. Zeigefinger auf die A-Saite im 2. Bund.':
+    'Middle finger on the low E string, ring finger on the B string, little finger on the high E string – all at the 3rd fret. Index finger on the A string at the 2nd fret.',
+  'Ring- und kleiner Finger bleiben beim Wechsel zu Cadd9, Dsus4 und dem Em7 zum Rock-G einfach liegen.': 'Your ring and little fingers simply stay put when you change to Cadd9, Dsus4 and the rock-G Em7.',
+  'Mini-G7 mit einem Finger': 'Mini G7 with one finger',
+  'Zeigefinger auf die hohe e-Saite im 1. Bund. Nur die vier dünnen Saiten anschlagen.': 'Index finger on the high E string at the 1st fret. Strum only the four thin strings.',
+  'Passt zu Mini-G und Mini-C – so geht C, G7 und G mit ganz wenig Fingerarbeit.': 'Goes with mini G and mini C – C, G7 and G with hardly any finger work.',
+  'Em7 zum Rock-G': 'Em7 to go with rock G',
+  'Zeigefinger auf die A-Saite und Mittelfinger auf die D-Saite im 2. Bund, Ringfinger und kleiner Finger auf B- und e-Saite im 3. Bund.': 'Index finger on the A string and middle finger on the D string at the 2nd fret, ring and little fingers on the B and high E strings at the 3rd fret.',
+  'In Liedern mit G: Ring- und kleiner Finger bleiben vom Rock-G aus einfach liegen.': 'In songs with G: from rock G your ring and little fingers simply stay put.',
+  'Em mit zwei Fingern': 'Em with two fingers',
+  'Ringfinger auf die C-Saite im 4. Bund, Zeigefinger auf die A-Saite im 2. Bund. G- und E-Saite bleiben leer.': 'Ring finger on the C string at the 4th fret, index finger on the A string at the 2nd fret. The G and E strings stay open.',
+  'Ein echtes Em mit nur zwei Fingern. Pass auf, dass der Ringfinger die E-Saite nicht berührt.': 'A real Em with only two fingers. Make sure your ring finger doesn’t touch the E string.',
+  'A5 mit zwei Fingern': 'A5 with two fingers',
+  'Zeigefinger auf die G-Saite, Mittelfinger auf die D-Saite, beide im 2. Bund. A- und E-Saite bleiben leer.': 'Index finger on the G string, middle finger on the D string, both at the 2nd fret. The A and E strings stay open.',
+  'Ohne Terz, also weder Dur noch Moll – klingt kräftig und passt, wenn die anderen A spielen.': 'No third, so neither major nor minor – it sounds strong and fits when the others play A.',
+  'Mini-C mit zwei Fingern': 'Mini C with two fingers',
+  'Mittelfinger auf die D-Saite im 2. Bund, Zeigefinger auf die B-Saite im 1. Bund. Nur die vier dünnen Saiten anschlagen.':
+    'Middle finger on the D string at the 2nd fret, index finger on the B string at the 1st fret. Strum only the four thin strings.',
+  'Wenn der Ringfinger für das große C noch nicht weit genug reicht.': 'When your ring finger can’t reach far enough for the big C yet.',
+  'Cadd9 zum Rock-G': 'Cadd9 to go with rock G',
+  'Mittelfinger auf die A-Saite im 3. Bund, Zeigefinger auf die D-Saite im 2. Bund, Ringfinger und kleiner Finger auf B- und e-Saite im 3. Bund.':
+    'Middle finger on the A string at the 3rd fret, index finger on the D string at the 2nd fret, ring and little fingers on the B and high E strings at the 3rd fret.',
+  'In Liedern mit G: Vom Rock-G aus wandern nur zwei Finger eine Saite weiter. Der Zusatzton D klingt schön offen.':
+    'In songs with G: from rock G only two fingers move over by one string. The extra note D sounds nice and open.',
+  'A mit einem Finger': 'A with one finger',
+  'Leg den Zeigefinger flach über D-, G- und B-Saite im 2. Bund. Die hohe e-Saite soll frei klingen.':
+    'Lay your index finger flat across the D, G and B strings at the 2nd fret. The high E string should ring freely.',
+  'Wenn drei Finger im 2. Bund keinen Platz haben.': 'When three fingers don’t have room at the 2nd fret.',
+  'Asus2 mit zwei Fingern': 'Asus2 with two fingers',
+  'Zeigefinger auf die D-Saite, Mittelfinger auf die G-Saite, beide im 2. Bund. B- und e-Saite bleiben leer, die tiefe E-Saite schlägst du nicht an.':
+    'Index finger on the D string, middle finger on the G string, both at the 2nd fret. The B and high E strings stay open; don’t strum the low E string.',
+  'Klingt offen und schwebend, weder Dur noch Moll. Passt in vielen Pop- und Lagerfeuerliedern statt A.':
+    'Sounds open and floating, neither major nor minor. Fits instead of A in lots of pop and campfire songs.',
+  'Mini-Bm ohne Barré': 'Mini Bm without a barre',
+  'Ringfinger auf die D-Saite und kleiner Finger auf die G-Saite im 4. Bund, Mittelfinger auf die B-Saite im 3. Bund, Zeigefinger auf die e-Saite im 2. Bund. Nur vier Saiten anschlagen.':
+    'Ring finger on the D string and little finger on the G string at the 4th fret, middle finger on the B string at the 3rd fret, index finger on the high E string at the 2nd fret. Strum only four strings.',
+  'Der übliche Weg zu Bm, bis der Barré klappt.': 'The usual way to Bm until the barre works.',
+  'Bm7 mit drei Fingern': 'Bm7 with three fingers',
+  'Zeigefinger auf die A-Saite, Mittelfinger auf die G-Saite, Ringfinger auf die hohe e-Saite – alle im 2. Bund. D- und B-Saite bleiben leer.':
+    'Index finger on the A string, middle finger on the G string, ring finger on the high E string – all at the 2nd fret. The D and B strings stay open.',
+  'Klingt weich und fast wie Bm.': 'Sounds soft and almost like Bm.',
+  'Mini-Bb': 'Mini Bb',
+  'Mittel-, Ring- und kleiner Finger auf D-, G- und B-Saite im 3. Bund, Zeigefinger auf die hohe e-Saite im 1. Bund. Nur vier Saiten anschlagen.':
+    'Middle, ring and little fingers on the D, G and B strings at the 3rd fret, index finger on the high E string at the 1st fret. Strum only four strings.',
+  'Statt des großen Barrés, zum Beispiel in Liedern in F.': 'Instead of the big barre, for example in songs in F.',
+  'Ringfinger auf die D-Saite im 3. Bund, Mittelfinger auf die G-Saite im 2. Bund, Zeigefinger auf die B-Saite im 1. Bund. Die E-Saite bleibt leer.':
+    'Ring finger on the D string at the 3rd fret, middle finger on the G string at the 2nd fret, index finger on the B string at the 1st fret. The E string stays open.',
+  'Leg den Zeigefinger flach über D-, G- und B-Saite im 2. Bund. Die E-Saite soll frei klingen.':
+    'Lay your index finger flat across the D, G and B strings at the 2nd fret. The E string should ring freely.',
+  'Bm7 mit zwei Fingern': 'Bm7 with two fingers',
+  'Zeigefinger auf die G-Saite, Mittelfinger auf die E-Saite, beide im 2. Bund. D- und B-Saite bleiben leer.':
+    'Index finger on the G string, middle finger on the E string, both at the 2nd fret. The D and B strings stay open.',
+  'Klingt fast wie Bm – viel leichter als vier Finger.': 'Sounds almost like Bm – much easier than four fingers.',
+  'C mit einem Finger': 'C with one finger',
+  'Leg den Zeigefinger flach über die vier langen Saiten im 5. Bund. Die kurze Saite klingt leer mit.':
+    'Lay your index finger flat across the four long strings at the 5th fret. The short string rings open along with them.',
+  'Der Lagerfeuer-Trick des Banjos: G klingt mit leeren Saiten, C ist ein Finger im 5. Bund.': 'The banjo’s campfire trick: G is all open strings, C is one finger at the 5th fret.',
+  'Leg den Zeigefinger flach über die vier langen Saiten im 7. Bund. Die kurze Saite schlägst du nicht an.':
+    'Lay your index finger flat across the four long strings at the 7th fret. Don’t play the short string.',
+  'Mit G (leer) und C (5. Bund) hast du drei Akkorde für viele Lieder.': 'With G (open) and C (5th fret) you have three chords for lots of songs.',
   // src/views/detective.ts
   'Tippe auf „Zuhören“ und spiel irgendeinen Akkord – oder einen einzelnen Ton.': 'Tap “Listen” and play any chord – or a single note.',
   'Das klingt wie': 'That sounds like',

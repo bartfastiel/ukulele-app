@@ -9,8 +9,8 @@ function stringName(i: number): string {
   if (i === STRINGS.length - 1) return t('{s}-Saite (ganz unten)', { s });
   return t('{s}-Saite', { s });
 }
-const FINGER = ['', tk('Zeigefinger'), tk('Mittelfinger'), tk('Ringfinger'), tk('kleiner Finger')];
-const FINGER_ACC = ['', tk('deinen Zeigefinger'), tk('deinen Mittelfinger'), tk('deinen Ringfinger'), tk('deinen kleinen Finger')];
+const FINGER = ['', tk('Zeigefinger'), tk('Mittelfinger'), tk('Ringfinger'), tk('kleiner Finger'), tk('Daumen')];
+const FINGER_ACC = ['', tk('deinen Zeigefinger'), tk('deinen Mittelfinger'), tk('deinen Ringfinger'), tk('deinen kleinen Finger'), tk('deinen Daumen')];
 
 /**
  * Kindgerechter Tipp, was am Griff vermutlich nicht stimmt – statt nur „noch nicht richtig“.

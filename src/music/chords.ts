@@ -426,7 +426,7 @@ export function playableChord(ch: Chord): boolean {
   return ch.frets.length === STRINGS.length && ch.frets.every((f, i) => f < 0 || playableFret(i, f));
 }
 
-const FINGER_NAME = ['', tk('Zeigefinger'), tk('Mittelfinger'), tk('Ringfinger'), tk('kleiner Finger')];
+const FINGER_NAME = ['', tk('Zeigefinger'), tk('Mittelfinger'), tk('Ringfinger'), tk('kleiner Finger'), tk('Daumen')];
 
 export function describeChord(ch: Chord): string {
   if (instrument().notesOnly) {

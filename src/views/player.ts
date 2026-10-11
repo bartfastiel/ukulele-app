@@ -5,7 +5,8 @@ import { playableChord } from '../ui/chord-play.ts';
 import { findSong } from '../music/library.ts';
 import { isOwnId } from '../music/own-songs.ts';
 import { chordChanges, eventAt, type Song } from '../music/song.ts';
-import { chord } from '../music/chords.ts';
+import { chord, type Chord } from '../music/chords.ts';
+import { songGrip } from '../music/easy-grips.ts';
 import { STRINGS, tabPosition } from '../music/notes.ts';
 import { audio, click, melodyNote, pluck, strum, successSound } from '../audio/engine.ts';
 import { listenForChord, rootClass, type ChordListener } from '../audio/listen.ts';
@@ -254,7 +255,7 @@ class Player {
       h('div', { class: 'card-label' }, t('Jetzt')),
       h('div', { class: 'chord-name' }, name),
       this.bass ? h('div', { class: 'bass-root' }, t('Grundton {note}', { note: bassNote(name) })) : null,
-      playableChord(chord(name), { lefty: this.settings.lefty, fifth }),
+      playableChord(this.grip(name), { lefty: this.settings.lefty, fifth }),
     );
     const next = this.changes.find((c) => c > Math.max(0, idx));
     const nextInner = h('div', { class: 'card-inner' }, h('div', { class: 'card-label' }, t('Gleich')));
@@ -262,7 +263,7 @@ class Player {
       const nn = this.song.events[next].chord;
       nextInner.appendChild(h('div', { class: 'chord-name' }, nn));
       if (this.bass) nextInner.appendChild(h('div', { class: 'bass-root' }, t('Grundton {note}', { note: bassNote(nn) })));
-      nextInner.appendChild(playableChord(chord(nn), { lefty: this.settings.lefty, labels: false, fifth }));
+      nextInner.appendChild(playableChord(this.grip(nn), { lefty: this.settings.lefty, labels: false, fifth }));
       nextInner.appendChild(h('div', { class: 'beat-dots', 'aria-hidden': 'true' }));
     } else nextInner.appendChild(h('div', { class: 'chord-name end' }, t('Ende')));
 
@@ -486,7 +487,7 @@ class Player {
         if (this.phase !== 'waiting') return l.stop();
         this.listener = l;
       };
-      if (this.listener) this.listener.setExpected(name);
+      if (this.listener) this.listener.setExpected(name, this.easyGrip(name));
       else
         void listenForChord(name, {
           onHit: () => this.confirmChord(true),
@@ -501,12 +502,12 @@ class Player {
                 : { string: v.weakString, count: 1 };
             // Nur bei wiederholt gleicher Diagnose einen Tipp geben – einzelne Fehlmessungen sollen nicht frustrieren
             if (this.hintStreak.count === 4) {
-              hint.textContent = diagnose(chord(name), v.weakString, v.weakKind);
+              hint.textContent = diagnose(this.grip(name), v.weakString, v.weakKind);
               const svg = this.nowCard.querySelector('.card-inner:not(.leaving) svg');
-              if (svg) svg.replaceWith(playableChord(chord(name), { lefty: this.settings.lefty, highlight: v.weakString }));
+              if (svg) svg.replaceWith(playableChord(this.grip(name), { lefty: this.settings.lefty, highlight: v.weakString }));
             }
           },
-        }).then(handle, () => {
+        }, this.easyGrip(name)).then(handle, () => {
           this.micOk = false;
           hint.textContent = t('Tippe auf „Geschafft“, wenn du so weit bist.');
         });
@@ -618,6 +619,16 @@ class Player {
     this.showChords(Math.max(0, this.lastIdx), false);
   }
 
+  /** Mit „Einfache Griffe“ ein leichteres Griffbild für denselben Akkord (Gitarre: Mini-G), sonst undefined. */
+  private easyGrip(name: string): Chord | undefined {
+    return this.settings.simplify && !this.bass ? songGrip(name) || undefined : undefined;
+  }
+
+  /** Griff, den das Lied zeigt und für den das Mikrofon zuhört. */
+  private grip(name: string): Chord {
+    return this.easyGrip(name) || chord(name);
+  }
+
   /** Gewählte Tonart, auf Wunsch mit leichteren Griffen. */
   private arrange(): Song {
     const t = transposeSong(this.base, this.shift);
@@ -671,6 +682,8 @@ class Player {
     // E-Bass: Grundtöne sind in jeder Tonart gleich leicht – nichts zu vereinfachen
     const swaps = this.bass ? {} : simplifications(transposeSong(this.base, this.shift));
     const names = Object.keys(swaps);
+    // dazu kleinere Griffbilder für denselben Akkord (Gitarre: Mini-G, Mini-C)
+    const minis = this.bass ? [] : simplifySong(transposeSong(this.base, this.shift)).chords.filter((c) => !!songGrip(c));
     if (!this.bass) this.keyBox.appendChild(
       h(
         'div',
@@ -678,7 +691,7 @@ class Player {
         button(t('Einfache Griffe'), () => this.setSimplify(!this.settings.simplify), 'btn-seg', { 'aria-pressed': String(this.settings.simplify) }),
       ),
     );
-    if (!this.bass) this.keyBox.appendChild(
+    if (!this.bass && (names.length || !minis.length)) this.keyBox.appendChild(
       h(
         'p',
         { class: 'small' },
@@ -687,6 +700,8 @@ class Player {
           : t('Einfache Griffe: In dieser Tonart sind schon alle Griffe so leicht wie möglich.'),
       ),
     );
+    if (minis.length)
+      this.keyBox.appendChild(h('p', { class: 'small' }, t('Mit „Einfache Griffe“ zeigt die App leichtere Griffbilder für {list} – schlag dann nur die Saiten an, die das Bild zeigt.', { list: minis.join(', ') })));
     this.keyBox.appendChild(
       h(
         'p',

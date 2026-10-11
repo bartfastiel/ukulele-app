@@ -679,6 +679,11 @@ summary:focus-visible {
   margin-bottom: 6px;
 }
 
+/* lange Namen (Bbmaj7) passen sonst nicht in die schmale Kachel */
+.chord-tile .chord-name.long {
+  font-size: 1.4em;
+}
+
 .chord-tile .chord-svg {
   max-width: 110px;
 }
@@ -709,6 +714,55 @@ summary:focus-visible {
 .diagram-big {
   max-width: 300px;
   margin: 8px auto 0;
+}
+
+/* Leichter greifen: Varianten auf der Akkordseite */
+.easy-grips {
+  margin-top: 18px;
+}
+
+.easy-intro h2 {
+  margin: 0 0 4px;
+}
+
+.easy-intro p {
+  margin: 0;
+}
+
+.easy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-gap: 14px;
+  margin-top: 14px;
+}
+
+.easy-card h3 {
+  margin: 0 0 6px;
+}
+
+.easy-tags {
+  margin: 0 0 6px;
+}
+
+.easy-tag {
+  display: inline-block;
+  margin: 0 6px 6px 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8em;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--cream-2);
+  border: 1px solid rgba(43, 22, 8, 0.2);
+}
+
+.diagram-easy {
+  max-width: 220px;
+  margin: 4px auto;
+}
+
+.easy-when {
+  color: var(--ink-soft);
 }
 
 /* Griffbilder, die beim Antippen klingen: auf dem Bild selbst weder scrollen noch zoomen noch markieren */

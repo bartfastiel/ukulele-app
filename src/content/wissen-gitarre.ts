@@ -466,7 +466,7 @@ export const GITARRE_ARTICLES: Article[] = [
       { h2: { de: 'Der erste Wechsel: Em zu Am', en: 'Your first change: Em to Am', fr: 'Premier changement : Em vers Am' } },
       {
         p: {
-          de: 'Für **Am** rutschen dieselben beiden Finger einfach **eine Saite tiefer** (Richtung Boden): Mittelfinger auf die D-Saite, Ringfinger auf die G-Saite, beide im 2. Bund. Dazu kommt der Zeigefinger auf die H-Saite im 1. Bund. Die tiefe E-Saite schlägst du nicht an.',
+          de: 'Für **Am** rutschen dieselben beiden Finger einfach **eine Saite tiefer** (Richtung Boden): Mittelfinger auf die D-Saite, Ringfinger auf die G-Saite, beide im 2. Bund. Dazu kommt der Zeigefinger auf die B-Saite im 1. Bund. Die tiefe E-Saite schlägst du nicht an.',
           en: 'For **Am**, the same two fingers simply slide **one string over** (towards the floor): middle finger on the D string, ring finger on the G string, both at the 2nd fret. Add your index finger on the B string at the 1st fret. Don’t strum the low E string.',
           fr: 'Pour **Am**, les deux mêmes doigts descendent simplement **d’une corde** (vers le sol) : majeur sur le Ré, annulaire sur le Sol, toujours en case 2. Ajoute l’index sur la corde de Si en case 1. Ne gratte pas le Mi grave.',
         },
@@ -490,14 +490,14 @@ export const GITARRE_ARTICLES: Article[] = [
       {
         ul: [
           {
-            de: '**Kleines C:** nur Zeigefinger auf der H-Saite im 1. Bund, dazu die drei dünnsten Saiten anschlagen.',
+            de: '**Kleines C:** nur Zeigefinger auf der B-Saite im 1. Bund, dazu die drei dünnsten Saiten anschlagen.',
             en: '**Mini C:** just your index finger on the B string at the 1st fret, and strum only the three thinnest strings.',
             fr: '**Petit C :** seulement l’index sur la corde de Si en case 1, et gratte uniquement les trois cordes les plus fines.',
           },
           {
-            de: '**Kleines G:** nur Ringfinger auf der hohen e-Saite im 3. Bund, wieder die drei dünnsten Saiten.',
-            en: '**Mini G:** just your ring finger on the high E string at the 3rd fret, again only the three thinnest strings.',
-            fr: '**Petit G :** seulement l’annulaire sur le Mi aigu en case 3, toujours sur les trois cordes les plus fines.',
+            de: '**Kleines G:** nur Ringfinger auf der hohen e-Saite im 3. Bund, dazu die vier dünnsten Saiten anschlagen.',
+            en: '**Mini G:** just your ring finger on the high E string at the 3rd fret, and strum the four thinnest strings.',
+            fr: '**Petit G :** seulement l’annulaire sur le Mi aigu en case 3, en grattant les quatre cordes les plus fines.',
           },
           {
             de: '**D** greifst du mit drei Fingern auf den drei dünnsten Saiten und schlägst ab der D-Saite an.',

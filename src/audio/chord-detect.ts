@@ -170,7 +170,9 @@ export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] 
     // Häufigster Anfängerfehler: ein Finger drückt nicht richtig, die Saite klingt leer. Passt der Griff mit dieser
     // leeren Saite besser als der gewünschte, ist das die Saite für den Hinweis.
     const ch = candidates.find((c) => c.name === expected)!;
-    let bestVariant = exp.score;
+    // gibt es zwei Griffe gleichen Namens (gewählte leichte Variante vorn), gilt der Hinweis dem ersten
+    const mine = scoreChord(peaks, ch);
+    let bestVariant = mine.score;
     ch.frets.forEach((f, i) => {
       if (f <= 0) return;
       const frets = ch.frets.slice();
@@ -182,9 +184,9 @@ export function judgeChord(peaks: Peak[], expected: string, candidates: Chord[] 
         weakKind = 'open';
       }
     });
-    if (weakString < 0 && exp.explained > 0.5) {
+    if (weakString < 0 && mine.explained > 0.5) {
       let min = 0.25;
-      exp.strings.forEach((v, i) => {
+      mine.strings.forEach((v, i) => {
         if (ch.frets[i] >= 0 && v < min) {
           min = v;
           weakString = i;
