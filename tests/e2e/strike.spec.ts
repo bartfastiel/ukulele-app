@@ -13,6 +13,7 @@ test.beforeEach(async ({ page }) => {
     const w = window as unknown as { __sets: { kind: string; v: number }[] };
     w.__sets = [];
     const owner = new WeakMap<AudioParam, string>();
+    const filters = new WeakMap<AudioParam, BiquadFilterNode>();
     const proto = (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext).prototype;
     const gain = proto.createGain;
     proto.createGain = function (this: AudioContext) {
@@ -24,13 +25,16 @@ test.beforeEach(async ({ page }) => {
     proto.createBiquadFilter = function (this: AudioContext) {
       const n = biquad.call(this);
       owner.set(n.frequency, 'cutoff');
+      filters.set(n.frequency, n);
       return n;
     };
     const d = Object.getOwnPropertyDescriptor(AudioParam.prototype, 'value')!;
     Object.defineProperty(AudioParam.prototype, 'value', {
       get: d.get,
       set(this: AudioParam, v: number) {
-        const kind = owner.get(this);
+        const f = filters.get(this);
+        // nur Tiefpässe zählen als Klangfarbe (der Hochpass des Anschlagsgeräuschs nicht)
+        const kind = f ? (f.type === 'lowpass' ? 'cutoff' : '') : owner.get(this);
         if (kind) w.__sets.push({ kind, v });
         d.set!.call(this, v);
       },
@@ -95,7 +99,7 @@ test('Anschlag über die Kontaktfläche (Druck immer 1 wie auf manchen Android-G
   }
   const s = soft[soft.length - 1];
   const h = hard[hard.length - 1];
-  expect(dB(h.gain) - dB(s.gain)).toBeGreaterThan(12);
+  expect(dB(h.gain) - dB(s.gain)).toBeGreaterThan(20);
   expect(s.cutoff).toBeLessThan(h.cutoff);
   await expect(page.locator('.strike-meter')).toContainText('dB');
   await expect(page.locator('.strike-meter')).toContainText('Fläche: erkannt');
@@ -110,7 +114,7 @@ test('Anschlag mit echter Kraft (Radius gleichbleibend): fest deutlich lauter', 
     s = await tap(page, cdp, at, { radius: 1, force: 0.15 + i * 0.002 }, { radius: 1, force: 0.03 });
     h = await tap(page, cdp, at, { radius: 1, force: 0.8 - i * 0.002 }, { radius: 1, force: 0.05 });
   }
-  expect(dB(h!.gain) - dB(s!.gain)).toBeGreaterThan(12);
+  expect(dB(h!.gain) - dB(s!.gain)).toBeGreaterThan(20);
 });
 
 test('Anschlag ohne Sensor (Kraft und Radius immer gleich): jeder Ton gleich laut und unverändert hell', async ({ page }) => {

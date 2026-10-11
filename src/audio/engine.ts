@@ -175,11 +175,40 @@ export function setWah(level: number | null): void {
   for (const v of live) wahTarget(v.filter, ctx.currentTime);
 }
 
+let noise: AudioBuffer | null = null;
+
+/** Kurzes, helles Knacken wie Fingernagel oder Plektrum auf der Saite (rund 15 ms). */
+function strikeNoise(at: number, level: number): void {
+  const c = audio();
+  if (!noise) {
+    const n = Math.floor(c.sampleRate * 0.015);
+    noise = c.createBuffer(1, n, c.sampleRate);
+    const d = noise.getChannelData(0);
+    let seed = 12345;
+    for (let i = 0; i < n; i++) {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+      d[i] = (seed / 0x3fffffff - 1) * Math.exp(-i / (c.sampleRate * 0.003));
+    }
+  }
+  const src = c.createBufferSource();
+  src.buffer = noise;
+  const hp = c.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 1800;
+  const g = c.createGain();
+  g.gain.value = level;
+  src.connect(hp);
+  hp.connect(g);
+  g.connect(master!);
+  src.start(at);
+}
+
 /**
  * Ton anschlagen und halten; `bend` zieht ihn kurz nach dem Anschlag selbst um so viele Halbtöne hoch. `cutoff` (Hz)
- * nimmt einem leisen Anschlag die Höhen (0 = unverändert hell).
+ * nimmt einem leisen Anschlag die Höhen (0 = unverändert hell), `attack` gibt einem festen ein kurzes Anschlagsgeräusch
+ * (relativ zur Lautstärke).
  */
-export function hold(midi: number, gain = 0.6, bend = 0, cutoff = 0): Voice {
+export function hold(midi: number, gain = 0.6, bend = 0, cutoff = 0, attack = 0): Voice {
   if (!hasAudio()) return SILENT_VOICE;
   const c = audio();
   const t0 = c.currentTime;
@@ -189,6 +218,7 @@ export function hold(midi: number, gain = 0.6, bend = 0, cutoff = 0): Voice {
   filter.type = 'lowpass';
   filter.frequency.value = 18000;
   wahTarget(filter, t0);
+  if (attack > 0) strikeNoise(t0, gain * attack);
   const g = c.createGain();
   g.gain.value = gain;
   const lfo = c.createOscillator();
