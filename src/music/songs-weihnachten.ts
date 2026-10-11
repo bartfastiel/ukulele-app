@@ -11,6 +11,7 @@ export const CHRISTMAS_SONGS: SongSource[] = [
     category: 'weihnachten',
     origin:
       'Text Friedrich Heinrich Ranke (1798–1876), Erstdruck 1826 (bei Louise Reichardt), Melodie Georg Friedrich Händel (1685–1759), Chor aus „Joshua“ (1747), 1751 in „Judas Maccabaeus“ übernommen; Text nach dem Wikipedia-Artikel',
+    textUrl: 'https://de.wikipedia.org/wiki/Tochter_Zion,_freue_dich',
     meter: 4,
     bpm: 100,
     chordpro: `
@@ -39,6 +40,7 @@ export const CHRISTMAS_SONGS: SongSource[] = [
     category: 'weihnachten',
     origin:
       'Text 1. und 2. Strophe traditionell (Speyerer Gesangbuch 1599, 2. Strophe nach Michael Praetorius, 1571–1621), 3. Strophe Friedrich Layriz (1808–1859), 1844; Melodie traditionell (gedruckt Köln 1599); Text nach Layriz 1844 (Wikipedia-Artikel)',
+    textUrl: 'https://de.wikipedia.org/wiki/Es_ist_ein_Ros_entsprungen',
     meter: 4,
     bpm: 80,
     chordpro: `
@@ -69,6 +71,7 @@ Wahr [Am]Mensch und wahrer [G7]Gott,
     title: 'Am Weihnachtsbaum die Lichter brennen',
     category: 'weihnachten',
     origin: 'Text Hermann Kletke (1813–1886), 1841, Melodie anonym (um 1830); Text nach dem Erstdruck (Wikipedia-Artikel)',
+    textUrl: 'https://de.wikipedia.org/wiki/Am_Weihnachtsbaume_die_Lichter_brennen',
     meter: 3,
     bpm: 100,
     chordpro: `
@@ -91,6 +94,7 @@ und [G7]wenden wieder [G7]sich und [C]gehn.`,
     category: 'weihnachten',
     origin:
       'Text und Melodie traditionell aus Schlesien, gedruckt 1842 in „Schlesische Volkslieder“ von Hoffmann von Fallersleben (1798–1874) und Ernst Richter (1805–1876); Text nach dem Druck von 1842',
+    textUrl: 'https://de.wikipedia.org/wiki/Was_soll_das_bedeuten',
     meter: 3,
     bpm: 110,
     chordpro: `
@@ -113,6 +117,7 @@ liegt [F]dort in der [C]Krippe bei [G7]Esel und [C]Rind.`,
     category: 'weihnachten',
     origin:
       'Text und Melodie traditionell aus dem Salzburger Land, gedruckt 1865 in der Sammlung von Vinzenz Maria Süß (1802–1868); Text: eigene Übertragung aus der Mundart nach Süß 1865 (Wikipedia-Artikel)',
+    textUrl: 'https://de.wikipedia.org/wiki/Still,_still,_still',
     meter: 3,
     bpm: 80,
     chordpro: `
@@ -135,6 +140,7 @@ Gott [G7]hat den Himmelsthron [C]verlassen
     category: 'weihnachten',
     origin:
       'Text Friedrich Spee (1591–1635), gedruckt Köln 1637, Melodie nach dem französischen „Une petite feste“ (Paris 1599); Text nach dem Wikipedia-Artikel',
+    textUrl: 'https://de.wikipedia.org/wiki/Zu_Bethlehem_geboren',
     meter: 4,
     bpm: 90,
     chordpro: `
@@ -159,6 +165,7 @@ je [G7]länger mehr und [C]mehr.
     title: 'Macht hoch die Tür',
     category: 'weihnachten',
     origin: 'Text Georg Weissel (1590–1635), 1623, Melodie Halle 1704 (Freylinghausens Gesangbuch); Text nach dem Wikipedia-Artikel',
+    textUrl: 'https://de.wikipedia.org/wiki/Macht_hoch_die_T%C3%BCr',
     meter: 3,
     bpm: 110,
     chordpro: `
@@ -193,6 +200,7 @@ mein [C]Tröster [G7]früh und [C]spat.`,
     category: 'weihnachten',
     origin:
       'Text Daniel Sudermann (1550–1631) nach einem älteren Lied (Elsass, 15. Jahrhundert), gedruckt Straßburg 1626; Melodie traditionell (Andernacher Gesangbuch 1608); Text nach dem Druck von 1626 (Wikipedia-Artikel)',
+    textUrl: 'https://de.wikipedia.org/wiki/Es_kommt_ein_Schiff,_geladen',
     meter: 3,
     bpm: 90,
     chordpro: `
@@ -218,6 +226,7 @@ ge[Dm]lobet muss es [Am]sein.`,
     title: 'Vom Himmel hoch, da komm ich her',
     category: 'weihnachten',
     origin: 'Text Martin Luther (1483–1546), 1535, Melodie Martin Luther, gedruckt Leipzig 1539; Text nach dem Wikipedia-Artikel',
+    textUrl: 'https://de.wikipedia.org/wiki/Vom_Himmel_hoch,_da_komm_ich_her',
     meter: 4,
     bpm: 90,
     chordpro: `
@@ -240,6 +249,7 @@ von [C]allen [F]Sünden [G7]machen [C]rein.`,
     category: 'weihnachten',
     origin:
       'Deutscher Text Friedrich Heinrich Ranke (1798–1876), Erstdruck 1826, nach dem lateinischen „Adeste fideles“; Melodie John Francis Wade (1711–1786) zugeschrieben; Text nach Rankes Wortlaut (Wikipedia-Artikel)',
+    textUrl: 'https://de.wikipedia.org/wiki/Adeste_fideles',
     meter: 4,
     bpm: 90,
     chordpro: `
@@ -264,7 +274,8 @@ o [C]lasset uns [F]an[C]be[G7]ten den [C]König!`,
     title: 'Mon beau sapin',
     category: 'weihnachten',
     origin:
-      'Französischer Text Laurent Delcasso (1797–1887), 1856, nach „O Tannenbaum“, Melodie Volksweise; Text nach dem Erstdruck (französischer Wikipedia-Artikel)',
+      'Französischer Text Laurent Delcasso (1797–1887), 1856, nach „O Tannenbaum“, Melodie Volksweise; Text nach dem Erstdruck 1856, S. 9 (Gallica)',
+    textUrl: 'https://gallica.bnf.fr/ark:/12148/bpt6k65830899',
     meter: 3,
     bpm: 90,
     chordpro: `
@@ -292,7 +303,8 @@ m’of[Dm]frent la douce [G7]i[C]mage.`,
     title: 'Il est né, le divin Enfant',
     category: 'weihnachten',
     origin:
-      'Text und Melodie traditionell (Frankreich; Text gedruckt 1818, Melodie notiert 1819, gedruckt 1862 von Jean-Romary Grosjean, 1815–1888); Text nach dem englischen Wikipedia-Artikel',
+      'Text und Melodie traditionell (Frankreich, Text gedruckt 1818, Melodie notiert 1819, gedruckt 1862 von Jean-Romary Grosjean, 1815–1888); Text nach dem englischen Wikipedia-Artikel',
+    textUrl: 'https://en.wikipedia.org/wiki/Il_est_n%C3%A9,_le_divin_Enfant',
     meter: 2,
     bpm: 100,
     chordpro: `
@@ -330,7 +342,8 @@ Il est [C]né le di[G7]vin En[C]fant,
     title: 'Les anges dans nos campagnes',
     category: 'weihnachten',
     origin:
-      'Text und Melodie traditionell (Frankreich; Text gedruckt 1805, Fassung mit Melodie 1842 bei Louis Lambillotte, 1796–1855); Text nach dem Druck Lille 1862 (französisches Wikisource)',
+      'Text und Melodie traditionell (Frankreich, Text gedruckt 1805, Fassung mit Melodie 1842 bei Louis Lambillotte, 1796–1855); Text nach dem Druck Lille 1862 (französisches Wikisource)',
+    textUrl: 'https://fr.wikisource.org/wiki/Les_Anges_dans_nos_campagnes',
     meter: 4,
     bpm: 100,
     chordpro: `
@@ -359,6 +372,7 @@ Il est [C]né le di[G7]vin En[C]fant,
     category: 'weihnachten',
     origin:
       'Text und Melodie traditionell (Frankreich, ältester Druck Nantes 1792); Text nach dem französischen Wikipedia-Artikel',
+    textUrl: 'https://fr.wikipedia.org/wiki/Entre_le_b%C5%93uf_et_l%27%C3%A2ne_gris',
     meter: 4,
     bpm: 150,
     chordpro: `
@@ -387,6 +401,7 @@ Il est [C]né le di[G7]vin En[C]fant,
     category: 'weihnachten',
     origin:
       'Text und Melodie traditionell (England, West Country); früheste Notenquelle Arthur Warrell (1883–1939), Oxford 1935 – nach EU-Recht gemeinfrei (70 Jahre nach dem Tod); Text nach Wikisource',
+    textUrl: 'https://en.wikisource.org/wiki/We_Wish_You_a_Merry_Christmas',
     meter: 3,
     bpm: 120,
     chordpro: `
@@ -429,6 +444,7 @@ and a [F]happy [G7]New [C]Year!`,
     category: 'weihnachten',
     origin:
       'Englischer Text nach Thomas Oliphant (1799–1873), 1862, in der Fassung aus „The Pennsylvania School Journal“ (1877), Melodie traditionell aus Wales; Text nach dem englischen Wikipedia-Artikel',
+    textUrl: 'https://en.wikipedia.org/wiki/Deck_the_Halls',
     meter: 4,
     bpm: 120,
     chordpro: `
@@ -463,6 +479,7 @@ and a [F]happy [G7]New [C]Year!`,
     category: 'weihnachten',
     origin:
       'Text Isaac Watts (1674–1748), 1719, Melodie „Antioch“ von Lowell Mason (1792–1872), 1839, Georg Friedrich Händel zugeschrieben; Text nach „The Army and Navy Hymnal“ (1920, Wikisource)',
+    textUrl: 'https://en.wikisource.org/wiki/The_Army_and_Navy_Hymnal/Hymns/Joy_to_the_World!_the_Lord_Is_Come',
     meter: 2,
     bpm: 90,
     chordpro: `
@@ -491,6 +508,7 @@ And [C]wonders, and [F]wonders [G7]of his [C]love.`,
     category: 'weihnachten',
     origin:
       'Text Charles Wesley (1707–1788), 1739, in der Fassung von „Hymns Ancient and Modern“ (1861), Melodie Felix Mendelssohn Bartholdy (1809–1847), eingerichtet von William Hayman Cummings (1831–1915); Text nach dem englischen Wikipedia-Artikel',
+    textUrl: 'https://en.wikipedia.org/wiki/Hark!_The_Herald_Angels_Sing',
     meter: 4,
     bpm: 100,
     chordpro: `
@@ -531,6 +549,7 @@ And [C]wonders, and [F]wonders [G7]of his [C]love.`,
     category: 'weihnachten',
     origin:
       'Englischer Text Frederick Oakeley (1802–1880), 1841, überarbeitet 1852, nach dem lateinischen „Adeste fideles“; Melodie John Francis Wade (1711–1786) zugeschrieben; Text nach dem englischen Wikipedia-Artikel',
+    textUrl: 'https://en.wikipedia.org/wiki/O_Come,_All_Ye_Faithful',
     meter: 4,
     bpm: 90,
     chordpro: `
@@ -555,7 +574,8 @@ O [C]come, let us [F]a[C]dore [G7]Him, Christ the [C]Lord.`,
     title: 'Away in a Manger',
     category: 'weihnachten',
     origin:
-      'Text anonym (USA, ab 1882; 3. Strophe gedruckt 1892), Melodie „Mueller“ von James Ramsey Murray (1841–1905), 1887; Text nach Kirkpatrick 1895 (englischer Wikipedia-Artikel)',
+      'Text anonym (USA, ab 1882, 3. Strophe gedruckt 1892), Melodie „Mueller“ von James Ramsey Murray (1841–1905), 1887; Text nach Kirkpatrick 1895 (englischer Wikipedia-Artikel)',
+    textUrl: 'https://en.wikipedia.org/wiki/Away_in_a_Manger',
     meter: 3,
     bpm: 90,
     chordpro: `
@@ -578,6 +598,7 @@ and [F]take us to [C]heaven to [G7]live with thee [C]there.`,
     category: 'weihnachten',
     origin:
       'Text und Melodie John Henry Hopkins Jr. (1820–1891), 1857; Text nach Hopkins, „Carols, Hymns, and Songs“ (1863)',
+    textUrl: 'https://en.wikisource.org/wiki/We_Three_Kings_of_Orient_Are',
     meter: 3,
     bpm: 160,
     chordpro: `
@@ -619,6 +640,7 @@ and [F]take us to [C]heaven to [G7]live with thee [C]there.`,
     title: 'I Saw Three Ships',
     category: 'weihnachten',
     origin: 'Text und Melodie traditionell (England); Text nach William Sandys (1792–1874), „Christmas Carols, Ancient and Modern“ (1833, Wikisource)',
+    textUrl: 'https://en.wikisource.org/wiki/Christmas_Carols,_Ancient_and_Modern/I_Saw_Three_Ships',
     meter: 6,
     bpm: 160,
     chordpro: `
@@ -657,6 +679,7 @@ On [C]Christmas day [G7]in the [C]morning.`,
     category: 'weihnachten',
     origin:
       'Text und Melodie traditionell (England); Text in der Fassung von Bramley und Stainer, „Christmas Carols New and Old“ (1871), nach Wikisource',
+    textUrl: 'https://en.wikisource.org/wiki/The_First_Nowell',
     meter: 3,
     bpm: 110,
     chordpro: `

@@ -315,7 +315,7 @@ De-:E5 puis:F5 plus:G5 de:F5:0.5 qua-:E5:0.5 [G7]tre:F5 mille:A5 [C]ans,:G5:2
 nous:E5 le:F5 pro-:G5 met-:A5:0.5 taient:G5:0.5 les:F5 pro-:E5 [G7]phè-:E5 tes,:D5
 [C]de-:E5 puis:F5 plus:G5 de:F5:0.5 qua-:E5:0.5 [G7]tre:F5 mille:A5 [C]ans,:G5:2
 nous:E5 at-:F5 ten-:G5 dions:A5:0.5 cet:G5:0.5 [G7]heu-:F5 [C]reux:E5 [G7]temps.:D5:2` },
-  'entre-le-boeuf': { meter: 4, pickup: 0, originalKey: 'Em', similarity: 0.97, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Entre le bœuf et l’âne gris“ (CC BY-SA 4.0)', url: 'https://fr.wikipedia.org/w/index.php?title=Entre_le_b%C5%93uf_et_l'%C3%A2ne_gris&oldid=239977253', text: `
+  'entre-le-boeuf': { meter: 4, pickup: 0, originalKey: 'Em', similarity: 0.97, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Entre le bœuf et l’âne gris“ (CC BY-SA 4.0)', url: 'https://fr.wikipedia.org/w/index.php?title=Entre_le_b%C5%93uf_et_l%27%C3%A2ne_gris&oldid=239977253', text: `
 [Am]En-:A4:2 tre:A4 le:B4 bœuf:C5:2 et:A4:2 l'â-:E5:2 ne:E5:2 gris:E5:4 Dort,:A5:4
 dort,:E5:4 [E7]dort:E5 le:D5 [Am]pe-:C5 tit:D5 fils:E5:4 Mille:A4 an-:B4 ges:C5 di-:D5 [E7]vins:D5:4 Mil-:E5 le:D5 [Am]sé-:C5 ra-:B4 phins:A4:4 Vo-:A4 lent:B4 à:C5 l'en-:D5 tour:E5:1.5 De:C5:0.5 [E7]ce:D5 grand:E5 [Am]Dieu:C5:2 [E7]d'a-:B4:2 [Am]mour:A4:4` },
   'hark-the-herald': { meter: 4, pickup: 0, originalKey: 'F', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Hark! The Herald Angels Sing“ (CC BY-SA 4.0)', url: 'https://en.wikipedia.org/w/index.php?title=Hark!_The_Herald_Angels_Sing&oldid=1359078229', text: `

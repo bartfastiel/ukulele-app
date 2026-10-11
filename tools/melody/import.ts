@@ -410,7 +410,7 @@ if (write) {
     'export const MELODIES: Record<string, ImportedMelody> = {',
     ...results.map(
       (r) =>
-        `  '${r.id}': { meter: ${r.meter}, pickup: ${r.pickup}, originalKey: '${r.originalKey}', similarity: ${r.similarity.toFixed(2)}, source: '${r.source.replace(/'/g, '’')}', url: '${r.url}', text: \`${r.text.replace(/`/g, '\\`')}\` },`,
+        `  '${r.id}': { meter: ${r.meter}, pickup: ${r.pickup}, originalKey: '${r.originalKey}', similarity: ${r.similarity.toFixed(2)}, source: '${r.source.replace(/'/g, '’')}', url: '${r.url.replace(/'/g, '%27')}', text: \`${r.text.replace(/`/g, '\\`')}\` },`,
     ),
     '};',
     '',
