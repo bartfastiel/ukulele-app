@@ -160,7 +160,7 @@ test('Sitemaps: x-default, jede Adresse nur einmal über alle Instrument-Seiten'
 test('Titel und Texte: Artikel vor Instrumentnamen, wo die Sprache einen braucht', () => {
   for (const s of SITES)
     for (const p of rendered[s]) {
-      const bad = /\b(le|au|du|mon|ton|son) (guitare|basse électrique)|\bauf (Ukulele|Gitarre|Banjo|Bariton-Ukulele|Mandoline|E-Bass)\b|\brund um (Ukulele|Gitarre|Banjo|Bariton-Ukulele|Mandoline|E-Bass)\b/i.exec(p.html);
+      const bad = /\b(le|au|du|mon|ton|son) (guitare|basse électrique|mandoline)|\bauf (Ukulele|Gitarre|Banjo|Bariton-Ukulele|Mandoline|E-Bass)\b|\brund um (Ukulele|Gitarre|Banjo|Bariton-Ukulele|Mandoline|E-Bass)\b/i.exec(p.html);
       assert.equal(bad && bad[0], null, `${s}/${p.file}`);
     }
   assert.ok(page('gitarre', 'fr/index.html').html.indexOf('<title>Apprendre la guitare gratuitement') >= 0);

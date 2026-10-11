@@ -335,10 +335,10 @@ const GRAMMAR: Record<Lang, [RegExp, string][]> = {
   ],
   en: [],
   fr: [
-    [/\b([Ll])e (guitare|basse électrique)/g, '$1a $2'],
-    [/\bau (guitare|basse électrique)/g, 'à la $1'],
-    [/\bdu (guitare|basse électrique)/g, 'de la $1'],
-    [/\b([MmTtSs])on (guitare|basse électrique)/g, '$1a $2'],
+    [/\b([Ll])e (guitare|basse électrique|mandoline)/g, '$1a $2'],
+    [/\bau (guitare|basse électrique|mandoline)/g, 'à la $1'],
+    [/\bdu (guitare|basse électrique|mandoline)/g, 'de la $1'],
+    [/\b([MmTtSs])on (guitare|basse électrique|mandoline)/g, '$1a $2'],
     // „Accords en {tuning}“ mit der Ukulele-Stimmung „Accordage en D“
     [/\ben Accordage en ([A-G])\b/g, 'avec l’accordage en $1'],
   ],
