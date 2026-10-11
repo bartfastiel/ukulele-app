@@ -14,6 +14,8 @@ import { parseSong, type Song } from '../../src/music/song.ts';
 import { songKey, shiftBetween } from '../../src/music/transpose.ts';
 import { ROOTS, chord, chordMidis } from '../../src/music/chords.ts';
 import { NOTE_NAMES } from '../../src/music/notes.ts';
+import { WIKI } from './sources.ts';
+import { permalink } from './wiki-api.ts';
 
 /** Nicht übernehmen – der Notentext ist eine geschützte oder abweichende Fassung. */
 const EXCLUDE: Record<string, string> = {
@@ -133,9 +135,16 @@ interface Result {
   chordSource: 'Notenbeispiel' | 'Textabgleich' | 'Harmonisierung';
   file: string;
   source: string;
+  url: string;
 }
 
-function convert(id: string, sc: LyScore, file: string, syl: LySyllable[], source: string, opts: AlignOptions = {}): Result | null {
+/** Herkunft der Melodie: Text für `origin` und Adresse der Quelle (Permalink auf die verwendete Fassung). */
+interface Source {
+  text: string;
+  url: string;
+}
+
+function convert(id: string, sc: LyScore, file: string, syl: LySyllable[], source: Source, opts: AlignOptions = {}): Result | null {
   const song = songs.get(id);
   if (!song) return null;
   const al = align(sc.notes, syl, opts);
@@ -275,28 +284,44 @@ function convert(id: string, sc: LyScore, file: string, syl: LySyllable[], sourc
     leftover,
     chordSource,
     file,
-    source,
+    source: source.text,
+    url: source.url,
   };
 }
 
 const LANG: Record<string, string> = { de: 'deutschen', en: 'englischen', hu: 'ungarischen', fr: 'französischen', nl: 'niederländischen', es: 'spanischen', it: 'italienischen', sv: 'schwedischen', pl: 'polnischen', cs: 'tschechischen' };
 
-/** Herkunft der Melodie für `origin`: aus dem Dateinamen des Notenbeispiels bzw. dem S:-Feld der ABC-Datei. */
-function sourceOf(dir: string, id: string, file: string): string {
-  const tag = new RegExp(`^${id}@([a-z]+)(\\d*)-`).exec(file);
-  if (!tag) return 'nach dem Notenbeispiel im Wikipedia-Artikel';
-  if (tag[2]) {
-    // Suchtreffer (search-wiki.ts): Wiki und Seitentitel stehen in <id>@<tag>.title
-    let meta = ['wikipedia', 'unbekannt'];
+/** „host|Seitentitel|Revision“ aus <basis>.src (fetch-wiki.ts, fetch-langs.ts, search-wiki.ts), ältere Caches: <basis>.title. */
+function readSrc(dir: string, base: string): string[] | null {
+  for (const ext of ['.src', '.title']) {
     try {
-      meta = readFileSync(join(dir, `${id}@${tag[1]}${tag[2]}.title`), 'utf8').split('|');
+      return readFileSync(join(dir, base + ext), 'utf8').trim().split('|');
     } catch {
-      // ältere Suchtreffer ohne .title
+      // nächste Variante
     }
-    const title = meta.slice(1).join('|').replace(/^Page:/, '').replace(/\.djvu\/\d+$/, '');
-    return meta[0].includes('wikisource') ? `nach „${title}“ (Wikisource)` : `nach dem Notenbeispiel im Wikipedia-Artikel „${title}“`;
   }
-  return `nach dem Notenbeispiel im ${LANG[tag[1]] || tag[1]} Wikipedia-Artikel`;
+  return null;
+}
+
+const NOTATION = 'Melodie gemeinfrei, Notation nach';
+const LICENSE = 'CC BY-SA 4.0';
+
+/** Herkunft der Melodie für `origin` aus dem Dateinamen des Notenbeispiels und den Angaben aus dem Cache. */
+function sourceOf(dir: string, id: string, file: string): Source {
+  const tag = new RegExp(`^${id}@([a-z]+)(\\d*)-`).exec(file);
+  const meta = readSrc(dir, tag ? `${id}@${tag[1]}${tag[2]}` : id);
+  let host = meta ? meta[0] : '';
+  let title = meta ? meta[1] : '';
+  if (!meta && !tag && WIKI[id]) {
+    const parts = WIKI[id].split(':');
+    host = `${parts[0]}.wikipedia.org`;
+    title = decodeURIComponent(parts.slice(1).join(':')).replace(/_/g, ' ');
+  }
+  const url = host && title ? (meta && meta[2] ? permalink(host, title, meta[2]) : `https://${host}/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`) : '';
+  const shown = title.replace(/^Page:/, '').replace(/\.djvu\/\d+$/, '');
+  if (host.includes('wikisource')) return { text: `${NOTATION} „${shown}“ (Wikisource, ${LICENSE})`, url };
+  const langName = tag && !tag[2] ? LANG[tag[1]] || tag[1] : '';
+  return { text: `${NOTATION} dem Notenbeispiel im ${langName ? langName + ' ' : ''}Wikipedia-Artikel${shown ? ` „${shown}“` : ''} (${LICENSE})`, url };
 }
 
 const abcDir = new URL('./abc/', import.meta.url);
@@ -335,7 +360,7 @@ for (const id of songs.keys()) {
   // selbst notierte bzw. aus gemeinfreien Liederbüchern übertragene Melodien (tools/melody/abc/<id>.abc)
   if (abcFiles.has(id + '.abc')) {
     const sc = parseAbc(readFileSync(new URL(id + '.abc', abcDir), 'utf8'));
-    consider(convert(id, sc, id + '.abc', sc.verses[0], sc.source));
+    consider(convert(id, sc, id + '.abc', sc.verses[0], { text: `Melodie ${sc.source}`, url: '' }));
   }
   if (!chosen) continue;
   const c: Result = chosen;
@@ -361,12 +386,14 @@ if (write) {
     '  similarity: number;',
     '  /** Herkunft der Melodie, wird an `origin` angehängt. */',
     '  source: string;',
+    '  /** Adresse der Quelle (Permalink auf die verwendete Fassung des Notenbeispiels). */',
+    '  url: string;',
     '}',
     '',
     'export const MELODIES: Record<string, ImportedMelody> = {',
     ...results.map(
       (r) =>
-        `  '${r.id}': { meter: ${r.meter}, pickup: ${r.pickup}, originalKey: '${r.originalKey}', similarity: ${r.similarity.toFixed(2)}, source: '${r.source.replace(/'/g, '’')}', text: \`${r.text.replace(/`/g, '\\`')}\` },`,
+        `  '${r.id}': { meter: ${r.meter}, pickup: ${r.pickup}, originalKey: '${r.originalKey}', similarity: ${r.similarity.toFixed(2)}, source: '${r.source.replace(/'/g, '’')}', url: '${r.url}', text: \`${r.text.replace(/`/g, '\\`')}\` },`,
     ),
     '};',
     '',

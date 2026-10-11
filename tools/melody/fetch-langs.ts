@@ -1,32 +1,15 @@
 // Sucht Notenbeispiele in den anderen Sprachversionen eines Wikipedia-Artikels (Sprachlinks des Artikels aus
-// sources.ts) und legt die Quelltexte mit <score> als <id>@<sprache>.txt in den Cache-Ordner.
+// sources.ts) und legt die Quelltexte mit <score> als <id>@<sprache>.txt in den Cache-Ordner, daneben <id>@<sprache>.src
+// mit „host|Seitentitel|Revision“ für den Nachweis.
 //   node tools/melody/fetch-langs.ts <cache-ordner> [id …]
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { WIKI } from './sources.ts';
+import { fetchPage, json } from './wiki-api.ts';
 
 const dir = process.argv[2];
 const only = process.argv.slice(3);
 mkdirSync(dir, { recursive: true });
-const UA = { 'User-Agent': 'ukulele-app-melody-import/1.0 (privates Open-Source-Projekt)' };
-
-async function json(url: string, attempt = 0): Promise<any> {
-  const res = await fetch(url, { headers: UA });
-  if (res.status === 429 && attempt < 6) {
-    await new Promise((r) => setTimeout(r, 5000 * 2 ** attempt));
-    return json(url, attempt + 1);
-  }
-  if (!res.ok) throw new Error(`${res.status} ${url}`);
-  return res.json();
-}
-
-async function raw(lang: string, title: string): Promise<string> {
-  const data = await json(
-    `https://${lang}.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&rvslots=main&redirects=1&format=json&formatversion=2&titles=${encodeURIComponent(title)}`,
-  );
-  const page = data.query.pages[0];
-  return page.missing ? '' : page.revisions[0].slots.main.content;
-}
 
 for (const id of only.length ? only : Object.keys(WIKI)) {
   const parts = WIKI[id].split(':');
@@ -45,9 +28,11 @@ for (const id of only.length ? only : Object.keys(WIKI)) {
         found.push(l.lang);
         continue;
       }
-      const text = await raw(l.lang, l.title);
-      if (/<score/.test(text)) {
-        writeFileSync(file, text);
+      const host = `${l.lang}.wikipedia.org`;
+      const got = await fetchPage(host, l.title);
+      if (got && /<score/.test(got.text)) {
+        writeFileSync(file, got.text);
+        writeFileSync(join(dir, `${id}@${l.lang}.src`), `${host}|${got.title}|${got.revid}`);
         found.push(l.lang);
       }
       await new Promise((r) => setTimeout(r, 1000));

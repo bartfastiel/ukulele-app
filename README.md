@@ -72,8 +72,13 @@ einfache Tonart der App und legt unsere Akkorde per Textabgleich bzw. Harmonisie
 wird mit unserem geprüften Text verglichen; abweichende, geschützte Fassungen (z. B. „Im Märzen der Bauer“ nach
 Hensel) werden ausgeschlossen. Außer dem Artikel selbst werden seine anderen Sprachversionen und per Volltextsuche
 weitere Seiten in Wikipedia und Wikisource (z. B. transkribierte gemeinfreie Liederbücher) durchsucht; die Herkunft
-landet im `origin` des Lieds. Melodien ohne solche Quelle können als ABC-Datei in `tools/melody/abc/<id>.abc`
-ergänzt werden (Herkunft im Feld `S:`).
+landet im `origin` des Lieds, der Permalink auf die verwendete Fassung (Revision) in `melodyUrl` (die Werkzeuge legen
+dazu `<id>.src` mit Wiki, Seitentitel und Revision in den Cache). Melodien ohne solche Quelle können als ABC-Datei in
+`tools/melody/abc/<id>.abc` ergänzt werden (Herkunft im Feld `S:`).
+
+**Quellennachweis:** `node tools/quellen.ts` erzeugt [`docs/quellen.md`](docs/quellen.md) – je Lied Urheber mit
+Lebensdaten, Jahr der Gemeinfreiheit und Text-/Melodiequelle mit Link (aus `origin`, `textUrl`, `melodyUrl`). Ein
+Unit-Test prüft, dass jedes Lied Lebensdaten bzw. „traditionell“ und eine Textquelle nennt und die Datei aktuell ist.
 
 ```sh
 node tools/melody/fetch-wiki.ts <cache>                       # Artikel laden (langsam, Wikipedia drosselt)
@@ -200,14 +205,24 @@ Die Auswertung spielt jede Aufnahme durch denselben Lauscher wie die App (Spektr
 ## Deployment
 
 Jeder Push auf `main` baut die ganze Domain (Startseite an der Wurzel, je Instrument ein Ordner) und legt sie per SSH auf
-den Server (`SITE_DOMAIN` → https://openstring.de/). Die alten Subdomains (ukulele./gitarre./banjo.wer-ist-daniel-schwarz.de)
+den eigenen Server (`SITE_DOMAIN` → https://openstring.de/). Die alten Subdomains (ukulele./gitarre./banjo. der früheren Domain)
 bekommen Umzugsseiten, die Fortschritt und eigene Lieder mitnehmen (`MOVE_TO`). Jeder Pull
 Request bekommt eine Vorschau mit allen Instrumenten (`…/pr-<nr>/ukulele/`, `…/gitarre/`, …). Der Build liest
 `SITE_URL` (Adresse je Seite, `{site}` wird ersetzt), `PUBLIC_URL` (für canonical/hreflang/Sitemap) und `PREVIEW=1`
 (nicht indexieren). Caddy-Konfiguration und
-TLS liegen im Repo `frag-daniel`. Secrets (`DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`) liegen nur in den
+TLS liegen in einem eigenen, privaten Repo für den Server. Secrets (`DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`) liegen nur in den
 GitHub-Einstellungen, nie im Repo.
 
 ## Lizenz
 
-MIT – siehe `LICENSE`.
+- **Code:** MIT – siehe `LICENSE`.
+- **Texte der Wissensartikel, Lektionen und übrigen Inhalte** (z. B. `src/content/`, Texte der App und der Seiten):
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de), Namensnennung „Daniel Schwarz, openstring.de“.
+- **Eigene Lieder des Projekts** (in `origin` als „Eigenes Lied für diese App“ vermerkt): [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/deed.de).
+- **Mitgelieferte Lieder:** gemeinfrei (Text und Melodie); Urheber, Lebensdaten und Quellen je Lied in
+  [`docs/quellen.md`](docs/quellen.md). Melodien aus Wikipedia-Notenbeispielen: übernommen sind nur Tonhöhen, Dauern
+  und Silben der gemeinfreien Melodie; die Notation dort steht unter CC BY-SA 4.0, der Link auf die verwendete Fassung
+  steht beim Lied.
+
+Hinweise von Rechteinhabern bitte als Issue: https://github.com/bartfastiel/ukulele-app/issues – sie werden umgehend
+geprüft, betroffene Inhalte ggf. entfernt.
