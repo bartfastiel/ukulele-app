@@ -33,7 +33,8 @@ jobs:
   e2e:
     name: E2E (Chromium, WebKit, Mikrofon-Simulation)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # gut 400 Tests auf zwei Workern brauchen inzwischen rund 15 Minuten
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
