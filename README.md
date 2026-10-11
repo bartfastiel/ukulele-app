@@ -55,8 +55,8 @@ und eigene Lieder. Ein Teil hat eine ausnotierte Melodie (Karaoke mit Melodie un
 „Akkorde + Text“ – die Melodie kennt man, die App führt durch die Akkordwechsel.
 
 Aufgenommen werden nur Lieder, deren Text **und** Melodie von vor 1956 gestorbenen Urhebern stammen oder nachweislich
-traditionell sind, oder eigene. Bei jedem Lied stehen Urheber mit Lebensdaten und die gemeinfreie Textquelle (z. B. volksliederarchiv.de,
-Erstdrucke über Wikipedia, Camp-Fire Choruses 1916, The Shanty Book 1921). Bewusst ausgeschlossen sind u. a. jüngere
+traditionell sind, oder eigene. Bei jedem Lied stehen Urheber mit Lebensdaten und die gemeinfreie Textquelle (Erstdrucke und historische Liederbücher, z. B. über Wikisource,
+Camp-Fire Choruses 1916, The Shanty Book 1921). Bewusst ausgeschlossen sind u. a. jüngere
 Textfassungen (z. B. „Im Märzen der Bauer“ nach Hensel 1923, frei erst ab 2027), Lieder mit geschützter Melodie
 („Hoch auf dem gelben Wagen“) und Lieder mit rassistischen Originalstrophen.
 
