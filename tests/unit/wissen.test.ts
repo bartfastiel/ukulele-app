@@ -7,7 +7,7 @@ import { parseChordName } from '../../src/music/chords.ts';
 
 const LANGS = ['de', 'en', 'fr'] as const;
 const INSTRUMENTS: InstrumentId[] = ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'];
-const TOOLS: ToolId[] = ['stimmen', 'rhythmus', 'spiel', 'blues', 'detektiv', 'akkorde', 'lieder', 'eigenes-lied'];
+const TOOLS: ToolId[] = ['stimmen', 'rhythmus', 'spiel', 'blues', 'begleitung/rock', 'begleitung/pop', 'begleitung/shuffle', 'begleitung/country', 'detektiv', 'akkorde', 'lieder', 'eigenes-lied'];
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const songIds = new Set(SONGS.map((s) => s.id));
 const byId = new Map(ARTICLES.map((a) => [a.id, a]));

@@ -8,6 +8,7 @@ import { BARITON_ARTICLES } from './wissen-bariton.ts';
 import { MANDOLINE_ARTICLES } from './wissen-mandoline.ts';
 import { BASS_ARTICLES } from './wissen-bass.ts';
 import { STIMMUNGEN_ARTICLES } from './wissen-stimmungen.ts';
+import { BEGLEITUNG_ARTICLES } from './wissen-begleitung.ts';
 
 export const ARTICLES: Article[] = UKULELE_ARTICLES.concat(
   GITARRE_ARTICLES,
@@ -18,6 +19,7 @@ export const ARTICLES: Article[] = UKULELE_ARTICLES.concat(
   STIMMUNGEN_ARTICLES,
   ALLGEMEIN_THEORIE,
   ALLGEMEIN_PRAXIS,
+  BEGLEITUNG_ARTICLES,
 );
 
 export function article(id: string): Article | undefined {

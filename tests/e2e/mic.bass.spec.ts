@@ -24,3 +24,11 @@ test('E-Bass: Ton-Detektiv nennt E und zeigt, wo es auf dem Hals liegt', async (
   await expect(page.locator('.det-note .chord-name')).toHaveText('E', { timeout: 8000 });
   await expect(page.locator('.det-note .fb-mark.now')).toHaveCount(1);
 });
+
+test('E-Bass: Rock-Begleitung zählt den gehörten Grundton E als Treffer', async ({ page }) => {
+  await page.goto('../bass/#/begleitung/rock');
+  await page.getByRole('button', { name: /Ich höre zu/ }).click();
+  await page.getByRole('button', { name: 'Ja, hör zu!' }).click();
+  await page.getByRole('button', { name: /Start/ }).click();
+  await expect(page.locator('.feedback')).toContainText('Treffer', { timeout: 12000 });
+});

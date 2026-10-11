@@ -10,7 +10,19 @@ export type Block =
   | { tip: L10n } // hervorgehobener Tipp-Kasten
   | { chord: string } // Griffbild dieses Akkords für das Instrument der Seite (z. B. 'C', 'Am', 'G7')
   | { tool: ToolId }; // großer Knopf zum Werkzeug der App
-export type ToolId = 'stimmen' | 'rhythmus' | 'spiel' | 'blues' | 'detektiv' | 'akkorde' | 'lieder' | 'eigenes-lied';
+export type ToolId =
+  | 'stimmen'
+  | 'rhythmus'
+  | 'spiel'
+  | 'blues'
+  | 'begleitung/rock'
+  | 'begleitung/pop'
+  | 'begleitung/shuffle'
+  | 'begleitung/country'
+  | 'detektiv'
+  | 'akkorde'
+  | 'lieder'
+  | 'eigenes-lied';
 export type Category =
   | 'erste-schritte'
   | 'technik'

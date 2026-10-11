@@ -36,6 +36,8 @@ import { stars } from '../views/stars.ts';
 import { record } from '../views/record.ts';
 import { detective } from '../views/detective.ts';
 import { blues } from '../views/blues.ts';
+import { grooves } from '../views/grooves.ts';
+import { GROOVES, chordsText, easyKey } from '../music/grooves.ts';
 import { ownSongEditor } from '../views/own-song.ts';
 import { receiveSong, shareSong } from '../views/share.ts';
 import { teachers } from '../views/teachers.ts';
@@ -109,6 +111,7 @@ const VIEW_NAMES: Record<string, View> = {
   aufnahme: record,
   detektiv: detective,
   blues,
+  begleitung: grooves,
   'eigenes-lied': ownSongEditor,
   'lied-teilen': shareSong,
   teilen: receiveSong,
@@ -200,6 +203,10 @@ const TOOL_ICON: Record<string, string> = {
   rhythmus: 'rhythm',
   spiel: 'game',
   blues: 'blues',
+  'begleitung/rock': 'rhythm',
+  'begleitung/pop': 'rhythm',
+  'begleitung/shuffle': 'rhythm',
+  'begleitung/country': 'rhythm',
   detektiv: 'detective',
   akkorde: 'chords',
   lieder: 'songs',
@@ -217,6 +224,8 @@ function toolTitle(tool: string): string {
     lieder: t('Lieder spielen'),
     'eigenes-lied': t('Eigenes Lied anlegen'),
   };
+  const style = tool.indexOf('begleitung/') === 0 ? GROOVES.filter((g) => 'begleitung/' + g.id === tool)[0] : undefined;
+  if (style) return t('{style} starten', { style: t(style.title) });
   return titles[tool] || tool;
 }
 
@@ -500,6 +509,21 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
       // persönlicher Fortschritt, nichts für Suchmaschinen
       noindex: tool[0] === 'sterne',
     });
+  for (const g of GROOVES) {
+    const style = t(g.title);
+    const title = t('{style} zum Mitspielen für {instrument}', { style, instrument: inst });
+    const description = bass
+      ? t('{style} mit Schlagzeug: Die Band spielt, du spielst den Bass – erst Grundtöne, dann „{line}“. Tempo und Tonart wählbar, mit Tabulatur für {instrument}.', { style, line: t(g.lineName), instrument: inst })
+      : t('{style} mit Schlagzeug und Bass: {chords} – mit Griffbildern und Schlagmuster für {instrument}, Tempo und Tonart wählbar.', { style, chords: chordsText(g, easyKey(g)), instrument: inst });
+    specs.push({
+      route: `begleitung/${g.id}`,
+      title,
+      description,
+      view: grooves,
+      extra: () => grooveCard(title, description, g.id, siteDef, l),
+      crumb: style,
+    });
+  }
   for (const tu of tuningPages()) {
     const name = t(tu.name);
     const list = chordsInTuning(tu.id).map((c) => c.name);
@@ -609,6 +633,28 @@ function toolCard(title: string, text: string, tool: string, siteDef: SiteDef, l
           h('ul', { class: 'wissen-list' }, ...tunings.map((tu) => h('li', null, h('a', { href: rel(`stimmung/${tu.id}`, l) }, t(tu.name)), ' – ', tuningNotes(tu.names)))),
         )
       : null,
+  );
+}
+
+/** Erklärung unter einer Begleitung: Wissensartikel dazu und die anderen Stile (auch der Blues). */
+function grooveCard(title: string, text: string, id: string, siteDef: SiteDef, l: Lang): Node {
+  return h(
+    'section',
+    { class: 'card seo-card' },
+    h('h2', null, title),
+    h('p', null, text),
+    articleLinks(t('Mehr dazu'), articlesAbout('tool', `begleitung/${id}`, siteDef).slice(0, 4), l),
+    h(
+      'nav',
+      { 'aria-label': t('Andere Stile') },
+      h('h2', null, t('Andere Stile')),
+      h(
+        'ul',
+        { class: 'wissen-list' },
+        ...GROOVES.filter((g) => g.id !== id).map((g) => h('li', null, h('a', { href: rel(`begleitung/${g.id}`, l) }, t(g.title)))),
+        h('li', null, h('a', { href: rel('blues', l) }, t('Blues spielen'))),
+      ),
+    ),
   );
 }
 
