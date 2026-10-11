@@ -93,8 +93,9 @@ test('Griff-Übersicht und Hals: von Akkorden und Stimmgerät verlinkt, Knöpfe 
 });
 
 for (const id of ['gitarre', 'banjo', 'bariton', 'mandoline', 'bass']) {
-  test(`${id}: Griff-Übersicht und Hals passen je auf ein Blatt`, async ({ page, browserName }) => {
-    test.skip(browserName !== 'chromium', 'PDF nur in Chromium');
+  test(`${id}: Griff-Übersicht und Hals passen je auf ein Blatt`, async ({ page }, info) => {
+    // Druck-Layout hängt nicht vom Gerät ab: einmal in Chromium (PDF) genügt
+    test.skip(info.project.name !== 'desktop', 'nur einmal in Chromium');
     const errors = collectErrors(page);
     await page.goto(`../${id}/#/griffe-drucken`);
     await expect(page.locator('.chart-chord').first()).toBeVisible();
@@ -136,8 +137,8 @@ function sheetProblems(page: Page): Promise<string[]> {
 }
 
 for (const id of ['ukulele', 'gitarre']) {
-  test(`${id}: Liedblätter aller Lieder im Druck – Griffbild über der Silbe, nichts überlappt`, async ({ page, browserName }) => {
-    test.skip(browserName !== 'chromium', 'Druck-Layout einmal genügt');
+  test(`${id}: Liedblätter aller Lieder im Druck – Griffbild über der Silbe, nichts überlappt`, async ({ page }, info) => {
+    test.skip(info.project.name !== 'desktop', 'Druck-Layout einmal in Chromium genügt');
     test.setTimeout(300000);
     await page.goto(`../${id}/#/lieder`);
     const songs = await page.locator('.song-card').evaluateAll((els) =>
