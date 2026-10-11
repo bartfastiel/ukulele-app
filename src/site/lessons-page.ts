@@ -339,6 +339,7 @@ export function coursePage(course: Course, ctx: LessonCtx, l: Lang): Node[] {
         { class: 'card article' },
         h('p', null, t('Jede Woche eine Lektion: Sie bauen aufeinander auf – von der Haltung über die ersten Akkorde bis zu Barré, Blues und Musiktheorie. Jede Lektion hat ein Stück zum Mitspielen, eine Hausaufgabe für zehn Minuten am Tag und ein Blatt zum Ausdrucken.')),
         h('p', null, t('Für Lehrkräfte: Die Nummern bleiben fest. Schreib einfach die Adresse an die Tafel, zum Beispiel {url}.', { url: example })),
+        h('p', null, h('a', { href: ctx.rel('lehrkraefte', l) }, t('Für Lehrkräfte und Eltern'), ' ›')),
         h('p', { class: 'lesson-actions' }, h('button', { type: 'button', class: 'btn btn-seg', 'data-print': '' }, t('Übersicht drucken'))),
       ),
       ...parts.map((part, i) =>

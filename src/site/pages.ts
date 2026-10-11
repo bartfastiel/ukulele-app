@@ -664,7 +664,21 @@ function appText(): string {
 function teachersCard(siteDef: SiteDef, l: Lang): Node {
   const ids = ['instrumentalklasse-schule', 'ueben-mit-kindern', 'app-ohne-konto', notesOnly() ? 'bass-erste-toene' : 'lieder-fuer-anfaenger', 'akkordwechsel-schneller', 'fingerkuppen-hornhaut'];
   const list = ids.map((id) => articlesOn(siteDef).filter((a) => a.id === id)[0]).filter((a) => !!a);
-  return h('section', { class: 'card seo-card' }, articleLinks(t('Mehr dazu im Wissen'), list, l));
+  const course = courseFor(siteDef.instrument || '');
+  return h(
+    'section',
+    { class: 'card seo-card' },
+    course
+      ? h(
+          'p',
+          null,
+          h('a', { href: rel('lektionen', l) }, t('{instrument} lernen in Lektionen', { instrument: siteDef.name[l] })),
+          ': ',
+          t('Der Lernweg Woche für Woche: {n} Lektionen mit Stück zum Mitspielen, Hausaufgabe und Druckblatt.', { n: course.lessons.length }),
+        )
+      : null,
+    articleLinks(t('Mehr dazu im Wissen'), list, l),
+  );
 }
 
 function toolCard(title: string, text: string, tool: string, siteDef: SiteDef, l: Lang): Node {
