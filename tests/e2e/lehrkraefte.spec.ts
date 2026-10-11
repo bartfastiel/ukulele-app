@@ -50,5 +50,5 @@ test('Lehrkräfte und Eltern: auf Englisch und beim E-Bass', async ({ page }) =>
   await page.goto('../bass/en/teachers-and-parents/');
   await expect(page.getByRole('heading', { name: 'For teachers and parents', level: 1 })).toBeVisible();
   await expect(page.locator('.ho-plan')).toContainText('Find notes in the note game');
-  await expect(page.locator('.ho-url')).toHaveText(/bass\..*\/en$/);
+  await expect(page.locator('.ho-url')).toHaveText(/openstring\.de\/bass\/en$/);
 });
