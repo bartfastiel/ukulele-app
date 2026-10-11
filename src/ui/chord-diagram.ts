@@ -2,6 +2,12 @@ import { s } from './dom.ts';
 import { describeChord, type Chord } from '../music/chords.ts';
 import { STRINGS } from '../music/notes.ts';
 import { instrument } from '../music/instrument.ts';
+import { t } from '../i18n.ts';
+
+/** Finger 5 ist der Daumen, der über den Hals greift: im Bild sein Anfangsbuchstabe (D, T, P). */
+function fingerLabel(f: number): string {
+  return f === 5 ? t('Daumen').charAt(0).toUpperCase() : String(f);
+}
 
 let uid = 0;
 
@@ -196,7 +202,7 @@ export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
       svg.appendChild(s('circle', { cx: x, cy, r: 8.6, fill: `url(#${id}f)`, stroke: '#6b430c', 'stroke-width': 0.8 }));
       if (ch.fingers[i])
         svg.appendChild(
-          s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger', fill: '#3a2105' }, String(ch.fingers[i])),
+          s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger', fill: '#3a2105' }, fingerLabel(ch.fingers[i])),
         );
     }
   }

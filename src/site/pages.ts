@@ -29,6 +29,7 @@ import { home } from '../views/home.ts';
 import { songs } from '../views/songs.ts';
 import { player } from '../views/player.ts';
 import { chords, chordDetail } from '../views/chords.ts';
+import { easyArticle, easyGrips } from '../music/easy-grips.ts';
 import { game } from '../views/game.ts';
 import { tuner } from '../views/tuner.ts';
 import { rhythm } from '../views/rhythm.ts';
@@ -890,6 +891,13 @@ function noteCard(name: string, siteDef: SiteDef, l: Lang): Node {
   );
 }
 
+/** Artikel zu einem Akkord; gibt es leichte Griffe, steht der Artikel mit den Tricks vorn. */
+function chordArticles(name: string, siteDef: SiteDef): Article[] {
+  const easy = easyGrips(name).length ? easyArticle() : undefined;
+  const first = easy ? articlesOn(siteDef).filter((a) => a.id === easy) : [];
+  return first.concat(articlesAbout('chord', name, siteDef).filter((a) => a.id !== easy)).slice(0, 4);
+}
+
 /** Wie die Akkordart klingt und wofür man sie braucht (Text der Akkordseiten). */
 const CHORD_CHARACTER: Record<string, string> = {
   '': tk('Ein Dur-Akkord klingt hell, fest und fröhlich. Mit drei Dur-Akkorden kannst du schon sehr viele Lieder begleiten.'),
@@ -955,7 +963,7 @@ function chordCard(name: string, siteDef: SiteDef, l: Lang): Node {
     h('h2', null, chordLongName(name, l)),
     ...chordTheory(name, l),
     with_.length ? h('p', null, t('Lieder mit {chord}:', { chord: name }), ' ', ...with_.map((s, i) => h('span', null, i ? ', ' : '', h('a', { href: rel(`lied/${s.id}`, l) }, s.title)))) : null,
-    articleLinks(t('Mehr dazu'), articlesAbout('chord', name, siteDef).slice(0, 4), l),
+    articleLinks(t('Mehr dazu'), chordArticles(name, siteDef), l),
   );
 }
 

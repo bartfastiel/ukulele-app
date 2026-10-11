@@ -272,6 +272,115 @@ export const FR: Record<string, string> = {
   'Akkord {chord}': 'Accord {chord}',
   'Anhören': 'Écouter',
   'Andere Akkorde': 'Autres accords',
+  // leichte Griffe (src/music/easy-grips.ts, src/views/chords.ts, src/views/player.ts)
+  '{title} anhören': 'Écouter {title}',
+  '{title} prüfen lassen': 'Faire vérifier {title}',
+  'Leichter greifen': 'Plus facile à jouer',
+  'Diese Griffe sind leichter als {chord}. Manche klingen ein bisschen anders – das steht immer dabei.':
+    'Ces doigtés sont plus faciles que {chord}. Certains sonnent un peu différemment – c’est toujours indiqué.',
+  'Dein leichter Griff klingt richtig gut!': 'Ton doigté facile sonne vraiment bien !',
+  'Leichtere Griffbilder für {list} – schlag nur die Saiten an, die das Bild zeigt.': 'Doigtés plus faciles pour {list} – gratte seulement les cordes indiquées sur le schéma.',
+  'eigentlich {chord}': 'en fait {chord}',
+  'ohne Grundton {note}': 'sans la fondamentale {note}',
+  'gleiche Töne, anderer Fingersatz': 'mêmes notes, autre doigté',
+  'alle Töne von {chord}': 'toutes les notes de {chord}',
+  'nur {n} Saiten anschlagen': 'gratte seulement {n} cordes',
+  'tiefster Ton {note}': 'note la plus grave {note}',
+  'mit dem Daumen': 'avec le pouce',
+  'deinen Daumen': 'ton pouce',
+  'D mit einem Finger': 'D avec un seul doigt',
+  'Leg den Zeigefinger flach über G-, C- und E-Saite im 2. Bund. Die A-Saite muss frei klingen – knick dafür die Fingerspitze etwas ab.':
+    'Pose l’index à plat sur les cordes G, C et E en case 2. La corde A doit sonner librement – plie un peu le bout du doigt pour ça.',
+  'Wenn drei Finger im 2. Bund nicht nebeneinander passen.': 'Quand trois doigts ne tiennent pas côte à côte en case 2.',
+  'Leichtes D7': 'D7 facile',
+  'Zeigefinger auf die G-Saite, Mittelfinger auf die E-Saite, beide im 2. Bund. C- und A-Saite bleiben leer.':
+    'Index sur la corde G, majeur sur la corde E, tous deux en case 2. Les cordes C et A restent à vide.',
+  'Wenn im Lied auch D7 passt, zum Beispiel kurz vor G.': 'Quand D7 convient aussi à la chanson, par exemple juste avant G.',
+  'E7 statt E': 'E7 au lieu de E',
+  'Zeigefinger auf die G-Saite im 1. Bund, Mittelfinger auf die C-Saite und Ringfinger auf die A-Saite im 2. Bund. Die E-Saite bleibt leer.':
+    'Index sur la corde G en case 1, majeur sur la corde C et annulaire sur la corde A en case 2. La corde E reste à vide.',
+  'In den meisten Liedern klingt E7 an dieser Stelle fast genauso gut.': 'Dans la plupart des chansons, E7 sonne presque aussi bien à cet endroit.',
+  'E ohne Querbalken': 'E sans barré',
+  'Zeigefinger auf die G-Saite im 1. Bund, Mittelfinger auf die A-Saite im 2. Bund, Ringfinger auf die C-Saite im 4. Bund. Die E-Saite bleibt leer.':
+    'Index sur la corde G en case 1, majeur sur la corde A en case 2, annulaire sur la corde C en case 4. La corde E reste à vide.',
+  'Ein echtes E mit nur drei Fingern – dafür musst du sie weit spreizen.': 'Un vrai E avec seulement trois doigts – mais il faut bien les écarter.',
+  'G7 als Wechselhilfe': 'G7 pour changer plus vite',
+  'Von F zu G7 bleibt der Zeigefinger auf der E-Saite im 1. Bund liegen – nur zwei Finger wandern.':
+    'De F à G7, l’index reste sur la corde E en case 1 – seuls deux doigts bougent.',
+  'Wenn der Wechsel zu G zu lange dauert und G7 ins Lied passt, besonders vor C.': 'Quand le passage à G prend trop de temps et que G7 va avec la chanson, surtout avant C.',
+  'Bbmaj7 ohne Querbalken': 'Bbmaj7 sans barré',
+  'Ringfinger auf die G-Saite im 3. Bund, Mittelfinger auf die C-Saite im 2. Bund, Zeigefinger auf die E-Saite im 1. Bund. Die A-Saite bleibt leer.':
+    'Annulaire sur la corde G en case 3, majeur sur la corde C en case 2, index sur la corde E en case 1. La corde A reste à vide.',
+  'Wenn der kleine Barré noch nicht klappt. Klingt weicher als Bb, passt aber in vielen Liedern.': 'Quand le petit barré ne marche pas encore. Plus doux que Bb, mais il convient à beaucoup de chansons.',
+  'Em7 mit zwei Fingern': 'Em7 avec deux doigts',
+  'Zeigefinger auf die C-Saite, Mittelfinger auf die A-Saite, beide im 2. Bund. G- und E-Saite bleiben leer.':
+    'Index sur la corde C, majeur sur la corde A, tous deux en case 2. Les cordes G et E restent à vide.',
+  'Klingt fast wie Em und passt fast immer – viel leichter als drei Finger in drei Bünden.': 'Sonne presque comme Em et convient presque toujours – bien plus facile que trois doigts sur trois cases.',
+  'Fmaj7 ohne Barré': 'Fmaj7 sans barré',
+  'Ringfinger auf die D-Saite im 3. Bund, Mittelfinger auf die G-Saite im 2. Bund, Zeigefinger auf die B-Saite im 1. Bund. Die hohe e-Saite bleibt leer, die zwei tiefen Saiten schlägst du nicht an.':
+    'Annulaire sur la corde D en case 3, majeur sur la corde G en case 2, index sur la corde B en case 1. La corde E aiguë reste à vide, ne gratte pas les deux cordes graves.',
+  'Der leichteste Einstieg statt F: klingt weicher und passt fast immer.': 'Le plus facile pour commencer à la place de F : plus doux, et il convient presque toujours.',
+  'Daumen-F': 'F avec le pouce',
+  'Wie das kleine F, dazu drückt der Daumen über den Hals die tiefe E-Saite im 1. Bund. Seine Spitze berührt die A-Saite leicht, damit sie still bleibt.':
+    'Comme le petit F, et en plus le pouce passe par-dessus le manche pour appuyer la corde E grave en case 1. Son bout effleure la corde A pour qu’elle reste muette.',
+  'Wenn das kleine F zu dünn klingt und der volle Barré noch zu schwer ist. Klappt mit großen Händen besser.':
+    'Quand le petit F sonne trop maigre et que le barré complet est encore trop dur. Plus facile avec de grandes mains.',
+  'Mini-G mit einem Finger': 'Mini G avec un seul doigt',
+  'Ringfinger auf die hohe e-Saite im 3. Bund. Nur die vier dünnen Saiten anschlagen.': 'Annulaire sur la corde E aiguë en case 3. Gratte seulement les quatre cordes fines.',
+  'Für den Anfang und für schnelle Wechsel – zusammen mit Mini-C und D.': 'Pour débuter et pour changer vite – avec le mini C et D.',
+  'Daumen-G': 'G avec le pouce',
+  'Der Daumen drückt über den Hals die tiefe E-Saite im 3. Bund und dämpft mit seiner Spitze die A-Saite. Der Ringfinger kommt auf die hohe e-Saite im 3. Bund.':
+    'Le pouce passe par-dessus le manche, appuie la corde E grave en case 3 et étouffe la corde A avec son bout. L’annulaire va sur la corde E aiguë en case 3.',
+  'Ein volles G mit tiefem Grundton, aber nur zwei Fingern.': 'Un G complet avec une fondamentale grave, mais seulement deux doigts.',
+  'Rock-G für schnelle Wechsel': 'G rock pour changer vite',
+  'Mittelfinger auf die tiefe E-Saite und Ringfinger auf die B-Saite, kleiner Finger auf die e-Saite – alle im 3. Bund. Zeigefinger auf die A-Saite im 2. Bund.':
+    'Majeur sur la corde E grave, annulaire sur la corde B, auriculaire sur la corde E aiguë – tous en case 3. Index sur la corde A en case 2.',
+  'Ring- und kleiner Finger bleiben beim Wechsel zu Cadd9, Em7 und Dsus4 einfach liegen.': 'L’annulaire et l’auriculaire restent simplement en place pour passer à Cadd9, Em7 et Dsus4.',
+  'Mini-C mit zwei Fingern': 'Mini C avec deux doigts',
+  'Mittelfinger auf die D-Saite im 2. Bund, Zeigefinger auf die B-Saite im 1. Bund. Nur die vier dünnen Saiten anschlagen.':
+    'Majeur sur la corde D en case 2, index sur la corde B en case 1. Gratte seulement les quatre cordes fines.',
+  'Wenn der Ringfinger für das große C noch nicht weit genug reicht.': 'Quand l’annulaire n’atteint pas encore assez loin pour le grand C.',
+  'Cadd9 zum Rock-G': 'Cadd9 avec le G rock',
+  'Mittelfinger auf die A-Saite im 3. Bund, Zeigefinger auf die D-Saite im 2. Bund, Ringfinger und kleiner Finger auf B- und e-Saite im 3. Bund.':
+    'Majeur sur la corde A en case 3, index sur la corde D en case 2, annulaire et auriculaire sur les cordes B et E aiguë en case 3.',
+  'In Liedern mit G: Vom Rock-G aus wandern nur zwei Finger eine Saite weiter. Der Zusatzton D klingt schön offen.':
+    'Dans les chansons avec G : depuis le G rock, seuls deux doigts se décalent d’une corde. La note en plus, D, sonne joliment ouverte.',
+  'A mit einem Finger': 'A avec un seul doigt',
+  'Leg den Zeigefinger flach über D-, G- und B-Saite im 2. Bund. Die hohe e-Saite soll frei klingen.':
+    'Pose l’index à plat sur les cordes D, G et B en case 2. La corde E aiguë doit sonner librement.',
+  'Wenn drei Finger im 2. Bund keinen Platz haben.': 'Quand trois doigts n’ont pas de place en case 2.',
+  'Asus2 mit zwei Fingern': 'Asus2 avec deux doigts',
+  'Zeigefinger auf die D-Saite, Mittelfinger auf die G-Saite, beide im 2. Bund. B- und e-Saite bleiben leer, die tiefe E-Saite schlägst du nicht an.':
+    'Index sur la corde D, majeur sur la corde G, tous deux en case 2. Les cordes B et E aiguë restent à vide, ne gratte pas la corde E grave.',
+  'Klingt offen und schwebend, weder Dur noch Moll. Passt in vielen Pop- und Lagerfeuerliedern statt A.':
+    'Un son ouvert et flottant, ni majeur ni mineur. Il remplace A dans beaucoup de chansons pop et de feu de camp.',
+  'Mini-Bm ohne Barré': 'Mini Bm sans barré',
+  'Ringfinger auf die D-Saite und kleiner Finger auf die G-Saite im 4. Bund, Mittelfinger auf die B-Saite im 3. Bund, Zeigefinger auf die e-Saite im 2. Bund. Nur vier Saiten anschlagen.':
+    'Annulaire sur la corde D et auriculaire sur la corde G en case 4, majeur sur la corde B en case 3, index sur la corde E aiguë en case 2. Gratte seulement quatre cordes.',
+  'Der übliche Weg zu Bm, bis der Barré klappt.': 'La façon habituelle de jouer Bm en attendant que le barré marche.',
+  'Bm7 mit drei Fingern': 'Bm7 avec trois doigts',
+  'Zeigefinger auf die A-Saite, Mittelfinger auf die G-Saite, Ringfinger auf die hohe e-Saite – alle im 2. Bund. D- und B-Saite bleiben leer.':
+    'Index sur la corde A, majeur sur la corde G, annulaire sur la corde E aiguë – tous en case 2. Les cordes D et B restent à vide.',
+  'Klingt weich und fast wie Bm.': 'Un son doux, presque comme Bm.',
+  'Mini-Bb': 'Mini Bb',
+  'Mittel-, Ring- und kleiner Finger auf D-, G- und B-Saite im 3. Bund, Zeigefinger auf die hohe e-Saite im 1. Bund. Nur vier Saiten anschlagen.':
+    'Majeur, annulaire et auriculaire sur les cordes D, G et B en case 3, index sur la corde E aiguë en case 1. Gratte seulement quatre cordes.',
+  'Statt des großen Barrés, zum Beispiel in Liedern in F.': 'À la place du grand barré, par exemple dans les chansons en F.',
+  'Ringfinger auf die D-Saite im 3. Bund, Mittelfinger auf die G-Saite im 2. Bund, Zeigefinger auf die B-Saite im 1. Bund. Die E-Saite bleibt leer.':
+    'Annulaire sur la corde D en case 3, majeur sur la corde G en case 2, index sur la corde B en case 1. La corde E reste à vide.',
+  'Leg den Zeigefinger flach über D-, G- und B-Saite im 2. Bund. Die E-Saite soll frei klingen.':
+    'Pose l’index à plat sur les cordes D, G et B en case 2. La corde E doit sonner librement.',
+  'Bm7 mit zwei Fingern': 'Bm7 avec deux doigts',
+  'Zeigefinger auf die G-Saite, Mittelfinger auf die E-Saite, beide im 2. Bund. D- und B-Saite bleiben leer.':
+    'Index sur la corde G, majeur sur la corde E, tous deux en case 2. Les cordes D et B restent à vide.',
+  'Klingt fast wie Bm – viel leichter als vier Finger.': 'Sonne presque comme Bm – bien plus facile qu’avec quatre doigts.',
+  'C mit einem Finger': 'C avec un seul doigt',
+  'Leg den Zeigefinger flach über die vier langen Saiten im 5. Bund. Die kurze Saite klingt leer mit.':
+    'Pose l’index à plat sur les quatre longues cordes en case 5. La petite corde sonne à vide avec elles.',
+  'Der Lagerfeuer-Trick des Banjos: G klingt mit leeren Saiten, C ist ein Finger im 5. Bund.': 'L’astuce feu de camp du banjo : G, ce sont les cordes à vide, C, un seul doigt en case 5.',
+  'Leg den Zeigefinger flach über die vier langen Saiten im 7. Bund. Die kurze Saite schlägst du nicht an.':
+    'Pose l’index à plat sur les quatre longues cordes en case 7. Ne joue pas la petite corde.',
+  'Mit G (leer) und C (5. Bund) hast du drei Akkorde für viele Lieder.': 'Avec G (à vide) et C (case 5), tu as trois accords pour beaucoup de chansons.',
   // src/views/detective.ts
   'Tippe auf „Zuhören“ und spiel irgendeinen Akkord – oder einen einzelnen Ton.': 'Touche « Écouter » et joue n’importe quel accord – ou une seule note.',
   'Das klingt wie': 'On dirait',

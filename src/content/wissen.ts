@@ -9,6 +9,7 @@ import { MANDOLINE_ARTICLES } from './wissen-mandoline.ts';
 import { BASS_ARTICLES } from './wissen-bass.ts';
 import { STIMMUNGEN_ARTICLES } from './wissen-stimmungen.ts';
 import { BEGLEITUNG_ARTICLES } from './wissen-begleitung.ts';
+import { LAGERFEUER_ARTICLES } from './wissen-lagerfeuer.ts';
 
 export const ARTICLES: Article[] = UKULELE_ARTICLES.concat(
   GITARRE_ARTICLES,
@@ -17,6 +18,7 @@ export const ARTICLES: Article[] = UKULELE_ARTICLES.concat(
   MANDOLINE_ARTICLES,
   BASS_ARTICLES,
   STIMMUNGEN_ARTICLES,
+  LAGERFEUER_ARTICLES,
   ALLGEMEIN_THEORIE,
   ALLGEMEIN_PRAXIS,
   BEGLEITUNG_ARTICLES,

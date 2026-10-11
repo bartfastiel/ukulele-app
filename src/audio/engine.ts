@@ -1,6 +1,6 @@
 import { lowpass, overdrive, renderPluck } from './pluck.ts';
 import { midiToFreq } from '../music/notes.ts';
-import { QUALITY_INTERVALS, chord as chordByName, parseChordName } from '../music/chords.ts';
+import { QUALITY_INTERVALS, chord as chordByName, parseChordName, type Chord } from '../music/chords.ts';
 import { stringMidi } from '../music/notes.ts';
 import { notesOnly, onInstrumentChange, twelveString, voice, type Synth } from '../music/instrument.ts';
 
@@ -248,8 +248,9 @@ export function hold(midi: number, gain = 0.6, bend = 0, cutoff = 0): Voice {
   };
 }
 
-/** Akkord anschlagen; abwärts von der oberen Saite (Ukulele G) zur unteren (A), aufwärts umgekehrt. */
-export function strum(name: string, when = 0, gain = 0.35, up = false): void {
+/** Akkord anschlagen (Name oder ein bestimmter Griff); abwärts von der oberen Saite (Ukulele G) zur unteren (A), aufwärts umgekehrt. */
+export function strum(what: string | Chord, when = 0, gain = 0.35, up = false): void {
+  const name = typeof what === 'string' ? what : what.name;
   if (notesOnly()) {
     if (!hasAudio()) return;
     const notes = compVoicing(name);
@@ -257,7 +258,7 @@ export function strum(name: string, when = 0, gain = 0.35, up = false): void {
     order.forEach((m, i) => play(compBuffer(m), when + i * 0.016, gain * (up ? 0.6 : 0.8)));
     return;
   }
-  const ch = chordByName(name);
+  const ch = typeof what === 'string' ? chordByName(name) : what;
   const notes: { midi: number; string: number }[] = [];
   ch.frets.forEach((f, i) => {
     if (f >= 0) notes.push({ midi: stringMidi(i, f), string: i });

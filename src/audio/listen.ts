@@ -1,14 +1,15 @@
 import { openMic, type Mic } from './mic.ts';
 import { hearingOwnSound } from './own-sound.ts';
 import { dbToLinear, holdSpectrum, instrumentPeaks, judgeChord, type ChordVerdict } from './chord-detect.ts';
-import { CHORDS, chord, parseChordName } from '../music/chords.ts';
+import { CHORDS, chord, parseChordName, type Chord } from '../music/chords.ts';
 import { detectPitchIn } from './pitch.ts';
 import { freqToMidi, pitchClass } from '../music/notes.ts';
 import { instrument } from '../music/instrument.ts';
 
 export interface ChordListener {
   stop(): void;
-  setExpected(name: string): void;
+  /** grip: ein anderer Griff als der aus der Bibliothek, z. B. eine leichte Variante (src/music/easy-grips.ts). */
+  setExpected(name: string, grip?: Chord): void;
 }
 
 export interface ListenEvents {
@@ -67,8 +68,24 @@ async function listenForNote(expected: string, ev: ListenEvents): Promise<ChordL
   };
 }
 
-/** Hört ~12-mal pro Sekunde zu und meldet, sobald der erwartete Akkord klingt (E-Bass: sein Grundton). */
-export async function listenForChord(expected: string, ev: ListenEvents): Promise<ChordListener> {
+/**
+ * Kandidaten für die Bewertung. Mit eigenem Griff ersetzt er den Bibliotheksgriff; Bibliotheksgriffe mit genau denselben
+ * Bünden (Fmaj7, wenn Fmaj7 als leichtes F gewählt ist) fallen weg, sonst lägen zwei gleich gute Griffe gleichauf.
+ */
+export function candidatesFor(target: string, grip?: Chord): Chord[] {
+  if (grip) {
+    const key = grip.frets.join(' ');
+    return CHORDS.filter((c) => c.name !== target && c.frets.join(' ') !== key).concat([{ ...grip, name: target }]);
+  }
+  // transponierte Lieder können Akkorde außerhalb der Bibliothek verlangen
+  return CHORDS.some((c) => c.name === target) ? CHORDS : CHORDS.concat([chord(target)]);
+}
+
+/**
+ * Hört ~12-mal pro Sekunde zu und meldet, sobald der erwartete Akkord klingt (E-Bass: sein Grundton). Mit `grip` gilt
+ * genau dieser Griff als richtig – eine leichte Variante, die der Nutzer gewählt hat.
+ */
+export async function listenForChord(expected: string, ev: ListenEvents, grip?: Chord): Promise<ChordListener> {
   if (instrument().notesOnly) return listenForNote(expected, ev);
   const mic: Mic = await openMic();
   const db = new Float32Array(mic.analyser.frequencyBinCount);
@@ -77,6 +94,7 @@ export async function listenForChord(expected: string, ev: ListenEvents): Promis
   const time = new Float32Array(2048);
   const binHz = mic.sampleRate / mic.analyser.fftSize;
   let target = expected;
+  let targetGrip = grip;
   let streak = 0;
   let paused = false;
   const timer = window.setInterval(() => {
@@ -94,9 +112,7 @@ export async function listenForChord(expected: string, ev: ListenEvents): Promis
       return;
     }
     const peaks = instrumentPeaks(held, binHz);
-    // transponierte Lieder können Akkorde außerhalb der Bibliothek verlangen
-    const candidates = CHORDS.some((c) => c.name === target) ? CHORDS : CHORDS.concat([chord(target)]);
-    const v = judgeChord(peaks, target, candidates);
+    const v = judgeChord(peaks, target, candidatesFor(target, targetGrip));
     ev.onVerdict?.(v, rms);
     if (v && v.ok) {
       streak++;
@@ -113,8 +129,9 @@ export async function listenForChord(expected: string, ev: ListenEvents): Promis
     stop() {
       window.clearInterval(timer);
     },
-    setExpected(name: string) {
+    setExpected(name: string, g?: Chord) {
       target = name;
+      targetGrip = g;
       streak = 0;
     },
   };
