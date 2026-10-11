@@ -121,7 +121,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
         },
       },
     ],
-    related: ['saubere-griffe', 'ueben-mit-kindern', 'akkordwechsel-schneller'],
+    related: ['saubere-griffe', 'ueben-mit-kindern', 'akkordwechsel-schneller', 'wiedereinstieg-nach-pause'],
   },
 
   {
@@ -411,7 +411,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
       },
       { tool: 'eigenes-lied' },
     ],
-    related: ['akkordwechsel-schneller', 'transponieren', 'akkordsymbole-lesen'],
+    related: ['akkordwechsel-schneller', 'transponieren', 'akkordsymbole-lesen', 'singen-und-spielen'],
   },
 
   {
@@ -527,7 +527,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
         },
       },
     ],
-    related: ['instrumentalklasse-schule', 'lieder-fuer-anfaenger', 'app-ohne-konto'],
+    related: ['instrumentalklasse-schule', 'lieder-fuer-anfaenger', 'app-ohne-konto', 'eltern-ohne-vorkenntnisse'],
   },
 
   {
@@ -639,7 +639,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
         },
       },
     ],
-    related: ['ueben-mit-kindern', 'app-ohne-konto', 'lieder-fuer-anfaenger'],
+    related: ['ueben-mit-kindern', 'app-ohne-konto', 'lieder-fuer-anfaenger', 'klasse-stimmen'],
   },
 
   {

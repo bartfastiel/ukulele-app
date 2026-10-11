@@ -97,7 +97,7 @@ export const MANDOLINE_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['mandoline-erste-akkorde', 'mandoline-und-geige', 'saiten-wechseln-pflege', 'toene-und-notennamen'],
+    related: ['mandoline-erste-akkorde', 'mandoline-und-geige', 'saiten-wechseln-pflege', 'toene-und-notennamen', 'mandoline-alt-gefunden'],
   },
   {
     id: 'mandoline-erste-akkorde',
@@ -183,7 +183,7 @@ export const MANDOLINE_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['mandoline-stimmen', 'mandoline-tremolo', 'akkordwechsel-schneller', 'lieder-fuer-anfaenger'],
+    related: ['mandoline-stimmen', 'mandoline-tremolo', 'akkordwechsel-schneller', 'lieder-fuer-anfaenger', 'mandoline-chop-doppelgriffe', 'mandoline-wie-gitarre'],
   },
   {
     id: 'mandoline-tremolo',
@@ -355,6 +355,6 @@ export const MANDOLINE_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['mandoline-stimmen', 'mandoline-tremolo', 'tabulatur-lesen', 'toene-und-notennamen'],
+    related: ['mandoline-stimmen', 'mandoline-tremolo', 'tabulatur-lesen', 'toene-und-notennamen', 'tenorbanjo-irish'],
   },
 ];

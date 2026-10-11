@@ -277,7 +277,7 @@ export const BARITON_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['bariton-stimmen', 'bariton-zur-gitarre', 'transponieren', 'instrumentalklasse-schule'],
+    related: ['bariton-stimmen', 'bariton-zur-gitarre', 'transponieren', 'instrumentalklasse-schule', 'gitarre-und-ukulele-zusammen'],
   },
   {
     id: 'bariton-zur-gitarre',

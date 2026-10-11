@@ -102,7 +102,7 @@ export const BANJO_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['banjo-halten', 'banjo-saiten', 'banjo-stimmen', 'ueben-mit-kindern'],
+    related: ['banjo-halten', 'banjo-saiten', 'banjo-stimmen', 'ueben-mit-kindern', 'tenorbanjo-irish', 'gitarrenbanjo'],
   },
   {
     id: 'banjo-halten',
@@ -402,7 +402,7 @@ export const BANJO_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['banjo-saiten', 'banjo-erste-akkorde', 'saiten-wechseln-pflege', 'banjo-kapodaster'],
+    related: ['banjo-saiten', 'banjo-erste-akkorde', 'saiten-wechseln-pflege', 'banjo-kapodaster', 'banjo-einstellen'],
   },
   {
     id: 'banjo-erste-akkorde',
@@ -708,7 +708,7 @@ export const BANJO_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['banjo-halten', 'mit-metronom-ueben', 'takt-und-taktarten', 'tabulatur-lesen'],
+    related: ['banjo-halten', 'mit-metronom-ueben', 'takt-und-taktarten', 'tabulatur-lesen', 'banjo-clawhammer'],
   },
   {
     id: 'banjo-kapodaster',

@@ -77,7 +77,7 @@ export const BASS_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['bass-erste-toene', 'bass-zupfen'],
+    related: ['bass-erste-toene', 'bass-zupfen', 'bass-short-scale-kinder'],
     published: '2026-10-10',
   },
   {
@@ -152,7 +152,7 @@ export const BASS_ARTICLES: Article[] = [
       },
       { tool: 'akkorde' },
     ],
-    related: ['bass-stimmen', 'bass-zupfen', 'toene-und-notennamen'],
+    related: ['bass-stimmen', 'bass-zupfen', 'toene-und-notennamen', 'bass-griffbrett-lernen'],
     published: '2026-10-10',
   },
   {
@@ -228,7 +228,7 @@ export const BASS_ARTICLES: Article[] = [
         },
       },
     ],
-    related: ['bass-erste-toene', 'mit-metronom-ueben', 'fingerkuppen-hornhaut'],
+    related: ['bass-erste-toene', 'mit-metronom-ueben', 'fingerkuppen-hornhaut', 'bass-metronom-schlagzeug'],
     published: '2026-10-10',
   },
   {

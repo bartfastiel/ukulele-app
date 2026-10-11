@@ -10,6 +10,9 @@ import { BASS_ARTICLES } from './wissen-bass.ts';
 import { STIMMUNGEN_ARTICLES } from './wissen-stimmungen.ts';
 import { BEGLEITUNG_ARTICLES } from './wissen-begleitung.ts';
 import { LAGERFEUER_ARTICLES } from './wissen-lagerfeuer.ts';
+import { FRAGEN_UKULELE_GITARRE } from './wissen-fragen-ukulele-gitarre.ts';
+import { FRAGEN_BANJO_MANDOLINE_BASS } from './wissen-fragen-banjo-mandoline-bass.ts';
+import { FRAGEN_ALLGEMEIN } from './wissen-fragen-allgemein.ts';
 
 export const ARTICLES: Article[] = UKULELE_ARTICLES.concat(
   GITARRE_ARTICLES,
@@ -22,6 +25,9 @@ export const ARTICLES: Article[] = UKULELE_ARTICLES.concat(
   ALLGEMEIN_THEORIE,
   ALLGEMEIN_PRAXIS,
   BEGLEITUNG_ARTICLES,
+  FRAGEN_UKULELE_GITARRE,
+  FRAGEN_BANJO_MANDOLINE_BASS,
+  FRAGEN_ALLGEMEIN,
 );
 
 export function article(id: string): Article | undefined {

@@ -97,7 +97,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
       { tool: 'akkorde' },
       { tool: 'detektiv' },
     ],
-    related: ['dur-und-moll', 'toene-und-notennamen', 'transponieren'],
+    related: ['dur-und-moll', 'toene-und-notennamen', 'transponieren', 'griffbild-lesen'],
   },
   {
     id: 'dur-und-moll',
@@ -370,7 +370,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
       },
       { tool: 'rhythmus' },
     ],
-    related: ['takt-und-taktarten', 'mit-metronom-ueben', 'akkordwechsel-schneller'],
+    related: ['takt-und-taktarten', 'mit-metronom-ueben', 'akkordwechsel-schneller', 'schlagmuster-heraushoeren'],
   },
   {
     id: 'mit-metronom-ueben',
@@ -712,7 +712,7 @@ export const ALLGEMEIN_THEORIE: Article[] = [
       { tool: 'lieder' },
       { tool: 'blues' },
     ],
-    related: ['toene-und-notennamen', 'zwoelf-takt-blues', 'lieder-fuer-anfaenger'],
+    related: ['toene-und-notennamen', 'zwoelf-takt-blues', 'lieder-fuer-anfaenger', 'griffbild-lesen', 'musik-ohne-noten'],
   },
   {
     id: 'zwoelf-takt-blues',
