@@ -65,8 +65,11 @@ test('Liedblatt eines eigenen Liedes entsteht im Browser', async ({ page }) => {
 
 test('Griff-Übersicht und Hals: von Akkorden und Stimmgerät verlinkt, Knöpfe groß genug', async ({ page, browserName }) => {
   await page.goto('#/akkorde');
+  // dieselben Griffe wie in der Akkord-Übersicht
+  const tiles = await page.locator('.chord-tile').count();
+  expect(tiles).toBeGreaterThanOrEqual(18);
   await page.getByRole('link', { name: 'Griffe drucken' }).click();
-  await expect(page.locator('.chord-chart .chart-chord')).toHaveCount(18);
+  await expect(page.locator('.chord-chart .chart-chord')).toHaveCount(tiles);
   await expect(page.locator('.chart-group h3').first()).toHaveText('Dur');
   const small = await page.evaluate(() =>
     Array.from(document.querySelectorAll('.btn'))
