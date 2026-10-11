@@ -32,7 +32,8 @@ test('jeder interne Link führt auf eine erzeugte Seite (alle Instrumente, alle 
   const broken: string[] = [];
   for (const s of SITES)
     for (const p of rendered[s]) {
-      const re = /href="(\/[^"#]*)(#[^"]*)?"/g;
+      // Lektionen verlinken Lieder in einer Tonart (…/?tonart=G): Die Seite ist dieselbe
+      const re = /href="(\/[^"#?]*)([?#][^"]*)?"/g;
       let m: RegExpExecArray | null;
       while ((m = re.exec(p.html))) {
         const href = m[1];

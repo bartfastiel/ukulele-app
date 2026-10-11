@@ -45,6 +45,8 @@ import { teachers } from '../views/teachers.ts';
 import { chordChart, neckView, songSheet } from '../views/print.ts';
 import { CATEGORIES } from '../music/song.ts';
 import { OG_HEIGHT, OG_WIDTH } from './og-image.ts';
+import { courseFor } from '../content/lektionen.ts';
+import { courseDescription, courseLd, coursePage, courseTitle, lessonDescription, lessonHeading, lessonLd, lessonPage, lessonPageTitle, type LessonCtx } from './lessons-page.ts';
 
 /** Vorschaubild je Instrument-Seite, erzeugt von tools/build.mjs (src/site/og-image.ts). */
 export const OG_IMAGE = 'og-image.png';
@@ -98,6 +100,8 @@ interface Spec {
   crumb?: string;
   /** Gleicher Inhalt auf mehreren Instrument-Seiten: Diese Seite gilt als Original (canonical, Sitemap). */
   canonicalSite?: SiteId;
+  /** Art der Seite für eigene Stile (z. B. Druckblatt der Lektionen): data-page am <html>. */
+  page?: string;
 }
 
 const VIEW_NAMES: Record<string, View> = {
@@ -179,7 +183,7 @@ function quietly<T>(f: () => T): T | null {
 function inline(text: string, siteDef: SiteDef, l: Lang): Node[] {
   // **fett** und [Text](ziel:wert) – sonst reiner Text
   const out: Node[] = [];
-  const re = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((chord|tool|wissen|lied):([^)]+)\)/g;
+  const re = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((chord|tool|wissen|lied|lektion):([^)]+)\)/g;
   let last = 0;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
@@ -188,7 +192,8 @@ function inline(text: string, siteDef: SiteDef, l: Lang): Node[] {
     else {
       const kind = m[3];
       const target = m[4];
-      const route = kind === 'chord' ? `akkord/${encodeURIComponent(canonicalChord(target))}` : kind === 'tool' ? target : kind === 'lied' ? `lied/${target}` : `wissen/${target}`;
+      const route =
+        kind === 'chord' ? `akkord/${encodeURIComponent(canonicalChord(target))}` : kind === 'tool' ? target : kind === 'lied' ? `lied/${target}` : kind === 'lektion' ? `lektion/${target}` : `wissen/${target}`;
       out.push(h('a', { href: rel(route, l) }, m[2]));
     }
     last = m.index + m[0].length;
@@ -617,7 +622,52 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
       crumb: a.title[l],
       canonicalSite: primarySite(a),
     });
-  return specs.concat(legalSpecs(siteDef, l));
+  return specs.concat(lessonSpecs(siteDef, l), legalSpecs(siteDef, l));
+}
+
+/** Lernweg: Übersicht und je Lektion eine Seite (nur Instrumente mit Kurs). */
+function lessonSpecs(siteDef: SiteDef, l: Lang): Spec[] {
+  const course = courseFor(siteDef.instrument || '');
+  if (!course) return [];
+  const ctx = lessonCtx(siteDef);
+  const out: Spec[] = [
+    {
+      route: 'lektionen',
+      title: courseTitle(course, siteDef, l),
+      description: courseDescription(course, siteDef, l),
+      body: () => coursePage(course, ctx, l),
+      jsonld: () => [courseLd(course, ctx, l)],
+      crumb: t('Lektionen'),
+      page: 'lektionen',
+    },
+  ];
+  for (const lesson of course.lessons)
+    out.push({
+      route: `lektion/${lesson.n}`,
+      title: lessonPageTitle(lesson, siteDef, l),
+      description: lessonDescription(lesson, l),
+      body: () => lessonPage(course, lesson, ctx, l),
+      jsonld: () => [lessonLd(course, lesson, ctx, l)],
+      ogType: 'article',
+      crumb: lessonHeading(lesson, l),
+      page: 'lektion',
+    });
+  return out;
+}
+
+function lessonCtx(siteDef: SiteDef): LessonCtx {
+  return {
+    siteDef,
+    rel,
+    publicUrl: (route, l) => env().publicUrl(siteDef.id) + pathOf(route, l),
+    inline: (text, l) => inline(text, siteDef, l),
+    screen: staticScreen,
+    articles: articlesOn(siteDef),
+  };
+}
+
+function hasCourse(siteDef: SiteDef): boolean {
+  return !!courseFor(siteDef.instrument || '');
 }
 
 function legalSpecs(siteDef: SiteDef, l: Lang): Spec[] {
@@ -653,7 +703,21 @@ function appText(): string {
 function teachersCard(siteDef: SiteDef, l: Lang): Node {
   const ids = ['instrumentalklasse-schule', 'ueben-mit-kindern', 'app-ohne-konto', notesOnly() ? 'bass-erste-toene' : 'lieder-fuer-anfaenger', 'akkordwechsel-schneller', 'fingerkuppen-hornhaut'];
   const list = ids.map((id) => articlesOn(siteDef).filter((a) => a.id === id)[0]).filter((a) => !!a);
-  return h('section', { class: 'card seo-card' }, articleLinks(t('Mehr dazu im Wissen'), list, l));
+  const course = courseFor(siteDef.instrument || '');
+  return h(
+    'section',
+    { class: 'card seo-card' },
+    course
+      ? h(
+          'p',
+          null,
+          h('a', { href: rel('lektionen', l) }, t('{instrument} lernen in Lektionen', { instrument: siteDef.name[l] })),
+          ': ',
+          t('Der Lernweg Woche für Woche: {n} Lektionen mit Stück zum Mitspielen, Hausaufgabe und Druckblatt.', { n: course.lessons.length }),
+        )
+      : null,
+    articleLinks(t('Mehr dazu im Wissen'), list, l),
+  );
 }
 
 function toolCard(title: string, text: string, tool: string, siteDef: SiteDef, l: Lang): Node {
@@ -1015,9 +1079,18 @@ function wissenIndex(articles: Article[], siteDef: SiteDef, l: Lang): Node[] {
     { id: 'theorie', title: t('Musik verstehen') },
     { id: 'eltern-lehrkraefte', title: t('Für Eltern und Lehrkräfte') },
   ];
+  const course = courseFor(siteDef.instrument || '');
   return staticScreen(
     t('Wissen rund um {instrument}', { instrument: siteDef.name[l] }),
     rel('', l),
+    course
+      ? h(
+          'section',
+          { class: 'card wissen-cat' },
+          h('h2', null, h('a', { href: rel('lektionen', l) }, t('{instrument} lernen in Lektionen', { instrument: siteDef.name[l] }))),
+          h('p', null, t('Der Lernweg Woche für Woche: {n} Lektionen mit Stück zum Mitspielen, Hausaufgabe und Druckblatt.', { n: course.lessons.length })),
+        )
+      : null,
     ...cats
       .filter((c) => articles.some((a) => a.category === c.id))
       .map((c) =>
@@ -1071,6 +1144,7 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
         ),
       ),
       h('section', { class: 'card seo-card' }, h('p', null, t('Lieder zum Mitspielen, die auf dich warten, Akkorde mit Prüf-Funktion übers Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.'))),
+      courseLinks(l),
       h(
         'section',
         { class: 'card seo-card' },
@@ -1094,6 +1168,23 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
       ),
     ),
   ];
+}
+
+/** Startseite: Lernwege der Instrumente, die einen haben – für Schule und Zuhause. */
+function courseLinks(l: Lang): Node | null {
+  const withCourse = SITES.filter((s) => s.instrument && hasCourse(s) && env().sites.indexOf(s.id) >= 0);
+  if (!withCourse.length) return null;
+  return h(
+    'section',
+    { class: 'card seo-card' },
+    h('h2', null, t('Lernen in Lektionen – eine pro Woche')),
+    h('p', null, t('Für Musikunterricht und Zuhause: aufeinander aufbauende Lektionen mit Stück zum Mitspielen, Hausaufgabe und Blatt zum Ausdrucken.')),
+    h(
+      'ul',
+      { class: 'wissen-list' },
+      ...withCourse.map((s) => h('li', null, h('a', { href: env().url(s.id) + pathOf('lektionen', l) }, t('{instrument} lernen in Lektionen', { instrument: s.name[l] })))),
+    ),
+  );
 }
 
 /** Kurzporträt je Instrument für die Startseite: Wer neu anfängt, sucht oft erst nach dem passenden Instrument. */
@@ -1248,6 +1339,7 @@ function breadcrumbLd(spec: Spec, siteDef: SiteDef, l: Lang, canonicalBase: stri
     wissen: ['wissen', t('Wissen')],
     stimmung: ['stimmen', t('Stimmgerät')],
     powerchords: ['akkorde', t('Akkorde')],
+    lektion: ['lektionen', t('Lektionen')],
   };
   const items: [string, string][] = [['', siteDef.brand[l]]];
   if (parent[name] && (spec.route.indexOf('/') > 0 || name === 'powerchords')) items.push(parent[name]);
@@ -1277,6 +1369,7 @@ function footer(siteDef: SiteDef, l: Lang, alternates: Partial<Record<Lang, stri
           ['stimmen', t('Stimmgerät')],
           ['wissen', t('Wissen')],
         ];
+  if (hasCourse(siteDef)) links.splice(1, 0, ['lektionen', t('Lektionen')]);
   return h(
     'footer',
     { class: 'site-footer card' },
@@ -1386,6 +1479,7 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
   if (spec.view) attrs.push(`data-route="${escAttr(spec.route)}"`);
   if (spec.view === teachers || spec.view === songSheet || spec.view === chordChart || spec.view === neckView) attrs.push(`data-public="${escAttr(e.publicUrl(siteDef.id))}"`);
   if (spec.hashParam) attrs.push('data-hash-param');
+  if (spec.page) attrs.push(`data-page="${spec.page}"`);
   const html =
     `<!doctype html>\n<html ${attrs.join(' ')}>\n<head>\n${head.join('\n')}\n</head>\n<body>\n` +
     `<div id="app">${grammar(body.map(serialize).join(''), l)}</div>\n` +

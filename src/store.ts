@@ -11,6 +11,8 @@ export interface Progress {
   chordsChecked: string[];
   tunedStrings: number;
   lastSong: string | null;
+  /** Lektionen des Lernwegs, die als erledigt abgehakt sind (Nummern). */
+  lessonsDone: number[];
   settings: {
     lefty: boolean;
     speed: number;
@@ -102,6 +104,7 @@ const DEFAULTS: Progress = {
   chordsChecked: [],
   tunedStrings: 0,
   lastSong: null,
+  lessonsDone: [],
   settings: {
     lefty: false,
     speed: 0.7,
@@ -188,6 +191,18 @@ export function daysThisWeek(): boolean[] {
     out.push(days.has(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`));
   }
   return out;
+}
+
+/** Lektion abhaken oder das Häkchen wieder entfernen. */
+export function setLessonDone(n: number, done: boolean): void {
+  save((p) => {
+    const rest = (p.lessonsDone || []).filter((x) => x !== n);
+    p.lessonsDone = done ? rest.concat([n]).sort((a, b) => a - b) : rest;
+  });
+}
+
+export function lessonDone(n: number): boolean {
+  return (load().lessonsDone || []).indexOf(n) >= 0;
 }
 
 export function exportCode(): string {

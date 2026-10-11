@@ -2,11 +2,12 @@ import { h, clear } from '../ui/dom.ts';
 import { icon, soundHole } from '../ui/icons.ts';
 import { load, totalStars } from '../store.ts';
 import { t } from '../i18n.ts';
-import { instrument, notesOnly } from '../music/instrument.ts';
+import { baseInstrument, instrument, notesOnly } from '../music/instrument.ts';
 import { langSwitch } from '../ui/lang-switch.ts';
 import { findSong } from '../music/library.ts';
 import type { View } from '../ui/screen.ts';
 import { link } from '../site/nav.ts';
+import { COURSE_INSTRUMENTS } from '../content/kurse.ts';
 
 function tile(href: string, ic: string, title: string, sub: string, cls = ''): HTMLElement {
   return h(
@@ -22,6 +23,9 @@ export const home: View = (root) => {
   const p = load();
   const last = p.lastSong ? findSong(p.lastSong) : undefined;
   const firstVisit = !p.days.length;
+  const course = COURSE_INSTRUMENTS.indexOf(baseInstrument().id) >= 0
+    ? tile(link('lektionen'), 'steps', t('Lektionen'), t('Schritt für Schritt – jede Woche eine'), 'tile-wide theme-teal tile-lessons')
+    : null;
   root.appendChild(
     h(
       'main',
@@ -67,6 +71,7 @@ export const home: View = (root) => {
             'nav',
             { class: 'tiles', 'aria-label': t('Bereiche') },
             last ? tile(link(`lied/${last.id}`), 'play', t('Weiterspielen'), last.title, 'tile-wide theme-pearl') : null,
+            course,
             tile(link('lieder'), 'songs', t('Lieder spielen'), t('Karaoke zum Mitspielen'), 'tile-big theme-brass'),
             tile(link('blues'), 'blues', t('Blues'), t('Mit der Band jammen'), 'theme-teal'),
             tile(link('begleitung/rock'), 'rhythm', t('Band-Begleitung'), t('Rock, Pop, Shuffle, Country'), 'theme-teal'),

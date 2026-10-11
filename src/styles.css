@@ -3314,6 +3314,312 @@ html[data-instrument='bass'] .card {
     0 9px 16px 5px rgba(0, 0, 0, 0.45);
 }
 
+/* ---------- Lernweg: Lektionen und Kursübersicht (src/site/lessons-page.ts) ---------- */
+.lesson-week {
+  margin: 0 0 4px;
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.lesson-actions {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 8px -4px 0;
+}
+
+.lesson-actions .btn,
+.lesson-nav .btn {
+  min-height: var(--tap);
+  margin: 4px;
+}
+
+.lesson-done[aria-pressed='true'] .icon {
+  color: var(--good);
+}
+
+.lesson-steps li {
+  margin: 6px 0;
+}
+
+.lesson-chords {
+  margin-top: 8px;
+}
+
+.lesson-play p {
+  margin: 6px 0;
+}
+
+.lesson-play .article-tool {
+  margin: 0 8px 0 0;
+}
+
+.lesson-play-hint {
+  display: inline-block;
+  font-size: 0.85em;
+  color: var(--ink-soft);
+}
+
+.lesson-piece {
+  box-shadow:
+    0 0 0 3px var(--binding),
+    0 0 0 5px var(--brass-dark),
+    0 0 0 6px rgba(255, 220, 160, 0.35),
+    0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* die Hausaufgabe als klarer Kasten: Lehrkräfte zeigen genau darauf */
+.lesson-homework {
+  border-left: 8px solid var(--teal);
+}
+
+.lesson-done-when ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.lesson-done-when li::before {
+  content: '✓ ';
+  font-weight: 700;
+  color: var(--good);
+}
+
+.lesson-teacher summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 0 2px 12px;
+}
+
+.course-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.course-list li {
+  margin: 4px 0;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(60, 20, 6, 0.15);
+}
+
+.course-list li:last-child {
+  border-bottom: 0;
+}
+
+.course-list a {
+  display: inline-block;
+  min-height: 44px;
+  padding: 8px 0;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+.course-n {
+  display: inline-block;
+  min-width: 5.5em;
+  color: var(--ink-soft);
+}
+
+.course-check .icon {
+  width: 1.2em;
+  height: 1.2em;
+  margin-left: 6px;
+  vertical-align: -0.2em;
+  color: var(--good);
+}
+
+.course-goal {
+  display: block;
+}
+
+.lesson-sheet,
+.course-sheet {
+  display: none;
+}
+
+/* Druck: eine A4-Seite je Lektion, schwarz auf weiß, dünne Linien; Übersicht als Tabelle */
+@page lesson-sheet {
+  size: A4 portrait;
+  margin: 11mm 12mm;
+}
+
+@media print {
+  html[data-page='lektion'] body,
+  html[data-page='lektionen'] body {
+    padding: 0;
+    font-size: 13.5pt;
+    line-height: 1.32;
+    color: #000;
+    background: #fff;
+  }
+  html[data-page='lektion'] body > :not(#app),
+  html[data-page='lektionen'] body > :not(#app),
+  html[data-page='lektion'] .topbar,
+  html[data-page='lektionen'] .topbar,
+  html[data-page='lektion'] .lesson-screen,
+  html[data-page='lektionen'] .course-screen {
+    display: none;
+  }
+  html[data-page='lektion'] #app,
+  html[data-page='lektionen'] #app {
+    max-width: none;
+    padding: 0;
+  }
+  html[data-page='lektion'] .screen,
+  html[data-page='lektionen'] .screen {
+    margin: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .lesson-sheet {
+    display: block;
+    page: lesson-sheet;
+  }
+  .lesson-sheet h2,
+  .lesson-sheet h3,
+  .course-sheet h2 {
+    color: #000;
+    text-shadow: none;
+  }
+  .sheet-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 2.5mm;
+    margin-bottom: 3mm;
+    border-bottom: 0.5pt solid #000;
+  }
+  .sheet-title {
+    flex: 1;
+    padding-right: 4mm;
+  }
+  .sheet-kicker {
+    margin: 0;
+    font-size: 9pt;
+  }
+  .lesson-sheet .sheet-head h2 {
+    margin: 1mm 0 1.5mm;
+    font-size: 22pt;
+  }
+  .sheet-goal {
+    margin: 0;
+  }
+  .sheet-link {
+    flex: none;
+    width: 34mm;
+    font-size: 7.5pt;
+    text-align: center;
+  }
+  .sheet-link p {
+    margin: 0.5mm 0 0;
+    word-break: break-all;
+  }
+  .sheet-qr {
+    display: block;
+    width: 28mm;
+    height: 28mm;
+    margin: 0 auto;
+  }
+  .sheet-block {
+    margin: 0 0 2.5mm;
+    padding: 2mm 3mm;
+    border: 0.5pt solid #000;
+    border-radius: 2mm;
+    break-inside: avoid;
+  }
+  .lesson-sheet h3 {
+    margin: 0 0 1mm;
+    font-size: 15pt;
+  }
+  .sheet-block p {
+    margin: 0;
+  }
+  .sheet-block ol,
+  .sheet-block ul {
+    margin: 0;
+    padding-left: 5mm;
+  }
+  .sheet-block li {
+    margin: 0.6mm 0;
+  }
+  .sheet-block .sheet-checks {
+    padding-left: 0;
+    list-style: none;
+  }
+  .sheet-box {
+    display: inline-block;
+    width: 3.4mm;
+    height: 3.4mm;
+    margin-right: 1mm;
+    vertical-align: -0.5mm;
+    border: 0.5pt solid #000;
+  }
+  .sheet-days {
+    margin-top: 1.5mm;
+  }
+  .sheet-days span {
+    margin-left: 4mm;
+  }
+  .sheet-chords {
+    margin: 0 0 2.5mm;
+  }
+  .sheet-chord {
+    display: inline-block;
+    width: 40mm;
+    margin-right: 6mm;
+    text-align: center;
+    vertical-align: top;
+  }
+  .sheet-chord svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .sheet-chord b {
+    display: block;
+    font-size: 16pt;
+  }
+  .course-sheet {
+    display: block;
+    page: lesson-sheet;
+  }
+  .course-sheet h2 {
+    margin: 0 0 3mm;
+    font-size: 15pt;
+  }
+  .course-sheet table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+  }
+  .course-sheet th,
+  .course-sheet td {
+    padding: 1.2mm 2mm;
+    text-align: left;
+    vertical-align: top;
+    border: 0.5pt solid #000;
+  }
+  .course-sheet tr {
+    break-inside: avoid;
+  }
+  .course-sheet p {
+    margin: 2mm 0 0;
+    font-size: 8pt;
+  }
+}
+
 /* Impressum: Angaben als Grafik aus Kacheln (src/ui/secret-text.ts) */
 .secret {
   display: inline-block;

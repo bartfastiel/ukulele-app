@@ -88,6 +88,12 @@ export function shiftBetween(from: number, to: number): number {
   return d > 5 ? d - 12 : d;
 }
 
+/** Verschiebung in die Tonart `key` (Name des Schlussakkords, z. B. „G“ oder „Em“); null, wenn unlesbar. */
+export function shiftToKey(song: Song, key: string): number | null {
+  const p = parseChordName(key);
+  return p ? shiftBetween(songKey(song).root, p.root) : null;
+}
+
 /** Verschiebung zur Original- bzw. Quellentonart, falls bekannt. */
 export function originalShift(song: Song): number | null {
   if (!song.originalKey) return null;

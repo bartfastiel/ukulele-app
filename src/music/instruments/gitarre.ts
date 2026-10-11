@@ -124,7 +124,7 @@ export const GITARRE: Instrument = {
     boogie: tk('Grundton, Terz, Quinte, Sexte – das klassische Boogie-Riff. In E liegt es ganz bequem auf den beiden tiefsten Saiten.'),
   },
   game: [['Em', 'Am'], ['E', 'A'], ['D', 'A'], ['G', 'C'], ['G', 'Em', 'C', 'D'], ['A', 'D', 'E']],
-  rhythmChords: ['Em', 'G', 'C', 'D'],
+  rhythmChords: ['Em', 'G', 'C', 'D', 'E', 'Am', 'A'],
   recordChords: ['Em', 'Am', 'C', 'G', 'D', 'E', 'A', 'D7', 'G7', 'Dm'],
   tunings: [
     {
