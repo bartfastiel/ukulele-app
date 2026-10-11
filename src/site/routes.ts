@@ -25,6 +25,7 @@ export const SEGMENTS: Record<string, Record<Lang, string>> = {
   datenschutz: { de: 'datenschutz', en: 'privacy', fr: 'confidentialite' },
   ueber: { de: 'ueber', en: 'about', fr: 'a-propos' },
   powerchords: { de: 'powerchords', en: 'power-chords', fr: 'power-chords' },
+  lehrkraefte: { de: 'lehrkraefte-und-eltern', en: 'teachers-and-parents', fr: 'enseignants-et-parents' },
   // Griffe in einer anderen Stimmung: „stimmung/open-g“
   stimmung: { de: 'stimmung', en: 'tuning', fr: 'accordage' },
 };

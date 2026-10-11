@@ -25,6 +25,7 @@ import { detective } from './views/detective.ts';
 import { blues } from './views/blues.ts';
 import { ownSongEditor } from './views/own-song.ts';
 import { receiveSong, shareSong } from './views/share.ts';
+import { teachers } from './views/teachers.ts';
 
 const ROUTES: Record<string, View> = {
   '': home,
@@ -42,6 +43,7 @@ const ROUTES: Record<string, View> = {
   'eigenes-lied': ownSongEditor,
   'lied-teilen': shareSong,
   teilen: receiveSong,
+  lehrkraefte: teachers,
 };
 
 const TITLES: Record<string, string> = {

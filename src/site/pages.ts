@@ -38,6 +38,7 @@ import { detective } from '../views/detective.ts';
 import { blues } from '../views/blues.ts';
 import { ownSongEditor } from '../views/own-song.ts';
 import { receiveSong, shareSong } from '../views/share.ts';
+import { teachers } from '../views/teachers.ts';
 import { CATEGORIES } from '../music/song.ts';
 import { OG_HEIGHT, OG_WIDTH } from './og-image.ts';
 
@@ -528,6 +529,14 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
   specs.push({ route: 'teilen', title: t('Geschicktes Lied'), description: t('Ein geteiltes Lied öffnen.'), view: receiveSong, hashParam: true, noindex: true, body: () => staticScreen(t('Geschicktes Lied'), rel('lieder', l)) });
   const articles = ARTICLES.filter((a) => a.instruments.indexOf(siteDef.instrument as 'ukulele') >= 0);
   specs.push({
+    route: 'lehrkraefte',
+    title: t('{instrument} in Schule und Familie: Infos und Handout', { instrument: inst }),
+    description: t('Für Lehrkräfte und Eltern: wie die kostenlose {instrument}-App im Unterricht und zu Hause hilft, warum sie ohne Konto und Daten auskommt, ein 10-Minuten-Übungsplan und ein Handout mit QR-Code zum Ausdrucken.', { instrument: inst }),
+    view: teachers,
+    extra: () => teachersCard(siteDef, l),
+    crumb: t('Für Lehrkräfte und Eltern'),
+  });
+  specs.push({
     route: 'wissen',
     title: t('Wissen rund um {instrument} – Tipps zum Lernen', { instrument: inst }),
     description: t('Stimmen, Akkorde, Rhythmus, Üben mit Kindern: kurze, verständliche Artikel rund um {instrument} – mit Übungen zum Mitmachen.', { instrument: inst }),
@@ -575,6 +584,13 @@ function appText(): string {
   return notesOnly()
     ? t('Lieder zum Mitspielen, die auf dich warten, Basstöne mit Prüf-Funktion übers Mikrofon, Stimmgerät, Basslinien und Walking Bass im Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.')
     : t('Lieder zum Mitspielen, die auf dich warten, Akkorde mit Prüf-Funktion übers Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.');
+}
+
+/** Lehrkräfte-Seite: passende Wissensartikel (nur vorgerendert – die Artikel gehören nicht ins Skript der App). */
+function teachersCard(siteDef: SiteDef, l: Lang): Node {
+  const ids = ['instrumentalklasse-schule', 'ueben-mit-kindern', 'app-ohne-konto', notesOnly() ? 'bass-erste-toene' : 'lieder-fuer-anfaenger', 'akkordwechsel-schneller', 'fingerkuppen-hornhaut'];
+  const list = ids.map((id) => articlesOn(siteDef).filter((a) => a.id === id)[0]).filter((a) => !!a);
+  return h('section', { class: 'card seo-card' }, articleLinks(t('Mehr dazu im Wissen'), list, l));
 }
 
 function toolCard(title: string, text: string, tool: string, siteDef: SiteDef, l: Lang): Node {
@@ -917,7 +933,12 @@ function wissenIndex(articles: Article[], siteDef: SiteDef, l: Lang): Node[] {
           'section',
           { class: 'card wissen-cat' },
           h('h2', null, c.title),
-          h('ul', { class: 'wissen-list' }, ...articles.filter((a) => a.category === c.id).map((a) => h('li', null, h('a', { href: rel(`wissen/${a.id}`, l) }, a.title[l]), h('span', { class: 'small' }, ' – ', a.description[l])))),
+          h(
+            'ul',
+            { class: 'wissen-list' },
+            ...articles.filter((a) => a.category === c.id).map((a) => h('li', null, h('a', { href: rel(`wissen/${a.id}`, l) }, a.title[l]), h('span', { class: 'small' }, ' – ', a.description[l]))),
+            c.id === 'eltern-lehrkraefte' ? h('li', null, h('a', { href: rel('lehrkraefte', l) }, t('Für Lehrkräfte und Eltern')), h('span', { class: 'small' }, ' – ', t('Infos für Schule und Familie und ein Handout mit QR-Code zum Ausdrucken'))) : null,
+          ),
         ),
       ),
   );
@@ -964,6 +985,19 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
         h('h2', null, t('Welches Instrument passt zu mir?')),
         ...SITES.filter((s) => s.instrument && INSTRUMENT_PITCH[s.id] && env().sites.indexOf(s.id) >= 0).map((s) =>
           h('p', null, h('a', { href: env().url(s.id) + (l === 'de' ? '' : l + '/') }, h('strong', null, s.brand[l])), ': ', t(INSTRUMENT_PITCH[s.id])),
+        ),
+      ),
+      h(
+        'section',
+        { class: 'card seo-card' },
+        h('h2', null, t('Für Lehrkräfte und Eltern')),
+        h('p', null, t('Ohne Konto, ohne Werbung, ohne Daten der Kinder – mit Übungsplan und einem Handout mit QR-Code zum Ausdrucken:')),
+        h(
+          'p',
+          null,
+          ...SITES.filter((s) => s.instrument && env().sites.indexOf(s.id) >= 0).map((s, i) =>
+            h('span', null, i ? ' · ' : '', h('a', { href: env().url(s.id) + pathOf('lehrkraefte', l) }, s.brand[l])),
+          ),
         ),
       ),
     ),
@@ -1048,6 +1082,8 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
       ),
       h('h2', null, t('Wie sie funktioniert')),
       p(t('Alles läuft in deinem Browser, auch auf älteren Tablets, und nach dem ersten Besuch auch offline. Nichts wird an einen Server geschickt.')),
+      siteDef.id === 'start' ? null : h('h2', null, t('Für Lehrkräfte und Eltern')),
+      siteDef.id === 'start' ? null : h('p', null, h('a', { href: rel('lehrkraefte', l) }, t('Infos für Schule und Familie und ein Handout mit QR-Code zum Ausdrucken'))),
       h('p', null, h('a', { href: 'https://github.com/bartfastiel/ukulele-app' }, t('Quelltext und Ideen auf GitHub'))),
     ),
   );
@@ -1164,6 +1200,7 @@ function footer(siteDef: SiteDef, l: Lang, alternates: Partial<Record<Lang, stri
     h(
       'nav',
       { class: 'footer-legal', 'aria-label': t('Rechtliches') },
+      links.length ? h('a', { href: rel('lehrkraefte', l) }, t('Für Lehrkräfte und Eltern')) : null,
       h('a', { href: rel('ueber', l) }, t('Über')),
       h('a', { href: rel('impressum', l) }, t('Impressum')),
       h('a', { href: rel('datenschutz', l) }, t('Datenschutz')),
@@ -1190,6 +1227,8 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
   // Adressen der anderen Instrument-Seiten, für Hinweise auf verwandte Instrumente (src/site/relatives.ts)
   const siteUrls = e.sites.filter((s) => s !== siteDef.id && s !== 'start').map((s) => `${s}=${e.url(s)}`).join(' ');
   de.setAttribute('data-sites', siteUrls);
+  // QR-Codes des Handouts zeigen auf die öffentliche Adresse (src/views/teachers.ts), auch aus einer Vorschau
+  de.setAttribute('data-public', e.publicUrl(siteDef.id));
   const indexable = !spec.noindex && !spec.hashParam;
   const alternates: Partial<Record<Lang, string>> = {};
   for (const x of LANGS) alternates[x.id] = e.publicUrl(siteDef.id) + pathOf(spec.route, x.id);
@@ -1253,6 +1292,7 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
   const attrs: string[] = [`lang="${l}"`, `data-base="${escAttr(currentBase)}"`, `data-brand="${escAttr(siteDef.brand[l])}"`, `data-site="${siteDef.id}"`];
   if (siteDef.instrument) attrs.push(`data-instrument="${siteDef.instrument}"`, `data-sites="${escAttr(siteUrls)}"`);
   if (spec.view) attrs.push(`data-route="${escAttr(spec.route)}"`);
+  if (spec.view === teachers) attrs.push(`data-public="${escAttr(e.publicUrl(siteDef.id))}"`);
   if (spec.hashParam) attrs.push('data-hash-param');
   const html =
     `<!doctype html>\n<html ${attrs.join(' ')}>\n<head>\n${head.join('\n')}\n</head>\n<body>\n` +
