@@ -173,9 +173,9 @@ export const FRAGEN_BANJO_MANDOLINE_BASS: Article[] = [
     blocks: [
       {
         p: {
-          de: 'Es gibt zwei große Arten, das fünfsaitige Banjo anzuschlagen. Beim **Picking** zupfen Daumen, Zeige- und Mittelfinger mit Fingerpicks nach oben – das sind die [Banjo-Rolls](wissen:banjo-rolls). Beim **Clawhammer** ist es umgekehrt: Die Hand formt eine Kralle und schlägt mit dem **Fingernagel nach unten** auf die Saite, der Daumen zupft die kurze 5. Saite. Der Klang ist weicher und rollender, typisch für alte amerikanische Tanzmusik.',
-          en: 'There are two main ways to play the five-string banjo. In **picking** the thumb, index and middle finger pluck upwards with fingerpicks – those are the [banjo rolls](wissen:banjo-rolls). **Clawhammer** works the other way round: the hand forms a claw and strikes **down with the fingernail**, while the thumb plucks the short 5th string. The sound is softer and more rolling, typical of old American dance music.',
-          fr: 'Il y a deux grandes façons de jouer du banjo à cinq cordes. En **picking**, le pouce, l’index et le majeur pincent vers le haut avec des onglets – ce sont les [rolls de banjo](wissen:banjo-rolls). En **clawhammer**, c’est l’inverse : la main forme une griffe et frappe la corde **vers le bas avec l’ongle**, et le pouce pince la petite 5e corde. Le son est plus doux et plus roulant, typique des anciennes musiques à danser américaines.',
+          de: 'Es gibt zwei große Arten, das fünfsaitige Banjo anzuschlagen. Beim **Picking** zupfen Daumen, Zeige- und Mittelfinger mit Fingerpicks einzelne Saiten – der Daumen nach unten, die Finger nach oben. Daraus entstehen die [Banjo-Rolls](wissen:banjo-rolls). Beim **Clawhammer** ist es umgekehrt: Die Hand formt eine Kralle und schlägt mit dem **Fingernagel nach unten** auf die Saite, der Daumen zupft die kurze 5. Saite. Der Klang ist weicher und rollender, typisch für alte amerikanische Tanzmusik.',
+          en: 'There are two main ways to play the five-string banjo. In **picking** the thumb, index and middle finger pluck single strings with fingerpicks – the thumb downwards, the fingers upwards. That’s how the [banjo rolls](wissen:banjo-rolls) are made. **Clawhammer** works the other way round: the hand forms a claw and strikes **down with the fingernail**, while the thumb plucks the short 5th string. The sound is softer and more rolling, typical of old American dance music.',
+          fr: 'Il y a deux grandes façons de jouer du banjo à cinq cordes. En **picking**, le pouce, l’index et le majeur pincent des cordes seules avec des onglets – le pouce vers le bas, les doigts vers le haut. C’est ainsi que naissent les [rolls de banjo](wissen:banjo-rolls). En **clawhammer**, c’est l’inverse : la main forme une griffe et frappe la corde **vers le bas avec l’ongle**, et le pouce pince la petite 5e corde. Le son est plus doux et plus roulant, typique des anciennes musiques à danser américaines.',
         },
       },
       { h2: { de: 'Die Hand als Kralle', en: 'The hand as a claw', fr: 'La main en griffe' } },
@@ -268,9 +268,9 @@ export const FRAGEN_BANJO_MANDOLINE_BASS: Article[] = [
       },
       {
         tip: {
-          de: 'Der Daumen schlägt nie aktiv nach oben. Er liegt einfach im Weg, und die Handbewegung nach oben lässt die 5. Saite klingen. Das fühlt sich erst seltsam an und wird dann ganz natürlich.',
-          en: 'The thumb never actively plucks upwards. It just sits in the way, and the hand moving back up makes the 5th string ring. That feels strange at first and then becomes completely natural.',
-          fr: 'Le pouce ne pince jamais activement vers le haut. Il est simplement sur le chemin, et c’est la main qui remonte qui fait sonner la 5e corde. Ça paraît étrange au début, puis ça devient tout naturel.',
+          de: 'Beim Grundschlag schlägt der Daumen nie aktiv nach oben. Er liegt einfach im Weg, und die Handbewegung nach oben lässt die 5. Saite klingen. Das fühlt sich erst seltsam an und wird dann ganz natürlich.',
+          en: 'In the basic stroke the thumb never actively plucks upwards. It just sits in the way, and the hand moving back up makes the 5th string ring. That feels strange at first and then becomes completely natural.',
+          fr: 'Dans le coup de base, le pouce ne pince jamais activement vers le haut. Il est simplement sur le chemin, et c’est la main qui remonte qui fait sonner la 5e corde. Ça paraît étrange au début, puis ça devient tout naturel.',
         },
       },
     ],
@@ -458,7 +458,7 @@ export const FRAGEN_BANJO_MANDOLINE_BASS: Article[] = [
         ul: [
           { de: '**Risse** in der Decke (oben), im Boden oder an den Seiten?', en: '**Cracks** in the top, back or sides?', fr: 'Des **fissures** sur la table, le fond ou les côtés ?' },
           { de: 'Ist die **Decke hinter dem Steg eingesunken**? Leg ein Lineal quer darüber und schau, ob Licht durchscheint.', en: 'Has the **top sunk in behind the bridge**? Lay a ruler across it and see if light shows underneath.', fr: 'La **table est-elle affaissée derrière le chevalet** ? Pose une règle en travers et regarde si la lumière passe dessous.' },
-          { de: 'Ist der **Hals gerade**? Schau vom Kopf aus am Griffbrett entlang wie über einen Gewehrlauf.', en: 'Is the **neck straight**? Sight along the fretboard from the headstock.', fr: 'Le **manche est-il droit** ? Vise le long de la touche depuis la tête.' },
+          { de: 'Ist der **Hals gerade**? Schau vom Kopf aus am Griffbrett entlang wie über ein langes Lineal.', en: 'Is the **neck straight**? Look along the fretboard from the headstock, as you would along a long ruler.', fr: 'Le **manche est-il droit** ? Regarde le long de la touche depuis la tête, comme le long d’une grande règle.' },
           { de: 'Drehen sich die **Mechaniken**? Sind die Bundstäbchen sehr abgenutzt?', en: 'Do the **tuners** turn? Are the frets badly worn?', fr: 'Les **mécaniques** tournent-elles ? Les frettes sont-elles très usées ?' },
         ],
       },
@@ -481,14 +481,14 @@ export const FRAGEN_BANJO_MANDOLINE_BASS: Article[] = [
       {
         ul: [
           {
-            de: 'Alte, rostige Saiten kommen alle runter. Neue Mandolinensaiten haben meist eine **Schlaufe** am Ende, die über kleine Stifte am Saitenhalter gehängt wird.',
-            en: 'Old, rusty strings all come off. New mandolin strings usually have a **loop** at the end that hooks over small pins on the tailpiece.',
-            fr: 'Les vieilles cordes rouillées s’enlèvent toutes. Les cordes de mandoline neuves ont en général une **boucle** au bout, qu’on accroche à de petits ergots du cordier.',
+            de: 'Alle alten, rostigen Saiten werden ersetzt – aber Paar für Paar. Neue Mandolinensaiten haben meist eine **Schlaufe** am Ende, die über kleine Stifte am Saitenhalter gehängt wird.',
+            en: 'All old, rusty strings get replaced – but one pair at a time. New mandolin strings usually have a **loop** at the end that hooks over small pins on the tailpiece.',
+            fr: 'Toutes les vieilles cordes rouillées sont remplacées – mais paire par paire. Les cordes de mandoline neuves ont en général une **boucle** au bout, qu’on accroche à de petits ergots du cordier.',
           },
           {
-            de: 'Steht der Steg noch, wechsle **Paar für Paar**, damit er stehen bleibt.',
-            en: 'If the bridge is still standing, change **one pair at a time** so it stays in place.',
-            fr: 'Si le chevalet tient encore, change les cordes **paire par paire** pour qu’il reste en place.',
+            de: 'Warum **Paar für Paar**? So bleibt der Steg stehen und behält seinen Platz. Ist er schon umgefallen, steht weiter unten, wo er hingehört.',
+            en: 'Why **one pair at a time**? That way the bridge stays up and keeps its place. If it has already fallen over, see below for where it belongs.',
+            fr: 'Pourquoi **paire par paire** ? Ainsi le chevalet reste debout et garde sa place. S’il est déjà tombé, tu verras plus bas où le remettre.',
           },
           {
             de: 'Zieh die Saiten nicht in einem Rutsch auf Tonhöhe, sondern in zwei, drei Runden. Schau zwischendurch, ob sich etwas verzieht oder knackt.',
@@ -827,9 +827,9 @@ export const FRAGEN_BANJO_MANDOLINE_BASS: Article[] = [
       { tool: 'detektiv' },
       {
         tip: {
-          de: 'Kleb keine Namen aufs Griffbrett. Dein Kopf merkt sich die Töne viel besser, wenn er sie selbst finden muss.',
-          en: 'Don’t stick labels on the fretboard. Your brain remembers the notes much better when it has to find them itself.',
-          fr: 'Ne colle pas d’étiquettes sur le manche. Ton cerveau retient bien mieux les notes quand il doit les trouver lui-même.',
+          de: 'Am besten ohne Aufkleber mit Tonnamen auf dem Griffbrett: Dein Kopf merkt sich die Töne viel besser, wenn er sie selbst finden muss.',
+          en: 'Best to go without note-name stickers on the fretboard: your brain remembers the notes much better when it has to find them itself.',
+          fr: 'Le mieux, c’est sans étiquettes de notes sur le manche : ton cerveau retient bien mieux les notes quand il doit les trouver lui-même.',
         },
       },
     ],
