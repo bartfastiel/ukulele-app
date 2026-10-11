@@ -473,7 +473,6 @@ export const FR: Record<string, string> = {
   "Der ganze Hals bis zum 15. Bund für {instrument}: auf jeder Saite und in jedem Bund der Tonname, mit Bundmarkierungen – als A4-Blatt zum Ausdrucken, quer oder hochkant.": "Tout le manche jusqu’à la 15e case pour {instrument} : le nom de la note sur chaque corde et chaque case, avec les repères – en feuille A4 à imprimer, à l’horizontale ou à la verticale.",
   "Hals drucken": "Imprimer le manche",
   "Alle Töne auf dem Hals": "Toutes les notes sur le manche",
-  "Drucken": "Imprimer",
   "Nur Griffbilder": "Diagrammes seuls",
   "Über dem Text steht an jedem Wechsel das Griffbild – ganz ohne Akkordnamen. Am leichtesten zu lesen.": "Au-dessus des paroles, chaque changement montre le diagramme – sans aucun nom d’accord. Le plus facile à lire.",
   "Akkordnamen": "Noms d’accords",

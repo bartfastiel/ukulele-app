@@ -470,7 +470,6 @@ export const EN: Record<string, string> = {
   "Der ganze Hals bis zum 15. Bund für {instrument}: auf jeder Saite und in jedem Bund der Tonname, mit Bundmarkierungen – als A4-Blatt zum Ausdrucken, quer oder hochkant.": "The whole neck up to the 15th fret for {instrument}: the note name on every string and fret, with fret markers – as an A4 sheet to print, landscape or upright.",
   "Hals drucken": "Print neck",
   "Alle Töne auf dem Hals": "All notes on the neck",
-  "Drucken": "Print",
   "Nur Griffbilder": "Diagrams only",
   "Über dem Text steht an jedem Wechsel das Griffbild – ganz ohne Akkordnamen. Am leichtesten zu lesen.": "Above the lyrics, every change shows the chord diagram – no chord names at all. The easiest to read.",
   "Akkordnamen": "Chord names",
