@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { BEND_MAX, StrikeSense, VibratoDetector, bendSemis, slideFret, strikeCutoff, strikeGain, type TouchSample } from '../../src/ui/expression.ts';
+import { BEND_MAX, StrikeSense, VibratoDetector, bendSemis, slideFret, STRIKE_TUNING, strikeAttack, strikeCutoff, strikeGain, type TouchSample } from '../../src/ui/expression.ts';
 import { TiltTracker, pitchOf, wahOf } from '../../src/audio/motion.ts';
 
 const dB = (g: number) => 20 * Math.log10(g);
@@ -64,7 +64,7 @@ test('Anschlag nur über die Kontaktfläche (Android): leicht deutlich leiser un
   for (const v of late(soft)) assert.ok(v < 0.25, `leicht ${v}`);
   for (const v of late(hard)) assert.ok(v > 0.75, `fest ${v}`);
   const gap = dB(strikeGain(late(hard)[0])) - dB(strikeGain(late(soft)[0]));
-  assert.ok(gap >= 12, `Unterschied ${gap.toFixed(1)} dB`);
+  assert.ok(gap >= 20, `Unterschied ${gap.toFixed(1)} dB`);
   assert.ok(strikeCutoff(late(soft)[0], 392) < 2000);
   assert.ok(strikeCutoff(late(hard)[0], 392) > 8000);
   // gleich fest getippt klingt gleich (nicht zufällig)
@@ -98,12 +98,22 @@ test('Anschlag: die ersten Anschläge eines Geräts springen nicht wild, der Ber
   assert.ok(first !== null && first > 0.3 && first < 0.7, `erster ${first}`);
 });
 
-test('Lautstärke: 24 dB Umfang, Mitte etwa wie ohne Sensor, steigt stetig', () => {
-  assert.ok(Math.abs(dB(strikeGain(1)) - dB(strikeGain(0)) - 24) < 0.01);
-  assert.ok(Math.abs(strikeGain(0.5) - strikeGain(null)) < 0.08, `Mitte ${strikeGain(0.5)}`);
+test('Lautstärke: über 30 dB Umfang, leisester Anschlag hörbar, kleine Unterschiede in der Mitte hörbar', () => {
+  assert.ok(STRIKE_TUNING.rangeDb >= 30);
+  assert.ok(Math.abs(dB(strikeGain(1)) - dB(strikeGain(0)) - STRIKE_TUNING.rangeDb) < 0.01);
+  // nie stumm: auch der leiseste Anschlag hat noch über 1 % der vollen Lautstärke
+  assert.ok(strikeGain(0) > 0.01, `leisester ${strikeGain(0)}`);
+  // ein Zehntel mehr Druck in der Mitte: mindestens 3 dB lauter
+  assert.ok(dB(strikeGain(0.55)) - dB(strikeGain(0.45)) >= 3, `Mitte ${(dB(strikeGain(0.55)) - dB(strikeGain(0.45))).toFixed(1)} dB`);
   for (let i = 0; i < 10; i++) assert.ok(strikeGain((i + 1) / 10) > strikeGain(i / 10));
   assert.equal(strikeGain(2), strikeGain(1));
-  assert.ok(strikeCutoff(0, 392) < strikeCutoff(0.5, 392) && strikeCutoff(1, 392) === 18000);
+  assert.equal(strikeGain(null), 0.6);
+  // leise deutlich dumpf (unter dem 2. Oberton), fest ganz hell
+  assert.ok(strikeCutoff(0, 392) < 2 * 392 && strikeCutoff(0.5, 392) > strikeCutoff(0, 392) && strikeCutoff(1, 392) === 18000);
+  // Anschlagsgeräusch nur bei festem Anschlag, ohne Sensor keins
+  assert.equal(strikeAttack(null), 0);
+  assert.equal(strikeAttack(0.3), 0);
+  assert.ok(strikeAttack(1) > strikeAttack(0.75) && strikeAttack(0.75) > 0);
 });
 
 /** Bewegung abtasten: alle 16 ms eine Position. */

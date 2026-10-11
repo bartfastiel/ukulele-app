@@ -1,6 +1,6 @@
 import { h, clear } from './dom.ts';
 import { onStrike, strikeSense, touchSample, type StrikeInfo } from './fret-gesture.ts';
-import { STRIKE_RANGE_DB, strikeCutoff, strikeGain, type StrikeChannel } from './expression.ts';
+import { STRIKE_TUNING, strikeCutoff, strikeGain, type StrikeChannel } from './expression.ts';
 import { t } from '../i18n.ts';
 
 /** Mit `?druck=1` in der Adresse: Messanzeige für Druck und Kontaktfläche zum Prüfen auf dem eigenen Gerät. */
@@ -87,7 +87,7 @@ export function strikeMeter(): void {
     if (history.length > 8) history.shift();
     clear(bars);
     for (const g of history) {
-      const w = Math.max(2, Math.round(100 * (1 + db(g) / STRIKE_RANGE_DB)));
+      const w = Math.max(2, Math.round(100 * (1 + db(g) / STRIKE_TUNING.rangeDb)));
       bars.appendChild(h('div', { style: `height:6px;margin:2px 0;border-radius:3px;background:var(--teal);width:${w}%` }));
     }
   });

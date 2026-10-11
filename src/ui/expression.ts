@@ -23,7 +23,28 @@ const GIVE_UP = 16;
 /** Anschläge, aus denen sich der Bereich lernt (ältere fallen heraus, damit ein Ausreißer nicht für immer bleibt). */
 const HISTORY = 24;
 /** Bis so viele Anschläge gelernt sind, gibt ein Bereich um den Median den ersten Anschlägen Halt. */
-const PRIOR_UNTIL = 6;
+const PRIOR_UNTIL = 4;
+/** Ab so vielen gelernten Anschlägen zählen der leiseste und der festeste nicht (Ausreißer verengen sonst den Rest). */
+const TRIM_FROM = 8;
+
+/**
+ * Wirkung des Anschlags – hier an einer Stelle nachstellbar. Mehr `rangeDb` = leise leiser; kleinere `curve` = schon
+ * kleine Druckunterschiede in der Mitte hörbar; kleinere `spread`/`minRatio` = normales Spiel nutzt die volle Spanne.
+ */
+export const STRIKE_TUNING = {
+  /** leisester Anschlag so viele dB unter dem festesten */
+  rangeDb: 34,
+  /** Form der Kurve: 1 = gleichmäßig in dB, größer = oben flacher und unten steiler */
+  curve: 1.5,
+  /** Bereich der ersten Anschläge: Median geteilt bzw. mal diesen Wert */
+  spread: 1.25,
+  /** kleinstes gelerntes Verhältnis fest/leicht, damit Rauschen nicht zur vollen Dynamik aufgeblasen wird */
+  minRatio: 1.35,
+  /** Grenzfrequenz des leisesten Anschlags in Vielfachen des Grundtons (kleiner = dumpfer) */
+  dullest: 1.5,
+  /** Anschlagsgeräusch beim festesten Anschlag, relativ zur Lautstärke (0 = keins) */
+  attack: 0.35,
+};
 
 /**
  * Ein Messkanal (Kraft oder Kontaktfläche). Echt ist er erst, wenn mehrere verschiedene, fein abgestufte Werte kommen:
@@ -78,10 +99,12 @@ export class StrikeChannel {
     const pts = this.strikes.slice();
     if (pts.length < PRIOR_UNTIL) {
       const ref = pts.length ? median(pts) : peak;
-      pts.push(ref / 1.4, ref * 1.4);
+      pts.push(ref / STRIKE_TUNING.spread, ref * STRIKE_TUNING.spread);
     }
-    let lo = Math.min.apply(null, pts);
-    let hi = Math.max.apply(null, pts);
+    pts.sort((a, b) => a - b);
+    const trim = this.strikes.length >= TRIM_FROM ? 1 : 0;
+    let lo = pts[trim];
+    let hi = pts[pts.length - 1 - trim];
     if (hi / lo < this.minRatio) {
       const mid = Math.sqrt(hi * lo);
       lo = mid / Math.sqrt(this.minRatio);
@@ -110,8 +133,8 @@ function median(xs: number[]): number {
  * zählt der höchste Wert kurz nach dem Aufsetzen, nicht der erste.
  */
 export class StrikeSense {
-  readonly force = new StrikeChannel([0, 0.5, 1], Infinity, 1.6);
-  readonly area = new StrikeChannel([0, 1], 3, 1.6);
+  readonly force = new StrikeChannel([0, 0.5, 1], Infinity, STRIKE_TUNING.minRatio);
+  readonly area = new StrikeChannel([0, 1], 3, STRIKE_TUNING.minRatio);
 
   observe(sample: TouchSample): void {
     this.force.observe(sample.force);
@@ -144,29 +167,36 @@ export class StrikeSense {
  * darin vier Messpunkte, und der Unterschied zwischen leicht und fest ist schon deutlich; länger fühlte es sich träge an.
  */
 export const STRIKE_WAIT = 30;
-/** Dynamikumfang in dB zwischen leisestem und festestem Anschlag. */
-export const STRIKE_RANGE_DB = 24;
-const STRIKE_MAX = 0.9;
+const STRIKE_MAX = 0.95;
+
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
 /**
- * Anschlagstärke → Lautstärke: ohne Sensor ein gleichmäßiger mittlerer Wert, mit Sensor von −24 dB bis zum Höchstwert.
- * Die Kurve ist oben flach (ein normaler Anschlag klingt etwa so laut wie ohne Sensor) und fällt zum leisen Ende steil ab.
+ * Anschlagstärke → Lautstärke: ohne Sensor ein gleichmäßiger mittlerer Wert, mit Sensor von −rangeDb bis zum
+ * Höchstwert. Auch der leiseste Anschlag bleibt hörbar (bei 34 dB etwa 2 % der vollen Lautstärke).
  */
 export function strikeGain(strength: number | null): number {
   if (strength === null) return 0.6;
-  const v = Math.max(0, Math.min(1, strength));
-  return STRIKE_MAX * Math.pow(10, (-STRIKE_RANGE_DB * Math.pow(1 - v, 2.5)) / 20);
+  const v = clamp01(strength);
+  return STRIKE_MAX * Math.pow(10, (-STRIKE_TUNING.rangeDb * Math.pow(1 - v, STRIKE_TUNING.curve)) / 20);
 }
 
 /**
- * Klangfarbe des Anschlags als Grenzfrequenz eines Tiefpasses: leise gezupft klingen nur die ersten Obertöne (weich),
+ * Klangfarbe des Anschlags als Grenzfrequenz eines Tiefpasses: leise gezupft klingen nur die ersten Obertöne (dumpf),
  * fest gezupft alle (hell). Ohne Sensor 0 = kein Filter.
  */
 export function strikeCutoff(strength: number | null, freq: number): number {
   if (strength === null) return 0;
-  const v = Math.max(0, Math.min(1, strength));
-  const low = Math.min(18000, 2.5 * freq);
+  const v = clamp01(strength);
+  const low = Math.min(18000, STRIKE_TUNING.dullest * freq);
   return Math.min(18000, low * Math.pow(18000 / low, v));
+}
+
+/** Anschlagsgeräusch (Nagel/Plektrum auf der Saite) relativ zur Lautstärke: erst bei festem Anschlag, ohne Sensor keins. */
+export function strikeAttack(strength: number | null): number {
+  if (strength === null) return 0;
+  const v = clamp01(strength);
+  return v <= 0.5 ? 0 : STRIKE_TUNING.attack * Math.pow((v - 0.5) / 0.5, 1.5);
 }
 
 const MIN_SWING = 2;
