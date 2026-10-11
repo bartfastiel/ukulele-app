@@ -1,4 +1,4 @@
-import { PressureSense } from './expression.ts';
+import { STRIKE_WAIT, StrikeSense, type TouchSample } from './expression.ts';
 
 /** Was beim Aufsetzen getroffen wurde. */
 export interface Press {
@@ -6,8 +6,8 @@ export interface Press {
   fret: number;
   /** der Ziehpfeil der Blue Note statt des Punkts */
   arrow: boolean;
-  /** Druck 0 … 1, wenn das Gerät ihn wirklich misst */
-  pressure: number | null;
+  /** Anschlagstärke 0 … 1 aus Druck bzw. Kontaktfläche, wenn das Gerät sie wirklich misst; sonst null */
+  strength: number | null;
 }
 
 /** Ein liegender Finger; Bewegung relativ zum Aufsetzpunkt. */
@@ -30,48 +30,109 @@ export interface NeckGeometry {
   vertical?: boolean;
 }
 
-const pressure = new PressureSense();
+/** Ein Anschlag, wie er gemessen wurde (für die Messanzeige). */
+export interface StrikeInfo {
+  first: TouchSample;
+  peak: TouchSample;
+  strength: number | null;
+  /** Wartezeit bis zum Anschlag in ms und Zahl der Messpunkte darin */
+  waited: number;
+  samples: number;
+}
+
+const sense = new StrikeSense();
 let active = 0;
+let strikeListener: ((info: StrikeInfo) => void) | null = null;
 
 /** Liegt gerade ein Finger auf dem Hals? Solange zeichnet die Ansicht den Hals nicht neu (sonst verlöre er den Finger). */
 export function fingerDown(): boolean {
   return active > 0;
 }
 
+/** Messanzeige: gelernter Zustand und jeder Anschlag. */
+export function strikeSense(): StrikeSense {
+  return sense;
+}
+
+export function onStrike(listener: ((info: StrikeInfo) => void) | null): void {
+  strikeListener = listener;
+}
+
 const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
 
-function force(t: Touch): number | undefined {
-  const f = (t as unknown as { force?: number }).force;
-  return typeof f === 'number' ? f : undefined;
+/** Kraft und mittlerer Kontaktradius eines Fingers, soweit der Browser sie meldet. */
+export function touchSample(t: Touch): TouchSample {
+  const r = t as unknown as { force?: number; radiusX?: number; radiusY?: number };
+  const rx = typeof r.radiusX === 'number' ? r.radiusX : 0;
+  const ry = typeof r.radiusY === 'number' ? r.radiusY : rx;
+  return { force: typeof r.force === 'number' ? r.force : undefined, radius: rx > 0 || ry > 0 ? (rx + ry) / 2 : undefined };
 }
+
+function higher(a: number | undefined, b: number | undefined): number | undefined {
+  if (typeof a !== 'number') return b;
+  if (typeof b !== 'number') return a;
+  return Math.max(a, b);
+}
+
+/** Bewegt sich der Finger schon in der Wartezeit so weit, schlägt er sofort an (Wischen über die Saiten). */
+const MOVE_NOW = 6;
 
 /**
  * Finger (oder Maus) auf einer Stelle des Halses: anschlagen, halten, ziehen, rutschen, wiegen. Mehrere Finger
  * gleichzeitig klingen zusammen. Bewusst mit Touch- statt Pointer-Events: alte iPads (Safari 12) kennen nur diese.
+ *
+ * Meldet das Gerät Druck oder Kontaktfläche, wartet der Anschlag bis zu STRIKE_WAIT ms und nimmt den höchsten Wert
+ * darin: Beim Aufsetzen ist die Fläche noch klein, ein fester Anschlag wird erst in den nächsten Millisekunden breiter.
  */
-export function attachPlay(el: Element, geo: NeckGeometry, hit: (clientX: number, clientY: number) => Omit<Press, 'pressure'>, play: Play): void {
+export function attachPlay(el: Element, geo: NeckGeometry, hit: (clientX: number, clientY: number) => Omit<Press, 'strength'>, play: Play): void {
   const scale = () => {
     const r = geo.svg.getBoundingClientRect();
     return r.width ? r.width / geo.width : 1;
   };
-  const begin = (x: number, y: number, p: number | undefined) => {
-    pressure.observe(p);
+  const begin = (x: number, y: number, first: TouchSample | null) => {
     const base = hit(x, y);
     // vor dem Anschlag zählen: der Ton löst Neuzeichnen aus, das bis zum Loslassen warten muss
     active++;
-    const held = play({ string: base.string, fret: base.fret, arrow: base.arrow, pressure: pressure.normalised(p) });
-    if (!held) {
-      active--;
-      return null;
-    }
-    el.setAttribute('class', el.getAttribute('class') + ' down');
-    if (navigator.vibrate) navigator.vibrate(8);
+    if (first) sense.observe(first);
+    const startedAt = now();
+    let peak: TouchSample = first ? { force: first.force, radius: first.radius } : {};
+    let samples = first ? 1 : 0;
+    let held: Held | null = null;
+    let struck = false;
+    let done = false;
+    let timer = 0;
+    const strike = () => {
+      if (struck) return;
+      struck = true;
+      window.clearTimeout(timer);
+      const strength = first ? sense.strike(peak) : null;
+      if (first && strikeListener)
+        strikeListener({ first, peak, strength, waited: Math.round((now() - startedAt) * 1000), samples });
+      held = play({ string: base.string, fret: base.fret, arrow: base.arrow, strength });
+      if (!held) {
+        done = true;
+        active = Math.max(0, active - 1);
+        return;
+      }
+      el.setAttribute('class', el.getAttribute('class') + ' down');
+      if (navigator.vibrate) navigator.vibrate(8);
+    };
+    if (first && sense.worthWaiting(first)) timer = window.setTimeout(strike, STRIKE_WAIT);
+    else strike();
+    if (done) return null;
     const k = scale();
     const sign = geo.lefty ? -1 : 1;
-    let done = false;
     return {
-      move(mx: number, my: number, mp?: number) {
-        pressure.observe(mp);
+      move(mx: number, my: number, sample?: TouchSample) {
+        if (done) return;
+        if (sample) sense.observe(sample);
+        if (!struck && sample) {
+          peak = { force: higher(peak.force, sample.force), radius: higher(peak.radius, sample.radius) };
+          samples++;
+          if (Math.abs(mx - x) + Math.abs(my - y) < MOVE_NOW) return;
+        }
+        strike();
+        if (!held) return;
         if (geo.vertical) {
           const dy = my - y;
           held.move(dy / k / geo.fret, ((mx - x) * sign) / k / geo.gap, dy, now());
@@ -81,11 +142,13 @@ export function attachPlay(el: Element, geo: NeckGeometry, hit: (clientX: number
         held.move(dx / k / geo.fret, (my - y) / k / geo.gap, dx, now());
       },
       end() {
+        // kürzer getippt als die Wartezeit: trotzdem anschlagen, mit dem bis dahin höchsten Wert
+        strike();
         if (done) return;
         done = true;
         active = Math.max(0, active - 1);
         el.setAttribute('class', (el.getAttribute('class') || '').replace(/ down/g, ''));
-        held.end();
+        if (held) held.end();
       },
     };
   };
@@ -95,7 +158,7 @@ export function attachPlay(el: Element, geo: NeckGeometry, hit: (clientX: number
     ev.preventDefault();
     for (let i = 0; i < ev.changedTouches.length; i++) {
       const touch = ev.changedTouches[i];
-      const g = begin(touch.clientX, touch.clientY, force(touch));
+      const g = begin(touch.clientX, touch.clientY, touchSample(touch));
       if (!g) continue;
       const id = touch.identifier;
       const find = (list: TouchList) => {
@@ -106,7 +169,7 @@ export function attachPlay(el: Element, geo: NeckGeometry, hit: (clientX: number
         const tm = find((m as TouchEvent).changedTouches);
         if (!tm) return;
         m.preventDefault();
-        g.move(tm.clientX, tm.clientY, force(tm));
+        g.move(tm.clientX, tm.clientY, touchSample(tm));
       };
       const onEnd = (m: Event) => {
         if (!find((m as TouchEvent).changedTouches)) return;
@@ -126,7 +189,7 @@ export function attachPlay(el: Element, geo: NeckGeometry, hit: (clientX: number
     const ev = e as MouseEvent;
     if (ev.button !== 0) return;
     ev.preventDefault();
-    const g = begin(ev.clientX, ev.clientY, undefined);
+    const g = begin(ev.clientX, ev.clientY, null);
     if (!g) return;
     const onMove = (m: MouseEvent) => g.move(m.clientX, m.clientY);
     const onUp = () => {

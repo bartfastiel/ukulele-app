@@ -11,6 +11,7 @@ import { playableChord, tuningNow, type Tuning } from './ui/chord-play.ts';
 import { LEFTY_EVENT, syncLeftyBadge } from './ui/lefty.ts';
 import type { Chord } from './music/chords.ts';
 import { TUNING_EVENT, applyStoredTuning } from './ui/tuning.ts';
+import { strikeMeter, strikeMeterWanted } from './ui/strike-meter.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
 import { songs } from './views/songs.ts';
@@ -166,6 +167,7 @@ if (!redirectOldHash()) {
   renderSecrets();
   if (html.hasAttribute('data-hash-param')) window.addEventListener('hashchange', () => mount());
   offerLanguage(load().settings.lang);
+  if (strikeMeterWanted(location.search)) strikeMeter();
 }
 
 // Die Startseite liegt an der Wurzel; ein Service Worker dort wäre für alle Instrumente zuständig

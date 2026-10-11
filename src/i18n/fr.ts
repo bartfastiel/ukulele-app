@@ -126,6 +126,17 @@ export const FR: Record<string, string> = {
   'Eigene Lieder': 'Mes chansons',
   // src/ui/fretboard.ts
   'Griffbrett': 'Manche',
+  // Anschlagdynamik (src/ui/strike-meter.ts, Messanzeige mit ?druck=1)
+  'Druck-Messung': 'Mesure de la pression',
+  'Kraft': 'Force',
+  'Fläche': 'Surface',
+  'erkannt': 'détecté',
+  'noch offen': 'pas encore sûr',
+  'keiner': 'aucun',
+  'Anschlag': 'Attaque',
+  'ohne Sensor gleich laut': 'sans capteur, toujours le même volume',
+  'Klang': 'Son',
+  'Tipp auf eine Saite – leicht und fest.': 'Touche une corde – doucement, puis fort.',
   // src/ui/screen.ts
   'Zur Startseite': 'Accueil',
   'Zurück': 'Retour',
