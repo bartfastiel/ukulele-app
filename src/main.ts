@@ -4,6 +4,8 @@ import { lastInstrument, load, rememberInstrument, takeMoved } from './store.ts'
 import { isLang, setLang, t, tk } from './i18n.ts';
 import { base, brand, link } from './site/nav.ts';
 import { offerLanguage } from './ui/lang-switch.ts';
+import { christmasNow } from './site/season.ts';
+import { SEGMENTS } from './site/routes.ts';
 import { renderSecrets } from './ui/secret-text.ts';
 import { activeTuning, initInstrument, setTuning } from './music/instrument.ts';
 import { chord } from './music/chords.ts';
@@ -156,12 +158,32 @@ function offerLastInstrument(): void {
   (tile.querySelector('.tile-text') || tile).appendChild(badge);
 }
 
+/** Startseite in der Weihnachtszeit: Hinweis auf die Weihnachtslieder des vordersten (zuletzt gespielten) Instruments. */
+function offerChristmas(): void {
+  const first = document.querySelector('.home.start .tiles a.tile');
+  if (!christmasNow() || !first || !first.parentNode) return;
+  const l = isLang(html.lang) ? html.lang : 'de';
+  const card = document.createElement('a');
+  card.className = 'card hint season-hint';
+  card.setAttribute('href', (first.getAttribute('href') || '') + SEGMENTS.weihnachten[l] + '/');
+  const strong = document.createElement('strong');
+  strong.textContent = t('Weihnachtslieder') + ' ';
+  const go = document.createElement('span');
+  go.className = 'hint-go';
+  go.textContent = ' ' + t('Zu den Weihnachtsliedern') + ' ›';
+  card.appendChild(strong);
+  card.appendChild(document.createTextNode(t('Mit Akkorden und Text, die leichtesten zuerst.')));
+  card.appendChild(go);
+  first.parentNode.parentNode!.insertBefore(card, first.parentNode);
+}
+
 const isStart = html.getAttribute('data-site') === 'start';
 takeOverMove();
 if (isStart) offerLastInstrument();
 else if (html.hasAttribute('data-instrument')) rememberInstrument();
 if (!redirectOldHash()) {
   setLang(isLang(html.lang) ? html.lang : 'de');
+  if (isStart) offerChristmas();
   if (load().settings.calm) html.classList.add('calm');
   // Wissensartikel erklären die Normalstimmung – ihre Griffbilder werden vor dem Umstimmen gespiegelt
   playArticleChords();

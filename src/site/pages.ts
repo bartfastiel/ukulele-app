@@ -43,7 +43,9 @@ import { ownSongEditor } from '../views/own-song.ts';
 import { receiveSong, shareSong } from '../views/share.ts';
 import { teachers } from '../views/teachers.ts';
 import { chordChart, neckView, songSheet } from '../views/print.ts';
-import { CATEGORIES } from '../music/song.ts';
+import { CATEGORIES, difficulty, parseChordPro } from '../music/song.ts';
+import { oneStringTab, type OneStringTab } from '../music/one-string.ts';
+import { neutralSeason } from './season.ts';
 import { OG_HEIGHT, OG_WIDTH } from './og-image.ts';
 import { courseFor } from '../content/lektionen.ts';
 import { courseDescription, courseLd, coursePage, courseTitle, lessonDescription, lessonHeading, lessonLd, lessonPage, lessonPageTitle, type LessonCtx } from './lessons-page.ts';
@@ -301,6 +303,7 @@ function pagesForArticle(a: Article): [string, string][] {
   const out: [string, string][] = [];
   for (const tu of tuningPages()) if (tu.article === a.id) out.push([`stimmung/${tu.id}`, t('Akkorde in {tuning} – alle Griffbilder', { tuning: t(tu.name) })]);
   if (a.id === POWER_ARTICLE && powerChordNames().length) out.push(['powerchords', t('Alle Powerchords auf einen Blick')]);
+  if (a.id === CHRISTMAS_ARTICLE) out.push(['weihnachten', t('Alle Weihnachtslieder, die leichtesten zuerst')]);
   return out;
 }
 
@@ -438,6 +441,13 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
       crumb: s.title,
     });
   }
+  specs.push({
+    route: 'weihnachten',
+    title: bass ? t('Weihnachtslieder für {instrument} – Basstöne und Text', { instrument: inst }) : t('Weihnachtslieder für {instrument} – Akkorde und Text', { instrument: inst }),
+    description: t('{n} Weihnachtslieder für {instrument}, die leichtesten zuerst: deutsche, englische und französische Lieder mit Text zum Mitspielen – dazu Lieder auf nur einer Saite.', { n: christmasSongs().length, instrument: inst }),
+    body: () => christmasPage(siteDef, l),
+    crumb: t('Weihnachtslieder'),
+  });
   specs.push({ route: 'lied/eigen', title: t('Eigenes Lied'), description: t('Dein eigenes Lied, gespeichert nur auf diesem Gerät.'), view: player, hashParam: true, noindex: true, body: () => staticScreen(t('Eigenes Lied'), rel('lieder', l)) });
   // Liedblätter zum Ausdrucken: gleicher Inhalt wie die Liedseite, daher nicht in den Suchindex
   for (const s of SONGS)
@@ -850,6 +860,7 @@ function songsIntroCard(siteDef: SiteDef, l: Lang): Node {
         { class: 'wissen-list' },
         first ? h('li', null, h('a', { href: rel(`wissen/${first.id}`, l) }, first.title[l])) : null,
         h('li', null, h('a', { href: rel('akkorde', l) }, t('Töne auf dem {instrument} – wo liegt welcher Ton?', { instrument: inst }))),
+        h('li', null, h('a', { href: rel('weihnachten', l) }, t('Weihnachtslieder für {instrument}', { instrument: inst }))),
       ),
     );
   }
@@ -864,7 +875,108 @@ function songsIntroCard(siteDef: SiteDef, l: Lang): Node {
       { class: 'wissen-list' },
       easy ? h('li', null, h('a', { href: rel(`wissen/${easy.id}`, l) }, easy.title[l])) : null,
       h('li', null, h('a', { href: rel('akkorde', l) }, t('Akkorde für {instrument} – Griffbilder zum Lernen', { instrument: inst }))),
+      h('li', null, h('a', { href: rel('weihnachten', l) }, t('Weihnachtslieder für {instrument}', { instrument: inst }))),
     ),
+  );
+}
+
+/** Wissensartikel über die leichtesten Weihnachtslieder; er und die Weihnachtsseite verlinken einander. */
+const CHRISTMAS_ARTICLE = 'weihnachtslieder-leicht';
+
+/** Weihnachtslieder, die leichtesten zuerst (wie in der Liederliste der App). */
+function christmasSongs(): Song[] {
+  return SONGS.filter((s) => s.category === 'weihnachten').sort(
+    (a, b) => difficulty(a) - difficulty(b) || a.chords.length - b.chords.length || a.title.localeCompare(b.title, 'de'),
+  );
+}
+
+/** Lieder für den allerersten Schritt: die ganze Melodie auf einer Saite, nur Bundzahlen. */
+function oneStringSongs(): { song: Song; tab: OneStringTab }[] {
+  const out: { song: Song; tab: OneStringTab }[] = [];
+  for (const s of christmasSongs()) {
+    const tab = s.hasMelody ? oneStringTab(s, 9) : null;
+    if (tab) out.push({ song: s, tab });
+  }
+  // große Sprünge auf dem Hals sind für den ersten Schritt schwerer als ein hoher Bund
+  const effort = (x: OneStringTab) => {
+    const frets = x.lines.reduce((a: number[], l) => a.concat(l.map((n) => n.fret)), []);
+    let jumps = 0;
+    for (let i = 1; i < frets.length; i++) jumps += Math.abs(frets[i] - frets[i - 1]);
+    return jumps / Math.max(1, frets.length - 1) + 0.2 * x.maxFret;
+  };
+  return out.sort((a, b) => effort(a.tab) - effort(b.tab)).slice(0, 3);
+}
+
+function oneStringCard(l: Lang): Node | null {
+  const list = oneStringSongs();
+  if (!list.length) return null;
+  return h(
+    'section',
+    { class: 'card wissen-cat one-string' },
+    h('h2', null, t('Weihnachtslieder auf einer Saite')),
+    h('p', null, t('Der allererste Schritt, ganz ohne Akkorde: Die ganze Melodie liegt auf einer einzigen Saite. Die Zahl über der Silbe ist der Bund, 0 heißt leere Saite.')),
+    ...list.map((x) =>
+      h(
+        'div',
+        { class: 'os-song' },
+        h('h3', null, h('a', { href: rel(`lied/${x.song.id}`, l) }, x.song.title)),
+        h(
+          'p',
+          { class: 'small' },
+          t('Auf der {string}-Saite.', { string: STRINGS[x.tab.string].name }),
+          x.tab.shift ? ' ' + t('In einer anderen Tonart als in der App, damit alles auf eine Saite passt.') : '',
+        ),
+        ...x.tab.lines.map((line) =>
+          h(
+            'p',
+            { class: 'os-line' },
+            ...line.map((n) => h('span', { class: 'os-note' }, h('b', null, String(n.fret)), h('span', null, n.hold ? '~' : n.syllable + (n.joinNext ? '-' : '')))),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+function christmasPage(siteDef: SiteDef, l: Lang): Node[] {
+  const inst = siteDef.name[l];
+  const all = christmasSongs();
+  const article = articlesOn(siteDef).filter((a) => a.id === CHRISTMAS_ARTICLE)[0];
+  const levels: [number, string][] = [
+    [1, t('Leicht')],
+    [2, t('Mittel')],
+    [3, t('Knifflig')],
+  ];
+  return staticScreen(
+    t('Weihnachtslieder'),
+    rel('lieder', l),
+    h(
+      'section',
+      { class: 'card article' },
+      h('p', null, notesOnly()
+        ? t('{n} Weihnachtslieder zum Mitspielen auf {instrument}: Zu jedem Akkord zeigt die App den Grundton, die Begleitung wartet auf dich. Die leichtesten stehen oben.', { n: all.length, instrument: inst })
+        : t('{n} Weihnachtslieder zum Mitspielen auf {instrument}, mit Akkorden über dem Text und vielen Melodien als Tabulatur. Die leichtesten stehen oben – oft reichen zwei oder drei Griffe.', { n: all.length, instrument: inst })),
+      notesOnly() ? null : h('aside', { class: 'tip' }, h('strong', null, t('Tipp:'), ' '), t('Im Lied stellst du unter „Tonart“ jede andere Tonart ein, ★ markiert die mit den leichtesten Griffen – Melodie und Tabulatur wandern mit. „Einfache Griffe“ tauscht schwere Griffe gegen leichtere.')),
+      h('p', null, t('Auch zum Singen hilft der Tonart-Wechsel: Der Vorschlag ★ achtet neben leichten Griffen auf eine angenehme Singlage für Kinderstimmen.')),
+      article ? h('p', null, h('a', { href: rel(`wissen/${article.id}`, l) }, article.title[l], ' ›')) : null,
+    ),
+    ...levels
+      .filter((lv) => all.some((s) => difficulty(s) === lv[0]))
+      .map((lv) =>
+        h(
+          'section',
+          { class: 'card wissen-cat' },
+          h('h2', null, lv[1]),
+          h(
+            'ul',
+            { class: 'wissen-list' },
+            ...all
+              .filter((s) => difficulty(s) === lv[0])
+              .map((s) => h('li', null, h('a', { href: rel(`lied/${s.id}`, l) }, s.title), h('span', { class: 'small' }, ' – ', s.chords.join(', ')))),
+          ),
+        ),
+      ),
+    oneStringCard(l),
   );
 }
 
@@ -903,7 +1015,8 @@ function lyricLines(s: Song): { chord: string; text: string }[][] {
 }
 
 function lyricsCard(s: Song): Node | null {
-  const lines = lyricLines(s);
+  // die Melodie hat nur die erste Strophe; zum Mitlesen alle Strophen aus dem Text mit Akkorden
+  const lines = lyricLines(s.lyrics ? parseChordPro({ ...s, chordpro: s.lyrics }) : s);
   if (!lines.length) return null;
   return h(
     'section',
@@ -950,6 +1063,7 @@ function moreSongs(s: Song, l: Lang): Node | null {
     { 'aria-label': t(cat.title) },
     h('h2', null, t('Mehr Lieder: {category}', { category: t(cat.title) })),
     h('ul', { class: 'wissen-list' }, ...others.map((x) => h('li', null, h('a', { href: rel(`lied/${x.id}`, l) }, x.title)))),
+    s.category === 'weihnachten' ? h('p', null, h('a', { href: rel('weihnachten', l) }, t('Alle Weihnachtslieder, die leichtesten zuerst'), ' ›')) : null,
   );
 }
 
@@ -1130,7 +1244,7 @@ function articlePage(a: Article, siteDef: SiteDef, l: Lang): Node[] {
     rel('wissen', l),
     h('article', { class: 'card article' }, ...renderBlocks(a.blocks, siteDef, l)),
     pages.length
-      ? h('section', { class: 'card wissen-cat' }, h('h2', null, t('Griffe dazu')), h('ul', { class: 'wissen-list' }, ...pages.map((x) => h('li', null, h('a', { href: rel(x[0], l) }, x[1])))))
+      ? h('section', { class: 'card wissen-cat' }, h('h2', null, a.id === CHRISTMAS_ARTICLE ? t('Lieder dazu') : t('Griffe dazu')), h('ul', { class: 'wissen-list' }, ...pages.map((x) => h('li', null, h('a', { href: rel(x[0], l) }, x[1])))))
       : null,
     related.length
       ? h('section', { class: 'card wissen-cat' }, h('h2', null, t('Passt dazu')), h('ul', { class: 'wissen-list' }, ...related.map((r) => h('li', null, h('a', { href: rel(`wissen/${r.id}`, l) }, r.title[l])))))
@@ -1359,9 +1473,10 @@ function breadcrumbLd(spec: Spec, siteDef: SiteDef, l: Lang, canonicalBase: stri
     stimmung: ['stimmen', t('Stimmgerät')],
     powerchords: ['akkorde', t('Akkorde')],
     lektion: ['lektionen', t('Lektionen')],
+    weihnachten: ['lieder', t('Lieder')],
   };
   const items: [string, string][] = [['', siteDef.brand[l]]];
-  if (parent[name] && (spec.route.indexOf('/') > 0 || name === 'powerchords')) items.push(parent[name]);
+  if (parent[name] && (spec.route.indexOf('/') > 0 || name === 'powerchords' || name === 'weihnachten')) items.push(parent[name]);
   items.push([spec.route, spec.crumb || spec.title]);
   return {
     '@context': 'https://schema.org',
@@ -1514,6 +1629,7 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
 /** Alle Seiten einer Instrument-Seite (bzw. der Startseite) in allen Sprachen. */
 export function renderSite(siteId: SiteId, buildEnv: BuildEnv): Page[] {
   installDom();
+  neutralSeason();
   currentEnv = buildEnv;
   const siteDef = SITES.filter((s) => s.id === siteId)[0];
   currentBase = pathname(buildEnv.url(siteId));

@@ -2,6 +2,7 @@ import { parseSong, type Song, type SongSource } from './song.ts';
 import { CHORD_SONGS } from './songs-chordpro.ts';
 import { KINDER_SONGS } from './songs-kinder.ts';
 import { ENGLISH_SONGS } from './songs-english.ts';
+import { CHRISTMAS_SONGS } from './songs-weihnachten.ts';
 import { MELODIES } from './songs-melodies.ts';
 
 
@@ -252,6 +253,7 @@ function withMelody(src: SongSource): SongSource {
   return {
     ...src,
     chordpro: undefined,
+    lyrics: src.chordpro,
     text: m.text,
     meter: m.meter,
     pickup: m.pickup || undefined,
@@ -262,7 +264,7 @@ function withMelody(src: SongSource): SongSource {
   };
 }
 
-export const SONGS: Song[] = SONG_SOURCES.concat(CHORD_SONGS, KINDER_SONGS, ENGLISH_SONGS).map(withMelody).map(parseSong);
+export const SONGS: Song[] = SONG_SOURCES.concat(CHORD_SONGS, KINDER_SONGS, ENGLISH_SONGS, CHRISTMAS_SONGS).map(withMelody).map(parseSong);
 
 export function song(id: string): Song | undefined {
   return SONGS.find((s) => s.id === id);

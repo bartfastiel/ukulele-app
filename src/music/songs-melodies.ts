@@ -37,9 +37,6 @@ han:G4:0.5 i:G4:0.5 [F]doch:A4 mei:A4 Freud:C5 an:B4:0.5 ~:A4:0.5 [C]dir.:G4:2
 _:R Wenn:C4:0.5 i:E4:0.5 komm,:G4 wenn:G4:0.5 i:A4:0.5 komm,:G4 wenn:G4:0.5 i:C5:0.5 [G7]wie-:G4 der-:G4:0.5 um:F4:0.5 [C]komm,:E4:2
 [G7]wie-:G4 der-:G4:0.5 um:F4:0.5 [C]komm,:E4 kehr:E4:0.5 i:G4:0.5 [G7]ein:F4 mein:F4 Schatz:D4 bei:G4 [C]dir.:E4:2
 _:R` },
-  'mond-ist-aufgegangen': { meter: 4, pickup: 1, originalKey: 'F', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Abendlied (Matthias Claudius)“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Abendlied_(Matthias_Claudius)&oldid=267877595', text: `
-[C]Der:C4 [G]Mond:D4 ist:C4 [F]auf-:F4 ge-:E4 [G]gan-:D4:2 [C]gen,:C4 die:E4 gold-:E4 nen:E4 [F]Stern-:A4 lein:G4 pran-:F4:2 [C]gen:E4 am:E4 Him-:E4 mel:E4 [F]hell:F4 und:E4 [G]klar.:D4:3
-[C]Der:C4 [G]Wald:D4 steht:C4 [F]schwarz:F4 und:E4 [G]schwei-:D4:2 [C]get,:C4 und:E4 aus:E4 den:E4 [F]Wie-:A4 sen:G4 stei-:F4:2 [C]get:E4 der:E4 wei-:E4 ße:E4 [F]Ne-:F4 bel:E4 [G]wun-:D4 der-:D4 [C]bar.:C4` },
   'bunt-sind-die-waelder': { meter: 6, pickup: 0, originalKey: 'G', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Bunt sind schon die Wälder“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Bunt_sind_schon_die_W%C3%A4lder&oldid=265580824', text: `
 [C]Bunt:C5:2 sind:C5 schon:C5 ~:B4 die:C5 [G7]Wäl-:D5:3 [C]der,:C5:3 gelb:E5:2 die:E5 Stop-:E5 ~:D5 pel-:E5 [G7]fel-:F5:3 [C]der,:E5:3
 [F6]und:D5:2 der:D5 [D7]Herbst:C5 ~:E5 be-:F#4 [G]ginnt.:G4:3
@@ -246,11 +243,6 @@ Chri-:C4 stus,:E4:0.5 der:C4:0.5 Herr,:E4:0.5 ist:G4:0.5 [F]heu-:C5 te:E5:0.5 ge
 [C]Den:C5 Gott:E5:0.5 zum:C5:0.5 Hei-:E5:0.5 land:G5:0.5 [F]euch:C5 hat:E5:0.5 er-:C5:0.5 [G7]ko-:D5:0.5 ren.:G4:0.5
 [C]Fürch-:G5 tet:E5:0.5 ~:G5:0.5 [G7]euch:D5:0.5 ~:E5:0.5 [C]nicht!:C5:2
 _:R` },
-  'clementine': { meter: 3, pickup: 1, originalKey: 'G', similarity: 0.95, source: 'Melodie gemeinfrei, Notation nach „College Songs (Waite, 1887)“ (Wikisource, CC BY-SA 4.0)', url: 'https://en.wikisource.org/w/index.php?title=Page%3ACollege_Songs_(Waite%2C_1887).djvu%2F22&oldid=13965353', text: `
-[C]In:C5:0.75 a:C5:0.25 cav-:C5 ern,:G4 in:E5:0.75 a:E5:0.25 can-:E5 on,:C5
-Ex-:C5:0.5 ca-:E5:0.5 vat-:G5 ing:G5 for:F5:0.5 a:E5:0.5 [G7]mine,:D5:2 Dwelt:D5:0.75 a:E5:0.25 min-:F5 er,:F5
-for-:E5:0.75 ty-:D5:0.25 [C]nin-:E5 er,:C5 And:C5:0.75 his:E5:0.25 daugh-:D5 ter,:G4
-[G7]Cle-:B4:0.75 men-:D5:0.25 [C]tine.:C5:2` },
   'my-bonnie': { meter: 3, pickup: 1, originalKey: 'G', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „My Bonnie Lies over the Ocean“ (CC BY-SA 4.0)', url: 'https://en.wikipedia.org/w/index.php?title=My_Bonnie_Lies_over_the_Ocean&oldid=1371358716', text: `
 [C]My:G4 Bon-:E5 nie:D5 lies:C5 [F]o-:D5 ver:C5 the:A4 [C]o-:G4 cean.:E4:4
 My:G4 Bon-:E5 nie:D5 lies:C5 [D7]o-:C5 ver:B4 the:C5 [G7]sea.:D5:5
@@ -274,4 +266,88 @@ and:E5 [F]auld:C5:1.5 ~:A4:0.5 lang:A4 ~:G4 syne?:C5:3
 For:A5 [C]auld:G5:1.5 ~:E5:0.5 lang:E5 ~:C5 [G7]syne,:D5:1.5 my:C5:0.5 jo,:D5
 for:A5 [C]auld:G5:1.5 ~:E5:0.5 lang:E5 ~:G5 [F]syne,:A5:3 we'll:A5 [C]tak':G5:1.5 a:E5:0.5 cup:E5 o':C5 [G7]kind-:D5:1.5 ness:C5:0.5 yet,:D5
 for:E5 [F]auld:C5:1.5 ~:A4:0.5 lang:A4 ~:G4 [C]syne.:C5:3` },
+  'es-ist-ein-ros': { meter: 4, pickup: 2, originalKey: 'F', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Es ist ein Ros entsprungen“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Es_ist_ein_Ros_entsprungen&oldid=270412355', text: `
+[C]Es:G5:2 ist:G5 ein:G5 [Am]Ros:A5 ent-:G5 [C]sprun-:G5:2 gen:E5:2 [F]aus:F5:2 [C]ei-:E5 ner:D5:2 Wur-:C5:2 [G7]zel:B4 [C]zart,:C5:2
+Wie:G5:2 uns:G5 die:G5 [Am]Al-:A5 ten:G5 [C]sun-:G5:2 gen,:E5:2 [F]von:F5:2 [C]Jes-:E5 se:D5:2 kam:C5:2 [G7]die:B4 [C]Art,:C5:2
+_:R Und:E5 [G7]hat:D5 ein:B4 [Am]Blüm-:C5 lein:A4 [C]bracht,:G4:2 _:R mit-:G5 ten:G5 im:G5 [Am]kal-:A5 ten:G5 [C]Win-:G5:2 ter,:E5:2
+[F]wohl:F5:2 [C]zu:E5 der:D5:2 hal-:C5:2 [G7]ben:B4 [C]Nacht.:C5:2` },
+  'am-weihnachtsbaum': { meter: 3, pickup: 1.5, originalKey: 'C', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Am Weihnachtsbaum die Lichter brennen“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Am_Weihnachtsbaum_die_Lichter_brennen&oldid=262727332', text: `
+[C]Am:C4:0.5 Weih-:C4:0.5 nachts-:E4:0.5 baum:G4 ~:E4:0.5 die:G4:0.5 Lich-:C5:0.5 ter:A4:0.5 bren-:G4 nen,:E4:0.5
+wie:G4:0.5 glänzt:A4:0.5 er:G4:0.5 [G7]fest-:F4 lich,:D4 lieb:G4:0.5 und:G4:0.5 [C]mild,:E4
+_:R:0.5 als:E4:0.5 spräch’:E4:0.5 er:G4:0.5 [G7]wollt:F4 ~:D4:0.5 in:F4:0.5 mir:F4:0.5 er-:A4:0.5 [C]ken-:G4 nen:E4:0.5 ge-:E4:0.5 treu-:E4:0.5 er:G4:0.5 [G7]Hoff-:F4 nung:D4 still-:G4:0.5 es:G4:0.5 [C]Bild.:E4
+_:R:0.5` },
+  'was-soll-das-bedeuten': { meter: 3, pickup: 1, originalKey: 'G', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Was soll das bedeuten“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Was_soll_das_bedeuten&oldid=231184199', text: `
+[C]Was:C4:0.5 ~:D4:0.5 soll:E4 das:E4 be-:D4:0.5 ~:E4:0.5 [G7]deu-:F4 ten?:F4
+Es:E4:0.5 ~:F4:0.5 ta-:G4 get:G4 ja:F4:0.5 ~:E4:0.5 schon.:D4:2
+Ich:C4:0.5 ~:D4:0.5 [C]weiß:E4 wohl,:E4 es:D4:0.5 ~:E4:0.5 [G7]geht:F4 erst:F4 um:E4:0.5 ~:F4:0.5 Mit-:G4 ter-:G4 nacht:F4:0.5 ~:E4:0.5 rum.:D4:2
+_:R Schaut:D4 nur:D4:0.5 ~:C4:0.5 da-:D4:0.5 ~:F4:0.5 [C]her,:E4:2 _:R schaut:E4 nur:E4:0.5 ~:D4:0.5 da-:E4:0.5 ~:F4:0.5 [G7]her,:D4:2
+wie:G4:0.5 ~:F4:0.5 [C]glän-:E4 zen:G4 die:F4:0.5 ~:E4:0.5 [G7]Stern-:D4:0.5 ~:E4:0.5 lein:F4 je:E4:0.5 ~:D4:0.5 [C]län-:C4:0.5 ~:D4:0.5 ger,:E4
+je:D4 mehr.:C4:2` },
+  'still-still-still': { meter: 2, pickup: 0, originalKey: 'F', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Still, still, still“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Still%2C_still%2C_still&oldid=261911341', text: `
+[C]Still,:G5 ~:C5 still,:E5 ~:G5 still,:C5 weil’s:C5:0.5 ~:E5:0.5 [G7]Kind-:D5 lein:D5:0.5 ~:F5:0.5 schla-:B4 fen:B4:0.5 ~:D5:0.5 [C]will.:C5:2
+_:R Ma-:C5 [G7]ri-:D5 a:D5:0.5 ~:E5:0.5 tut:F5 es:D5 [C]nie-:E5 der-:E5:0.5 ~:F5:0.5 sing-:G5 en,:E5
+[G7]ih-:D5 re:D5:0.5 ~:E5:0.5 keu-:F5 sche:D5 [C]Brust:E5 dar-:E5:0.5 ~:F5:0.5 brin-:G5 gen.:E5
+Still,:G5 ~:C5 still,:E5 ~:G5 still,:C5 weil’s:C5:0.5 ~:E5:0.5 [G7]Kind-:D5 lein:D5:0.5 ~:F5:0.5 schla-:B4 fen:B4:0.5 ~:D5:0.5 [C]will.:C5:2` },
+  'zu-bethlehem-geboren': { meter: 4, pickup: 1, originalKey: 'F', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Zu Bethlehem geboren“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Zu_Bethlehem_geboren&oldid=252973153', text: `
+[C]Zu:G4 Beth-:C5:1.5 le-:D5:0.5 hem:E5 ge-:D5 bo-:C5:2 [G7]ren:B4 ist:C5 uns:D5 ein:C5:0.5 ~:D5:0.5 [C]Kin-:E5 de-:D5 lein.:C5:2
+_:R Das:G5 hab:G5 ich:E5 [G7]aus-:F5 er-:G5 [F]ko-:A5:2 ren,:F5
+sein:F5 [C]ei-:E5 gen:F5 will:G5 ich:F5:0.5 ~:E5:0.5 [G7]sein.:D5:3
+_:R Ei-:G5:2 a,:D5:2 [C]ei-:E5:2 [G7]a,:D5 sein:E5:0.5 ~:F5:0.5 ei-:G5 gen:C5:0.5 ~:D5:0.5 [C]will:E5 ich:D5 sein.:C5:3` },
+  'macht-hoch-die-tuer': { meter: 3, pickup: 1, originalKey: 'G', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Macht hoch die Tür“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Macht_hoch_die_T%C3%BCr&oldid=270515756', text: `
+[C]Macht:E4 [G7]hoch:G4:2 die:F4 [C]Tür,:E4:2 die:D4 Tor:C4 ~:D4 macht:E4 [G7]weit!:D4:2
+Es:G4 kommt:F4:2 der:F4 [C]Herr:E4:2 der:E4 [G7]Herr-:D4 ~:C4 lich-:D4 [C]keit,:C4:2
+ein:E4 [G7]Kö-:D4:2 nig:D4 [C]al-:E4 ~:F#4 ler:G4 Kö-:G4 ~:A4 nig-:F#4 [G7]reich,:G4:2
+ein:D4 [C]Hei-:E4:2 land:D4 al-:E4 ~:F#4 ler:G4 Welt:G4 ~:A4 zu-:F#4 gleich,:G4:2
+der:G4 [Am]Heil:A4:2 und:G4 Le-:A4:2 ben:G4 [Dm]mit:A4 ~:G4 sich:F4 [C]bringt,:E4:2
+der-:G4 [Am]hal-:A4:2 ben:G4 jauchzt,:A4:2 mit:G4 [Dm]Freu-:A4 ~:G4 den:F4 [C]singt:E4:2
+ge-:G4 lo-:C4:2 bet:C4 [G7]sei:F4:2 mein:E4 Gott,:D4:5 mein:G4 Schöp-:F4:2 fer,:E4
+reich:D4 ~:C4 von:D4 [C]Rat!:C4:5` },
+  'es-kommt-ein-schiff': { meter: 4, pickup: 1, originalKey: 'Dm', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Es kommt ein Schiff, geladen“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Es_kommt_ein_Schiff%2C_geladen&oldid=266130537', text: `
+[Am]Es:E5 kommt:E5:2 [C]ein:E5 Schiff,:G5:2 ge-:G5 [Am]la-:A5:3 den:A5:2 bis:E5 [Dm]an:F5:2 sein:F5 höch-:D5:2 sten:D5 [Am]Bord,:E5:2
+_:R trägt:C5 [C]Got-:E5 tes:G5 [Am]Sohn:A5 voll:A5 [G]Gna-:G5:0.5 ~:F5:0.5 ~:E5:0.5 ~:D5:0.5 [Am]den,:C5
+des:D5 [E7]Va-:E5 ters:D5 [Am]e-:C5 wigs:B4 Wort.:A4:3` },
+  'il-est-ne': { meter: 2, pickup: 0, originalKey: 'G', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Il est né, le divin Enfant“ (CC BY-SA 4.0)', url: 'https://en.wikipedia.org/w/index.php?title=Il_est_n%C3%A9%2C_le_divin_Enfant&oldid=1324825612', text: `
+[C]Il:G4 est:C5 né:C5 le:E5:0.5 di-:C5:0.5 vin:G4 En-:C5 fant,:C5:2
+jou-:C5 ez:C5:0.5 haut-:D5:0.5 bois,:E5 ré-:F5:0.5 son-:E5:0.5 [G7]nez:D5 mu-:C5 set-:D5:0.5 ~:B4:0.5 tes!:G4
+[C]Il:G4 est:C5 né,:C5 le:E5:0.5 di-:C5:0.5 vin:G4 En-:C5 fant,:C5:2
+chan-:C5 tons:D5 tous:E5 son:F5:0.5 a-:E5:0.5 [G7]vè-:D5 ne-:G5 [C]ment!:C5:2
+De-:E5 puis:F5 plus:G5 de:F5:0.5 qua-:E5:0.5 [G7]tre:F5 mille:A5 [C]ans,:G5:2
+nous:E5 le:F5 pro-:G5 met-:A5:0.5 taient:G5:0.5 les:F5 pro-:E5 [G7]phè-:E5 tes,:D5
+[C]de-:E5 puis:F5 plus:G5 de:F5:0.5 qua-:E5:0.5 [G7]tre:F5 mille:A5 [C]ans,:G5:2
+nous:E5 at-:F5 ten-:G5 dions:A5:0.5 cet:G5:0.5 [G7]heu-:F5 [C]reux:E5 [G7]temps.:D5:2` },
+  'entre-le-boeuf': { meter: 4, pickup: 0, originalKey: 'Em', similarity: 0.97, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Entre le bœuf et l’âne gris“ (CC BY-SA 4.0)', url: 'https://fr.wikipedia.org/w/index.php?title=Entre_le_b%C5%93uf_et_l%27%C3%A2ne_gris&oldid=239977253', text: `
+[Am]En-:A4:2 tre:A4 le:B4 bœuf:C5:2 et:A4:2 l'â-:E5:2 ne:E5:2 gris:E5:4 Dort,:A5:4
+dort,:E5:4 [E7]dort:E5 le:D5 [Am]pe-:C5 tit:D5 fils:E5:4 Mille:A4 an-:B4 ges:C5 di-:D5 [E7]vins:D5:4 Mil-:E5 le:D5 [Am]sé-:C5 ra-:B4 phins:A4:4 Vo-:A4 lent:B4 à:C5 l'en-:D5 tour:E5:1.5 De:C5:0.5 [E7]ce:D5 grand:E5 [Am]Dieu:C5:2 [E7]d'a-:B4:2 [Am]mour:A4:4` },
+  'hark-the-herald': { meter: 4, pickup: 0, originalKey: 'F', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Hark! The Herald Angels Sing“ (CC BY-SA 4.0)', url: 'https://en.wikipedia.org/w/index.php?title=Hark!_The_Herald_Angels_Sing&oldid=1359078229', text: `
+[C]Hark!:G4 the:C5 her-:C5:1.5 ald:B4:0.5 an-:C5 gels:E5 sing,:E5 ~:D5 Glo-:G5 ry:G5 [G7]to:G5:1.5 the:F5:0.5 [C]new-:E5 born:D5 King;:E5:2
+peace:G4 on:C5 earth,:C5:1.5 and:B4:0.5 mer-:C5 cy:E5 mild,:E5 ~:D5 [G7]God:G5 and:D5 sin-:D5:1.5 ners:B4:0.5 rec-:B4 on-:A4 ciled!:G4:2 Joy-:G5 ful,:G5
+[C]all:G5 ye:C5 [G7]na-:F5 tions:E5 [C]rise,:E5 ~:D5 join:G5 the:G5 tri-:G5 umph:C5 [G7]of:F5 the:E5 [C]skies;:E5
+~:D5 [Am]With:A5 th'an-:A5 gel-:A5 ic:G5 [G7]host:F5 pro-:E5 claim:F5:2 Christ:D5 is:E5:0.5 ~:F5:0.5 [C]born:G5:1.5 in:C5:0.5 Beth-:C5 le-:D5 hem!:E5:2 [Am]Hark!:A5:1.5
+the:A5:0.5 her-:A5 ald:G5 [G7]an-:F5 gels:E5 sing,:F5:2 Glo-:D5 ry:E5:0.5 ~:F5:0.5 [C]to:G5:1.5 the:C5:0.5 new-:C5 born:D5 king.:C5:2` },
+  'away-in-a-manger': { meter: 3, pickup: 1, originalKey: 'F', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Away in a Manger“ (CC BY-SA 4.0)', url: 'https://en.wikipedia.org/w/index.php?title=Away_in_a_Manger&oldid=1331519026', text: `
+[C]A-:G5 way:G5:1.5 in:F5:0.5 a:E5 man-:E5:1.5 ger,:D5:0.5 No:C5 [F]crib:C5 for:B4 a:A4 [C]bed,:G4:2
+The:G4 lit-:G4:1.5 tle:A4:0.5 Lord:G4 [G7]Je-:G4 sus:D5 Laid:B4 [F]down:A4 His:G4 sweet:C5 [C]head.:E5:2
+The:G5 stars:G5:1.5 in:F5:0.5 the:E5 sky:E5:1.5 ~:D5:0.5 Looked:C5 [F]down:C5 where:B4 He:A4 [C]lay,:G4:2
+The:G4 [G7]lit-:F5:1.5 tle:E5:0.5 Lord:D5 [C]Je-:E5 sus:D5 A-:C5 [G7]sleep:D5 on:A4 the:B4 [C]hay.:C5:2` },
+  'we-three-kings': { meter: 3, pickup: 0, originalKey: 'Em', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „We Three Kings“ (CC BY-SA 4.0)', url: 'https://en.wikipedia.org/w/index.php?title=We_Three_Kings&oldid=1373948208', text: `
+[Am]We:E5:2 three:D5 kings:C5:2 of:A4 [E7]O-:B4 ri-:C5 ent:B4 [Am]are,:A4:2
+_:R Bear-:E5:2 ing:D5 gifts:C5:2 we:A4 [E7]tra-:B4 verse:C5 a-:B4 [Am]far,:A4:2
+_:R Field:C5:2 and:C5 [G]foun-:D5:2 tain,:D5 [C]Moor:E5:2 and:E5 moun-:G5 ~:F5 tain,:E5
+[Dm]Fol-:D5 low-:E5 ing:D5 [Am]yon-:C5:2 [E7]der:B4 [Am]star.:A4:2
+_:R [G7]O:B4:2 ~:D5 [C]star:C5:2 of:C5 won-:C5:2 der,:G4 [F]star:C5:2 of:A4 [C]night,:C5:2
+_:R Star:C5:2 with:C5 roy-:C5:2 al:G4 [F]beau-:C5:2 ty:A4 [C]bright,:C5:2
+_:R [Am]West-:C5:2 ward:C5 [G]lead-:D5:2 [C]ing,:E5 [F]Still:F5:2 [C]pro-:E5 [G]ceed-:D5:2 [C]ing,:E5
+Guide:C5:2 [F]us:C5 [C]to:C5:2 Thy:G4 [F]per-:C5:2 fect:A4 [C]light.:C5:3` },
+  'i-saw-three-ships': { meter: 6, pickup: 1, originalKey: 'Ab', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „I Saw Three Ships“ (CC BY-SA 4.0)', url: 'https://en.wikipedia.org/w/index.php?title=I_Saw_Three_Ships&oldid=1358441275', text: `
+[C]I:G4 saw:C5:2 three:C5 [G7]ships:D5:2 come:E5 [C]sail-:G5:2 ing:E5 [G7]in:D5:2 on:F5 [C]Christ-:E5:2 mas:C5 day,:C5:2
+on:E5 [G7]Christ-:D5:2 mas:B4 day;:G4:2
+I:G4 [C]saw:C5:2 three:C5 [G7]ships:D5:2 come:E5 [C]sail-:G5:2 ing:E5 [G7]in:D5:2 on:F5 [C]Christ-:E5:2 mas:C5 day:C5 in:D5 the:E5 [G7]morn-:D5:3 [C]ing.:C5:2` },
+  'mond-ist-aufgegangen': { meter: 4, pickup: 1, originalKey: 'F', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Abendlied (Matthias Claudius)“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Abendlied_(Matthias_Claudius)&oldid=267877595', text: `
+[C]Der:C4 [G]Mond:D4 ist:C4 [F]auf-:F4 ge-:E4 [G]gan-:D4:2 [C]gen,:C4 die:E4 gold-:E4 nen:E4 [F]Stern-:A4 lein:G4 pran-:F4:2 [C]gen:E4 am:E4 Him-:E4 mel:E4 [F]hell:F4 und:E4 [G]klar.:D4:3
+[C]Der:C4 [G]Wald:D4 steht:C4 [F]schwarz:F4 und:E4 [G]schwei-:D4:2 [C]get,:C4 und:E4 aus:E4 den:E4 [F]Wie-:A4 sen:G4 stei-:F4:2 [C]get:E4 der:E4 wei-:E4 ße:E4 [F]Ne-:F4 bel:E4 [G]wun-:D4 der-:D4 [C]bar.:C4` },
+  'clementine': { meter: 3, pickup: 1, originalKey: 'G', similarity: 0.95, source: 'Melodie gemeinfrei, Notation nach „College Songs (Waite, 1887)“ (Wikisource, CC BY-SA 4.0)', url: 'https://en.wikisource.org/w/index.php?title=Page%3ACollege_Songs_(Waite%2C_1887).djvu%2F22&oldid=13965353', text: `
+[C]In:C5:0.75 a:C5:0.25 cav-:C5 ern,:G4 in:E5:0.75 a:E5:0.25 can-:E5 on,:C5
+Ex-:C5:0.5 ca-:E5:0.5 vat-:G5 ing:G5 for:F5:0.5 a:E5:0.5 [G7]mine,:D5:2 Dwelt:D5:0.75 a:E5:0.25 min-:F5 er,:F5
+for-:E5:0.75 ty-:D5:0.25 [C]nin-:E5 er,:C5 And:C5:0.75 his:E5:0.25 daugh-:D5 ter,:G4
+[G7]Cle-:B4:0.75 men-:D5:0.25 [C]tine.:C5:2` },
 };
