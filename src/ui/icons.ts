@@ -18,6 +18,7 @@ const PATHS: Record<string, string> = {
   sound: 'M4 9v6h4l5 4V5L8 9zM16 8a5 5 0 0 1 0 8M18.5 5.5a9 9 0 0 1 0 13',
   star: 'M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z',
   check: 'M4 12l5 5L20 6',
+  steps: 'M3 20h5v-5h5v-5h5V5h3M3 20h18',
   next: 'M5 4v16l10-8zM17 4h3v16h-3z',
   text: 'M4 6h16M4 11h16M4 16h11',
   blues: 'M3 15c3 0 3-6 6-6s3 6 6 6 3-6 6-6M3 19h18',

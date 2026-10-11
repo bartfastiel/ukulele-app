@@ -50,7 +50,10 @@ src/site/                routes.ts (interne Routen „lied/<id>“, „akkord/C�
                          Seiten), chord-names.ts, legal-data.ts (Impressum-Angaben), move.ts (Umzug auf neue Domain),
                          app-icon.ts (App-Symbole je Seite, SVG + PNG im Build), relatives.ts (Hinweise auf verwandte Instrumente)
                          Aufbau: eigene Domain mit Pfaden (/ukulele/ …, Startseite an der Wurzel) oder Subdomains; s. tools/build.mjs
-src/content/             Wissenssammlung (Artikel je Instrument, de/en/fr, nur Daten)
+src/content/             Wissenssammlung (Artikel je Instrument, de/en/fr, nur Daten); Lernweg lektionen.ts mit Kursdaten je
+                         Instrument (lektionen-<instrument>.ts, Nummern = Adresse /lektion/4/, nie verschieben, Neues hinten),
+                         kurse.ts (Instrumente mit Kurs, für die App); Seiten und A4-Druckblatt in src/site/lessons-page.ts,
+                         Häkchen/Drucken in src/ui/lessons.ts; Lieder in einer Tonart verlinken: lied/<id>/?tonart=G
 src/views/*.ts           je Ansicht eine Funktion (root, param) → Aufräumfunktion
 src/views/player.ts      Karaoke: Transport auf der AudioContext-Uhr, Vorausplanung (25-ms-Takt, 150 ms Horizont),
                          Modus „Wartet auf mich“ hält an jedem Akkordwechsel (stopBeat) und hört per listen.ts zu

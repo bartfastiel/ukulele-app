@@ -10,7 +10,7 @@ import { STRINGS, tabPosition } from '../music/notes.ts';
 import { audio, click, melodyNote, pluck, strum, successSound } from '../audio/engine.ts';
 import { listenForChord, rootClass, type ChordListener } from '../audio/listen.ts';
 import { load, save, giveStars, markPracticed } from '../store.ts';
-import { capoHint, keyLabel, melodyOffset, originalShift, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
+import { capoHint, keyLabel, melodyOffset, originalShift, shiftToKey, songKey, suggestShift, transposeSong } from '../music/transpose.ts';
 import { simplifications, simplifySong } from '../music/simplify.ts';
 import { diagnose } from '../music/diagnose.ts';
 import { noteText, ordinal, t, tk, tParts } from '../i18n.ts';
@@ -85,7 +85,10 @@ class Player {
 
   constructor(root: HTMLElement, song: Song) {
     this.base = song;
-    this.shift = load().keys[song.id] || 0;
+    // Lektionen verlinken ein Lied in einer bestimmten Tonart (…/?tonart=G), ohne die eigene Wahl zu überschreiben
+    const wanted = typeof location !== 'undefined' ? /[?&]tonart=([^&#]+)/.exec(location.search || '') : null;
+    const asked = wanted ? shiftToKey(song, decodeURIComponent(wanted[1])) : null;
+    this.shift = asked !== null ? asked : load().keys[song.id] || 0;
     this.song = this.arrange();
     this.changes = chordChanges(this.song);
     this.bassNotes = this.bass ? bassLine(this.song, this.settings.bassLine) : [];

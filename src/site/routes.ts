@@ -30,6 +30,9 @@ export const SEGMENTS: Record<string, Record<Lang, string>> = {
   lehrkraefte: { de: 'lehrkraefte-und-eltern', en: 'teachers-and-parents', fr: 'enseignants-et-parents' },
   // Griffe in einer anderen Stimmung: „stimmung/open-g“
   stimmung: { de: 'stimmung', en: 'tuning', fr: 'accordage' },
+  // Lernweg: Übersicht und „lektion/4“ – die Nummer steht an der Tafel und bleibt fest
+  lektionen: { de: 'lektionen', en: 'lessons', fr: 'lecons' },
+  lektion: { de: 'lektion', en: 'lesson', fr: 'lecon' },
 };
 
 /** Instrumente ohne Akkorde (E-Bass): Töne statt Akkorde, Ton-Spiel und Ton-Detektiv – auch in der Adresse. */
@@ -87,7 +90,7 @@ export function routePath(route: string, lang: Lang, isOwn: (id: string) => bool
   const seg = segment(name);
   if (!seg) return prefix;
   if (HASH_PARAM.indexOf(name) >= 0) return `${prefix}${seg[lang]}/${param ? '#' + param : ''}`;
-  if ((name === 'stimmung' || name === 'begleitung') && param) return `${prefix}${seg[lang]}/${param}/`;
+  if ((name === 'stimmung' || name === 'begleitung' || name === 'lektion') && param) return `${prefix}${seg[lang]}/${param}/`;
   if (name === 'wissen' && param) {
     const slug = articleSlug ? articleSlug(param, lang) : undefined;
     return `${prefix}${seg[lang]}/${slug ? slug + '/' : ''}`;
