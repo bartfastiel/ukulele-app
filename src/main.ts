@@ -28,6 +28,7 @@ import { grooves } from './views/grooves.ts';
 import { ownSongEditor } from './views/own-song.ts';
 import { receiveSong, shareSong } from './views/share.ts';
 import { teachers } from './views/teachers.ts';
+import { chordChart, neckView, songSheet } from './views/print.ts';
 
 const ROUTES: Record<string, View> = {
   '': home,
@@ -47,6 +48,9 @@ const ROUTES: Record<string, View> = {
   'lied-teilen': shareSong,
   teilen: receiveSong,
   lehrkraefte: teachers,
+  liedblatt: songSheet,
+  'griffe-drucken': chordChart,
+  hals: neckView,
 };
 
 const TITLES: Record<string, string> = {
@@ -64,6 +68,7 @@ const TITLES: Record<string, string> = {
   'eigenes-lied': tk('Eigenes Lied'),
   'lied-teilen': tk('Lied teilen'),
   teilen: tk('Geschicktes Lied'),
+  liedblatt: tk('Liedblatt'),
 };
 
 let cleanup: Cleanup = undefined;

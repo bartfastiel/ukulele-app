@@ -77,8 +77,19 @@ export const notesView: View = (root) => {
         ),
       ),
     ),
+    printLinks(),
   );
 };
+
+/** Zum Ausdrucken: alle Griffe (bzw. Töne) auf einem Blatt und der ganze Hals. */
+export function printLinks(): HTMLElement {
+  return h(
+    'div',
+    { class: 'row print-links' },
+    h('a', { class: 'btn btn-seg', href: link('griffe-drucken') }, icon('print'), instrument().notesOnly ? t('Töne drucken') : t('Griffe drucken')),
+    h('a', { class: 'btn btn-seg', href: link('hals') }, icon('print'), t('Hals drucken')),
+  );
+}
 
 /** Saite und Bund als Satz: „A-Saite im 3. Bund“, „leere E-Saite“. */
 function where(string: number, fret: number): string {

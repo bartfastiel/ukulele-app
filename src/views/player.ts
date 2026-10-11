@@ -148,14 +148,14 @@ class Player {
       }, 'btn-seg', { 'aria-pressed': String(this.settings[key]) });
       return b;
     };
-    const own = isOwnId(this.song.id)
-      ? h(
-          'div',
-          { class: 'row own-tools' },
-          h('a', { class: 'btn btn-seg', href: link(`eigenes-lied/${this.song.id}`) }, icon('edit'), t('Bearbeiten')),
-          h('a', { class: 'btn btn-seg', href: link(`lied-teilen/${this.song.id}`) }, icon('share'), t('Teilen')),
-        )
-      : null;
+    const isOwn = isOwnId(this.song.id);
+    const own = h(
+      'div',
+      { class: 'row own-tools' },
+      isOwn ? h('a', { class: 'btn btn-seg', href: link(`eigenes-lied/${this.song.id}`) }, icon('edit'), t('Bearbeiten')) : null,
+      isOwn ? h('a', { class: 'btn btn-seg', href: link(`lied-teilen/${this.song.id}`) }, icon('share'), t('Teilen')) : null,
+      h('a', { class: 'btn btn-seg print-link', href: link(`liedblatt/${this.song.id}`) }, icon('print'), t('Drucken')),
+    );
     const controls = h(
       'section',
       { class: 'controls' },

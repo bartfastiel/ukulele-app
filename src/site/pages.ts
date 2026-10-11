@@ -42,6 +42,7 @@ import { GROOVES, chordsText, easyKey } from '../music/grooves.ts';
 import { ownSongEditor } from '../views/own-song.ts';
 import { receiveSong, shareSong } from '../views/share.ts';
 import { teachers } from '../views/teachers.ts';
+import { chordChart, neckView, songSheet } from '../views/print.ts';
 import { CATEGORIES } from '../music/song.ts';
 import { OG_HEIGHT, OG_WIDTH } from './og-image.ts';
 
@@ -116,6 +117,9 @@ const VIEW_NAMES: Record<string, View> = {
   'eigenes-lied': ownSongEditor,
   'lied-teilen': shareSong,
   teilen: receiveSong,
+  liedblatt: songSheet,
+  'griffe-drucken': chordChart,
+  hals: neckView,
 };
 
 function paramOf(route: string): string {
@@ -430,6 +434,40 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
     });
   }
   specs.push({ route: 'lied/eigen', title: t('Eigenes Lied'), description: t('Dein eigenes Lied, gespeichert nur auf diesem Gerät.'), view: player, hashParam: true, noindex: true, body: () => staticScreen(t('Eigenes Lied'), rel('lieder', l)) });
+  // Liedblätter zum Ausdrucken: gleicher Inhalt wie die Liedseite, daher nicht in den Suchindex
+  for (const s of SONGS)
+    specs.push({
+      route: `liedblatt/${s.id}`,
+      title: t('Liedblatt: {title}', { title: s.title }),
+      description: t('{title} zum Ausdrucken: Liedtext mit Griffbildern oder Akkordnamen für {instrument}.', { title: s.title, instrument: inst }),
+      view: songSheet,
+      noindex: true,
+    });
+  specs.push({ route: 'liedblatt/eigen', title: t('Liedblatt'), description: t('Eigenes Lied zum Ausdrucken.'), view: songSheet, hashParam: true, noindex: true, body: () => staticScreen(t('Liedblatt'), rel('lieder', l)) });
+  specs.push(
+    bass
+      ? {
+          route: 'griffe-drucken',
+          title: t('Töne auf dem {instrument} zum Ausdrucken', { instrument: inst }),
+          description: t('Alle zwölf Töne in der ersten Lage auf dem {instrument} mit Griffbild und Fingersatz – auf einem A4-Blatt zum Ausdrucken.', { instrument: inst }),
+          view: chordChart,
+          crumb: t('Töne drucken'),
+        }
+      : {
+          route: 'griffe-drucken',
+          title: t('Griff-Tabelle für {instrument} zum Ausdrucken', { instrument: inst }),
+          description: t('Alle wichtigen Akkorde für {instrument} auf einem A4-Blatt: Dur, Moll und Septakkorde mit Griffbild und Fingersatz – leichte Griffe zuerst.', { instrument: inst }),
+          view: chordChart,
+          crumb: t('Griffe drucken'),
+        },
+  );
+  specs.push({
+    route: 'hals',
+    title: t('Griffbrett mit allen Tönen für {instrument} zum Ausdrucken', { instrument: inst }),
+    description: t('Der ganze Hals bis zum 15. Bund für {instrument}: auf jeder Saite und in jedem Bund der Tonname, mit Bundmarkierungen – als A4-Blatt zum Ausdrucken, quer oder hochkant.', { instrument: inst }),
+    view: neckView,
+    crumb: t('Hals drucken'),
+  });
   if (bass) {
     specs.push({
       route: 'akkorde',
@@ -1346,7 +1384,7 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
   const attrs: string[] = [`lang="${l}"`, `data-base="${escAttr(currentBase)}"`, `data-brand="${escAttr(siteDef.brand[l])}"`, `data-site="${siteDef.id}"`];
   if (siteDef.instrument) attrs.push(`data-instrument="${siteDef.instrument}"`, `data-sites="${escAttr(siteUrls)}"`);
   if (spec.view) attrs.push(`data-route="${escAttr(spec.route)}"`);
-  if (spec.view === teachers) attrs.push(`data-public="${escAttr(e.publicUrl(siteDef.id))}"`);
+  if (spec.view === teachers || spec.view === songSheet || spec.view === chordChart || spec.view === neckView) attrs.push(`data-public="${escAttr(e.publicUrl(siteDef.id))}"`);
   if (spec.hashParam) attrs.push('data-hash-param');
   const html =
     `<!doctype html>\n<html ${attrs.join(' ')}>\n<head>\n${head.join('\n')}\n</head>\n<body>\n` +

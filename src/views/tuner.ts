@@ -11,6 +11,7 @@ import { TWELVE_MAX_HZ, instrument, twelveString } from '../music/instrument.ts'
 import { countWord, t } from '../i18n.ts';
 import { tuningChooser, variantChooser } from '../ui/tuning.ts';
 import { relativeHints } from '../site/relatives.ts';
+import { link } from '../site/nav.ts';
 
 export const tuner: View = (root) => {
   let raf = 0;
@@ -168,6 +169,7 @@ export const tuner: View = (root) => {
         h('div', { class: `string-row strings-${STRINGS.length}` }, ...stringBtns),
         tuningChooser(),
         variantChooser(),
+        h('p', { class: 'card print-hint' }, h('a', { href: link('hals') }, icon('print'), ' ', t('Alle Töne auf dem Hals zum Ausdrucken'), ' ›')),
         ...relativeHints('stimmen'),
       ),
     ),
