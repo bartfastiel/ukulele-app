@@ -98,9 +98,9 @@ export const FRAGEN_UKULELE_GITARRE: Article[] = [
       { h2: { de: 'In der App', en: 'In the app', fr: 'Dans l’appli' } },
       {
         p: {
-          de: 'Kopier Text und Akkorde des Gitarrenlieds als eigenes Lied in die App. Dort kannst du es mit „Einen Halbton höher“ und „Einen Halbton tiefer“ verschieben, bis die Griffe leicht sind. Die App schlägt dir auch eine Tonart vor und sagt, wenn ein Kapodaster helfen würde.',
-          en: 'Copy the lyrics and chords of the guitar song into the app as your own song. There you can shift it with “One semitone higher” and “One semitone lower” until the grips are easy. The app also suggests a key and tells you when a capo would help.',
-          fr: 'Copie les paroles et les accords de la chanson de guitare dans l’appli comme chanson perso. Tu peux la décaler avec « Un demi-ton plus haut » et « Un demi-ton plus bas » jusqu’à ce que les accords soient faciles. L’appli te propose aussi une tonalité et te dit quand un capodastre aiderait.',
+          de: 'Kopier Text und Akkorde des Gitarrenlieds als eigenes Lied in die App. Dort kannst du es mit „Einen Halbton höher“ und „Einen Halbton tiefer“ verschieben, bis die Griffe leicht sind. Die App schlägt dir auch eine Tonart mit leichten Griffen vor (★).',
+          en: 'Copy the lyrics and chords of the guitar song into the app as your own song. There you can shift it with “One semitone higher” and “One semitone lower” until the grips are easy. The app also suggests a key with easy grips (★).',
+          fr: 'Copie les paroles et les accords de la chanson de guitare dans l’appli comme chanson perso. Tu peux la décaler avec « Un demi-ton plus haut » et « Un demi-ton plus bas » jusqu’à ce que les accords soient faciles. L’appli te propose aussi une tonalité aux accords faciles (★).',
         },
       },
       { tool: 'eigenes-lied' },
@@ -212,9 +212,9 @@ export const FRAGEN_UKULELE_GITARRE: Article[] = [
       { h2: { de: 'Kapo in der App', en: 'The capo in the app', fr: 'Le capo dans l’appli' } },
       {
         p: {
-          de: 'Bei jedem Lied kannst du die Tonart verschieben. Würde ein Kapo die Griffe leichter machen, zeigt die App das an, zum Beispiel „Kapo 2, greif wie C“ – dann siehst du die leichten C-Griffe und das Lied klingt trotzdem in D. Mehr übers Verschieben steht in [Transponieren](wissen:transponieren).',
-          en: 'In every song you can change the key. If a capo would make the grips easier, the app shows it, for example “Capo 2, play C shapes” – you then see the easy C grips while the song still sounds in D. More about changing keys in [Transposing](wissen:transponieren).',
-          fr: 'Dans chaque chanson, tu peux changer de tonalité. Si un capo rendait les accords plus faciles, l’appli l’indique, par exemple « Capo case 2, joue comme en C » – tu vois alors les accords faciles de C, et la chanson sonne quand même en Ré. Plus d’infos dans [Transposer](wissen:transponieren).',
+          de: 'Bei jedem Lied kannst du die Tonart verschieben. Willst du mit einem Kapo-Lied zusammenspielen, ohne selbst einen Kapo zu setzen, schiebst du das Lied einfach so viele Halbtöne höher, wie der Kapo Bünde hat – dann zeigt die App dir die Griffe für die klingenden Akkorde. Mehr übers Verschieben steht in [Transponieren](wissen:transponieren).',
+          en: 'In every song you can change the key. If you want to play along with a capo song without using a capo yourself, simply raise the song by as many semitones as the capo has frets – the app then shows you the grips for the sounding chords. More about changing keys in [Transposing](wissen:transponieren).',
+          fr: 'Dans chaque chanson, tu peux changer de tonalité. Pour jouer avec une chanson à capo sans en mettre toi-même, monte simplement la chanson d’autant de demi-tons que le capo a de cases – l’appli t’affiche alors les doigtés des accords réels. Plus d’infos dans [Transposer](wissen:transponieren).',
         },
       },
       { tool: 'lieder' },
