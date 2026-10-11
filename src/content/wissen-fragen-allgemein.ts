@@ -240,9 +240,9 @@ export const FRAGEN_ALLGEMEIN: Article[] = [
     instruments: ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass'],
     category: 'eltern-lehrkraefte',
     title: {
-      de: 'Sie spielen selbst nicht? So helfen Sie Ihrem Kind trotzdem beim Üben',
+      de: 'Du spielst selbst nicht? So hilfst du deinem Kind trotzdem beim Üben',
       en: 'You Don’t Play Yourself? How You Can Still Help Your Child Practise',
-      fr: 'Vous ne jouez pas vous-même ? Comment aider quand même votre enfant',
+      fr: 'Tu ne joues pas toi-même ? Comment aider quand même ton enfant',
     },
     description: {
       de: 'Eltern müssen kein Instrument spielen, um zu helfen. Stimmen, Griffbilder vergleichen, gute Fragen stellen und sich vom Kind etwas zeigen lassen – so geht’s.',
@@ -252,9 +252,9 @@ export const FRAGEN_ALLGEMEIN: Article[] = [
     blocks: [
       {
         p: {
-          de: 'Viele Eltern denken: „Ich kann ja selbst nicht spielen, da kann ich nicht helfen.“ Das stimmt nicht. Die wichtigsten Hilfen beim Üben haben mit dem Spielen selbst wenig zu tun. Hier sind Dinge, die Sie ohne jede Vorkenntnis können.',
+          de: 'Viele Eltern denken: „Ich kann ja selbst nicht spielen, da kann ich nicht helfen.“ Das stimmt nicht. Die wichtigsten Hilfen beim Üben haben mit dem Spielen selbst wenig zu tun. Hier sind Dinge, die du ohne jede Vorkenntnis kannst.',
           en: 'Many parents think: “I can’t play myself, so I can’t help.” That isn’t true. The most important kinds of help with practice have little to do with playing. Here are things you can do without any prior knowledge.',
-          fr: 'Beaucoup de parents se disent : « Je ne joue pas moi-même, je ne peux donc pas aider. » C’est faux. Les aides les plus importantes ont peu à voir avec le jeu lui-même. Voici ce que vous pouvez faire sans aucune connaissance préalable.',
+          fr: 'Beaucoup de parents se disent : « Je ne joue pas moi-même, je ne peux donc pas aider. » C’est faux. Les aides les plus importantes ont peu à voir avec le jeu lui-même. Voici ce que tu peux faire sans aucune connaissance préalable.',
         },
       },
       { h2: { de: 'Das Instrument stimmen', en: 'Tuning the instrument', fr: 'Accorder l’instrument' } },
@@ -269,17 +269,17 @@ export const FRAGEN_ALLGEMEIN: Article[] = [
       { h2: { de: 'Griffbilder vergleichen', en: 'Comparing chord diagrams', fr: 'Comparer les diagrammes' } },
       {
         p: {
-          de: 'Ein Griffbild zu lesen, lernen Sie in fünf Minuten – siehe [Griffbild lesen](wissen:griffbild-lesen). Dann können Sie mit Ihrem Kind vergleichen: Liegt jeder Finger auf der richtigen Saite und im richtigen Bund? Fragen Sie lieber, als zu korrigieren: „Schau mal, wo im Bild der Ringfinger ist – und wo ist deiner?“',
+          de: 'Ein Griffbild zu lesen, lernst du in fünf Minuten – siehe [Griffbild lesen](wissen:griffbild-lesen). Dann kannst du mit deinem Kind vergleichen: Liegt jeder Finger auf der richtigen Saite und im richtigen Bund? Frag lieber, als zu korrigieren: „Schau mal, wo im Bild der Ringfinger ist – und wo ist deiner?“',
           en: 'You can learn to read a chord diagram in five minutes – see [How to read chord diagrams](wissen:griffbild-lesen). Then you can compare with your child: is every finger on the right string and fret? Ask rather than correct: “Look where the ring finger is in the picture – and where’s yours?”',
-          fr: 'Lire un diagramme s’apprend en cinq minutes – voir [Lire un diagramme d’accord](wissen:griffbild-lesen). Vous pourrez ensuite comparer avec votre enfant : chaque doigt est-il sur la bonne corde et dans la bonne case ? Questionnez plutôt que corriger : « Regarde où est l’annulaire sur l’image – et où est le tien ? »',
+          fr: 'Lire un diagramme s’apprend en cinq minutes – voir [Lire un diagramme d’accord](wissen:griffbild-lesen). Tu pourras ensuite comparer avec ton enfant : chaque doigt est-il sur la bonne corde et dans la bonne case ? Pose des questions plutôt que de corriger : « Regarde où est l’annulaire sur l’image – et où est le tien ? »',
         },
       },
-      { h2: { de: 'Ihr Kind wird zur Lehrkraft', en: 'Your child becomes the teacher', fr: 'Votre enfant devient le professeur' } },
+      { h2: { de: 'Dein Kind wird zur Lehrkraft', en: 'Your child becomes the teacher', fr: 'Ton enfant devient le professeur' } },
       {
         p: {
-          de: 'Lassen Sie sich einen Akkord oder ein kleines Lied **beibringen**. Wer etwas erklärt, versteht es selbst besser – und Kinder genießen es sehr, einmal die Expertin oder der Experte zu sein. Dass Ihnen die Finger dabei wehtun und es schief klingt, ist sogar gut: Ihr Kind sieht, dass Anfangen für alle schwer ist.',
+          de: 'Lass dir einen Akkord oder ein kleines Lied **beibringen**. Wer etwas erklärt, versteht es selbst besser – und Kinder genießen es sehr, einmal die Expertin oder der Experte zu sein. Dass dir die Finger dabei wehtun und es schief klingt, ist sogar gut: Dein Kind sieht, dass Anfangen für alle schwer ist.',
           en: 'Let your child **teach you** a chord or a little song. Explaining something helps you understand it better – and children love being the expert for once. If your fingers hurt and it sounds off, that’s actually good: your child sees that starting out is hard for everyone.',
-          fr: 'Demandez à votre enfant de vous **apprendre** un accord ou une petite chanson. Expliquer aide à mieux comprendre – et les enfants adorent être l’expert pour une fois. Si vos doigts font mal et que ça sonne de travers, c’est même bien : votre enfant voit que débuter est difficile pour tout le monde.',
+          fr: 'Demande à ton enfant de t’**apprendre** un accord ou une petite chanson. Expliquer aide à mieux comprendre – et les enfants adorent être l’expert pour une fois. Si tes doigts font mal et que ça sonne de travers, c’est même bien : ton enfant voit que débuter est difficile pour tout le monde.',
         },
       },
       { h2: { de: 'Gute Fragen statt Bewertungen', en: 'Good questions instead of judgements', fr: 'De bonnes questions plutôt que des jugements' } },
@@ -302,14 +302,14 @@ export const FRAGEN_ALLGEMEIN: Article[] = [
       {
         ul: [
           {
-            de: '**Mitsingen:** Mit Gesang wird aus dem Üben ein Lied. Ihre Stimme muss dafür nicht schön sein.',
+            de: '**Mitsingen:** Mit Gesang wird aus dem Üben ein Lied. Deine Stimme muss dafür nicht schön sein.',
             en: '**Sing along:** with singing, practice turns into a song. Your voice doesn’t need to be pretty.',
-            fr: '**Chanter :** avec le chant, l’exercice devient une chanson. Votre voix n’a pas besoin d’être belle.',
+            fr: '**Chanter :** avec le chant, l’exercice devient une chanson. Ta voix n’a pas besoin d’être belle.',
           },
           {
-            de: '**Takt klatschen:** Klatschen Sie den Grundschlag mit oder schalten Sie das Metronom ein.',
+            de: '**Takt klatschen:** Klatsch den Grundschlag mit oder schalte das Metronom ein.',
             en: '**Clap the beat:** clap along to the pulse or switch on the metronome.',
-            fr: '**Frapper le temps :** frappez la pulsation dans les mains ou allumez le métronome.',
+            fr: '**Frapper le temps :** frappe la pulsation dans les mains ou allume le métronome.',
           },
           {
             de: '**Zuhören:** Ein kleines Vorspiel nach dem Abendessen ist für viele Kinder die schönste Belohnung.',
@@ -356,28 +356,28 @@ export const FRAGEN_ALLGEMEIN: Article[] = [
       {
         ul: [
           {
-            de: 'Bleiben die Instrumente in der Schule, stimmen Sie oder ein Helfer sie **vorab** – etwa in der Pause davor. Instrumente, die im selben Raum lagern, halten die Stimmung besser.',
+            de: 'Bleiben die Instrumente in der Schule, stimmst du oder ein Helfer sie **vorab** – etwa in der Pause davor. Instrumente, die im selben Raum lagern, halten die Stimmung besser.',
             en: 'If the instruments stay at school, you or a helper tune them **in advance** – for example during the break before. Instruments stored in the same room hold their tuning better.',
-            fr: 'Si les instruments restent à l’école, vous ou un assistant les accordez **à l’avance** – par exemple pendant la récréation précédente. Les instruments rangés dans la même salle tiennent mieux l’accord.',
+            fr: 'Si les instruments restent à l’école, tu les accordes **à l’avance**, seul ou avec un assistant – par exemple pendant la récréation précédente. Les instruments rangés dans la même salle tiennent mieux l’accord.',
           },
           {
             de: '**Neue Saiten vordehnen:** Nach dem Aufziehen jede Saite stimmen, vorsichtig vom Griffbrett wegziehen und nachstimmen, mehrmals. Das erspart Wochen voller Nachstimmen.',
             en: '**Pre-stretch new strings:** after fitting, tune each string, gently pull it away from the fretboard and retune, several times. That saves weeks of constant retuning.',
-            fr: '**Pré-étirer les cordes neuves :** après le montage, accordez chaque corde, tirez-la doucement loin de la touche et réaccordez, plusieurs fois. Cela évite des semaines de réaccordage.',
+            fr: '**Pré-étirer les cordes neuves :** après le montage, accorde chaque corde, tire-la doucement loin de la touche et réaccorde, plusieurs fois. Cela évite des semaines de réaccordage.',
           },
           {
-            de: 'Kommen die Instrumente aus der Kälte, lassen Sie sie ein paar Minuten im Raum warm werden, bevor gestimmt wird.',
+            de: 'Kommen die Instrumente aus der Kälte, lass sie ein paar Minuten im Raum warm werden, bevor gestimmt wird.',
             en: 'If the instruments come in from the cold, let them warm up in the room for a few minutes before tuning.',
-            fr: 'Si les instruments arrivent du froid, laissez-les se réchauffer quelques minutes dans la salle avant d’accorder.',
+            fr: 'Si les instruments arrivent du froid, laisse-les se réchauffer quelques minutes dans la salle avant d’accorder.',
           },
         ],
       },
       { h2: { de: 'Stimm-Stationen', en: 'Tuning stations', fr: 'Postes d’accordage' } },
       {
         p: {
-          de: 'Richten Sie drei oder vier **Stationen** mit einem Tablet oder Handy ein, auf dem das Stimmgerät läuft. Die Kinder kommen reihum, während die anderen eine ruhige Aufgabe haben – zum Beispiel einen Griff aus dem Liedblatt suchen oder einen Rhythmus leise auf dem Knie klopfen. Ruhe ist wichtig: Ein Stimmgerät über Mikrofon hört in einem lauten Raum schlechter.',
+          de: 'Richte drei oder vier **Stationen** mit einem Tablet oder Handy ein, auf dem das Stimmgerät läuft. Die Kinder kommen reihum, während die anderen eine ruhige Aufgabe haben – zum Beispiel einen Griff aus dem Liedblatt suchen oder einen Rhythmus leise auf dem Knie klopfen. Ruhe ist wichtig: Ein Stimmgerät über Mikrofon hört in einem lauten Raum schlechter.',
           en: 'Set up three or four **stations** with a tablet or phone running the tuner. The children come in turn while the others have a quiet task – for example finding a chord from the song sheet or tapping a rhythm softly on their knees. Quiet matters: a microphone-based tuner hears less well in a noisy room.',
-          fr: 'Installez trois ou quatre **postes** avec une tablette ou un téléphone où tourne l’accordeur. Les enfants passent à tour de rôle pendant que les autres font une tâche calme – par exemple chercher un accord de la grille ou taper doucement un rythme sur les genoux. Le calme compte : un accordeur par micro entend moins bien dans une salle bruyante.',
+          fr: 'Installe trois ou quatre **postes** avec une tablette ou un téléphone où tourne l’accordeur. Les enfants passent à tour de rôle pendant que les autres font une tâche calme – par exemple chercher un accord de la grille ou taper doucement un rythme sur les genoux. Le calme compte : un accordeur par micro entend moins bien dans une salle bruyante.',
         },
       },
       { tool: 'stimmen' },
@@ -406,9 +406,9 @@ export const FRAGEN_ALLGEMEIN: Article[] = [
       { h2: { de: 'Der Hörtest am Schluss', en: 'A listening check at the end', fr: 'Un test d’écoute pour finir' } },
       {
         p: {
-          de: 'Lassen Sie zum Schluss reihum jedes Kind einmal einen einfachen Akkord anschlagen, etwa C auf der Ukulele oder Em auf der Gitarre. Ein Instrument, das noch nicht stimmt, fällt so sofort auf – ohne dass es jemand vor der ganzen Klasse bewerten muss: „Lass uns das zusammen noch kurz nachstimmen.“',
+          de: 'Lass zum Schluss reihum jedes Kind einmal einen einfachen Akkord anschlagen, etwa C auf der Ukulele oder Em auf der Gitarre. Ein Instrument, das noch nicht stimmt, fällt so sofort auf – ohne dass es jemand vor der ganzen Klasse bewerten muss: „Lass uns das zusammen noch kurz nachstimmen.“',
           en: 'Finally, have each child strum a simple chord in turn, such as C on the ukulele or Em on the guitar. An instrument that isn’t in tune yet stands out at once – without anyone having to judge it in front of the class: “Let’s quickly retune that together.”',
-          fr: 'Pour finir, faites gratter à chaque enfant, tour à tour, un accord simple, comme C au ukulélé ou Em à la guitare. Un instrument pas encore juste se remarque tout de suite – sans qu’on ait à le juger devant toute la classe : « On le réaccorde vite ensemble. »',
+          fr: 'Pour finir, fais gratter à chaque enfant, tour à tour, un accord simple, comme C au ukulélé ou Em à la guitare. Un instrument pas encore juste se remarque tout de suite – sans qu’on ait à le juger devant toute la classe : « On le réaccorde vite ensemble. »',
         },
       },
       {

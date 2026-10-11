@@ -427,14 +427,14 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
     description: {
       de: 'Wie Eltern ihr Kind beim Instrument-Üben begleiten: kurz und regelmäßig, ohne Druck, mit Lob für den Einsatz. Praktische Tipps für den Alltag.',
       en: 'How parents can support a child learning an instrument: short, regular practice, no pressure, and praise for effort. Practical tips for everyday life.',
-      fr: 'Comment accompagner votre enfant dans l’apprentissage d’un instrument : séances courtes et régulières, sans pression, en valorisant l’effort.',
+      fr: 'Comment accompagner ton enfant dans l’apprentissage d’un instrument : séances courtes et régulières, sans pression, en valorisant l’effort.',
     },
     blocks: [
       {
         p: {
           de: 'Ob Ukulele, Gitarre oder Banjo: Kinder lernen ein Instrument am besten, wenn Üben sich nicht wie eine Pflicht anfühlt, sondern wie ein fester, angenehmer Teil des Tages. Eltern müssen dafür selbst nicht spielen können. Wichtiger sind Interesse, Geduld und ein paar gute Gewohnheiten.',
           en: 'Ukulele, guitar or banjo – children learn best when practice doesn’t feel like a chore but like a regular, pleasant part of the day. Parents don’t need to play themselves. Interest, patience and a few good habits matter far more.',
-          fr: 'Ukulélé, guitare ou banjo : les enfants apprennent mieux quand la pratique n’est pas une corvée, mais un moment agréable et régulier de la journée. Inutile de savoir jouer vous-même. L’intérêt, la patience et quelques bonnes habitudes comptent bien davantage.',
+          fr: 'Ukulélé, guitare ou banjo : les enfants apprennent mieux quand la pratique n’est pas une corvée, mais un moment agréable et régulier de la journée. Inutile de savoir jouer toi-même. L’intérêt, la patience et quelques bonnes habitudes comptent bien davantage.',
         },
       },
       { h2: { de: 'Kurz und regelmäßig', en: 'Short and regular', fr: 'Court et régulier' } },
@@ -474,9 +474,9 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
       { h2: { de: 'Ohne Druck, mit Lob für den Einsatz', en: 'No pressure, praise the effort', fr: 'Sans pression, en valorisant l’effort' } },
       {
         p: {
-          de: 'Loben Sie das Dranbleiben, nicht nur das Ergebnis: „Du hast heute dreimal den Wechsel von C nach G7 probiert – und beim letzten Mal war er schon viel flüssiger.“ Vermeiden Sie Bewertungen wie „Das klang aber schief“. Besser: „Hör mal, welche Saite noch nicht mitklingt.“ Wenn etwas nicht klappt, ist es noch nicht geübt – mehr nicht. Fehler sind ein normaler Teil des Lernens.',
+          de: 'Lob das Dranbleiben, nicht nur das Ergebnis: „Du hast heute dreimal den Wechsel von C nach G7 probiert – und beim letzten Mal war er schon viel flüssiger.“ Vermeide Bewertungen wie „Das klang aber schief“. Besser: „Hör mal, welche Saite noch nicht mitklingt.“ Wenn etwas nicht klappt, ist es noch nicht geübt – mehr nicht. Fehler sind ein normaler Teil des Lernens.',
           en: 'Praise persistence, not just results: “You tried the change from C to G7 three times today – and the last one was much smoother.” Avoid judgements like “That sounded awful.” Try instead: “Listen – which string isn’t ringing yet?” If something doesn’t work, it simply hasn’t been practised yet. Mistakes are a normal part of learning.',
-          fr: 'Félicitez la persévérance, pas seulement le résultat : « Tu as essayé trois fois le passage de C à G7 aujourd’hui, et la dernière fois c’était beaucoup plus fluide. » Évitez les jugements du type « Ça sonnait mal ». Préférez : « Écoute, quelle corde ne sonne pas encore ? » Si quelque chose ne marche pas, c’est simplement que ce n’est pas encore travaillé. Les erreurs font partie de l’apprentissage.',
+          fr: 'Félicite la persévérance, pas seulement le résultat : « Tu as essayé trois fois le passage de C à G7 aujourd’hui, et la dernière fois c’était beaucoup plus fluide. » Évite les jugements du type « Ça sonnait mal ». Préfère : « Écoute, quelle corde ne sonne pas encore ? » Si quelque chose ne marche pas, c’est simplement que ce n’est pas encore travaillé. Les erreurs font partie de l’apprentissage.',
         },
       },
       { h2: { de: 'Motivation: Ziele, Sterne und Mitbestimmung', en: 'Motivation: goals, stars and a say', fr: 'Motivation : objectifs, étoiles et choix' } },
@@ -507,9 +507,9 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
       { h2: { de: 'Vorspielen in der Familie', en: 'Mini concerts at home', fr: 'De petits concerts en famille' } },
       {
         p: {
-          de: 'Ein kleines Vorspiel am Sonntag, beim Geburtstag der Oma oder per Videoanruf gibt dem Üben ein Ziel. Singen Sie mit, auch wenn Sie selbst kein Instrument spielen – gemeinsames Musizieren ist für Kinder oft die größte Belohnung. Ein passendes Lied für den Anfang ist [Zum Geburtstag viel Glück](lied:geburtstag).',
+          de: 'Ein kleines Vorspiel am Sonntag, beim Geburtstag der Oma oder per Videoanruf gibt dem Üben ein Ziel. Sing mit, auch wenn du selbst kein Instrument spielst – gemeinsames Musizieren ist für Kinder oft die größte Belohnung. Ein passendes Lied für den Anfang ist [Zum Geburtstag viel Glück](lied:geburtstag).',
           en: 'A little performance on Sunday, at grandma’s birthday or over a video call gives practice a purpose. Sing along even if you don’t play – making music together is often the biggest reward for children. A good first piece is [Zum Geburtstag viel Glück](lied:geburtstag), the German “Happy Birthday”.',
-          fr: 'Un petit concert le dimanche, à l’anniversaire de mamie ou en appel vidéo donne un but à la pratique. Chantez avec votre enfant, même sans jouer d’un instrument : faire de la musique ensemble est souvent la plus belle récompense. Une bonne première chanson : [Zum Geburtstag viel Glück](lied:geburtstag), l’air de « Joyeux anniversaire ».',
+          fr: 'Un petit concert le dimanche, à l’anniversaire de mamie ou en appel vidéo donne un but à la pratique. Chante avec ton enfant, même sans jouer d’un instrument : faire de la musique ensemble est souvent la plus belle récompense. Une bonne première chanson : [Zum Geburtstag viel Glück](lied:geburtstag), l’air de « Joyeux anniversaire ».',
         },
       },
       {
@@ -584,9 +584,9 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
       { h2: { de: 'Ein gemeinsames Tempo', en: 'A shared tempo', fr: 'Un tempo commun' } },
       {
         p: {
-          de: 'In der Gruppe ist ein gleichmäßiger Puls wichtiger als jeder einzelne Akkord. Ein lautes Metronom oder ein klar vorgezähltes „1, 2, 3, 4“ hält alle zusammen. Wählen Sie das Tempo so, dass auch die langsamsten Kinder ihre Wechsel schaffen. Wer einen Wechsel noch nicht schafft, schlägt einfach im Rhythmus weiter – so bleibt die Klasse zusammen und niemand fällt heraus.',
+          de: 'In der Gruppe ist ein gleichmäßiger Puls wichtiger als jeder einzelne Akkord. Ein lautes Metronom oder ein klar vorgezähltes „1, 2, 3, 4“ hält alle zusammen. Wähl das Tempo so, dass auch die langsamsten Kinder ihre Wechsel schaffen. Wer einen Wechsel noch nicht schafft, schlägt einfach im Rhythmus weiter – so bleibt die Klasse zusammen und niemand fällt heraus.',
           en: 'In a group, a steady pulse matters more than any individual chord. A loud metronome or a clear count-in of “1, 2, 3, 4” keeps everyone together. Choose a tempo at which even the slowest children can manage their changes. Anyone who can’t make a change yet simply keeps strumming in time – the class stays together and nobody drops out.',
-          fr: 'En groupe, une pulsation régulière compte plus que chaque accord. Un métronome bien audible ou un « 1, 2, 3, 4 » clairement compté garde tout le monde ensemble. Choisissez un tempo qui permette même aux plus lents de réussir leurs changements. Celui qui n’y arrive pas encore continue simplement de gratter en rythme : la classe reste soudée et personne ne décroche.',
+          fr: 'En groupe, une pulsation régulière compte plus que chaque accord. Un métronome bien audible ou un « 1, 2, 3, 4 » clairement compté garde tout le monde ensemble. Choisis un tempo qui permette même aux plus lents de réussir leurs changements. Celui qui n’y arrive pas encore continue simplement de gratter en rythme : la classe reste soudée et personne ne décroche.',
         },
       },
       { tool: 'rhythmus' },
@@ -614,7 +614,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
           {
             de: '**Eigene Lieder teilen:** Lehrkräfte können ein Lied mit Akkorden eingeben und per Link oder QR-Code an die Klasse weitergeben. Der Inhalt steckt im Link selbst, nichts wird hochgeladen. Bitte nur eigene oder freie Lieder teilen.',
             en: '**Share your own songs:** teachers can enter a song with chords and share it with the class via link or QR code. The content lives inside the link itself; nothing is uploaded. Please share only your own or free songs.',
-            fr: '**Partager vos chansons :** l’enseignant peut saisir une chanson avec ses accords et la transmettre à la classe par lien ou QR code. Le contenu est dans le lien lui-même, rien n’est envoyé sur un serveur. Ne partagez que des chansons personnelles ou libres.',
+            fr: '**Partager tes chansons :** l’enseignant peut saisir une chanson avec ses accords et la transmettre à la classe par lien ou QR code. Le contenu est dans le lien lui-même, rien n’est envoyé sur un serveur. Ne partage que des chansons personnelles ou libres.',
           },
           {
             de: '**Wartet auf mich:** Im Liedmodus hält das Lied bei jedem Akkordwechsel an, bis das Kind so weit ist. So üben langsame und schnelle Kinder im eigenen Tempo.',
@@ -633,7 +633,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
       },
       {
         p: {
-          de: 'Wie Eltern zu Hause unterstützen können, ohne Druck aufzubauen, lesen Sie in [Üben mit Kindern](wissen:ueben-mit-kindern).',
+          de: 'Wie Eltern zu Hause unterstützen können, ohne Druck aufzubauen, liest du in [Üben mit Kindern](wissen:ueben-mit-kindern).',
           en: 'How parents can help at home without adding pressure is covered in [Practising with kids](wissen:ueben-mit-kindern).',
           fr: 'Comment les parents peuvent aider à la maison sans mettre de pression : voir [Faire pratiquer son enfant](wissen:ueben-mit-kindern).',
         },
@@ -698,7 +698,7 @@ export const ALLGEMEIN_PRAXIS: Article[] = [
         p: {
           de: 'Stimmgerät, „Prüf mich!“, Akkord-Spiel und Akkord-Detektiv nutzen das Mikrofon, um Töne und Akkorde zu erkennen. Die Auswertung geschieht **ausschließlich auf dem Gerät**, in Echtzeit. Es wird nichts aufgezeichnet, gespeichert oder hochgeladen. Der Browser fragt vorher um Erlaubnis, und die lässt sich jederzeit wieder entziehen.',
           en: 'The tuner, “Check me!”, the chord game and the chord detective use the microphone to recognise notes and chords. The analysis happens **only on the device**, in real time. Nothing is recorded, stored or uploaded. The browser asks for permission first, and you can withdraw it at any time.',
-          fr: 'L’accordeur, « Vérifie-moi ! », le jeu des accords et le détective d’accords utilisent le micro pour reconnaître notes et accords. L’analyse se fait **uniquement sur l’appareil**, en temps réel. Rien n’est enregistré, stocké ni envoyé. Le navigateur demande d’abord l’autorisation, que vous pouvez retirer à tout moment.',
+          fr: 'L’accordeur, « Vérifie-moi ! », le jeu des accords et le détective d’accords utilisent le micro pour reconnaître notes et accords. L’analyse se fait **uniquement sur l’appareil**, en temps réel. Rien n’est enregistré, stocké ni envoyé. Le navigateur demande d’abord l’autorisation, que tu peux retirer à tout moment.',
         },
       },
       {
