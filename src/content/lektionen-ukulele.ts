@@ -1820,9 +1820,9 @@ export const UKULELE_COURSE: Course = {
       ],
       piece: {
         text: l(
-          '„Weißt du, wie viel Sternlein stehen“ (C, G7, A7, F, D7) und „My Bonnie Lies Over the Ocean“ (C, F, D7, G7, C7) – fünf Akkorde!',
-          '“Weißt du, wie viel Sternlein stehen” (C, G7, A7, F, D7) and “My Bonnie Lies Over the Ocean” (C, F, D7, G7, C7) – five chords!',
-          '« Weißt du, wie viel Sternlein stehen » (C, G7, A7, F, D7) et « My Bonnie Lies Over the Ocean » (C, F, D7, G7, C7) – cinq accords !',
+          '„Weißt du, wie viel Sternlein stehen“ (C, G7, A7, F, D7) und „My Bonnie Lies Over the Ocean“ (C, F, D7, G7, Dm) – fünf Akkorde!',
+          '“Weißt du, wie viel Sternlein stehen” (C, G7, A7, F, D7) and “My Bonnie Lies Over the Ocean” (C, F, D7, G7, Dm) – five chords!',
+          '« Weißt du, wie viel Sternlein stehen » (C, G7, A7, F, D7) et « My Bonnie Lies Over the Ocean » (C, F, D7, G7, Dm) – cinq accords !',
         ),
         play: [{ song: 'weisst-du-wie-viel' }, { song: 'my-bonnie' }],
       },
@@ -2193,9 +2193,9 @@ export const UKULELE_COURSE: Course = {
       ],
       piece: {
         text: l(
-          'Dein Konzertprogramm, zum Beispiel „Freut euch des Lebens“, „Auld Lang Syne“ und dein eigenes Lied. Alle mit C, G7 und F – oder was du wählst.',
-          'Your concert programme, for example “Freut euch des Lebens”, “Auld Lang Syne” and your own song. All with C, G7 and F – or whatever you choose.',
-          'Ton programme de concert, par exemple « Freut euch des Lebens », « Auld Lang Syne » et ta propre chanson. Tous avec C, G7 et F – ou ce que tu choisis.',
+          'Dein Konzertprogramm, zum Beispiel „Freut euch des Lebens“, „Auld Lang Syne“ und dein eigenes Lied. Alles mit C, G7, F und Am – oder was du wählst.',
+          'Your concert programme, for example “Freut euch des Lebens”, “Auld Lang Syne” and your own song. All with C, G7, F and Am – or whatever you choose.',
+          'Ton programme de concert, par exemple « Freut euch des Lebens », « Auld Lang Syne » et ta propre chanson. Tout avec C, G7, F et Am – ou ce que tu choisis.',
         ),
         play: [{ tool: 'eigenes-lied' }, { song: 'auld-lang-syne' }, { song: 'freut-euch-des-lebens' }],
       },
