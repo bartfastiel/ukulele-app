@@ -7,7 +7,7 @@
 // Umgebung:
 //   SITE_URL    Adresse je Seite im Build, {site} wird ersetzt (Standard „/{site}/“; Produktion „https://{site}.<domain>/“,
 //               Vorschau „/<pfad>/pr-<nr>/{site}/“)
-//   PUBLIC_URL  öffentliche Adresse je Seite für canonical/hreflang/Sitemap (Standard https://{site}.wer-ist-daniel-schwarz.de/)
+//   PUBLIC_URL  öffentliche Adresse je Seite für canonical/hreflang/Sitemap (Standard https://openstring.de/{site}/)
 //   PREVIEW=1   nichts indexieren (Vorschauen, lokale Builds)
 //   LINKED_SITES  nur auf diese Seiten verlinken (Komma-Liste; Standard alle) – für Subdomains, die es nicht für jedes Instrument gibt
 //   MOVE_TO     Umzug: alte Instrument-Seiten werden zu Weiterleitungen auf diese Adresse ({site} wird ersetzt). Sie nehmen
@@ -30,7 +30,7 @@ const dist = join(root, 'dist');
 const TARGET = ['es2017', 'safari12', 'chrome70', 'firefox68'];
 const SITE_IDS = ['ukulele', 'gitarre', 'banjo', 'bariton', 'mandoline', 'bass', 'start'];
 const SITE_URL = process.env.SITE_URL || '/{site}/';
-const PUBLIC_URL = process.env.PUBLIC_URL || 'https://{site}.wer-ist-daniel-schwarz.de/';
+const PUBLIC_URL = process.env.PUBLIC_URL || 'https://openstring.de/{site}/';
 const PREVIEW = process.env.PREVIEW === '1' || !process.env.PUBLIC_URL;
 const MOVE_TO = process.env.MOVE_TO || '';
 // Instrumente, auf die Seiten verlinken dürfen (Subdomains: nur die, die dort wirklich ausgeliefert werden)

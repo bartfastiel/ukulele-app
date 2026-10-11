@@ -19,3 +19,24 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+The MIT License above applies to the source code. Other parts of this repository
+are licensed as follows:
+
+- Texts of the knowledge articles, lessons and other content (e.g. src/content/,
+  texts of the app and its pages): Creative Commons Attribution 4.0 International
+  (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/ – attribution
+  "Daniel Schwarz, openstring.de".
+- The project's own songs (marked "Eigenes Lied für diese App" in `origin`):
+  CC0 1.0 Universal, https://creativecommons.org/publicdomain/zero/1.0/
+- Included songs: public domain (lyrics and melody). Authors, life dates and
+  sources for every song are listed in docs/quellen.md. Melodies taken from
+  Wikipedia/Wikisource score examples contain only the pitches, durations and
+  syllables of the public-domain melody; the notation there is licensed under
+  CC BY-SA 4.0 and each song links to the revision used.
+
+Rights holders: please open an issue at
+https://github.com/bartfastiel/ukulele-app/issues – reports are reviewed
+promptly and affected content is removed if necessary.

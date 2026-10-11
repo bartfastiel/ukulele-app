@@ -155,7 +155,6 @@ jobs:
       - run: npm ci --no-audit --no-fund && npm run build
         env:
           SITE_URL: ${{ needs.prerequisites.outputs.preview_base }}/pr-${{ github.event.pull_request.number }}/{site}/
-          PUBLIC_URL: https://{site}.wer-ist-daniel-schwarz.de/
           PREVIEW: '1'
           LEGAL_ADDRESS: ${{ secrets.LEGAL_ADDRESS }}
           LEGAL_EMAIL: ${{ secrets.LEGAL_EMAIL }}

@@ -18,6 +18,10 @@ export interface SongSource {
   category: Category;
   /** Herkunft und Rechte – alle Lieder sind gemeinfrei oder eigene Werke. */
   origin: string;
+  /** Adresse der in `origin` genannten Textquelle (Nachweis, s. docs/quellen.md). */
+  textUrl?: string;
+  /** Adresse des Notenbeispiels, aus dem die Melodie übernommen ist (songs-melodies.ts). */
+  melodyUrl?: string;
   meter: number;
   bpm: number;
   /** Original- bzw. Quellentonart (Akkordname der Tonika, z. B. „D“), nur wenn belegt. */

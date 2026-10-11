@@ -919,11 +919,24 @@ function songCard(s: Song, l: Lang): Node {
     { class: 'card seo-card' },
     h('h2', null, t('Über das Lied')),
     h('p', null, s.origin),
+    sourceLinks(s),
     notesOnly()
       ? h('p', null, t('Basstöne:'), ' ', ...songRoots(s).map((r, i) => h('span', null, i ? ', ' : '', h('a', { href: rel(`akkord/${encodeURIComponent(r)}`, l) }, noteText(r)))))
       : h('p', null, t('Akkorde:'), ' ', ...s.chords.map((c, i) => h('span', null, i ? ', ' : '', h('a', { href: rel(`akkord/${encodeURIComponent(canonicalChord(c))}`, l) }, c)))),
     h('p', null, t('{meter}er-Takt, {bpm} Schläge pro Minute.', { meter: s.meter, bpm: s.bpm })),
     moreSongs(s, l),
+  );
+}
+
+/** Nachweis der Quellen von Text und Melodie (Notation aus Wikipedia unter CC BY-SA mit Link auf die verwendete Fassung). */
+function sourceLinks(s: Song): Node | null {
+  if (!s.textUrl && !s.melodyUrl) return null;
+  return h(
+    'p',
+    { class: 'small' },
+    s.textUrl ? h('a', { href: s.textUrl, rel: 'nofollow' }, t('Quelle des Textes')) : null,
+    s.textUrl && s.melodyUrl ? ' · ' : null,
+    s.melodyUrl ? h('a', { href: s.melodyUrl, rel: 'nofollow' }, t('Quelle der Notenschrift')) : null,
   );
 }
 
@@ -1236,15 +1249,21 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
         address,
         contact,
         h('h2', null, t('Beim Aufruf der Seite')),
-        p(t('Der Server muss deine IP-Adresse kurz verarbeiten, um die Seite auszuliefern (Art. 6 Abs. 1 lit. f DSGVO). Es werden keine Zugriffsprotokolle mit IP-Adressen gespeichert und keine Dienste Dritter eingebunden – keine Schriften, keine Statistik, keine Videos von fremden Servern.')),
+        p(t('Der Server muss deine IP-Adresse kurz verarbeiten, um die Seite auszuliefern (Art. 6 Abs. 1 lit. f DSGVO). Es werden keine Dienste Dritter eingebunden – keine Schriften, keine Statistik, keine Videos von fremden Servern.')),
+        h('h2', null, t('Hosting')),
+        p(t('Die Seite liegt auf einem Server der Hetzner Online GmbH (Industriestr. 25, 91710 Gunzenhausen) in einem Rechenzentrum in Deutschland. Hetzner verarbeitet die Daten dabei nur im Auftrag (Art. 28 DSGVO, Vertrag zur Auftragsverarbeitung). Die Zertifikate für die verschlüsselte Verbindung kommen von Let’s Encrypt – dabei werden keine Daten von dir übertragen.')),
+        h('h2', null, t('Speicherdauer')),
+        p(t('Deine IP-Adresse wird nur kurz im Arbeitsspeicher des Servers verarbeitet, solange die Seite ausgeliefert wird. Zugriffsprotokolle mit IP-Adressen werden nicht gespeichert.')),
         h('h2', null, t('Mikrofon')),
         p(t('Für Stimmgerät und Akkorderkennung fragt der Browser nach dem Mikrofon. Der Klang wird nur auf deinem Gerät ausgewertet, nie aufgezeichnet oder übertragen. Ausnahme: das Werkzeug für Beispielaufnahmen speichert Aufnahmen nur, wenn du es ausdrücklich startest, und nur auf deinem Gerät.')),
         h('h2', null, t('Speicher im Browser')),
         p(t('Sterne, Übungstage, Einstellungen und eigene Lieder liegen im lokalen Speicher deines Browsers (technisch notwendig, § 25 Abs. 2 Nr. 2 TDDDG). Du kannst sie jederzeit über die Browser-Einstellungen löschen. Zum Offline-Spielen speichert der Browser außerdem die Dateien der App.')),
         h('h2', null, t('Geteilte Lieder')),
         p(t('Beim Teilen steckt das Lied in der Adresse hinter dem „#“. Dieser Teil wird vom Browser nie an den Server geschickt.')),
+        h('h2', null, t('Externe Links')),
+        p(t('Der Link zum Quelltext führt zu GitHub (GitHub Inc., USA), die Quellenangaben der Lieder zum Teil zu Wikipedia. Erst wenn du so einen Link anklickst, verlässt du diese Seite – dann gelten die Datenschutzbestimmungen der anderen Seite.')),
         h('h2', null, t('Deine Rechte')),
-        p(t('Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Beschwerde bei einer Datenschutz-Aufsichtsbehörde. Da hier keine personenbezogenen Daten gespeichert werden, gibt es in der Regel nichts zu beauskunften – frag aber gern.')),
+        p(t('Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Beschwerde bei einer Datenschutz-Aufsichtsbehörde, zum Beispiel bei der Aufsichtsbehörde deines Bundeslandes. Da hier keine personenbezogenen Daten gespeichert werden, gibt es in der Regel nichts zu beauskunften – frag aber gern.')),
       ),
     );
   return staticScreen(
@@ -1253,7 +1272,7 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
     h(
       'section',
       { class: 'card article' },
-      p(t('Diese App ist entstanden, damit Kinder in Instrumentalklassen zu Hause gern üben – ohne Abo-Fallen, ohne Werbung und ohne Konto. Sie ist ein privates, persönliches Projekt, kostenlos und Open Source.')),
+      p(t('Diese App ist entstanden, damit Kinder in Instrumentalklassen zu Hause gern üben – ohne Abo, ohne Werbung und ohne Konto. Sie ist ein privates, persönliches Projekt, kostenlos und Open Source.')),
       h('h2', null, t('Was sie kann')),
       h(
         'ul',
