@@ -9,7 +9,6 @@ export const WIKI: Record<string, string> = {
   'freut-euch-des-lebens': 'de:Freut_euch_des_Lebens',
   'mond-ist-aufgegangen': 'de:Der_Mond_ist_aufgegangen',
   'horch-was-kommt': 'de:Horch,_was_kommt_von_draußen_rein',
-  'junger-wandersmann': 'de:Auf,_du_junger_Wandersmann',
   'bunt-sind-die-waelder': 'de:Bunt_sind_schon_die_Wälder',
   'klappert-die-muehle': 'de:Es_klappert_die_Mühle_am_rauschenden_Bach',
   'jaeger-aus-kurpfalz': 'de:Ein_Jäger_aus_Kurpfalz',

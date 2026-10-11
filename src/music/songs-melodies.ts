@@ -93,17 +93,6 @@ Ulm:E5:0.5 und:D5:0.5 [G7]Bi-:D5:0.5 ber-:C5:0.5 ach,:G4 Mek-:G4:0.5 ke-:G4:0.5 
 [C]Es:G4 tö-:C5 nen:C5 die:C5 [G7]Lie-:D5 der,:G4 der:G4 Früh-:D5 ling:D5 kehrt:D5 [C]wie-:E5 der,:C5
 es:G5 spie-:G5 let:E5:0.5 ~:G5:0.5 der:E5:0.5 ~:G5:0.5 [G7]Hir-:F5 te,:D5
 auf:F5 sei-:F5 ner:D5:0.5 ~:F5:0.5 Schal-:D5:0.5 ~:F5:0.5 [C]mei:E5:2 La:G5 la:C5:0.5 la:B4:0.5 la:A5:0.5 la:G5:0.5 la:F5:0.5 la:E5:0.5 [G7]la:G5 ~:F5 la:D5 La:B4:0.5 la:C5:0.5 la:D5:0.5 la:E5:0.5 la:F5:0.5 la:D5:0.5 [C]la.:C5:2` },
-  'wohlauf-gottes-welt': { meter: 4, pickup: 1, originalKey: 'G', similarity: 0.80, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Wohlauf in Gottes schöne Welt“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Wohlauf_in_Gottes_sch%C3%B6ne_Welt&oldid=270314085', text: `
-[C]Wohl-:G4 auf:G4 in:C5 Got-:C5 tes:E5 schö-:E5 ne:G5 Welt,:G5:2
-[G7]le-:F5:1.5 be:E5:0.5 wohl,:F5 a-:G5 [C]de!:E5:3
-Die:G4 Luft:G4 ist:C5 warm:C5 und:E5 grün:E5 das:G5 Feld,:G5:2
-[G7]le-:F5:1.5 be:E5:0.5 wohl,:F5 a-:G5 [C]de!:E5:3
-Die:C5 [F]Ber-:C5 ge:A5 glüh’n:A5 wie:A5 [C]E-:A5:1.5 del-:G5:0.5 stein,:G5
-[Am]ich:A5:0.5 ~:G5:0.5 [G7]wan-:G5:1.5 dre:F5:0.5 mit:F5 dem:G5 [C]Son-:F5:1.5 nen-:E5:0.5 schein,:E5:2
-[G7]la-:D5:1.5 la-:E5:0.5 la-:F5 la,:D5 [C]la-:E5:1.5 la-:F5:0.5 la,:G5 ins:E5 [G7]wei-:G5:1.5 te:F5:0.5 Land:E5 hin-:D5 [C]ein!:C5
-[G]~:D5 ~:E5 _:R [G7]la-:D5:1.5 la-:E5:0.5 [C]la-:F5 la,:D5 [G7]la-:E5:1.5 la-:F5:0.5 [C]la,:G5
-ins:E5 wei-:G5:1.5 te:F5:0.5 Land:E5 hin-:D5 ein!:C5:2
-_:R` },
   'fuchs-gans': { meter: 4, pickup: 0, originalKey: 'D', similarity: 1.00, source: 'Melodie gemeinfrei, Notation nach dem Notenbeispiel im Wikipedia-Artikel „Fuchs, du hast die Gans gestohlen“ (CC BY-SA 4.0)', url: 'https://de.wikipedia.org/w/index.php?title=Fuchs%2C_du_hast_die_Gans_gestohlen&oldid=246341239', text: `
 [C]Fuchs,:C4 du:D4 hast:E4 die:F4 Gans:G4 ge-:G4 stoh-:G4 len,:G4
 [F]gib:A4 sie:F4 wie-:C5 der:A4 [C]her,:G4:4 [F]gib:A4 sie:F4 wie-:C5 der:A4 [C]her,:G4:4
