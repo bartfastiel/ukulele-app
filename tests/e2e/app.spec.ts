@@ -273,6 +273,45 @@ test('Blues: Einzählen, Takte laufen, Vorgabe auf dem Hals, freie Stufe zeigt d
   await page.getByRole('button', { name: /Stopp/ }).click();
 });
 
+test('Blues: Akkorde begleiten – Griffbild zum Antippen, nächster Akkord, Schlagmuster, dann Septakkorde', async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto('#/blues');
+  await page.getByRole('group', { name: 'Akkorde begleiten' }).getByRole('button', { name: 'Akkorde · leicht' }).click();
+  await expect(page.locator('.fretboard')).toHaveCount(0);
+  await expect(page.locator('.blues-bar').first()).toHaveText('C');
+  await expect(page.locator('.groove-chord:not(.next) .chord-name')).toHaveText('C');
+  await expect(page.locator('.groove-chord.next .groove-next-label')).toHaveText('Danach: F');
+  await expect(page.getByText(/Begleite den Blues mit drei Akkorden: C – F – G/)).toBeVisible();
+  await expect(page.locator('.blues-strum .arrow')).toHaveCount(8);
+  await expect(page.locator('.blues-strum .arrow.down')).toHaveCount(4);
+  // das große Griffbild klingt beim Antippen
+  const svg = page.locator('.groove-chord:not(.next) svg.playable');
+  await svg.scrollIntoViewIfNeeded();
+  const a =(await page.locator('.groove-chord:not(.next) .string[data-string="3"]').boundingBox())!;
+  await page.mouse.click(a.x + a.width / 2, a.y + a.height * 0.7);
+  await expect(svg).toHaveAttribute('data-played', '3:3');
+
+  await page.getByRole('button', { name: 'Akkorde · mit 7' }).click();
+  await expect(page.locator('.blues-bar').first()).toHaveText('C7');
+  await expect(page.locator('.groove-chord:not(.next) .chord-name')).toHaveText('C7');
+  await expect(page.locator('.blues-strum .arrow.up')).toHaveCount(4);
+  await expect(page.getByText(/Jetzt mit Septakkorden: C7 – F7 – G7/)).toBeVisible();
+  await page.getByRole('button', { name: 'Schnell' }).click();
+  await page.getByRole('button', { name: 'Akkord vorspielen' }).click();
+  await page.getByRole('button', { name: /Start/ }).click();
+  await expect(page.locator('.blues-bar.now')).toHaveCount(1, { timeout: 5000 });
+  await expect(page.locator('.blues-strum .arrow.on')).toHaveCount(1);
+  // im 4. Takt kündigt sich der Wechsel an
+  await expect(page.locator('.groove-chord.next .groove-next-label')).toHaveText('Gleich: F7', { timeout: 12000 });
+  await page.getByRole('button', { name: /Stopp/ }).click();
+  await expect(page.locator('.feedback')).toHaveText('Geschafft!');
+  // zurück zu den Tönen: der Hals ist wieder da
+  await page.getByRole('button', { name: '1 · Grundton' }).click();
+  await expect(page.locator('.blues-target')).toHaveText('Spiel C');
+  await expect(page.locator('.blues-strum')).toBeHidden();
+  expect(errors).toEqual([]);
+});
+
 test('Blues in G: Akkorde, Erklärung und Vorgabe wandern mit', async ({ page }) => {
   await page.goto('#/blues');
   await page.getByRole('group', { name: 'Tonart' }).getByRole('button', { name: 'G', exact: true }).click();

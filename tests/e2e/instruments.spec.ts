@@ -100,6 +100,21 @@ for (const c of CASES) {
       await page.getByRole('button', { name: /Stopp/ }).click();
       expect(errors).toEqual([]);
     });
+
+    test('Blues: Akkorde begleiten in der bequemen Tonart', async ({ page }) => {
+      const errors = collectErrors(page);
+      await go(page, 'blues');
+      await page.getByRole('button', { name: 'Akkorde · leicht' }).click();
+      await expect(page.locator('.groove-chord:not(.next) .chord-name')).toHaveText(c.blues.replace('7', ''));
+      await expect(page.locator('.groove-chord:not(.next) svg.playable')).toBeVisible();
+      await expect(page.locator('.groove-chord.next svg')).toBeVisible();
+      await page.getByRole('button', { name: 'Akkorde · mit 7' }).click();
+      await expect(page.locator('.groove-chord:not(.next) .chord-name')).toHaveText(c.blues);
+      // Mandoline: Chop auf 2 und 4 statt Shuffle-Schlagen
+      await expect(page.locator('.blues-strum .arrow.chop')).toHaveCount(c.id === 'mandoline' ? 2 : 0);
+      await expect(page.locator('.blues-strum .arrow.up')).toHaveCount(c.id === 'mandoline' ? 0 : 4);
+      expect(errors).toEqual([]);
+    });
   });
 }
 
@@ -235,6 +250,9 @@ test.describe('bass', () => {
     await expect(page.locator('.blues-now .chord-name')).toHaveText('E7');
     await expect(page.locator('.blues-target')).toHaveText('Spiel E');
     await expect(page.locator('.fb-label')).toHaveCount(4);
+    // keine Akkord-Begleitung auf dem E-Bass
+    await expect(page.getByRole('button', { name: /^Akkorde ·/ })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Stufe', exact: true })).toBeVisible();
     await page.getByRole('button', { name: '3 · Walking Bass' }).click();
     await page.getByRole('button', { name: 'Schnell' }).click();
     await page.getByRole('button', { name: /Start/ }).click();

@@ -36,3 +36,15 @@ test('Akkord-Spiel zählt erkannte Akkorde', async ({ page }) => {
   await expect(page.locator('.score').first()).toHaveText('1', { timeout: 10000 });
   await expect(page.locator('.game-target .chord-name')).toHaveText('F');
 });
+
+test('Blues: Akkorde begleiten – das Mikrofon hört das C im ersten Takt', async ({ page }) => {
+  await page.goto('#/blues');
+  await page.getByRole('button', { name: 'Akkorde · leicht' }).click();
+  await page.getByRole('button', { name: 'Schnell' }).click();
+  await page.getByRole('button', { name: /Ich höre zu/ }).click();
+  await page.getByRole('button', { name: 'Ja, hör zu!' }).click();
+  await page.getByRole('button', { name: /Start/ }).click();
+  await expect(page.locator('.feedback')).toContainText('1 Akkord erkannt', { timeout: 12000 });
+  await page.getByRole('button', { name: /Stopp/ }).click();
+  await expect(page.locator('.feedback')).toContainText('Geschafft');
+});
