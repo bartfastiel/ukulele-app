@@ -2,12 +2,15 @@ import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { fretboard, type Mark } from '../ui/fretboard.ts';
-import { LEVELS, SWING, bluesBars, fitsFree, freeNotes, spell, levelText, levelTitle, levelWindow, organVoicing, place, rootOf, windowTop, type Level, type NeckWindow } from '../music/blues.ts';
+import { COMP_LEVELS, LEVELS, SWING, bluesBars, compBars, compChordsText, compGrip, compStrum, compText, fitsFree, freeNotes, spell, levelText, levelTitle, levelWindow, organVoicing, place, rootOf, windowTop, type CompLevel, type Level, type NeckWindow } from '../music/blues.ts';
 import { instrument } from '../music/instrument.ts';
 import { ROOTS } from '../music/chords.ts';
-import { audio, click, hold, pluck, setWah } from '../audio/engine.ts';
+import { audio, click, hold, pluck, setWah, strum } from '../audio/engine.ts';
 import { hasMotion, watchTilt } from '../audio/motion.ts';
-import { hearingOwnSound, holdOwnSound } from '../audio/own-sound.ts';
+import { hearingOwnSound, holdOwnSound, markOwnSound } from '../audio/own-sound.ts';
+import { playableChord } from '../ui/chord-play.ts';
+import { chordDiagram } from '../ui/chord-diagram.ts';
+import { listenForChord, type ChordListener } from '../audio/listen.ts';
 import { fingerDown, type Play } from '../ui/fret-gesture.ts';
 import { VIBRATO_CENTS, VibratoDetector, bendSemis, slideFret, strikeAttack, strikeCutoff, strikeGain } from '../ui/expression.ts';
 import { bass, hat, kick, organ, snare } from '../audio/band.ts';
@@ -16,7 +19,7 @@ import { detectPitchIn } from '../audio/pitch.ts';
 import { freqToMidi, midiToFreq, pitchClass, playableFret, stringMidi } from '../music/notes.ts';
 import { load, markPracticed } from '../store.ts';
 import { noteText, t, tk, tp } from '../i18n.ts';
-import { GROOVES } from '../music/grooves.ts';
+import { GROOVES, eighthOf } from '../music/grooves.ts';
 import { link } from '../site/nav.ts';
 
 const TEMPOS = [
@@ -52,7 +55,16 @@ export const blues: View = (root) => {
   let fade = 0;
   let releaseWake: (() => void) | null = null;
   let from = 1;
-  const win = (): NeckWindow => (level.notes ? levelWindow(from) : { from: Math.min(from, instrument().frets - FREE_FRETS + 1), frets: FREE_FRETS });
+  // Akkorde begleiten statt Töne spielen (nicht auf dem E-Bass)
+  let comp: CompLevel | null = null;
+  let compSig = '';
+  let lastEighth = '';
+  let chordListener: ChordListener | null = null;
+  let chordListening = false;
+  let disposed = false;
+  let hitBar = -1;
+  let expected = '';
+  const win =(): NeckWindow => (level.notes ? levelWindow(from) : { from: Math.min(from, instrument().frets - FREE_FRETS + 1), frets: FREE_FRETS });
 
   const grid = h('div', { class: 'blues-grid', 'aria-label': t('12 Takte') });
   const neck = h('div', { class: 'blues-neck-view' });
@@ -74,6 +86,9 @@ export const blues: View = (root) => {
     gestures,
     h('div', { class: 'blues-shift-row' }, lefty ? towardBody : towardHead, shiftLabel, lefty ? towardHead : towardBody),
   );
+  const shiftRow = neckCard.lastChild as HTMLElement;
+  const pattern = h('div', { class: 'arrows groove-pattern', 'aria-hidden': 'true' });
+  const patternCard = h('div', { class: 'card groove-pattern-card blues-strum' }, pattern);
   const info = h('p', { class: 'card blues-info' });
   const counter = h('div', { class: 'feedback', 'aria-live': 'polite' }, t('Tippe auf „Start“ – die Band zählt ein.'));
   const playBtn = button('', () => (running ? stop() : go()), 'btn-primary btn-play');
@@ -83,11 +98,66 @@ export const blues: View = (root) => {
 
   const drawGrid = (bar: number) => {
     clear(grid);
-    BARS.forEach((c, i) => grid.appendChild(h('div', { class: `blues-bar${i === bar ? ' now' : ''}` }, c.replace('7', ''), h('small', null, '7'))));
+    (comp ? compBars(key, comp) : BARS).forEach((c, i) =>
+      grid.appendChild(h('div', { class: `blues-bar${i === bar ? ' now' : ''}` }, c.replace(/7$/, ''), /7$/.test(c) ? h('small', null, '7') : null)),
+    );
+  };
+
+  /** Schlagmuster (↓ ↑ ·) mit Zählhilfe, die gerade klingende Achtel leuchtet. */
+  const drawPattern = (on: number) => {
+    clear(pattern);
+    if (!comp) return;
+    const st = compStrum(comp);
+    for (let e = 0; e < 8; e++) {
+      const c = st.charAt(e);
+      const kind = c === 'D' ? 'down' : c === 'C' ? 'down chop' : c === 'U' ? 'up' : 'rest';
+      pattern.appendChild(
+        h(
+          'span',
+          { class: `arrow ${kind}${e === on ? ' on' : ''}` },
+          h('span', { class: 'glyph' }, c === 'D' || c === 'C' ? '↓' : c === 'U' ? '↑' : '·'),
+          h('span', { class: 'beat-count' }, e % 2 === 0 ? String(e / 2 + 1) : t('und')),
+        ),
+      );
+    }
+  };
+
+  /** Aktueller Akkord groß zum Antippen, daneben klein der nächste andere – kurz vor dem Wechsel hervorgehoben. */
+  const drawComp = (beat: number) => {
+    if (!comp) return;
+    const bars = compBars(key, comp);
+    const bar = beat < 0 ? 0 : Math.floor(beat / 4) % 12;
+    const cur = bars[bar];
+    let ahead = 1;
+    while (ahead < 12 && bars[(bar + ahead) % 12] === cur) ahead++;
+    const next = bars[(bar + ahead) % 12];
+    const soon = running && beat >= 0 && ahead === 1 && beat - Math.floor(beat / 4) * 4 >= 3;
+    const sig = [cur, next, ahead === 1, soon, lefty].join('|');
+    if (sig === compSig && neck.firstChild) return;
+    // ein Finger auf dem Griffbild bliebe beim Neuzeichnen ohne Ton – danach nachholen
+    if (fingerDown()) {
+      redrawLater = true;
+      return;
+    }
+    compSig = sig;
+    clear(neck);
+    neck.appendChild(
+      h(
+        'div',
+        { class: 'groove-chords' },
+        h('div', { class: 'groove-chord' }, h('span', { class: 'chord-name' }, cur), playableChord(compGrip(cur), { lefty })),
+        h(
+          'div',
+          { class: `groove-chord next${soon ? ' soon' : ''}` },
+          h('span', { class: 'groove-next-label' }, ahead === 1 ? t('Gleich:') : t('Danach:'), ' ', h('span', { class: 'chord-name' }, next)),
+          chordDiagram(compGrip(next), { lefty }),
+        ),
+      ),
+    );
   };
 
   const targetAt = (beat: number) => {
-    if (!level.notes || beat < 0) return null;
+    if (comp || !level.notes || beat < 0) return null;
     const bar = Math.floor(beat / 4) % 12;
     const n = level.notes(BARS[bar], bar)[Math.floor(beat) % 4];
     return n ? n.midi : null;
@@ -95,6 +165,7 @@ export const blues: View = (root) => {
 
   let redrawLater = false;
   const drawNeck = (beat: number) => {
+    if (comp) return drawComp(beat);
     // liegt ein Finger auf dem Hals, bliebe er beim Neuzeichnen ohne Ton – danach nachholen
     if (fingerDown()) {
       redrawLater = true;
@@ -162,7 +233,18 @@ export const blues: View = (root) => {
             bass(rootOf(chord).bass + WALK[step], t + off * spb(), (k ? 1 - SWING : SWING) * spb());
           }
         if (inBar === 1 || inBar === 3) organ(organVoicing(chord, windowTop(win())), t + SWING * spb(), spb() * 0.45);
-        if (guide && level.notes) {
+        if (guide && comp) {
+          const st = compStrum(comp);
+          const grip = compGrip(compBars(key, comp)[bar]);
+          for (let k = 0; k < 2; k++) {
+            const c = st.charAt(inBar * 2 + k);
+            if (c === '-') continue;
+            const at = t + (k ? SWING : 0) * spb();
+            strum(grip, at, c === 'U' ? 0.22 : 0.3, c === 'U');
+            // was die App selbst anschlägt, soll das Mikrofon nicht als gespielt loben
+            markOwnSound(performance.now() + (at - audio().currentTime) * 1000);
+          }
+        } else if (guide && level.notes) {
           const target = targetAt(b);
           if (target !== null) pluck(place(target, win()).midi, t, 0.35);
         }
@@ -177,9 +259,24 @@ export const blues: View = (root) => {
     if (whole !== lastBeat) {
       lastBeat = whole;
       if (beat < 0) counter.textContent = t('Einzählen … {n}', { n: 4 + whole + 1 });
-      else if (!listening) counter.textContent = t('Takt {n} von 12', { n: (Math.floor(beat / 4) % 12) + 1 });
+      else if (!listening || (comp && !hits)) counter.textContent = t('Takt {n} von 12', { n: (Math.floor(beat / 4) % 12) + 1 });
       drawGrid(beat < 0 ? -1 : Math.floor(beat / 4) % 12);
       drawNeck(beat);
+      if (chordListener && comp && beat >= 0) {
+        const name = compBars(key, comp)[Math.floor(beat / 4) % 12];
+        if (name !== expected) {
+          expected = name;
+          chordListener.setExpected(name, compGrip(name));
+        }
+      }
+    }
+    if (comp) {
+      const eighth = beat < 0 ? -1 : eighthOf(beat - Math.floor(beat / 4) * 4, true);
+      const step = `${Math.floor(beat / 4)}:${eighth}`;
+      if (step !== lastEighth) {
+        lastEighth = step;
+        drawPattern(eighth);
+      }
     }
     raf = requestAnimationFrame(frame);
   };
@@ -189,7 +286,7 @@ export const blues: View = (root) => {
     const buf = new Float32Array(ownBass ? 4096 : 2048);
     micTimer = window.setInterval(() => {
       // der eben angetippte Ton aus dem Lautsprecher ist kein Treffer
-      if (!running || hearingOwnSound()) return;
+      if (!running || comp || hearingOwnSound()) return;
       mic.timeData(buf);
       // weiter oben am Hals klingen die Töne höher; die Orgel weicht dann aus (organVoicing)
       const maxHz = Math.max(setup.pitch.maxHz, midiToFreq(windowTop(win()) + 1));
@@ -199,6 +296,39 @@ export const blues: View = (root) => {
       played = { midi, at: audio().currentTime };
       heard(midi);
     }, 50);
+  };
+
+  /** Akkorde begleiten: Die Erkennung lauscht nur, solange das Mikrofon an und eine Akkord-Stufe gewählt ist. */
+  const syncChordListener = () => {
+    if (!comp && chordListener) {
+      chordListener.stop();
+      chordListener = null;
+    }
+    if (!comp || !listening || chordListener || chordListening) return;
+    chordListening = true;
+    expected = compBars(key, comp)[running && beatNow() >= 0 ? Math.floor(beatNow() / 4) % 12 : 0];
+    listenForChord(expected, { onHit: heardChord }, compGrip(expected))
+      .then((l) => {
+        chordListening = false;
+        if (disposed || !comp) l.stop();
+        else chordListener = l;
+      })
+      .catch(() => {
+        chordListening = false;
+      });
+  };
+
+  /** Erkannter Akkord: einmal je Takt zählen, beim Wechsel extra loben. */
+  const heardChord = (name: string) => {
+    if (!running || !comp) return;
+    const beat = beatNow();
+    if (beat < 0) return;
+    const abs = Math.floor(beat / 4);
+    const bars = compBars(key, comp);
+    if (bars[abs % 12] !== name || hitBar === abs) return;
+    hitBar = abs;
+    hits++;
+    counter.textContent = abs > 0 && bars[(abs + 11) % 12] !== name ? t('Wechsel zu {chord} geschafft!', { chord: name }) : tp(hits, '{n} Akkord erkannt – super!', '{n} Akkorde erkannt – super!');
   };
 
   /** Gespielter Ton (Mikrofon oder angetippt): Treffer zählen, solange die Band läuft. */
@@ -281,6 +411,7 @@ export const blues: View = (root) => {
     running = true;
     hits = 0;
     hitBeat = -1;
+    hitBar = -1;
     start = c.currentTime + 0.15 + 4 * spb();
     scheduled = -4;
     lastBeat = -99;
@@ -293,6 +424,7 @@ export const blues: View = (root) => {
   };
 
   const stop = () => {
+    const was = running;
     running = false;
     window.clearInterval(timer);
     cancelAnimationFrame(raf);
@@ -301,7 +433,10 @@ export const blues: View = (root) => {
     label();
     drawGrid(-1);
     drawNeck(0);
-    if (hits) counter.textContent = level.notes ? t('Geschafft – {n} Treffer!', { n: hits }) : tp(hits, 'Geschafft – {n} Blues-Ton!', 'Geschafft – {n} Blues-Töne!');
+    drawPattern(-1);
+    if (comp) {
+      if (was) counter.textContent = hits ? tp(hits, 'Geschafft – {n} Akkord erkannt!', 'Geschafft – {n} Akkorde erkannt!') : t('Geschafft!');
+    } else if (hits) counter.textContent = level.notes ? t('Geschafft – {n} Treffer!', { n: hits }) : tp(hits, 'Geschafft – {n} Blues-Ton!', 'Geschafft – {n} Blues-Töne!');
   };
 
   const seg = <T,>(name: string, items: T[], text: (t: T) => string, isOn: (t: T) => boolean, pick: (t: T) => void) =>
@@ -319,8 +454,37 @@ export const blues: View = (root) => {
     );
 
   const bendInfo = h('p', { class: 'card small' });
+  const guideBtn = button(t('Ton vorspielen'), () => {
+    guide = !guide;
+    guideBtn.setAttribute('aria-pressed', String(guide));
+  }, 'btn-seg', { 'aria-pressed': 'false' });
+
+  /** Was zur Stufe gehört: Hals oder Griffbilder, Schlagmuster, Erklärung, Lauscher. */
+  const showMode = () => {
+    shiftRow.style.display = comp ? 'none' : '';
+    patternCard.style.display = comp ? '' : 'none';
+    guideBtn.textContent = comp ? t('Akkord vorspielen') : t('Ton vorspielen');
+    compSig = '';
+    lastEighth = '';
+    drawPattern(-1);
+    drawGrid(running ? Math.floor(Math.max(0, beatNow()) / 4) % 12 : -1);
+    syncChordListener();
+  };
+
+  const setComp = (c: CompLevel) => {
+    comp = c;
+    info.textContent = t(compText(c), { chords: compChordsText(key, c) });
+    bendInfo.style.display = 'none';
+    gestures.style.display = 'none';
+    showMode();
+    drawNeck(running ? beatNow() : 0);
+  };
+
   const setLevel = (l: Level) => {
+    const was = comp;
+    comp = null;
     level = l;
+    if (was) showMode();
     info.textContent = t(levelText(l), {
       i: ROOTS[key],
       iv: ROOTS[(key + 5) % 12],
@@ -336,10 +500,6 @@ export const blues: View = (root) => {
     drawNeck(running ? beatNow() : 0);
   };
 
-  const guideBtn = button(t('Ton vorspielen'), () => {
-    guide = !guide;
-    guideBtn.setAttribute('aria-pressed', String(guide));
-  }, 'btn-seg', { 'aria-pressed': 'false' });
   let wahCtl: { stop: () => void; rezero: () => void } | null = null;
   const wahBtn = button(t('Wah: Handy kippen'), () => {
     if (wahCtl) {
@@ -360,8 +520,24 @@ export const blues: View = (root) => {
       listening = true;
       micBtn.setAttribute('aria-pressed', 'true');
       listen(await openMic());
+      syncChordListener();
     });
   }, 'btn-seg', { 'aria-pressed': 'false' });
+
+  // eine Auswahl über beide Gruppen: Akkorde begleiten oder eine Ton-Stufe
+  const levelButtons: HTMLElement[] = [];
+  const levelBtn = (text: string, on: boolean, pick: () => void) => {
+    const b = button(text, () => {
+      pick();
+      levelButtons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    }, 'btn-seg', { 'aria-pressed': String(on) });
+    levelButtons.push(b);
+    return b;
+  };
+  const compGroup = ownBass
+    ? null
+    : h('div', { class: 'seg seg-wrap', role: 'group', 'aria-label': t('Akkorde begleiten') }, ...COMP_LEVELS.map((c) => levelBtn(t(c.title), false, () => setComp(c))));
+  const levelGroup = h('div', { class: 'seg seg-wrap', role: 'group', 'aria-label': t('Stufe') }, ...LEVELS.map((l) => levelBtn(t(levelTitle(l)), l === level, () => setLevel(l))));
 
   const explainText = () => {
     const n = (i: number) => BARS[i].replace('7', '');
@@ -374,25 +550,30 @@ export const blues: View = (root) => {
 
   label();
   drawGrid(-1);
+  patternCard.style.display = 'none';
   setLevel(LEVELS[0]);
   screen(
     root,
     { title: t('Blues'), theme: 'teal' },
     h('div', { class: 'blues-top' }, grid, neckCard),
+    patternCard,
     info,
     bendInfo,
     h(
       'div',
       { class: 'controls' },
       playBtn,
-      h('h2', null, t('Stufe')),
-      seg(t('Stufe'), LEVELS, (l) => t(levelTitle(l)), (l) => l === level, setLevel),
+      compGroup ? h('h2', null, t('Akkorde begleiten')) : null,
+      compGroup,
+      h('h2', null, compGroup ? t('Töne spielen') : t('Stufe')),
+      levelGroup,
       h('h2', null, t('Tonart')),
       seg(t('Tonart'), ROOTS.map((_, i) => i), (i) => (i === setup.easyKey ? `${ROOTS[i]} ★` : ROOTS[i]), (i) => i === key, (i) => {
         key = i;
         BARS = bluesBars(key);
         explain.textContent = explainText();
-        setLevel(level);
+        if (comp) setComp(comp);
+        else setLevel(level);
         drawGrid(running ? Math.floor(Math.max(0, beatNow()) / 4) % 12 : -1);
         drawNeck(running ? beatNow() : 0);
       }),
@@ -419,7 +600,9 @@ export const blues: View = (root) => {
     ),
   );
   return () => {
+    disposed = true;
     stop();
+    if (chordListener) chordListener.stop();
     window.clearInterval(micTimer);
     window.clearTimeout(fade);
     if (wahCtl) wahCtl.stop();

@@ -37,6 +37,7 @@ import { stars } from '../views/stars.ts';
 import { record } from '../views/record.ts';
 import { detective } from '../views/detective.ts';
 import { blues } from '../views/blues.ts';
+import { COMP_LEVELS, compChordsText } from '../music/blues.ts';
 import { grooves } from '../views/grooves.ts';
 import { GROOVES, chordsText, easyKey } from '../music/grooves.ts';
 import { ownSongEditor } from '../views/own-song.ts';
@@ -550,7 +551,15 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
       : ['detektiv', t('Akkord-Detektiv für {instrument}: Welcher Akkord ist das?', { instrument: inst }), t('Spiel einen Akkord oder Ton auf {instrument} – der Detektiv sagt dir, wie er heißt und wo er auf dem Hals liegt.', { instrument: inst })],
     bass
       ? ['blues', t('Walking Bass im 12-Takt-Blues für {instrument}', { instrument: inst }), t('Blues mit Band in jeder Tonart: erst Grundtöne, dann Grundton und Quinte, dann Walking Bass und frei spielen – auf {instrument}, mit Tabulatur.', { instrument: inst })]
-      : ['blues', t('12-Takt-Blues zum Mitspielen für {instrument}', { instrument: inst }), t('Blues mit Band in jeder Tonart: erst Grundtöne, dann Riffs, dann frei spielen – auf {instrument}, mit Tabulatur.', { instrument: inst })],
+      : [
+          'blues',
+          t('12-Takt-Blues mit Akkorden zum Mitspielen für {instrument}', { instrument: inst }),
+          t('Blues mit Band in jeder Tonart: mit Akkorden begleiten ({easy}, dann {sept}), Grundtöne und Riffs spielen, frei spielen – auf {instrument}, mit Griffbildern und Tabulatur.', {
+            instrument: inst,
+            easy: compChordsText(instrument().blues.easyKey, COMP_LEVELS[0]),
+            sept: compChordsText(instrument().blues.easyKey, COMP_LEVELS[1]),
+          }),
+        ],
     ['sterne', t('Meine Sterne', {}), t('Deine Sterne, Abzeichen und Übungstage – gespeichert nur auf diesem Gerät.', {})],
   ];
   for (const tool of tools)

@@ -1,5 +1,6 @@
 import { STRINGS, playableFret, stringMidi, tabPosition } from './notes.ts';
-import { ROOTS, parseChordName } from './chords.ts';
+import { ROOTS, chord, chordCost, parseChordName, type Chord } from './chords.ts';
+import { songGrip } from './easy-grips.ts';
 import { instrument } from './instrument.ts';
 import { tk } from '../i18n.ts';
 
@@ -281,4 +282,72 @@ export function organVoicing(chord: string, above = 0): number[] {
   let low = instrument().blues.organ;
   if (low > instrument().blues.low) while (low <= above + 1) low += 12;
   return [0, 4, 7, 10].map((i) => low + ((((r + i - low) % 12) + 12) % 12)).sort((a, b) => a - b);
+}
+
+/**
+ * Akkorde begleiten (nicht auf dem E-Bass): leicht mit Dur-Dreiklängen, dann mit Septakkorden – dem typischen
+ * Blues-Klang. Ist der Septakkord deutlich leichter zu greifen als der Dreiklang (Gitarre in E: B7 statt B mit Barré),
+ * nimmt auch die leichte Stufe ihn; im Blues passt die Septime immer.
+ */
+export interface CompLevel {
+  id: 'akkorde' | 'sept';
+  title: string;
+  text: string;
+  /** Schlagmuster je Achtel: D = runter, U = rauf, C = Chop (kurz runter und gleich abdämpfen), - = Pause. */
+  strum: string;
+}
+
+export const COMP_LEVELS: CompLevel[] = [
+  {
+    id: 'akkorde',
+    title: tk('Akkorde · leicht'),
+    text: tk('Begleite den Blues mit drei Akkorden: {chords}. Schlag auf jeden Schlag einmal runter und zähl mit: 1, 2, 3, 4. Das kleine Griffbild zeigt dir schon vorher, welcher Akkord als Nächstes kommt.'),
+    strum: 'D-D-D-D-',
+  },
+  {
+    id: 'sept',
+    title: tk('Akkorde · mit 7'),
+    text: tk('Jetzt mit Septakkorden: {chords}. Die Sieben gibt den typischen Blues-Klang – ein bisschen frech, als wollte der Akkord gleich weiter. Schlag im Shuffle: runter lang, rauf kurz – lang-kurz, lang-kurz, wie beim Hüpfen.'),
+    strum: 'DUDUDUDU',
+  },
+];
+
+/**
+ * Auf der Mandoline begleitet man den Blues mit dem „Chop“ auf 2 und 4: kurz anschlagen, sofort abdämpfen – wie eine
+ * Snare. Durchgehendes Shuffle-Schlagen klingt auf den hellen Doppelsaiten schnell zu dicht.
+ */
+const MANDOLIN_CHOP = '--C---C-';
+
+export function compStrum(level: CompLevel): string {
+  return level.id === 'sept' && instrument().id === 'mandoline' ? MANDOLIN_CHOP : level.strum;
+}
+
+export function compText(level: CompLevel): string {
+  return level.id === 'sept' && instrument().id === 'mandoline'
+    ? tk('Jetzt mit Septakkorden: {chords}. Die Sieben gibt den typischen Blues-Klang. Auf der Mandoline spielt man dazu den „Chop“: nur auf 2 und 4 kurz runter schlagen und gleich danach mit der Greifhand locker lassen, ohne die Saiten loszulassen – dann klingt der Akkord kurz wie eine kleine Trommel.')
+    : level.text;
+}
+
+/** Griff zum Akkord: die leichte Variante mit allen Tönen (Gitarre: Mini-G), wenn es eine gibt. */
+export function compGrip(name: string): Chord {
+  return songGrip(name) || chord(name);
+}
+
+/** Akkord der Stufe zu einem Sept-Akkord aus `bluesBars`. */
+export function compChord(name: string, level: CompLevel): string {
+  if (level.id === 'sept') return name;
+  const triad = name.replace(/7$/, '');
+  return chordCost(compGrip(name)) < chordCost(compGrip(triad)) - 1.5 ? name : triad;
+}
+
+/** Die 12 Takte als Akkorde der Stufe. */
+export function compBars(key: number, level: CompLevel): string[] {
+  return bluesBars(key).map((c) => compChord(c, level));
+}
+
+/** Die Akkorde der Stufe ohne Wiederholung: „C – F – G“. */
+export function compChordsText(key: number, level: CompLevel): string {
+  return compBars(key, level)
+    .filter((c, i, all) => all.indexOf(c) === i)
+    .join(' – ');
 }
