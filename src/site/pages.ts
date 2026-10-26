@@ -22,7 +22,7 @@ import { noteText } from '../i18n.ts';
 import { parseChordName } from '../music/chords.ts';
 import type { Article, Block, L10n } from '../content/types.ts';
 import { h, s } from '../ui/dom.ts';
-import { icon, logo } from '../ui/icons.ts';
+import { icon } from '../ui/icons.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
 import { group, screen, type View } from '../ui/screen.ts';
 import { THEME_COLOR, themeBootScript } from '../ui/theme.ts';
@@ -702,7 +702,7 @@ function hasCourse(siteDef: SiteDef): boolean {
 function legalSpecs(siteDef: SiteDef, l: Lang): Spec[] {
   const brand = siteDef.brand[l];
   return [
-    { route: 'ueber', title: t('Über den {brand}', { brand }), description: t('Wer hinter {brand} steht und warum die App kostenlos ist: ein privates, persönliches Projekt, ohne Werbung, ohne Abo, Open Source.', { brand }), body: () => legalPage('ueber', siteDef, l) },
+    { route: 'ueber', title: t('Über {brand}', { brand }), description: t('Wer hinter {brand} steht und warum die App kostenlos ist: ein privates, persönliches Projekt, ohne Werbung, ohne Abo, Open Source.', { brand }), body: () => legalPage('ueber', siteDef, l) },
     { route: 'impressum', noindex: true, title: t('Impressum'), description: t('Impressum und Kontakt: ein privates, persönliches, nicht-kommerzielles Projekt – kostenlos, ohne Werbung und ohne Abo.'), body: () => legalPage('impressum', siteDef, l) },
     { route: 'datenschutz', noindex: true, title: t('Datenschutz'), description: t('Datenschutz: keine Konten, keine Cookies, kein Tracking – Fortschritt und Mikrofon bleiben auf deinem Gerät.'), body: () => legalPage('datenschutz', siteDef, l) },
   ];
@@ -725,7 +725,7 @@ function aboutCard(siteDef: SiteDef, l: Lang): Node {
 function appText(): string {
   return notesOnly()
     ? t('Lieder zum Mitspielen, die auf dich warten, Basstöne mit Prüf-Funktion übers Mikrofon, Stimmgerät, Basslinien und Walking Bass im Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.')
-    : t('Lieder zum Mitspielen, die auf dich warten, Akkorde mit Prüf-Funktion übers Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.');
+    : t('Lieder zum Mitspielen, Akkorde mit Prüfung über das Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.');
 }
 
 /** Lehrkräfte-Seite: passende Wissensartikel (nur vorgerendert – die Artikel gehören nicht ins Skript der App). */
@@ -1294,6 +1294,11 @@ function stringsMark(id: string): Node {
   );
 }
 
+/** Instrumentname am Zeilenanfang groß („guitar“ → „Guitar“). */
+function capName(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 function startPage(siteDef: SiteDef, l: Lang): Node[] {
   return [
     h(
@@ -1302,9 +1307,9 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
       h(
         'header',
         { class: 'home-head' },
-        h('div', { class: 'brand' }, logo(), h('h1', null, h('span', { class: 'brand-name' }, siteDef.brand[l]))),
+        h('div', { class: 'brand' }, h('h1', null, h('span', { class: 'brand-name' }, siteDef.brand[l]))),
       ),
-      h('p', { class: 'home-tagline' }, t('Kostenlos lernen, mitspielen, Spaß haben')),
+      h('p', { class: 'home-tagline' }, t('Kostenlos, ohne Werbung, ohne Anmeldung')),
       group(
         t('Instrument wählen'),
         h(
@@ -1315,22 +1320,22 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
               'a',
               { class: `list-row tile-${s.id}`, href: env().url(s.id) + (l === 'de' ? '' : l + '/') },
               stringsMark(s.id),
-              h('span', { class: 'row-text' }, h('span', { class: 'row-title' }, s.brand[l]), h('span', { class: 'row-sub' }, t('{instrument} lernen', { instrument: s.name[l] }))),
+              h('span', { class: 'row-text' }, h('span', { class: 'row-title' }, capName(s.name[l])), h('span', { class: 'row-sub' }, t('{instrument} lernen', { instrument: s.name[l] }))),
               icon('chevron', 'icon chevron'),
             ),
           ),
         ),
       ),
-      h('section', { class: 'card seo-card' }, h('p', null, t('Lieder zum Mitspielen, die auf dich warten, Akkorde mit Prüf-Funktion übers Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.'))),
-      courseLinks(l),
       h(
         'section',
-        { class: 'card seo-card' },
+        { class: 'card seo-card instrument-fit' },
         h('h2', null, t('Welches Instrument passt zu mir?')),
         ...SITES.filter((s) => s.instrument && INSTRUMENT_PITCH[s.id] && env().sites.indexOf(s.id) >= 0).map((s) =>
-          h('p', null, h('a', { href: env().url(s.id) + (l === 'de' ? '' : l + '/') }, h('strong', null, s.brand[l])), ': ', t(INSTRUMENT_PITCH[s.id])),
+          h('p', null, h('a', { href: env().url(s.id) + (l === 'de' ? '' : l + '/') }, h('strong', null, capName(s.name[l]))), ': ', t(INSTRUMENT_PITCH[s.id])),
         ),
       ),
+      h('section', { class: 'card seo-card' }, h('p', null, t('Lieder zum Mitspielen, Akkorde mit Prüfung über das Mikrofon, Stimmgerät, Rhythmus und Blues. Ohne Abo, ohne Werbung, ohne Konto – alles bleibt auf deinem Gerät.'))),
+      courseLinks(l),
       h(
         'section',
         { class: 'card seo-card' },
@@ -1340,7 +1345,7 @@ function startPage(siteDef: SiteDef, l: Lang): Node[] {
           'p',
           null,
           ...SITES.filter((s) => s.instrument && env().sites.indexOf(s.id) >= 0).map((s, i) =>
-            h('span', null, i ? ' · ' : '', h('a', { href: env().url(s.id) + pathOf('lehrkraefte', l) }, s.brand[l])),
+            h('span', null, i ? ' · ' : '', h('a', { href: env().url(s.id) + pathOf('lehrkraefte', l) }, capName(s.name[l]))),
           ),
         ),
       ),
@@ -1432,7 +1437,7 @@ function legalPage(kind: 'ueber' | 'impressum' | 'datenschutz', siteDef: SiteDef
       ),
     );
   return staticScreen(
-    t('Über den {brand}', { brand: siteDef.brand[l] }),
+    t('Über {brand}', { brand: siteDef.brand[l] }),
     rel('', l),
     h(
       'section',

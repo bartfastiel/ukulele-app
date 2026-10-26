@@ -21,7 +21,6 @@ function fromUkulele(q: string): Instrument['shapes'][string] {
 export const BARITON: Instrument = {
   id: 'bariton',
   name: tk('Bariton-Ukulele'),
-  club: tk('Bariton-Ukulele-Club'),
   obj: tk('die Bariton-Ukulele'),
   yours: tk('deine Bariton-Ukulele'),
   of: tk('der Bariton-Ukulele'),

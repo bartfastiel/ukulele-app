@@ -8,7 +8,6 @@ const shapes = (list: string[]) => list.map((s) => ({ frets: parseGrip(s) }));
 export const UKULELE: Instrument = {
   id: 'ukulele',
   name: tk('Ukulele'),
-  club: tk('Ukulele-Club'),
   obj: tk('die Ukulele'),
   yours: tk('deine Ukulele'),
   of: tk('der Ukulele'),

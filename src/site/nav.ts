@@ -35,7 +35,7 @@ export function go(route: string): void {
   location.href = link(route);
 }
 
-/** Markenname der Instrument-Seite (z. B. „Ukulele-Club“), vom Build in die Seite geschrieben. */
+/** Markenname der Instrument-Seite (z. B. „Open String Ukulele“), vom Build in die Seite geschrieben. */
 export function brand(): string {
-  return attr('data-brand') || 'Ukulele-Club';
+  return attr('data-brand') || 'Open String Ukulele';
 }

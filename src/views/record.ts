@@ -14,7 +14,7 @@ import { makeZip } from '../util/zip.ts';
 import { idbAll, idbClear, idbPut } from '../util/idb.ts';
 import type { Chord } from '../music/chords.ts';
 import { t, tp } from '../i18n.ts';
-import { link } from '../site/nav.ts';
+import { brand, link } from '../site/nav.ts';
 import { load } from '../store.ts';
 
 /**
@@ -114,7 +114,7 @@ export const record: View = (root) => {
     const list = Array.from(done.values()).sort((a, b) => (a.recordedAt < b.recordedAt ? -1 : 1));
     const files = list.map((s, i) => ({ name: fileName(i, s), data: new Uint8Array(s.wav) }));
     const meta = {
-      app: instrument().club,
+      app: brand(),
       instrument: instrument().id,
       strings: STRINGS.map((x) => x.midi),
       createdAt: new Date().toISOString(),

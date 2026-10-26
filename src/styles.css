@@ -787,13 +787,6 @@ button.list-row:active {
   min-width: 0;
 }
 
-.logo {
-  flex: none;
-  width: 34px;
-  height: 34px;
-  margin-right: 10px;
-}
-
 .brand h1 {
   font-size: 22px;
   font-weight: 800;
@@ -4528,18 +4521,6 @@ button.list-row:active {
   fill: var(--ink-2);
 }
 
-.logo-bg {
-  fill: var(--accent);
-}
-
-.logo-arc {
-  stroke: var(--on-accent);
-}
-
-.logo-dot {
-  fill: var(--on-accent);
-}
-
 .area-learn {
   color: var(--on-accent);
 }
@@ -4612,7 +4593,6 @@ button.list-row:active {
   .toggle,
   .theme-toggle,
   .hero-go,
-  .logo,
   .lang-offer,
   .tuning-banner,
   .icon.chevron,

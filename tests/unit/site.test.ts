@@ -132,7 +132,7 @@ test('Vorschaubild, Social-Tags und gültige strukturierte Daten auf jeder index
   assert.deepEqual(
     crumbs.itemListElement.map((x) => [x.position, x.name, x.item]),
     [
-      [1, 'Ukulele-Club', 'https://ukulele.example.org/'],
+      [1, 'Open String Ukulele', 'https://ukulele.example.org/'],
       [2, 'Lieder', 'https://ukulele.example.org/lieder/'],
       [3, 'Alle meine Entchen', 'https://ukulele.example.org/lieder/alle-meine-entchen/'],
     ],

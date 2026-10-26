@@ -1,5 +1,5 @@
 import { h, clear } from '../ui/dom.ts';
-import { icon, logo } from '../ui/icons.ts';
+import { icon } from '../ui/icons.ts';
 import { load, totalStars } from '../store.ts';
 import { lang, t } from '../i18n.ts';
 import { baseInstrument, instrument, notesOnly } from '../music/instrument.ts';
@@ -44,7 +44,7 @@ function courseCard(titles: { de: string; en: string; fr: string }[]): HTMLEleme
   if (!done.length)
     return heroCard(link('lektionen'), t('Lernweg'), t('Lernweg starten'), t('{n} Lektionen, eine pro Woche', { n: total }), null, 'hero-course');
   const sub = t('{done} von {n} Lektionen geschafft', { done: done.length, n: total });
-  if (!next) return heroCard(link('lektionen'), t('Lernweg'), t('Alle Lektionen geschafft!'), sub, 1, 'hero-course');
+  if (!next) return heroCard(link('lektionen'), t('Lernweg'), t('Alle Lektionen abgeschlossen'), sub, 1, 'hero-course');
   return heroCard(
     link(`lektion/${next}`),
     t('Weiter mit deinem Kurs'),
@@ -66,7 +66,6 @@ export const home: View = (root) => {
   clear(root);
   const p = load();
   const last = p.lastSong ? findSong(p.lastSong) : undefined;
-  const firstVisit = !p.days.length;
   const bass = notesOnly();
   const titles = COURSE_TITLES[baseInstrument().id];
   const lastRow = last ? listRow(link(`lied/${last.id}`), 'play', 'songs', t('Weiterspielen'), last.title, 'row-continue') : null;
@@ -74,7 +73,7 @@ export const home: View = (root) => {
     ? courseCard(titles)
     : last
       ? heroCard(link(`lied/${last.id}`), t('Weiterspielen'), last.title, t('Zuletzt gespielt'), null, 'hero-continue')
-      : heroCard(link('lieder'), t('Los geht’s'), t('Dein erstes Lied'), bass ? t('Basstöne zum Mitspielen') : t('Karaoke zum Mitspielen'), null, 'hero-start');
+      : heroCard(link('lieder'), t('Einstieg'), t('Erstes Lied spielen'), bass ? t('Basstöne zum Mitspielen') : t('Karaoke zum Mitspielen'), null, 'hero-start');
   root.appendChild(
     h(
       'main',
@@ -82,7 +81,7 @@ export const home: View = (root) => {
       h(
         'header',
         { class: 'home-head' },
-        h('div', { class: 'brand' }, logo(), h('h1', null, h('span', { class: 'brand-name' }, 'Open String'), ' ', h('span', { class: 'brand-inst' }, t(instrument().name)))),
+        h('div', { class: 'brand' }, h('h1', null, h('span', { class: 'brand-name' }, 'Open String'), ' ', h('span', { class: 'brand-inst' }, t(instrument().name)))),
         h(
           'nav',
           { class: 'head-tools', 'aria-label': t('Werkzeuge') },
@@ -91,17 +90,19 @@ export const home: View = (root) => {
           h('a', { class: 'topbar-tool', href: link('einstellungen'), 'aria-label': t('Einstellungen'), title: t('Einstellungen') }, icon('gear')),
         ),
       ),
-      firstVisit
-        ? h(
-            'a',
-            { class: 'card hint', href: link('stimmen') },
-            h('strong', null, t('Hallo!'), ' '),
-            t('Zuerst stimmen wir {yours} – dann klingt alles viel schöner.', { yours: t(instrument().yours) }),
-            ' ',
-            h('span', { class: 'hint-go' }, t('Zum Stimmgerät'), ' ›'),
-          )
-        : null,
       hero,
+      h(
+        'section',
+        { class: 'group-wrap' },
+        h('h2', { class: 'section-label' }, t('Werkzeuge')),
+        h(
+          'div',
+          { class: 'tool-grid' },
+          toolTile(link('stimmen'), 'tuner', t('Stimmen'), 'tile-tuner'),
+          toolTile(link('akkorde'), bass ? 'note' : 'chords', bass ? t('Töne') : t('Akkorde'), 'tile-chords'),
+          toolTile(link('rhythmus'), 'rhythm', t('Rhythmus'), 'tile-rhythm'),
+        ),
+      ),
       h(
         'nav',
         { class: 'home-groups', 'aria-label': t('Bereiche') },
@@ -110,30 +111,18 @@ export const home: View = (root) => {
           seasonRow(),
           titles ? lastRow : null,
           listRow(link('lieder'), 'songs', 'songs', t('Lieder spielen'), bass ? t('Basstöne zum Mitspielen') : t('Karaoke zum Mitspielen'), 'tile-songs'),
-          listRow(link('blues'), 'blues', 'band', t('Blues'), bass ? t('Walking Bass mit der Band') : t('Mit der Band jammen'), 'tile-blues'),
+          listRow(link('blues'), 'blues', 'band', t('Blues'), bass ? t('Walking Bass mit Begleitband') : t('12-Takt-Blues mit Begleitband'), 'tile-blues'),
           listRow(link('begleitung/rock'), 'band', 'band', t('Band-Begleitung'), t('Rock, Pop, Shuffle, Country'), 'tile-grooves'),
         ),
         group(
           t('Üben'),
-          listRow(link('detektiv'), 'detective', 'games', bass ? t('Ton-Detektiv') : t('Akkord-Detektiv'), t('Spiel was – ich sag, was es ist'), 'tile-detective'),
-          listRow(link('spiel'), 'game', 'games', bass ? t('Ton-Spiel') : t('Akkord-Spiel'), t('Wie viele schaffst du?'), 'tile-game'),
+          listRow(link('detektiv'), 'detective', 'games', bass ? t('Ton-Detektiv') : t('Akkord-Detektiv'), bass ? t('Erkennt gespielte Töne') : t('Erkennt gespielte Akkorde'), 'tile-detective'),
+          listRow(link('spiel'), 'game', 'games', bass ? t('Ton-Spiel') : t('Akkord-Spiel'), bass ? t('Töne finden auf Zeit') : t('Akkordwechsel auf Zeit'), 'tile-game'),
         ),
         group(
           t('Lernen'),
-          titles ? listRow(link('lektionen'), 'steps', 'learn', t('Lektionen'), t('Schritt für Schritt – jede Woche eine'), 'tile-lessons') : null,
-          listRow(link('wissen'), 'book', 'learn', t('Tipps & Wissen'), bass ? t('Stimmen, Töne, Üben – kurz erklärt') : t('Stimmen, Akkorde, Üben – kurz erklärt'), 'tile-wissen'),
-        ),
-        h(
-          'section',
-          { class: 'group-wrap' },
-          h('h2', { class: 'section-label' }, t('Werkzeuge')),
-          h(
-            'div',
-            { class: 'tool-grid' },
-            toolTile(link('stimmen'), 'tuner', t('Stimmen'), 'tile-tuner'),
-            toolTile(link('akkorde'), bass ? 'note' : 'chords', bass ? t('Töne') : t('Akkorde'), 'tile-chords'),
-            toolTile(link('rhythmus'), 'rhythm', t('Rhythmus'), 'tile-rhythm'),
-          ),
+          titles ? listRow(link('lektionen'), 'steps', 'learn', t('Lektionen'), t('Aufbauender Kurs, eine Lektion pro Woche'), 'tile-lessons') : null,
+          listRow(link('wissen'), 'book', 'learn', t('Tipps & Wissen'), bass ? t('Kurze Artikel zu Stimmen, Tönen und Üben') : t('Kurze Artikel zu Stimmen, Akkorden und Üben'), 'tile-wissen'),
         ),
       ),
     ),

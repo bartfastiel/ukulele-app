@@ -64,8 +64,6 @@ export interface Instrument {
   id: InstrumentId;
   /** Name (tk) – „Ukulele“. */
   name: string;
-  /** Name der App für dieses Instrument (tk). */
-  club: string;
   /** Wörter für Sätze (tk): als Objekt („halte die Ukulele ruhig“), „deine Ukulele“, Genitiv („Korpus der Ukulele“). */
   obj: string;
   yours: string;

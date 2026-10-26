@@ -126,16 +126,15 @@ const INK_2 = hex('#55575e');
 const FRET = hex('#d5d7dc');
 const ACCENT = hex('#0a7c6e');
 
-/** Zeichen von Open String (wie `logo()` in src/ui/icons.ts) als große Akzentfläche links. */
+/** Große Akzentfläche links mit einem Schallloch wie im App-Symbol. */
 function mark(c: Canvas): void {
   const x0 = 110;
   const y0 = 135;
   const k = 12;
   c.shape(roundRect(x0, y0, x0 + 30 * k, y0 + 30 * k, 8 * k), [x0 - 2, y0 - 2, x0 + 30 * k + 2, y0 + 30 * k + 2], ACCENT);
-  const p = (x: number, y: number) => [x0 + x * k, y0 + y * k];
-  const arc = [...p(8, 20), ...p(11, 12), ...p(19, 12), ...p(22, 20)];
-  c.shape(curve(arc, 2.4 * k), [x0, y0, x0 + 30 * k, y0 + 30 * k], WHITE);
-  c.shape(circle(x0 + 15 * k, y0 + 12 * k, 2.5 * k), box(x0 + 15 * k, y0 + 12 * k, 2.5 * k), WHITE);
+  const cx = x0 + 15 * k;
+  const cy = y0 + 15 * k;
+  c.shape(ring(cx, cy, 6.9 * k, 2 * k), box(cx, cy, 8 * k), WHITE);
 }
 
 /** Weiße Karte mit einem Griffbild im Stil der App: dunkle Saiten und Sattel, helle Bünde, Finger in der Akzentfarbe. */

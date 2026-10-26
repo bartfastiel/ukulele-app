@@ -106,7 +106,7 @@ export function variantChooser(): HTMLElement | null {
     'section',
     { class: 'group-wrap variant-choice' },
     h('h2', { class: 'section-label' }, t('Meine Gitarre')),
-    sounds.length ? h('p', { class: 'group-note group-note-top' }, t('Klang beim Vorspielen:')) : null,
+    sounds.length ? h('p', { class: 'group-note group-note-top' }, t('So klingt die App, wenn sie Akkorde und Lieder vorspielt:')) : null,
     sounds.length
       ? h(
           'div',

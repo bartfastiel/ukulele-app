@@ -1,4 +1,4 @@
-# Ukulele-Club – Hinweise für Claude
+# Open String – Hinweise für Claude
 
 Private Lern-App von Daniel für seinen Sohn (10, Realschul-Ukulelenklasse). Öffentlich als Open Source auf GitHub
 (`bartfastiel/ukulele-app`), live unter https://openstring.de/ (je Instrument ein Pfad). Antworten auf Deutsch; die App ist
@@ -61,7 +61,7 @@ src/views/*.ts           je Ansicht eine Funktion (root, param) → Aufräumfunk
 src/views/player.ts      Karaoke: Transport auf der AudioContext-Uhr, Vorausplanung (25-ms-Takt, 150 ms Horizont),
                          Modus „Wartet auf mich“ hält an jedem Akkordwechsel (stopBeat) und hört per listen.ts zu
 src/ui/                  dom.ts (h/s-Helfer), screen.ts (Kopfzeile mit Stimmgerät, Zeile/Gruppe/Schalter, Mikrofon-Dialog,
-                         Lob, Wake Lock), chord-diagram.ts (SVG-Griffbild), icons.ts (Symbole, logo()), theme.ts (hell/dunkel)
+                         Lob, Wake Lock), chord-diagram.ts (SVG-Griffbild), icons.ts (Symbole), theme.ts (hell/dunkel)
 src/views/settings.ts    Einstellungen (Hand, Stimmung, Klang, Darstellung, Sprache, Instrument, Sicherung)
 src/audio/engine.ts      AudioContext, Karplus-Strong-Puffer je Ton (Cache), Strum, Klick
 src/audio/pluck.ts       Synthese ohne Web Audio (auch für Tests und tools/make-wav.ts)

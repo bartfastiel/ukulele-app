@@ -87,17 +87,18 @@ Helfer in `src/ui/screen.ts`: `screen()`, `button()`, `toggle()`, `listRow()`, `
   rechts das Stimmgerät-Symbol (48 px, Ziel `stimmen`; auf dem Stimmgerät selbst und auf der Wurzel-Startseite
   entfällt es). Kein Rahmen. Inhaltsseiten (Wissen, Lektionen, Rechtliches) zeigen den Titel als großen Seitentitel
   (28/800) unter der Kopfzeile.
-  Auf der Startseite: links Logo (`logo()`) + „Open String“ + klein der Instrumentname, rechts Stimmgerät, Sterne
-  (mit Zahl), Einstellungen (Regler-Symbol).
-- **Startseite** (Instrument): Hallo-Hinweis (nur beim ersten Besuch), Lernweg-Karte, Gruppen „Spielen“
-  (Weihnachtslieder in der Saison, Lieder, Blues, Band-Begleitung), „Üben“ (Detektiv, Spiel), „Lernen“ (Lektionen,
-  Wissen), dann „Werkzeuge“ als Kacheln (Stimmen, Akkorde bzw. Töne, Rhythmus). Wurzel-Startseite: Gruppe
-  „Instrument wählen“ mit einem Saiten-Symbol je Instrument, darunter Text-Karten.
+  Auf der Startseite: links „Open String“ (Text, **kein Logo**) + klein der Instrumentname, rechts Stimmgerät,
+  Sterne (mit Zahl), Einstellungen (Regler-Symbol).
+- **Startseite** (Instrument): Lernweg-Karte, direkt darunter „Werkzeuge“ als Kacheln (Stimmen, Akkorde bzw. Töne,
+  Rhythmus) – beides muss auf dem ersten Handy-Bildschirm stehen. Dann Gruppen „Spielen“ (Weihnachtslieder in der
+  Saison, Lieder, Blues, Band-Begleitung), „Üben“ (Detektiv, Spiel), „Lernen“ (Lektionen, Wissen). Wurzel-Startseite:
+  Gruppe „Instrument wählen“ mit einem Saiten-Symbol je Instrument, direkt darunter „Welches Instrument passt zu
+  mir?“, danach die übrigen Text-Karten.
 - **Lernweg-Karte**: weiße Karte, Akzent-Überschrift („Weiter mit deinem Kurs“), „Lektion 4 · Titel“, Fortschritt
   „3 von 24 Lektionen geschafft“ mit dünnem Akzentbalken, runder Akzentknopf mit Play-Symbol. Nächste Lektion =
   kleinste Nummer ohne Häkchen. Ohne Häkchen: „Lernweg starten“ (führt zur Übersicht); alle geschafft: „Alle
-  Lektionen geschafft!“. Die Titel stehen in `src/content/kurse.ts` (ein Test hält sie gleich mit den Kursen).
-  Instrumente ohne Kurs zeigen an dieser Stelle „Weiterspielen“ (zuletzt gespieltes Lied) bzw. „Dein erstes Lied“;
+  Lektionen abgeschlossen“. Die Titel stehen in `src/content/kurse.ts` (ein Test hält sie gleich mit den Kursen).
+  Instrumente ohne Kurs zeigen an dieser Stelle „Weiterspielen“ (zuletzt gespieltes Lied) bzw. „Erstes Lied spielen“;
   bei Kurs-Instrumenten ist „Weiterspielen“ die erste Zeile der Gruppe „Spielen“.
 - **Bereichsüberschrift**: 13 px, 600, Großbuchstaben, `--ink-2`, 8 px Einzug, über jeder Gruppe.
 - **Gruppe**: `--surface`, Radius 16, Zeilen mit 1-px-Trennlinie `--fill-soft`, kein Rand, kein Schatten.
@@ -130,6 +131,17 @@ Helfer in `src/ui/screen.ts`: `screen()`, `button()`, `toggle()`, `listRow()`, `
   (Automatisch · Hell · Dunkel), Sprache, Instrument wechseln, Sicherung, Für Erwachsene. Keine Abzeichen oder
   Umschalter dafür in den Ansichten: das Stimmgerät zeigt die Stimmung nur als leise Zeile mit Link dorthin, eine
   andere Stimmung meldet eine schmale Zeile über der Kopfzeile („Zurück zur Normalstimmung“).
+
+## Sprache und Namen
+
+- **Sachlich und freundlich, nicht kindisch.** Beschriftungen sagen, was etwas tut („Erkennt gespielte Akkorde“,
+  „Akkordwechsel auf Zeit“), nicht wie lustig es ist. Kein „Spaß haben“, „jammen“, „Los geht’s“ auf Übersichtsseiten.
+  Lob in Spielansichten („Super!“) bleibt kurz.
+- **Namen:** die Seite heißt „Open String“, die Instrumentseiten „Open String Ukulele“, „Open String Gitarre“ usw.
+  (`brand` in `src/site/sites.ts`). Keine Zusätze wie „-Club“.
+- **Kein Logo** in der Oberfläche. App-Symbol, Favicon und Vorschaubild: Akzentfläche mit weißem Schallloch-Ring,
+  auf den Instrumentseiten die Saiten des Instruments dahinter (`src/site/app-icon.ts`, `og-image.ts`).
+- **Einstellungen erklären sich selbst:** jeder Schalter und jede Gruppe hat einen Satz darunter, was sie bewirkt.
 
 ## Musik-Darstellungen
 

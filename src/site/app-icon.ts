@@ -1,8 +1,7 @@
 /**
  * App-Symbole je Instrument-Seite (Favicon als SVG, Home-Bildschirm und Manifest als PNG), im Build erzeugt. Eine
  * Beschreibung aus einfachen Formen ergibt beide Fassungen, so sehen SVG und PNG gleich aus. Gleicher Aufbau für alle
- * (docs/design.md): ruhige Fläche in der Akzentfarbe, davor das Zeichen von Open String (Bogen und Punkt, wie
- * `logo()` in src/ui/icons.ts). Die Instrumente unterscheiden sich an den hellen Saiten dahinter – Zahl und Stärke wie
+ * (docs/design.md): ruhige Fläche in der Akzentfarbe, davor ein Schallloch als weißer Ring. Die Instrumente unterscheiden sich an den hellen Saiten dahinter – Zahl und Stärke wie
  * beim echten Instrument; die Startseite hat keine Saiten.
  */
 import { Canvas, circle, clamp, curve, dashedRing, encodePng, hex, mix, ring, roundRect, segment, type Paint, type RGB, type Sdf } from './og-image.ts';
@@ -32,18 +31,9 @@ const ACCENT = '#0a7c6e';
 /** Saiten: Weiß auf der Akzentfläche, zurückgenommen */
 const STRING = '#4fa397';
 
-/**
- * Zeichen von Open String aus src/ui/icons.ts (30 × 30) auf 360 px vergrößert und mittig: bleibt im sicheren Kreis der
- * „maskable“-Symbole.
- */
+/** Schallloch mittig, im sicheren Kreis der „maskable“-Symbole. */
 function mark(): Shape[] {
-  const k = 12;
-  const o = (S - 30 * k) / 2;
-  const p = (x: number, y: number) => [o + x * k, o + y * k];
-  return [
-    { k: 'curve', p: [...p(8, 20), ...p(11, 12), ...p(19, 12), ...p(22, 20)], w: 2.4 * k, color: '#ffffff' },
-    { k: 'circle', cx: o + 15 * k, cy: o + 12 * k, r: 2.5 * k, fill: '#ffffff' },
-  ];
+  return [{ k: 'ring', cx: S / 2, cy: S / 2, r: 118, w: 34, color: '#ffffff' }];
 }
 
 /** Senkrechte Saiten über das ganze Symbol: Lage auf einem 24er-Raster wie das Saiten-Zeichen der Startseite. */
@@ -69,7 +59,7 @@ const ICONS: Record<string, Icon> = {
   mandoline: { bg: flat, shapes: [...strings([5, 6.4, 9.8, 11.2, 12.8, 14.2, 17.6, 19], () => 5), ...mark()] },
   // vier dicke Saiten
   bass: { bg: flat, shapes: [...strings([6, 10, 14, 18], () => 20), ...mark()] },
-  // Startseite: nur das Zeichen
+  // Startseite: nur das Schallloch
   start: { bg: flat, shapes: mark() },
 };
 

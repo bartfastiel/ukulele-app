@@ -271,7 +271,7 @@ export const teachers: View = (root) => {
     { title: t('Für Lehrkräfte und Eltern'), back: link('') },
     card(
       t('Was die App kann'),
-      h('p', null, t('Der {brand} ist eine kostenlose Übungs-App für {instrument}: gemacht für Kinder in Instrumentalklassen, ihre Lehrkräfte und Eltern.', { brand: brand(), instrument: inst })),
+      h('p', null, t('{brand} ist eine kostenlose Übungs-App für {instrument}: gemacht für Kinder in Instrumentalklassen, ihre Lehrkräfte und Eltern.', { brand: brand(), instrument: inst })),
       h(
         'ul',
         null,
