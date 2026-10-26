@@ -14,6 +14,7 @@ import type { Chord } from './music/chords.ts';
 import { TUNING_EVENT, applyStoredTuning } from './ui/tuning.ts';
 import { strikeMeter, strikeMeterWanted } from './ui/strike-meter.ts';
 import { initLessons } from './ui/lessons.ts';
+import { initThemeToggle } from './ui/theme.ts';
 import type { Cleanup, View } from './ui/screen.ts';
 import { home } from './views/home.ts';
 import { songs } from './views/songs.ts';
@@ -190,6 +191,7 @@ if (!redirectOldHash()) {
   // Wissensartikel erklären die Normalstimmung – ihre Griffbilder werden vor dem Umstimmen gespiegelt
   playArticleChords();
   initLessons();
+  initThemeToggle();
   if (!isStart) applyStoredTuning();
   window.addEventListener(TUNING_EVENT, () => mount());
   window.addEventListener(LEFTY_EVENT, () => {

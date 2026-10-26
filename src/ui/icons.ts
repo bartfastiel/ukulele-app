@@ -32,6 +32,8 @@ const PATHS: Record<string, string> = {
   share: 'M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4',
   copy: 'M9 9h11v11H9zM5 15H4V4h11v1',
   print: 'M6 9V3h12v6M6 18H3v-9h18v9h-3M7 14h10v7H7z',
+  sun: 'M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',
+  moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
   school: 'M2 9l10-5 10 5-10 5zM6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5M22 9v6',
 };
 
@@ -59,8 +61,8 @@ export function logo(cls = 'logo'): SVGElement {
   return s(
     'svg',
     { viewBox: '0 0 30 30', class: cls, 'aria-hidden': 'true', focusable: 'false' },
-    s('rect', { width: 30, height: 30, rx: 8, fill: '#0A7C6E' }),
-    s('path', { d: 'M8 20c3-8 11-8 14 0', fill: 'none', stroke: '#fff', 'stroke-width': 2.4, 'stroke-linecap': 'round' }),
-    s('circle', { cx: 15, cy: 12, r: 2.5, fill: '#fff' }),
+    s('rect', { width: 30, height: 30, rx: 8, fill: '#0A7C6E', class: 'logo-bg' }),
+    s('path', { d: 'M8 20c3-8 11-8 14 0', fill: 'none', stroke: '#fff', 'stroke-width': 2.4, 'stroke-linecap': 'round', class: 'logo-arc' }),
+    s('circle', { cx: 15, cy: 12, r: 2.5, fill: '#fff', class: 'logo-dot' }),
   );
 }

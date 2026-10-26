@@ -88,6 +88,31 @@ function readShared(): Shared {
   return { lefty };
 }
 
+/**
+ * Darstellung hell/dunkel, gemeinsam für alle Instrumente: 'auto' folgt dem Gerät. Eigener Schlüssel als schlichter
+ * Text, damit das kleine Skript im Kopf jeder Seite ihn vor dem ersten Zeichnen lesen kann (src/site/pages.ts).
+ */
+export type Theme = 'auto' | 'light' | 'dark';
+export const THEME_KEY = 'saiten:darstellung';
+
+export function loadTheme(): Theme {
+  try {
+    const v = localStorage.getItem(THEME_KEY);
+    return v === 'light' || v === 'dark' ? v : 'auto';
+  } catch {
+    return 'auto';
+  }
+}
+
+export function saveTheme(v: Theme): void {
+  try {
+    if (v === 'auto') localStorage.removeItem(THEME_KEY);
+    else localStorage.setItem(THEME_KEY, v);
+  } catch {
+    // privater Modus: gilt nur bis zum Neuladen
+  }
+}
+
 function writeShared(shared: Shared): void {
   try {
     localStorage.setItem(SHARED_KEY, JSON.stringify(shared));

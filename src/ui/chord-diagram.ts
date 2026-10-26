@@ -9,7 +9,10 @@ function fingerLabel(f: number): string {
   return f === 5 ? t('Daumen').charAt(0).toUpperCase() : String(f);
 }
 
-/** Farben wie in docs/design.md („Griffbild“); SVG-Attribute statt CSS, damit vorgerenderte Seiten gleich aussehen. */
+/**
+ * Farben wie in docs/design.md („Griffbild“) als Attribute (Rückfall ohne Stil); src/styles.css setzt sie über Klassen
+ * auf die Tokens – so stimmen sie auch im Dunkelmodus.
+ */
 const INK = '#1C1C1E';
 const INK_2 = '#55575E';
 const INK_3 = '#9A9CA3';
@@ -170,19 +173,19 @@ export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
     const cy = y0 + fh * (shown(f) - 0.5);
     const cx = x0 + boardW / 2;
     if (f === 12) {
-      svg.appendChild(s('circle', { cx: cx - gap, cy, r: 3, fill: FRET }));
-      svg.appendChild(s('circle', { cx: cx + gap, cy, r: 3, fill: FRET }));
-    } else svg.appendChild(s('circle', { cx, cy, r: 3, fill: FRET }));
+      svg.appendChild(s('circle', { cx: cx - gap, cy, r: 3, fill: FRET, class: 'inlay' }));
+      svg.appendChild(s('circle', { cx: cx + gap, cy, r: 3, fill: FRET, class: 'inlay' }));
+    } else svg.appendChild(s('circle', { cx, cy, r: 3, fill: FRET, class: 'inlay' }));
   }
-  // Bünde und Sattel als Flächen: Linien sind im Griffbild die Saiten
-  for (let f = 1; f <= rows; f++) svg.appendChild(s('rect', { x: x0, y: y0 + fh * f - 0.8, width: boardW, height: 1.6, fill: FRET }));
+  // Bünde als Pfade, der Sattel als Fläche: <line> sind im Griffbild nur die Saiten
+  for (let f = 1; f <= rows; f++) svg.appendChild(s('path', { d: `M${x0} ${y0 + fh * f}H${x0 + boardW}`, stroke: FRET, 'stroke-width': 1.6, class: 'fret' }));
   if (first > 1) {
     // höher am Hals: kein Sattel, dafür die Bundzahl links neben dem ersten Bund
-    svg.appendChild(s('rect', { x: x0, y: y0 - 0.8, width: boardW, height: 1.6, fill: FRET }));
+    svg.appendChild(s('path', { d: `M${x0} ${y0}H${x0 + boardW}`, stroke: FRET, 'stroke-width': 1.6, class: 'fret' }));
     svg.appendChild(s('text', { x: 2, y: y0 + fh * 0.5 + 5, class: 'fret-number', fill: INK }, String(first)));
   } else
     // Sattel
-    svg.appendChild(s('rect', { x: x0 - 3, y: y0 - 4, width: boardW + 6, height: 4.5, rx: 2.25, fill: INK }));
+    svg.appendChild(s('rect', { x: x0 - 3, y: y0 - 4, width: boardW + 6, height: 4.5, rx: 2.25, fill: INK, class: 'nut' }));
   for (let i = 0; i < n; i++) {
     const x = xOf(i);
     const hl = opts.highlight === i;
@@ -195,15 +198,15 @@ export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
       stroke: hl ? ACCENT : INK,
       'stroke-width': hl ? 3.2 : 1.2 + (n === 6 ? (2 - Math.min(i, 2)) * 0.25 : 0),
       'stroke-linecap': 'round',
-      class: 'string',
+      class: hl ? 'string hl' : 'string',
       'data-string': i,
     };
     if (start >= first) {
       // kurze Banjo-Saite: erst ab ihrem Wirbel am 5. Bund eine echte Saite, darüber nur angedeutet
       const pegY = start - first + 1 <= rows ? y0 + fh * shown(start) : boardBottom;
-      svg.appendChild(s('line', { x1: x, y1: y0 - 1, x2: x, y2: pegY, stroke: INK_3, 'stroke-width': 1, 'stroke-dasharray': '2 4' }));
+      svg.appendChild(s('line', { x1: x, y1: y0 - 1, x2: x, y2: pegY, stroke: INK_3, 'stroke-width': 1, 'stroke-dasharray': '2 4', class: 'string-short' }));
       attrs.y1 = pegY;
-      if (pegY <= boardBottom) svg.appendChild(s('circle', { cx: x, cy: pegY, r: 3.2, fill: '#fff', stroke: INK, 'stroke-width': 1.2 }));
+      if (pegY <= boardBottom) svg.appendChild(s('circle', { cx: x, cy: pegY, r: 3.2, fill: '#fff', stroke: INK, 'stroke-width': 1.2, class: 'peg' }));
     }
     svg.appendChild(s('line', attrs));
   }
@@ -224,7 +227,7 @@ export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
       if (fifth && fifth.string === i) {
         const cy = y0 + fh * (shown(fifth.fret) - 0.5);
         svg.appendChild(s('circle', { cx: x, cy, r: 8.6, fill: '#fff', stroke: ACCENT, 'stroke-width': 2, class: 'fifth' }));
-        svg.appendChild(s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger', fill: ACCENT }, '5'));
+        svg.appendChild(s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger fifth-label', fill: ACCENT }, '5'));
       }
     } else if (fret === -1) {
       svg.appendChild(s('path', { d: `M${x - 4.5} ${y0 - 18.5}l9 9m0 -9l-9 9`, stroke: INK, 'stroke-width': 2, 'stroke-linecap': 'round', class: 'muted' }));

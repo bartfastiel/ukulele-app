@@ -1,7 +1,8 @@
 import { h } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
 import { screen, button, toggle, group, type View } from '../ui/screen.ts';
-import { load, save, exportCode, importCode } from '../store.ts';
+import { load, save, exportCode, importCode, loadTheme, type Theme } from '../store.ts';
+import { setTheme } from '../ui/theme.ts';
 import { lang, t } from '../i18n.ts';
 import { langSwitch } from '../ui/lang-switch.ts';
 import { link, otherSite, siteLink } from '../site/nav.ts';
@@ -19,6 +20,25 @@ function cap(s: string): string {
  * Einstellungen: alles, was man einmal festlegt und dann nicht mehr sehen will (docs/design.md „leise“) – Instrument,
  * Hand, Stimmung und Klang, Sprache, Bewegung, Sicherung. Erreichbar über das Zahnrad auf der Startseite.
  */
+/** Darstellung: Automatisch (wie das Gerät), Hell oder Dunkel – als Segmentschalter. */
+function themeChoice(): HTMLElement {
+  const now = loadTheme();
+  const options: [Theme, string][] = [
+    ['auto', t('Automatisch')],
+    ['light', t('Hell')],
+    ['dark', t('Dunkel')],
+  ];
+  const seg = h('div', { class: 'seg', role: 'group', 'aria-label': t('Darstellung') });
+  for (const o of options) {
+    const b = button(o[1], () => {
+      setTheme(o[0]);
+      for (let i = 0; i < seg.children.length; i++) seg.children[i].setAttribute('aria-pressed', String(seg.children[i] === b));
+    }, 'btn-seg', { 'aria-pressed': String(o[0] === now), 'data-theme-choice': o[0] });
+    seg.appendChild(b);
+  }
+  return seg;
+}
+
 export const settings: View = (root) => {
   const p = load();
   const here = document.documentElement.getAttribute('data-site') || '';
@@ -50,6 +70,7 @@ export const settings: View = (root) => {
     play,
     tuningChooser(),
     variantChooser(),
+    h('section', { class: 'group-wrap', id: 'darstellung' }, h('h2', { class: 'section-label' }, t('Darstellung')), themeChoice()),
     h('section', { class: 'group-wrap' }, h('h2', { class: 'section-label' }, t('Sprache')), langSwitch()),
     group(t('Instrument'), ...instruments),
     h(

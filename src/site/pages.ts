@@ -25,6 +25,7 @@ import { h, s } from '../ui/dom.ts';
 import { icon, logo } from '../ui/icons.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
 import { group, screen, type View } from '../ui/screen.ts';
+import { THEME_COLOR, themeBootScript } from '../ui/theme.ts';
 import { home } from '../views/home.ts';
 import { songs } from '../views/songs.ts';
 import { player } from '../views/player.ts';
@@ -1579,6 +1580,12 @@ function footer(siteDef: SiteDef, l: Lang, alternates: Partial<Record<Lang, stri
       ? h('p', { class: 'footer-instruments' }, t('Auch für:'), ' ', ...others.map((s, i) => h('span', null, i ? ' · ' : '', h('a', { href: env().url(s.id) + (l === 'de' ? '' : l + '/') }, s.name[l]))))
       : null,
     h('p', { class: 'footer-note' }, t('Kostenlos, ohne Werbung, ohne Konto – Open Source.')),
+    h(
+      'button',
+      { type: 'button', class: 'theme-toggle', 'data-theme-toggle': '', 'aria-label': t('Hell oder dunkel'), title: t('Hell oder dunkel') },
+      icon('moon', 'icon theme-moon'),
+      icon('sun', 'icon theme-sun'),
+    ),
   );
 }
 
@@ -1626,7 +1633,10 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
     `<title>${esc(pageTitle(title, siteDef.brand[l]))}</title>`,
     `<meta name="description" content="${escAttr(description)}">`,
-    '<meta name="theme-color" content="#F2F3F5">',
+    `<meta name="theme-color" content="${THEME_COLOR.light}" media="(prefers-color-scheme: light)">`,
+    `<meta name="theme-color" content="${THEME_COLOR.dark}" media="(prefers-color-scheme: dark)">`,
+    // gewählte Darstellung vor dem ersten Zeichnen (sonst blitzt die Seite hell auf)
+    `<script>${themeBootScript()}</script>`,
     '<meta name="apple-mobile-web-app-capable" content="yes">',
     '<meta name="mobile-web-app-capable" content="yes">',
     `<meta name="apple-mobile-web-app-title" content="${escAttr(siteDef.brand[l])}">`,

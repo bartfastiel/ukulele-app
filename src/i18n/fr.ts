@@ -1062,7 +1062,6 @@ export const FR: Record<string, string> = {
   "Eine eigene, dickere G-Saite eine Oktave tiefer: voller, tieferer Klang. Die Griffe bleiben genau gleich.": "Une corde de G spéciale, plus épaisse, une octave plus bas : un son plus plein et plus grave. Les doigtés restent exactement les mêmes.",
   "Alle Saiten einen Ganzton höher gespannt (A D F# B): heller Klang wie bei alten Ukulelen – lieber mit einem Erwachsenen umstimmen. Gleiche Fingerform, anderer Akkordname.": "Toutes les cordes tendues un ton plus haut (A D F# B) : un son clair comme sur les anciens ukulélés – mieux vaut réaccorder avec un adulte. Même forme de doigts, autre nom d’accord.",
   "Andere Stimmung: {name}": "Autre accordage : {name}",
-  "Gestimmt auf {notes}. Griffbilder und Stimmgerät passen dazu.": "Accordé en {notes}. Les diagrammes d’accords et l’accordeur suivent.",
   "Zurück zur Normalstimmung": "Revenir à l’accordage standard",
   "Für Fortgeschrittene. Wenn du nicht sicher bist, bleib bei der Normalstimmung.": "Pour les plus avancés. Si tu n’es pas sûr, garde l’accordage standard.",
   "Normalstimmung": "Accordage standard",
@@ -1312,4 +1311,9 @@ export const FR: Record<string, string> = {
   "Für Erwachsene": "Pour les adultes",
   "Beispiel-Akkorde aufnehmen": "Enregistrer des accords d’exemple",
   "Linkshänder, Stimmung, Sprache, Sicherung": "Gaucher, accordage, langue, sauvegarde",
+  "Hell oder dunkel": "Clair ou sombre",
+  "Darstellung": "Affichage",
+  "Automatisch": "Automatique",
+  "Hell": "Clair",
+  "Dunkel": "Sombre",
 };

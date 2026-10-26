@@ -96,7 +96,89 @@
   --radius-s: 12px;
   --tap: 64px;
   --font: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --on-accent: #ffffff;
+  --shadow-seg: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-pop: 0 8px 30px rgba(0, 0, 0, 0.18);
+  --seg-on: #ffffff;
   color-scheme: light;
+}
+
+/* Dunkelmodus (docs/design.md): folgt dem Gerät, außer es ist Hell oder Dunkel gewählt (data-theme, src/ui/theme.ts) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #111214;
+    --surface: #1c1d21;
+    --fill: #2c2e33;
+    --fill-soft: #26282c;
+    --ink: #f2f3f5;
+    --ink-2: #a4a7ae;
+    --ink-3: #6b6e76;
+    --accent: #3fbfa8;
+    --accent-soft: #133a34;
+    --on-accent: #0b1f1c;
+    --almost: #f0a24b;
+    --fret: #3a3c42;
+    --area-learn: #3fbfa8;
+    --area-songs: #4c8dff;
+    --area-band: #7a7ff0;
+    --area-games: #e8692b;
+    --area-tools: #6b6e76;
+    --shadow-seg: none;
+  --seg-on: #3a3c42;
+    --shadow-pop: none;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #111214;
+  --surface: #1c1d21;
+  --fill: #2c2e33;
+  --fill-soft: #26282c;
+  --ink: #f2f3f5;
+  --ink-2: #a4a7ae;
+  --ink-3: #6b6e76;
+  --accent: #3fbfa8;
+  --accent-soft: #133a34;
+  --on-accent: #0b1f1c;
+  --almost: #f0a24b;
+  --fret: #3a3c42;
+  --area-learn: #3fbfa8;
+  --area-songs: #4c8dff;
+  --area-band: #7a7ff0;
+  --area-games: #e8692b;
+  --area-tools: #6b6e76;
+  --shadow-seg: none;
+  --seg-on: #3a3c42;
+  --shadow-pop: none;
+  color-scheme: dark;
+}
+
+/* Druck immer hell (auch im Dunkelmodus); steht nach den dunklen Regeln und gewinnt bei gleicher Spezifität */
+@media print {
+  :root:not([data-theme='x']),
+  :root[data-theme] {
+    --bg: #f2f3f5;
+    --surface: #ffffff;
+    --fill: #e1e3e7;
+    --fill-soft: #ecedf0;
+    --ink: #1c1c1e;
+    --ink-2: #55575e;
+    --ink-3: #9a9ca3;
+    --accent: #0a7c6e;
+    --accent-soft: #e3f1ee;
+    --on-accent: #ffffff;
+    --almost: #b45309;
+    --fret: #d5d7dc;
+    --area-learn: #0a7c6e;
+    --area-songs: #2f6feb;
+    --area-band: #4b4fc6;
+    --area-games: #c2410c;
+    --area-tools: #55575e;
+    --shadow-seg: 0 1px 3px rgba(0, 0, 0, 0.12);
+    --shadow-pop: 0 8px 30px rgba(0, 0, 0, 0.18);
+    color-scheme: light;
+  }
 }
 
 * {
@@ -439,7 +521,7 @@ button.list-row:active {
 .wait .btn-primary,
 .result .btn-primary,
 .paused .btn-primary {
-  color: #fff;
+  color: var(--surface);
   background: var(--ink);
   border-radius: var(--radius);
   font-size: 19px;
@@ -448,7 +530,7 @@ button.list-row:active {
 
 .btn-primary:active,
 .card .btn-primary:active {
-  background: #000;
+  opacity: 0.85;
 }
 
 .btn-play {
@@ -513,8 +595,8 @@ button.list-row:active {
 .seg .btn-seg[aria-current='true'] {
   color: var(--ink);
   font-weight: 700;
-  background: var(--surface);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  background: var(--seg-on);
+  box-shadow: var(--shadow-seg);
 }
 
 /* einzelne Wahlknöpfe außerhalb eines Segments (Spiel-Auswahl, Lektion geschafft): aktiv hinterlegt in der Akzentfarbe */
@@ -830,7 +912,7 @@ button.list-row:active {
   height: 56px;
   margin-left: 14px;
   border-radius: 50%;
-  color: #fff;
+  color: var(--on-accent);
   background: var(--accent);
 }
 
@@ -1282,7 +1364,7 @@ button.list-row:active {
 
 .btn-chip.active,
 .card .btn-chip.active {
-  color: #fff;
+  color: var(--on-accent);
   background: var(--accent);
 }
 
@@ -1468,7 +1550,7 @@ button.list-row:active {
   border-radius: 50%;
   font-size: 88px;
   font-weight: 800;
-  color: #fff;
+  color: var(--on-accent);
   background: var(--accent);
   font-variant-numeric: tabular-nums;
   animation: pop 0.3s ease-out;
@@ -1483,7 +1565,7 @@ button.list-row:active {
   margin: 8px;
   text-align: center;
   max-width: 520px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-pop);
 }
 
 .wait {
@@ -1640,7 +1722,7 @@ button.list-row:active {
   min-height: 1.2em;
   padding: 0 5px;
   border-radius: 6px;
-  color: #fff;
+  color: var(--surface);
   background: var(--ink-2);
   font-variant-numeric: tabular-nums;
 }
@@ -1760,7 +1842,7 @@ button.list-row:active {
   width: 100%;
   padding: 24px;
   text-align: center;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-pop);
 }
 
 .dialog h2 {
@@ -1913,12 +1995,12 @@ button.list-row:active {
 }
 
 .btn-string.active {
-  color: #fff;
+  color: var(--on-accent);
   background: var(--accent);
 }
 
 .btn-string.active .shint {
-  color: #fff;
+  color: var(--on-accent);
 }
 
 /* ---------- Spiel ---------- */
@@ -2031,7 +2113,7 @@ button.list-row:active {
 
 .arrow.on .glyph,
 .arrow.on .beat-count {
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .tempo-row {
@@ -2096,7 +2178,7 @@ button.list-row:active {
 
 .day.on {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .badges {
@@ -2361,7 +2443,7 @@ button.list-row:active {
 }
 
 .blues-bar.now {
-  color: #fff;
+  color: var(--on-accent);
   background: var(--accent);
 }
 
@@ -2429,7 +2511,7 @@ button.list-row:active {
 
 .fb-mark.now {
   fill: var(--accent);
-  stroke: #fff;
+  stroke: var(--surface);
   stroke-width: 3;
 }
 
@@ -2461,7 +2543,7 @@ button.list-row:active {
 
 .fb-mark-label {
   font: 800 12px var(--font);
-  fill: #fff;
+  fill: var(--on-accent);
 }
 
 .fb-mark-label.next {
@@ -4387,5 +4469,242 @@ button.list-row:active {
 
   .ho-teacher {
     flex: 1 0 auto;
+  }
+}
+
+/* ---------- Griffbild und Zeichen über Tokens (hell und dunkel) ---------- */
+.chord-svg .fret {
+  stroke: var(--fret);
+}
+
+.chord-svg .inlay {
+  fill: var(--fret);
+}
+
+.chord-svg .nut,
+.chord-svg .fret-number {
+  fill: var(--ink);
+}
+
+.chord-svg .string,
+.chord-svg .open,
+.chord-svg .muted {
+  stroke: var(--ink);
+}
+
+.chord-svg .string.hl,
+.chord-svg .string.ringing {
+  stroke: var(--accent);
+}
+
+.chord-svg .string-short {
+  stroke: var(--ink-3);
+}
+
+.chord-svg .peg {
+  fill: var(--surface);
+  stroke: var(--ink);
+}
+
+.chord-svg .barre,
+.chord-svg .dot {
+  fill: var(--accent);
+}
+
+.chord-svg .finger {
+  fill: var(--on-accent);
+}
+
+.chord-svg .fifth {
+  fill: var(--surface);
+  stroke: var(--accent);
+}
+
+.chord-svg .fifth-label {
+  fill: var(--accent);
+}
+
+.chord-svg .string-label {
+  fill: var(--ink-2);
+}
+
+.logo-bg {
+  fill: var(--accent);
+}
+
+.logo-arc {
+  stroke: var(--on-accent);
+}
+
+.logo-dot {
+  fill: var(--on-accent);
+}
+
+.area-learn {
+  color: var(--on-accent);
+}
+
+/* Hell/Dunkel in der Fußzeile: leise, Symbol zeigt die andere Darstellung */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--ink-2);
+  background: transparent;
+  cursor: pointer;
+}
+
+.theme-toggle .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.theme-toggle:active {
+  background: var(--fill);
+}
+
+.theme-sun {
+  display: none;
+}
+
+:root[data-theme='dark'] .theme-sun {
+  display: inline;
+}
+
+:root[data-theme='dark'] .theme-moon {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .theme-sun {
+    display: inline;
+  }
+  :root:not([data-theme='light']) .theme-moon {
+    display: none;
+  }
+}
+
+/* ---------- Druck (jede Seite, auch Strg+P): weiß, schwarz, Haarlinien, keine Flächen, keine Bedienung ---------- */
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #000 !important;
+    text-shadow: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  .topbar-side,
+  .topbar-tool,
+  .head-tools,
+  .btn,
+  .seg,
+  .toggle,
+  .theme-toggle,
+  .hero-go,
+  .logo,
+  .lang-offer,
+  .tuning-banner,
+  .icon.chevron,
+  .row-icon,
+  .stage-overlay,
+  .more,
+  .controls h2 {
+    display: none !important;
+  }
+  .card:not(.handout-tool),
+  .group,
+  .hero-card,
+  .tool-tile,
+  .song-list,
+  .badge {
+    border: 0.5pt solid #000;
+  }
+  .list-row + .list-row,
+  .song-list li + li {
+    border-top: 0.5pt solid #000;
+  }
+  .topbar h1 {
+    font-size: 18pt;
+  }
+  a {
+    text-decoration: none;
+  }
+  /* Griffbild: schwarze Linien, kleine schwarze Fingerpunkte bleiben gefüllt */
+  .chord-svg .inlay,
+  .chord-svg .nut,
+  .chord-svg .fret-number,
+  .chord-svg .string-label,
+  .chord-svg .fifth-label,
+  .chord-svg .barre,
+  .chord-svg .dot {
+    fill: #000 !important;
+  }
+  .chord-svg .string,
+  .chord-svg .string-short,
+  .chord-svg .open,
+  .chord-svg .muted,
+  .chord-svg .peg,
+  .chord-svg .fifth {
+    stroke: #000 !important;
+  }
+  /* Haarlinien: Saiten und Bünde unabhängig von der Bildgröße 1 px bzw. 0,5 pt */
+  .chord-svg .string,
+  .chord-svg .fret {
+    stroke: #000 !important;
+    stroke-width: 0.75px !important;
+    vector-effect: non-scaling-stroke;
+  }
+  .chord-svg .inlay {
+    fill: none !important;
+  }
+  .chord-svg .finger,
+  .chord-svg .peg,
+  .chord-svg .fifth {
+    fill: #fff !important;
+  }
+  .fb-wood {
+    fill: none !important;
+    stroke: #000 !important;
+    stroke-width: 0.5 !important;
+  }
+  .fb-fret,
+  .fb-dot,
+  .fb-nut,
+  .fb-mark.now,
+  .fb-mark.chord {
+    fill: #000 !important;
+  }
+  .fb-string,
+  .fb-mark.next,
+  .fb-mark.scale,
+  .fb-mark.played {
+    fill: #fff !important;
+    stroke: #000 !important;
+  }
+  .fb-label,
+  .fb-num,
+  .fb-mark-label.next,
+  .fb-mark-label.scale {
+    fill: #000 !important;
+  }
+  .gauge-arc,
+  .gauge .tick,
+  .needle {
+    stroke: #000 !important;
+    stroke-width: 1 !important;
+  }
+  .gauge-ok {
+    stroke: none !important;
   }
 }

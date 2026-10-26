@@ -1059,7 +1059,6 @@ export const EN: Record<string, string> = {
   "Eine eigene, dickere G-Saite eine Oktave tiefer: voller, tieferer Klang. Die Griffe bleiben genau gleich.": "A separate, thicker G string an octave lower: a fuller, deeper sound. The chord shapes stay exactly the same.",
   "Alle Saiten einen Ganzton höher gespannt (A D F# B): heller Klang wie bei alten Ukulelen – lieber mit einem Erwachsenen umstimmen. Gleiche Fingerform, anderer Akkordname.": "All strings tuned a whole step higher and tighter (A D F# B): a bright sound like old ukuleles – better retune with an adult. Same finger shape, different chord name.",
   "Andere Stimmung: {name}": "Different tuning: {name}",
-  "Gestimmt auf {notes}. Griffbilder und Stimmgerät passen dazu.": "Tuned to {notes}. Chord charts and tuner match it.",
   "Zurück zur Normalstimmung": "Back to standard tuning",
   "Für Fortgeschrittene. Wenn du nicht sicher bist, bleib bei der Normalstimmung.": "For advanced players. If you’re not sure, stay with standard tuning.",
   "Normalstimmung": "Standard tuning",
@@ -1309,4 +1308,9 @@ export const EN: Record<string, string> = {
   "Für Erwachsene": "For grown-ups",
   "Beispiel-Akkorde aufnehmen": "Record sample chords",
   "Linkshänder, Stimmung, Sprache, Sicherung": "Left-handed, tuning, language, backup",
+  "Hell oder dunkel": "Light or dark",
+  "Darstellung": "Appearance",
+  "Automatisch": "Automatic",
+  "Hell": "Light",
+  "Dunkel": "Dark",
 };

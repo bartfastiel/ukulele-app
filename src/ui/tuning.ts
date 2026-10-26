@@ -47,8 +47,8 @@ export function tuningBanner(): void {
       'p',
       null,
       h('strong', null, t('Andere Stimmung: {name}', { name: t(tu.name) })),
-      ' ',
-      t('Gestimmt auf {notes}. Griffbilder und Stimmgerät passen dazu.', { notes: tuningNotes(tu.names) }),
+      ' · ',
+      h('span', { class: 'tuning-notes' }, tuningNotes(tu.names)),
     ),
     button(t('Zurück zur Normalstimmung'), () => chooseTuning(''), 'btn-quiet'),
   );
