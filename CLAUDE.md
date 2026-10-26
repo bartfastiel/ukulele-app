@@ -22,7 +22,9 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
 - **Alte iPads:** Build-Ziel Safari 12. Keine Destrukturierung (weder Array noch Objekt) in `src/` (esbuild kann sie für dieses Ziel
   nicht umschreiben), kein Flexbox-`gap` (Safari < 14.1), kein `aspect-ratio`, kein `replaceChildren`,
   kein `replaceAll`. Ohne Web Audio muss die App stumm weiterlaufen (`hasAudio()`).
-- **Kindgerecht:** Tippziele ≥ 64 px (Test prüft ≥ 52 px), Text nur auf cremefarbenen Flächen, nie „Falsch“,
+- **Design:** verbindlich ist `docs/design.md` (Richtlinie „Klar“: Tokens, Bausteine, Anordnung, Checkliste für neue
+  Features). Gleich für alle Instrumente; Stimmgerät und Lernweg prominent, Einmal-Einstellungen leise.
+- **Kindgerecht:** Tippziele ≥ 64 px (Test prüft ≥ 52 px), Text ≥ 4,5:1 Kontrast, nie „Falsch“,
   unsichere Mikrofon-Erkennung darf nie blockieren („Geschafft“ immer sichtbar), alles auch ohne Mikrofon nutzbar.
 - **Lieder nur gemeinfrei oder eigene** (Text UND Melodie; Urheber mit Lebensdaten und Textquelle in `origin`).
   Text wörtlich aus gemeinfreier Quelle, nie aus dem Gedächtnis. Melodien nur, wenn sicher bekannt, innerhalb C4–A5.
