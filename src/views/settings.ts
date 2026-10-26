@@ -11,9 +11,13 @@ import { notesOnly } from '../music/instrument.ts';
 import { SITES } from '../site/sites.ts';
 import { tuningChooser, variantChooser } from '../ui/tuning.ts';
 
-/** Beschriftung eines Schalters: Titel und darunter in einem Satz, was er bewirkt. */
-function described(title: string, what: string): HTMLElement {
-  return h('span', { class: 'row-text' }, h('span', { class: 'row-title' }, title), h('span', { class: 'row-sub' }, what));
+/**
+ * Beschriftung eines Schalters: Titel und darunter in einem Satz, was er bewirkt. Der Name des Schalters bleibt der
+ * Titel, der Satz ist seine Beschreibung (Screenreader lesen ihn danach vor).
+ */
+function described(id: string, title: string, what: string): [HTMLElement, Record<string, string>] {
+  const label = h('span', { class: 'row-text' }, h('span', { class: 'row-title' }, title), h('span', { class: 'row-sub', id }, what));
+  return [label, { 'aria-label': title, 'aria-describedby': id }];
 }
 
 /** Instrumentname am Zeilenanfang groß („bass guitar“ → „Bass guitar“). */
@@ -60,14 +64,21 @@ export const settings: View = (root) => {
   );
   const codeBox = h('textarea', { class: 'code', rows: 3, 'aria-label': t('Sicherungs-Code'), placeholder: t('Code hier einfügen') }) as HTMLTextAreaElement;
   const codeMsg = h('p', { class: 'small', 'aria-live': 'polite' });
+  const lefty = described('lefty-what', t('Linkshänder'), t('Griffbilder, Hals und Tabulatur werden gespiegelt, wie du sie als Linkshänder vor dir siehst. Gilt für alle Instrumente.'));
+  const calm = described('calm-what', t('Weniger Bewegung'), t('Schaltet Animationen ab: In der Karaoke gleiten die Akkorde nicht mehr herein, Anzeigen springen ohne Übergang. Angenehmer, wenn Bewegung ablenkt, und auf langsamen Geräten.'));
+  const leftyAttrs = lefty[1];
+  leftyAttrs['data-setting'] = 'lefty';
+  const calmAttrs = calm[1];
+  calmAttrs['data-setting'] = 'calm';
   const play = group(
     t('Spielen'),
-    toggle(described(t('Linkshänder'), t('Griffbilder, Hals und Tabulatur werden gespiegelt, wie du sie als Linkshänder vor dir siehst. Gilt für alle Instrumente.')), p.settings.lefty, (v) => setLefty(v), { 'data-setting': 'lefty' }),
-    toggle(described(t('Weniger Bewegung'), t('Schaltet Animationen ab: In der Karaoke gleiten die Akkorde nicht mehr herein, Anzeigen springen ohne Übergang. Angenehmer, wenn Bewegung ablenkt, und auf langsamen Geräten.')), p.settings.calm, (v) => {
+    toggle(lefty[0], p.settings.lefty, (v) => setLefty(v), leftyAttrs),
+    toggle(calm[0], p.settings.calm, (v) => {
       save((pr) => (pr.settings.calm = v));
       document.documentElement.classList.toggle('calm', v);
-    }, { 'data-setting': 'calm' }),
+    }, calmAttrs),
   );
+
   const instrumentGroup = group(t('Instrument'), ...instruments);
   instrumentGroup.appendChild(h('p', { class: 'group-note' }, t('Wechselt zur Seite eines anderen Instruments. Sterne und Lernfortschritt zählen je Instrument; Linkshänder, Darstellung und eigene Lieder gelten überall.')));
   screen(

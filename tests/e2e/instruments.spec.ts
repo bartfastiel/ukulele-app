@@ -184,9 +184,9 @@ test.describe('bass', () => {
     await go(page, '');
     await expect(page.locator('.brand-inst')).toHaveText('E-Bass');
     await expect(page.locator('html')).toHaveAttribute('data-instrument', 'bass');
-    const tiles = page.locator('.home-groups .row-title, .home-groups .tool-title');
-    await expect(tiles).toContainText(['Lieder spielen', 'Blues', 'Ton-Detektiv', 'Ton-Spiel', 'Stimmen', 'Töne', 'Rhythmus']);
-    await expect(page.locator('.home-groups')).not.toContainText('Akkord');
+    const tiles = page.locator('main .row-title, main .tool-title');
+    await expect(tiles).toContainText(['Stimmen', 'Töne', 'Rhythmus', 'Lieder spielen', 'Blues', 'Ton-Detektiv', 'Ton-Spiel']);
+    await expect(page.locator('main')).not.toContainText('Akkord');
     await page.locator('main').getByRole('link', { name: 'Töne', exact: true }).click();
     await expect(page).toHaveURL(/\/bass\/toene\/$/);
   });
