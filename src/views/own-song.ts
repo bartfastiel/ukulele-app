@@ -176,7 +176,7 @@ export const ownSongEditor: View = (root, id) => {
 
   screen(
     root,
-    { title: existing ? t('Lied bearbeiten') : t('Eigenes Lied'), back: existing ? link(`lied/${existing.id}`) : link('lieder'), theme: 'brass' },
+    { title: existing ? t('Lied bearbeiten') : t('Eigenes Lied'), back: existing ? link(`lied/${existing.id}`) : link('lieder') },
     h('div', { class: 'own-edit' }, form, preview),
   );
   return () => window.clearTimeout(timer);

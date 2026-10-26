@@ -1,5 +1,5 @@
 // Service Worker je Instrument-Seite: Skript, Stil und die wichtigsten Seiten offline. Gehashte Dateien cache-first,
-// Seiten network-first (besuchte Seiten bleiben offline verfügbar). Den Holz-Cache (src/ui/wood.ts) lässt er stehen.
+// Seiten network-first (besuchte Seiten bleiben offline verfügbar). Den Cache der früheren Holz-Texturen räumt er ab.
 const CACHE = 'saiten-club-__VERSION__';
 const FILES = __FILES__;
 
@@ -17,7 +17,7 @@ self.addEventListener('activate', (e) => {
     caches
       .keys()
       // nur die eigenen alten Fassungen: unter einer gemeinsamen Domain liegen die anderen Instrumente nebenan
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k.indexOf('saiten-club-__SITE__-') === 0).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => (k !== CACHE && k.indexOf('saiten-club-__SITE__-') === 0) || k.indexOf('saiten-holz-') === 0).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });

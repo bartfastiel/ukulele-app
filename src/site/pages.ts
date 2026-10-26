@@ -21,10 +21,10 @@ import { tuningNotes } from '../ui/tuning.ts';
 import { noteText } from '../i18n.ts';
 import { parseChordName } from '../music/chords.ts';
 import type { Article, Block, L10n } from '../content/types.ts';
-import { h } from '../ui/dom.ts';
-import { icon, soundHole } from '../ui/icons.ts';
+import { h, s } from '../ui/dom.ts';
+import { icon, logo } from '../ui/icons.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
-import { screen, type View } from '../ui/screen.ts';
+import { group, screen, type View } from '../ui/screen.ts';
 import { home } from '../views/home.ts';
 import { songs } from '../views/songs.ts';
 import { player } from '../views/player.ts';
@@ -34,6 +34,7 @@ import { game } from '../views/game.ts';
 import { tuner } from '../views/tuner.ts';
 import { rhythm } from '../views/rhythm.ts';
 import { stars } from '../views/stars.ts';
+import { settings } from '../views/settings.ts';
 import { record } from '../views/record.ts';
 import { detective } from '../views/detective.ts';
 import { blues } from '../views/blues.ts';
@@ -117,6 +118,7 @@ const VIEW_NAMES: Record<string, View> = {
   stimmen: tuner,
   rhythmus: rhythm,
   sterne: stars,
+  einstellungen: settings,
   aufnahme: record,
   detektiv: detective,
   blues,
@@ -375,7 +377,7 @@ function pageTitle(title: string, brand: string): string {
 /** Inhaltsseite im Stil der App: Kopfzeile mit Zurück-Knopf, darunter cremefarbene Karten. */
 function staticScreen(title: string, back: string, ...content: (Node | null)[]): Node[] {
   const root = document.createElement('div');
-  screen(root as unknown as HTMLElement, { title, back, theme: 'pearl' }, ...(content.filter((c) => c !== null) as Node[]));
+  screen(root as unknown as HTMLElement, { title, back }, ...(content.filter((c) => c !== null) as Node[]));
   // lange Titel (Wissensartikel) dürfen umbrechen statt abgeschnitten zu werden
   const header = root.childNodes[0] as unknown as { childNodes: { tagName?: string; setAttribute: (k: string, v: string) => void }[] };
   for (const c of header.childNodes) if (c.tagName === 'h1') c.setAttribute('class', 'wrap');
@@ -572,6 +574,13 @@ function specsFor(siteDef: SiteDef, l: Lang): Spec[] {
       // persönlicher Fortschritt, nichts für Suchmaschinen
       noindex: tool[0] === 'sterne',
     });
+  specs.push({
+    route: 'einstellungen',
+    title: t('Einstellungen'),
+    description: t('Instrument, Linkshänder, Stimmung, Sprache und Sicherung – gespeichert nur auf diesem Gerät.'),
+    view: settings,
+    noindex: true,
+  });
   for (const g of GROOVES) {
     const style = t(g.title);
     const title = t('{style} zum Mitspielen für {instrument}', { style, instrument: inst });
@@ -1261,21 +1270,53 @@ function articlePage(a: Article, siteDef: SiteDef, l: Lang): Node[] {
   );
 }
 
+/** Saiten des Instruments als Symbol der Zeile auf der Startseite (Mandoline: vier Saitenpaare). */
+const STRING_MARK: Record<string, number[]> = {
+  ukulele: [6, 10, 14, 18],
+  gitarre: [4, 7, 10, 14, 17, 20],
+  banjo: [5, 8.5, 12, 15.5, 19],
+  bariton: [6, 10, 14, 18],
+  mandoline: [5, 6.8, 10, 11.8, 12.2, 14, 17.2, 19],
+  bass: [6, 10, 14, 18],
+};
+
+function stringsMark(id: string): Node {
+  const w = id === 'bass' ? 2.4 : id === 'mandoline' ? 1.2 : 1.8;
+  return h(
+    'span',
+    { class: 'row-icon area-learn' },
+    s(
+      'svg',
+      { viewBox: '0 0 24 24', class: 'icon', 'aria-hidden': 'true' },
+      ...(STRING_MARK[id] || STRING_MARK.ukulele).map((x) => s('line', { x1: x, x2: x, y1: 3, y2: 21, stroke: 'currentColor', 'stroke-width': w, 'stroke-linecap': 'round' })),
+    ),
+  );
+}
+
 function startPage(siteDef: SiteDef, l: Lang): Node[] {
   return [
     h(
       'main',
       { class: 'home start', id: 'main' },
-      h('header', { class: 'home-head' }, soundHole(), h('div', { class: 'brand' }, h('h1', null, siteDef.brand[l]), h('p', null, t('Kostenlos lernen, mitspielen, Spaß haben')))),
       h(
-        'nav',
-        { class: 'tiles', 'aria-label': t('Instrument wählen') },
-        ...SITES.filter((s) => s.instrument && env().sites.indexOf(s.id) >= 0).map((s) =>
-          h(
-            'a',
-            { class: `tile btn tile-big theme-brass tile-${s.id}`, href: env().url(s.id) + (l === 'de' ? '' : l + '/') },
-            h('span', { class: 'tile-icon' }, icon(s.id === 'ukulele' ? 'songs' : s.id === 'gitarre' ? 'chords' : s.id === 'bariton' ? 'tuner' : s.id === 'mandoline' ? 'blues' : s.id === 'bass' ? 'sound' : 'rhythm')),
-            h('span', { class: 'tile-text' }, h('span', { class: 'tile-title' }, s.brand[l]), h('span', { class: 'tile-sub' }, t('{instrument} lernen', { instrument: s.name[l] }))),
+        'header',
+        { class: 'home-head' },
+        h('div', { class: 'brand' }, logo(), h('h1', null, h('span', { class: 'brand-name' }, siteDef.brand[l]))),
+      ),
+      h('p', { class: 'home-tagline' }, t('Kostenlos lernen, mitspielen, Spaß haben')),
+      group(
+        t('Instrument wählen'),
+        h(
+          'nav',
+          { class: 'instrument-list', 'aria-label': t('Instrument wählen') },
+          ...SITES.filter((s) => s.instrument && env().sites.indexOf(s.id) >= 0).map((s) =>
+            h(
+              'a',
+              { class: `list-row tile-${s.id}`, href: env().url(s.id) + (l === 'de' ? '' : l + '/') },
+              stringsMark(s.id),
+              h('span', { class: 'row-text' }, h('span', { class: 'row-title' }, s.brand[l]), h('span', { class: 'row-sub' }, t('{instrument} lernen', { instrument: s.name[l] }))),
+              icon('chevron', 'icon chevron'),
+            ),
           ),
         ),
       ),
@@ -1501,8 +1542,12 @@ function env(): BuildEnv {
   return currentEnv!;
 }
 
-function footer(siteDef: SiteDef, l: Lang, alternates: Partial<Record<Lang, string>>): Node {
-  const others = siteDef.id === 'start' ? [] : SITES.filter((s) => s.instrument && s.id !== siteDef.id && env().sites.indexOf(s.id) >= 0);
+/**
+ * Fußzeile jeder Seite (docs/design.md „Fußzeile“): ruhige kleine Links – Bereiche, Rechtliches, Sprache; die anderen
+ * Instrumente nur auf der Startseite des Instruments, damit die Wahl nicht ständig im Blick ist.
+ */
+function footer(siteDef: SiteDef, l: Lang, alternates: Partial<Record<Lang, string>>, isHome: boolean): Node {
+  const others = siteDef.id === 'start' || !isHome ? [] : SITES.filter((s) => s.instrument && s.id !== siteDef.id && env().sites.indexOf(s.id) >= 0);
   const links: [string, string][] =
     siteDef.id === 'start'
       ? []
@@ -1515,16 +1560,8 @@ function footer(siteDef: SiteDef, l: Lang, alternates: Partial<Record<Lang, stri
   if (hasCourse(siteDef)) links.splice(1, 0, ['lektionen', t('Lektionen')]);
   return h(
     'footer',
-    { class: 'site-footer card' },
-    links.length ? h('nav', { 'aria-label': t('Bereiche') }, ...links.map((x) => h('a', { href: rel(x[0], l) }, x[1]))) : null,
-    h(
-      'nav',
-      { class: 'footer-langs', 'aria-label': 'Sprache · Language · Langue' },
-      ...LANGS.map((x) => h('a', { href: alternates[x.id] ? localHref(alternates[x.id]!, siteDef) : rel('', x.id), hreflang: x.id, lang: x.id, 'aria-current': x.id === l ? 'true' : null }, x.name)),
-    ),
-    others.length
-      ? h('p', { class: 'footer-instruments' }, t('Auch für:'), ' ', ...others.map((s, i) => h('span', null, i ? ' · ' : '', h('a', { href: env().url(s.id) + (l === 'de' ? '' : l + '/') }, s.name[l]))))
-      : null,
+    { class: 'site-footer' },
+    links.length ? h('nav', { class: 'footer-areas', 'aria-label': t('Bereiche') }, ...links.map((x) => h('a', { href: rel(x[0], l) }, x[1]))) : null,
     h(
       'nav',
       { class: 'footer-legal', 'aria-label': t('Rechtliches') },
@@ -1533,8 +1570,15 @@ function footer(siteDef: SiteDef, l: Lang, alternates: Partial<Record<Lang, stri
       h('a', { href: rel('impressum', l) }, t('Impressum')),
       h('a', { href: rel('datenschutz', l) }, t('Datenschutz')),
     ),
-    links.length ? h('p', { class: 'small footer-lefty' }, h('a', { href: rel('sterne', l) + '#einstellungen' }, t('Für Linkshänder'))) : null,
-    h('p', { class: 'small' }, t('Kostenlos, ohne Werbung, ohne Konto – Open Source.')),
+    h(
+      'nav',
+      { class: 'footer-langs', 'aria-label': 'Sprache · Language · Langue' },
+      ...LANGS.map((x) => h('a', { href: alternates[x.id] ? localHref(alternates[x.id]!, siteDef) : rel('', x.id), hreflang: x.id, lang: x.id, 'aria-current': x.id === l ? 'true' : null }, x.name)),
+    ),
+    others.length
+      ? h('p', { class: 'footer-instruments' }, t('Auch für:'), ' ', ...others.map((s, i) => h('span', null, i ? ' · ' : '', h('a', { href: env().url(s.id) + (l === 'de' ? '' : l + '/') }, s.name[l]))))
+      : null,
+    h('p', { class: 'footer-note' }, t('Kostenlos, ohne Werbung, ohne Konto – Open Source.')),
   );
 }
 
@@ -1582,11 +1626,11 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
     `<title>${esc(pageTitle(title, siteDef.brand[l]))}</title>`,
     `<meta name="description" content="${escAttr(description)}">`,
-    '<meta name="theme-color" content="#3d160a">',
+    '<meta name="theme-color" content="#F2F3F5">',
     '<meta name="apple-mobile-web-app-capable" content="yes">',
     '<meta name="mobile-web-app-capable" content="yes">',
     `<meta name="apple-mobile-web-app-title" content="${escAttr(siteDef.brand[l])}">`,
-    '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">',
+    '<meta name="apple-mobile-web-app-status-bar-style" content="default">',
   ];
   if (e.preview || !indexable) head.push('<meta name="robots" content="noindex">');
   if (indexable) head.push(`<link rel="canonical" href="${escAttr(canonical)}">`);
@@ -1603,7 +1647,7 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
     '<meta property="og:image:type" content="image/png">',
     `<meta property="og:image:width" content="${OG_WIDTH}">`,
     `<meta property="og:image:height" content="${OG_HEIGHT}">`,
-    `<meta property="og:image:alt" content="${escAttr(t('Holz, Saiten und ein Griffbild – {brand}', { brand: siteDef.brand[l] }))}">`,
+    `<meta property="og:image:alt" content="${escAttr(t('Ein Griffbild auf hellem Grund – {brand}', { brand: siteDef.brand[l] }))}">`,
     `<meta property="og:locale" content="${OG_LOCALE[l]}">`,
     ...LANGS.filter((x) => x.id !== l).map((x) => `<meta property="og:locale:alternate" content="${OG_LOCALE[x.id]}">`),
     `<meta property="og:site_name" content="${escAttr(siteDef.brand[l])}">`,
@@ -1613,6 +1657,9 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
     // ältere Browser zeigen kein SVG-Favicon
     `<link rel="icon" href="${currentBase}icon-192.png" type="image/png" sizes="192x192">`,
     `<link rel="apple-touch-icon" href="${currentBase}icon-180.png">`,
+    // selbst gehostete Schrift früh laden: sonst springt die Seite beim Wechsel von der Ersatzschrift
+    `<link rel="preload" href="${currentBase}fonts/figtree-400-latin.woff2" as="font" type="font/woff2" crossorigin>`,
+    `<link rel="preload" href="${currentBase}fonts/figtree-600-latin.woff2" as="font" type="font/woff2" crossorigin>`,
     `<link rel="stylesheet" href="${currentBase}${e.assets.css}">`,
   );
   const ld = indexable && isOriginal ? (spec.jsonld ? spec.jsonld() : []).concat(breadcrumbLd(spec, siteDef, l, e.publicUrl(siteDef.id)) || []) : [];
@@ -1627,7 +1674,7 @@ function renderPage(spec: Spec, siteDef: SiteDef, l: Lang): Page {
     `<!doctype html>\n<html ${attrs.join(' ')}>\n<head>\n${head.join('\n')}\n</head>\n<body>\n` +
     `<div id="app">${grammar(body.map(serialize).join(''), l)}</div>\n` +
     (extra ? `<div class="page-extra">${grammar(serialize(extra), l)}</div>\n` : '') +
-    serialize(footer(siteDef, l, indexable ? alternates : {})) +
+    serialize(footer(siteDef, l, indexable ? alternates : {}, spec.route === '')) +
     '\n<div id="live" class="sr-only" aria-live="polite"></div>\n' +
     `<script src="${currentBase}${e.assets.js}" defer></script>\n</body>\n</html>\n`;
   const path = pathOf(spec.route, l).replace(/#.*$/, '');

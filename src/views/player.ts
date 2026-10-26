@@ -1,6 +1,6 @@
 import { h, clear, announce, reducedMotion } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
-import { screen, button, ensureMic, praise, keepAwake, type View } from '../ui/screen.ts';
+import { screen, button, toggle, ensureMic, praise, keepAwake, type View } from '../ui/screen.ts';
 import { playableChord } from '../ui/chord-play.ts';
 import { findSong } from '../music/library.ts';
 import { isOwnId } from '../music/own-songs.ts';
@@ -142,15 +142,11 @@ class Player {
           return b;
         }),
       );
-    const toggle = (label: string, key: 'backing' | 'melody' | 'clickOn' | 'tab' | 'bassDemo') => {
-      const b = button(label, () => {
-        const v = !this.settings[key];
+    const option = (label: string, key: 'backing' | 'melody' | 'clickOn' | 'tab' | 'bassDemo') =>
+      toggle(label, this.settings[key], (v) => {
         save((p) => (p.settings[key] = v));
-        b.setAttribute('aria-pressed', String(v));
         if (key === 'tab') this.lyrics.classList.toggle('with-tab', v);
-      }, 'btn-seg', { 'aria-pressed': String(this.settings[key]) });
-      return b;
-    };
+      });
     const isOwn = isOwnId(this.song.id);
     const own = h(
       'div',
@@ -183,12 +179,12 @@ class Player {
         h('summary', { class: 'btn btn-seg' }, icon('gear'), ' ', t('Mehr')),
         h(
           'div',
-          { class: 'seg seg-wrap' },
-          toggle(t('Begleitung'), 'backing'),
-          this.song.hasMelody ? toggle(t('Melodie'), 'melody') : null,
-          this.bass ? toggle(t('Bass vorspielen'), 'bassDemo') : null,
-          toggle(t('Klick'), 'clickOn'),
-          this.song.hasMelody || this.bass ? toggle(t('Tabulatur'), 'tab') : null,
+          { class: 'group' },
+          option(t('Begleitung'), 'backing'),
+          this.song.hasMelody ? option(t('Melodie'), 'melody') : null,
+          this.bass ? option(t('Bass vorspielen'), 'bassDemo') : null,
+          option(t('Klick'), 'clickOn'),
+          this.song.hasMelody || this.bass ? option(t('Tabulatur'), 'tab') : null,
         ),
         (this.keyBox = h('div', { class: 'key-box' })),
         h('p', { class: 'small' }, this.song.origin),
@@ -198,7 +194,7 @@ class Player {
     const note = this.song.hasMelody
       ? null
       : h('p', { class: 'card small no-melody' }, t('Dieses Lied hat hier nur Akkorde und Text – die Melodie singst du so, wie du sie kennst.'));
-    const main = screen(root, { title: this.song.title, back: link('lieder'), theme: 'brass' }, this.stage, this.lyrics, controls);
+    const main = screen(root, { title: this.song.title, back: link('lieder') }, this.stage, this.lyrics, controls);
     if (note) main.insertBefore(note, controls);
     main.classList.add('player');
   }

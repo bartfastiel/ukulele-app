@@ -408,7 +408,7 @@ test('Blues weiter oben am Hals: Vorgabe im Ausschnitt, ganze Tonleiter sichtbar
   });
 });
 
-test('Dur und Moll mischen: Dur-Töne blass, große Terz golden über I, ausgeblendet über IV; Ziehen nur über I', () => {
+test('Dur und Moll mischen: Dur-Töne blass, große Terz als Akkordton über I, ausgeblendet über IV; Ziehen nur über I', () => {
   const w = { from: 1, frets: 5 };
   const pcs = (chord: string, mixed: boolean) => freeNotes(0, chord, w, mixed);
   const find = (list: ReturnType<typeof pcs>, pc: number) => list.filter((n) => n.midi % 12 === pc);

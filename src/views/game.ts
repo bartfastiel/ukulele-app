@@ -151,7 +151,7 @@ export const game: View = (root) => {
     }, 250);
   };
 
-  screen(root, { title: bass ? t('Ton-Spiel') : t('Akkord-Spiel'), theme: 'cherry' }, area);
+  screen(root, { title: bass ? t('Ton-Spiel') : t('Akkord-Spiel') }, area);
   setup();
   return stop;
 };

@@ -10,7 +10,11 @@ const prefix = lang === 'de' ? '' : `${lang}/`;
 const locale = { de: 'de-DE', en: 'en-US', fr: 'fr-FR' }[lang] || lang;
 const instrument = process.argv[4] || '';
 const shotPrefix = instrument ? `${lang}-${instrument}` : lang;
-const views = ['', 'lieder', 'lied/alle-voegel', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied', 'eigenes-lied/mein-sonnenlied', 'lied/mein-sonnenlied', 'lied-teilen/mein-sonnenlied', '/wissen/', '/wissen/ukulele-stimmen/', '/impressum/', '/akkorde/f-sharp-m/'];
+const all = ['', 'lieder', 'lied/alle-voegel', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'einstellungen', 'aufnahme', 'blues', 'begleitung/rock', 'detektiv', 'eigenes-lied', 'eigenes-lied/mein-sonnenlied', 'lied/mein-sonnenlied', 'lied-teilen/mein-sonnenlied', '/wissen/', '/wissen/ukulele-stimmen/', '/impressum/', '/akkorde/f-sharp-m/', '/lektionen/', '/lektion/4/', '/lehrkraefte-und-eltern/'];
+// ONLY=home,blues,… nimmt nur diese Ansichten (Name wie im Dateinamen)
+const only = process.env.ONLY ? process.env.ONLY.split(',') : null;
+const shotName = (v) => v.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home';
+const views = only ? all.filter((v) => only.indexOf(shotName(v)) >= 0) : all;
 const devices = [
   { name: 'ipad', width: 1024, height: 768, engine: webkit },
   { name: 'phone', width: 390, height: 844, engine: chromium },
@@ -33,7 +37,7 @@ for (const d of devices) {
     await page.goto(v.indexOf('/') === 0 ? `${base}${prefix}${v.slice(1)}` : `${base}${prefix}#/${v}`);
     await page.waitForLoadState('load');
     await page.waitForTimeout(400);
-    await page.screenshot({ path: `${out}/${shotPrefix}-${d.name}-${v.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home'}.png` });
+    await page.screenshot({ path: `${out}/${shotPrefix}-${d.name}-${shotName(v)}.png` });
   }
   await browser.close();
 }

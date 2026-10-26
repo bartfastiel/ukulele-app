@@ -123,5 +123,5 @@ export const songs: View = (root) => {
   };
   search.addEventListener('input', runSearch);
   const tools = h('div', { class: 'song-tools' }, search, h('a', { class: 'btn btn-seg own-add', href: link('eigenes-lied') }, icon('plus'), t('Eigenes Lied')));
-  screen(root, { title: t('Lieder'), theme: 'brass' }, tools, filter, sections, results);
+  screen(root, { title: t('Lieder') }, tools, filter, sections, results);
 };

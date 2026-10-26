@@ -1,6 +1,6 @@
 import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
-import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
+import { screen, button, toggle, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { fretboard, type Mark } from '../ui/fretboard.ts';
 import { COMP_LEVELS, LEVELS, SWING, bluesBars, compBars, compChordsText, compGrip, compStrum, compText, fitsFree, freeNotes, spell, levelText, levelTitle, levelWindow, organVoicing, place, rootOf, windowTop, type CompLevel, type Level, type NeckWindow } from '../music/blues.ts';
 import { instrument } from '../music/instrument.ts';
@@ -454,16 +454,13 @@ export const blues: View = (root) => {
     );
 
   const bendInfo = h('p', { class: 'card small' });
-  const guideBtn = button(t('Ton vorspielen'), () => {
-    guide = !guide;
-    guideBtn.setAttribute('aria-pressed', String(guide));
-  }, 'btn-seg', { 'aria-pressed': 'false' });
+  const guideBtn = toggle(t('Ton vorspielen'), false, (v) => (guide = v));
 
   /** Was zur Stufe gehört: Hals oder Griffbilder, Schlagmuster, Erklärung, Lauscher. */
   const showMode = () => {
     shiftRow.style.display = comp ? 'none' : '';
     patternCard.style.display = comp ? '' : 'none';
-    guideBtn.textContent = comp ? t('Akkord vorspielen') : t('Ton vorspielen');
+    guideBtn.querySelector('.toggle-label')!.textContent = comp ? t('Akkord vorspielen') : t('Ton vorspielen');
     compSig = '';
     lastEighth = '';
     drawPattern(-1);
@@ -501,7 +498,7 @@ export const blues: View = (root) => {
   };
 
   let wahCtl: { stop: () => void; rezero: () => void } | null = null;
-  const wahBtn = button(t('Wah: Handy kippen'), () => {
+  const wahBtn = toggle(t('Wah: Handy kippen'), false, () => {
     if (wahCtl) {
       wahCtl.stop();
       wahCtl = null;
@@ -512,8 +509,10 @@ export const blues: View = (root) => {
       wahCtl.rezero();
     }
     wahBtn.setAttribute('aria-pressed', String(!!wahCtl));
-  }, 'btn-seg', { 'aria-pressed': 'false' });
-  const micBtn = button(h('span', null, icon('mic'), ' ', t('Ich höre zu')), () => {
+  });
+  // einmal an, bleibt an: der Lauscher hört bis zum Verlassen der Seite zu
+  const micBtn = toggle(h('span', null, icon('mic'), t('Ich höre zu')), false, () => {
+    micBtn.setAttribute('aria-pressed', String(listening));
     if (listening) return;
     void ensureMic().then(async (ok) => {
       if (!ok) return;
@@ -522,7 +521,7 @@ export const blues: View = (root) => {
       listen(await openMic());
       syncChordListener();
     });
-  }, 'btn-seg', { 'aria-pressed': 'false' });
+  });
 
   // eine Auswahl über beide Gruppen: Akkorde begleiten oder eine Ton-Stufe
   const levelButtons: HTMLElement[] = [];
@@ -554,7 +553,7 @@ export const blues: View = (root) => {
   setLevel(LEVELS[0]);
   screen(
     root,
-    { title: t('Blues'), theme: 'teal' },
+    { title: t('Blues') },
     h('div', { class: 'blues-top' }, grid, neckCard),
     patternCard,
     info,
@@ -588,7 +587,7 @@ export const blues: View = (root) => {
         }
       }),
       h('h2', null, t('Hilfen')),
-      h('div', { class: 'seg seg-wrap' }, guideBtn, micBtn, hasMotion() ? wahBtn : null),
+      h('div', { class: 'group helpers' }, micBtn, guideBtn, hasMotion() ? wahBtn : null),
     ),
     counter,
     explain,

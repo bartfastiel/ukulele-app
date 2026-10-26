@@ -14,6 +14,7 @@ export const SEGMENTS: Record<string, Record<Lang, string>> = {
   stimmen: { de: 'stimmgeraet', en: 'tuner', fr: 'accordeur' },
   rhythmus: { de: 'rhythmus', en: 'rhythm', fr: 'rythme' },
   sterne: { de: 'sterne', en: 'stars', fr: 'etoiles' },
+  einstellungen: { de: 'einstellungen', en: 'settings', fr: 'reglages' },
   aufnahme: { de: 'aufnahmen', en: 'recordings', fr: 'enregistrements' },
   detektiv: { de: 'akkord-detektiv', en: 'chord-detective', fr: 'detective-des-accords' },
   blues: { de: 'blues', en: 'blues', fr: 'blues' },

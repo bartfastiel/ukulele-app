@@ -1,16 +1,17 @@
 import { s } from './dom.ts';
-import { STRINGS } from '../music/notes.ts';
-import { instrument } from '../music/instrument.ts';
 
 /** Eigene, schlichte Symbole statt Emojis: sehen auf jedem Betriebssystem gleich aus. */
 const PATHS: Record<string, string> = {
   songs: 'M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
+  note: 'M10 18V4l7 2M10 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
   chords: 'M5 3h14M5 3v18M10 3v18M14 3v18M19 3v18M5 9h14M5 15h14',
   game: 'M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6z',
   tuner: 'M4 18a8 8 0 1 1 16 0M12 18l4-7',
   rhythm: 'M8 21h8l-2-17h-4zM12 14l5-9',
+  band: 'M4 9c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 9v7c0 1.7 3.6 3 8 3s8-1.3 8-3V9M7 2l3.5 5M17 2l-3.5 5',
   home: 'M3 11l9-8 9 8M5 9v12h5v-6h4v6h5V9',
   back: 'M15 5l-7 7 7 7',
+  chevron: 'M9 6l6 6-6 6',
   play: 'M7 4v16l13-8z',
   pause: 'M7 4h4v16H7zM14 4h4v16h-4z',
   stop: 'M6 6h12v12H6z',
@@ -21,15 +22,17 @@ const PATHS: Record<string, string> = {
   steps: 'M3 20h5v-5h5v-5h5V5h3M3 20h18',
   next: 'M5 4v16l10-8zM17 4h3v16h-3z',
   text: 'M4 6h16M4 11h16M4 16h11',
+  book: 'M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15H5.5A1.5 1.5 0 0 0 4 19.5zM4 19.5A1.5 1.5 0 0 0 5.5 21H20v-3',
   blues: 'M3 15c3 0 3-6 6-6s3 6 6 6 3-6 6-6M3 19h18',
   detective: 'M10 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12zM14.5 14.5L21 21',
-  gear: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',
+  gear: 'M4 7h9M17 7h3M4 17h3M11 17h9M15 4.5v5M9 14.5v5',
   plus: 'M12 5v14M5 12h14',
   edit: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
   trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
   share: 'M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4',
   copy: 'M9 9h11v11H9zM5 15H4V4h11v1',
   print: 'M6 9V3h12v6M6 18H3v-9h18v9h-3M7 14h10v7H7z',
+  school: 'M2 9l10-5 10 5-10 5zM6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5M22 9v6',
 };
 
 export function icon(name: keyof typeof PATHS | string, cls = 'icon'): SVGElement {
@@ -49,268 +52,15 @@ export function icon(name: keyof typeof PATHS | string, cls = 'icon'): SVGElemen
 }
 
 /**
- * Erkennungszeichen oben auf der Startseite: Schallloch (Ukulele, Gitarre, Bariton-Ukulele), Trommelfell (Banjo) bzw.
- * Decke mit F-Löchern und Doppelsaiten (Mandoline).
+ * Zeichen von Open String: Akzentfläche mit einem Bogen (schwingende Saite) und einem Punkt (Fingerpunkt) – gleich für
+ * alle Instrumente. Dieselbe Form tragen App-Symbol und Vorschaubild (src/site/app-icon.ts, og-image.ts).
  */
-export function soundHole(): SVGElement {
-  const id = instrument().id;
-  if (id === 'banjo') return banjoHead();
-  if (id === 'mandoline') return mandolinTop();
-  if (id === 'bass') return bassBody();
-  if (id === 'gitarre') return guitarRosette();
-  // Bariton-Ukulele: dieselbe Rosette wie die Ukulele, aber mit Abalone-Tönen, die tiefen D- und G-Saiten umsponnen
-  if (id === 'bariton') return ukuleleHole(['#1f4f5a', '#8fc0b2', '#3b1d0c', '#c9a24a'], 2);
-  return ukuleleHole(['#2c6e63', '#c9a24a', '#6a2410'], 0);
-}
-
-function strings(g: SVGElement, x0: number, x1: number, y0: number, y1: number): void {
-  const n = STRINGS.length;
-  for (let i = 0; i < n; i++) {
-    const x = x0 + (i * (x1 - x0)) / (n - 1);
-    const k = (i * 3) / (n - 1);
-    g.appendChild(s('rect', { x: x - 1.2 - k * 0.2, y: y0, width: 2.4 + k * 0.4, height: y1 - y0, fill: 'url(#str)', opacity: 0.95 }));
-  }
-}
-
-function stringGradient(): SVGElement {
+export function logo(cls = 'logo'): SVGElement {
   return s(
-    'linearGradient',
-    { id: 'str', x1: 0, x2: 1 },
-    s('stop', { offset: 0, 'stop-color': '#d9d0bf' }),
-    s('stop', { offset: 0.5, 'stop-color': '#fffaf0' }),
-    s('stop', { offset: 1, 'stop-color': '#cfc5b2' }),
+    'svg',
+    { viewBox: '0 0 30 30', class: cls, 'aria-hidden': 'true', focusable: 'false' },
+    s('rect', { width: 30, height: 30, rx: 8, fill: '#0A7C6E' }),
+    s('path', { d: 'M8 20c3-8 11-8 14 0', fill: 'none', stroke: '#fff', 'stroke-width': 2.4, 'stroke-linecap': 'round' }),
+    s('circle', { cx: 15, cy: 12, r: 2.5, fill: '#fff' }),
   );
-}
-
-/** Klassische Gitarren-Rosette: Mosaikring zwischen schwarz-elfenbeinfarbenen Zierlinien. */
-function guitarRosette(): SVGElement {
-  const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
-  g.appendChild(
-    s(
-      'defs',
-      null,
-      s('radialGradient', { id: 'hole' }, s('stop', { offset: 0, 'stop-color': '#0b0604' }), s('stop', { offset: 1, 'stop-color': '#24150a' })),
-      stringGradient(),
-    ),
-  );
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 94, fill: '#d6b06a' }));
-  const ring = (r: number, w: number, color: string) => g.appendChild(s('circle', { cx: 100, cy: 100, r, fill: 'none', stroke: color, 'stroke-width': w }));
-  ring(90, 2.5, '#15100e');
-  ring(87, 2, '#f6eedb');
-  ring(84.5, 2, '#15100e');
-  const segs = 72;
-  for (let i = 0; i < segs; i++) {
-    const a0 = (i / segs) * Math.PI * 2;
-    const a1 = ((i + 1) / segs) * Math.PI * 2;
-    const p = (r: number, a: number) => `${100 + r * Math.cos(a)},${100 + r * Math.sin(a)}`;
-    for (let band = 0; band < 2; band++) {
-      const r0 = 72 + band * 6;
-      const r1 = r0 + 6;
-      g.appendChild(
-        s('path', {
-          d: `M${p(r0, a0)} L${p(r1, a0)} A${r1},${r1} 0 0 1 ${p(r1, a1)} L${p(r0, a1)} A${r0},${r0} 0 0 0 ${p(r0, a0)}z`,
-          fill: (i + band) % 2 === 0 ? '#5a2f1a' : i % 4 < 2 ? '#2f5e3a' : '#f1e2bf',
-        }),
-      );
-    }
-  }
-  ring(71, 2, '#15100e');
-  ring(68.5, 2, '#f6eedb');
-  ring(66, 2, '#15100e');
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 64, fill: 'url(#hole)' }));
-  strings(g, 58, 142, 0, 200);
-  return g;
-}
-
-/** Banjo: mattes Trommelfell mit verchromtem Spannreif, Haken und Steg. */
-function banjoHead(): SVGElement {
-  const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
-  g.appendChild(
-    s(
-      'defs',
-      null,
-      s(
-        'linearGradient',
-        { id: 'chrome', x1: 0, y1: 0, x2: 1, y2: 1 },
-        s('stop', { offset: 0, 'stop-color': '#fbfdff' }),
-        s('stop', { offset: 0.45, 'stop-color': '#9aa4ac' }),
-        s('stop', { offset: 0.55, 'stop-color': '#e9eef2' }),
-        s('stop', { offset: 1, 'stop-color': '#5d666e' }),
-      ),
-      s('radialGradient', { id: 'head', cx: 0.4, cy: 0.35 }, s('stop', { offset: 0, 'stop-color': '#ffffff' }), s('stop', { offset: 1, 'stop-color': '#e3dccd' })),
-      stringGradient(),
-    ),
-  );
-  for (let i = 0; i < 16; i++) {
-    const a = (i / 16) * Math.PI * 2;
-    g.appendChild(
-      s('rect', { x: 96, y: 2, width: 8, height: 20, rx: 3, fill: 'url(#chrome)', transform: `rotate(${(a * 180) / Math.PI} 100 100)` }),
-    );
-  }
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 86, fill: 'url(#chrome)' }));
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 78, fill: 'url(#head)' }));
-  g.appendChild(s('rect', { x: 64, y: 122, width: 72, height: 7, rx: 2, fill: '#c9a46a', stroke: '#6b4a22', 'stroke-width': 1.5 }));
-  strings(g, 74, 126, 0, 126);
-  return g;
-}
-
-/** Mandoline: gewölbte Decke im Sunburst, zwei F-Löcher, Steg und vier Saitenpaare (G und D umsponnen). */
-function mandolinTop(): SVGElement {
-  const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
-  g.appendChild(
-    s(
-      'defs',
-      null,
-      s(
-        'radialGradient',
-        { id: 'burst', cx: 0.5, cy: 0.45, r: 0.55 },
-        s('stop', { offset: 0, 'stop-color': '#f2bd5a' }),
-        s('stop', { offset: 0.45, 'stop-color': '#c9772a' }),
-        s('stop', { offset: 0.78, 'stop-color': '#6a2a0c' }),
-        s('stop', { offset: 1, 'stop-color': '#1c0903' }),
-      ),
-      stringGradient(),
-      s(
-        'linearGradient',
-        { id: 'wound', x1: 0, x2: 1 },
-        s('stop', { offset: 0, 'stop-color': '#9a7a4a' }),
-        s('stop', { offset: 0.5, 'stop-color': '#f0dcae' }),
-        s('stop', { offset: 1, 'stop-color': '#86683c' }),
-      ),
-    ),
-  );
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 95, fill: '#1a0f0a' }));
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 93, fill: '#f4e9cc' }));
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 90.5, fill: '#1a0f0a' }));
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 89, fill: 'url(#burst)' }));
-  // F-Löcher: geschwungener Schlitz mit runden Augen oben und unten und den kleinen Kerben in der Mitte
-  for (const side of [-1, 1]) {
-    const x = (v: number) => 100 + side * v;
-    g.appendChild(
-      s('path', { d: `M${x(52)},46 C${x(66)},70 ${x(40)},128 ${x(56)},154`, fill: 'none', stroke: '#140703', 'stroke-width': 5.5, 'stroke-linecap': 'round' }),
-    );
-    g.appendChild(s('circle', { cx: x(52), cy: 46, r: 6, fill: '#140703' }));
-    g.appendChild(s('circle', { cx: x(56), cy: 154, r: 6.5, fill: '#140703' }));
-    g.appendChild(s('path', { d: `M${x(49)},100 L${x(59)},100`, stroke: '#140703', 'stroke-width': 2, 'stroke-linecap': 'round' }));
-  }
-  g.appendChild(s('rect', { x: 62, y: 146, width: 76, height: 9, rx: 2, fill: '#2a1408', stroke: '#0e0603', 'stroke-width': 1.2 }));
-  const n = STRINGS.length;
-  for (let i = 0; i < n; i++) {
-    const x = 72 + (i * 56) / (n - 1);
-    const w = i < 2 ? 2.2 - i * 0.3 : 1.5 - (i - 2) * 0.2;
-    for (const d of [-2.8, 2.8])
-      g.appendChild(s('rect', { x: x + d - w / 2, y: 0, width: w, height: 200, fill: i < 2 ? 'url(#wound)' : 'url(#str)', opacity: 0.95 }));
-  }
-  return g;
-}
-
-/** E-Bass: kein Schallloch, sondern Korpus aus schwarzer Esche mit Schlagbrett, geteiltem Tonabnehmer und dicken Saiten. */
-function bassBody(): SVGElement {
-  const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
-  g.appendChild(
-    s(
-      'defs',
-      null,
-      s(
-        'radialGradient',
-        { id: 'ash', cx: 0.45, cy: 0.35, r: 0.7 },
-        s('stop', { offset: 0, 'stop-color': '#4a4540' }),
-        s('stop', { offset: 0.6, 'stop-color': '#1e1c1b' }),
-        s('stop', { offset: 1, 'stop-color': '#0b0b0c' }),
-      ),
-      s(
-        'linearGradient',
-        { id: 'wound', x1: 0, x2: 1 },
-        s('stop', { offset: 0, 'stop-color': '#7d838a' }),
-        s('stop', { offset: 0.5, 'stop-color': '#f1f3f5' }),
-        s('stop', { offset: 1, 'stop-color': '#6c7279' }),
-      ),
-      s('clipPath', { id: 'bass-body' }, s('circle', { cx: 100, cy: 100, r: 88 })),
-    ),
-  );
-  // Kante wie ein dreilagiges Schlagbrett: weiß-schwarz-weiß
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 95, fill: '#101113' }));
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 93, fill: '#f2efe8' }));
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 91, fill: '#101113' }));
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 89.5, fill: '#f2efe8' }));
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 88, fill: 'url(#ash)' }));
-  const body = s('g', { 'clip-path': 'url(#bass-body)' });
-  // Jahresringe der Esche als helle Bögen
-  for (let i = 0; i < 9; i++) body.appendChild(s('path', { d: `M0 ${30 + i * 20} Q100 ${-10 + i * 20} 200 ${30 + i * 20}`, fill: 'none', stroke: '#6e6862', 'stroke-width': 1.4, opacity: 0.35 }));
-  body.appendChild(s('path', { d: 'M0 64 C52 56 84 96 104 140 C114 164 120 184 124 200 L0 200 Z', fill: '#101113' }));
-  body.appendChild(s('path', { d: 'M0 68 C50 60 80 98 100 142 C110 166 116 186 119 200 L0 200 Z', fill: '#f2efe8' }));
-  g.appendChild(body);
-  // geteilter Tonabnehmer: eine Hälfte unter E und A, die andere unter D und G
-  const n = STRINGS.length;
-  const xs: number[] = [];
-  for (let i = 0; i < n; i++) xs.push(70 + (i * 60) / (n - 1));
-  g.appendChild(s('rect', { x: xs[0] - 14, y: 74, width: xs[1] - xs[0] + 28, height: 22, rx: 7, fill: '#151517', stroke: '#000', 'stroke-width': 1 }));
-  g.appendChild(s('rect', { x: xs[n - 2] - 14, y: 92, width: xs[n - 1] - xs[n - 2] + 28, height: 22, rx: 7, fill: '#151517', stroke: '#000', 'stroke-width': 1 }));
-  xs.forEach((x, i) => {
-    const y = i < n / 2 ? 85 : 103;
-    for (const d of [-4, 4]) g.appendChild(s('circle', { cx: x + d, cy: y, r: 2.2, fill: '#9aa0a6' }));
-  });
-  // Rundwickelsaiten: dick und silbern, die tiefe E-Saite am dicksten
-  xs.forEach((x, i) => {
-    const w = 5.4 - i * 0.7;
-    g.appendChild(s('rect', { x: x - w / 2, y: 0, width: w, height: 200, fill: 'url(#wound)', opacity: 0.97 }));
-  });
-  return g;
-}
-
-function ukuleleHole(colors: string[], wound: number): SVGElement {
-  const g = s('svg', { viewBox: '0 0 200 200', class: 'soundhole', 'aria-hidden': 'true' });
-  g.appendChild(
-    s(
-      'defs',
-      null,
-      s(
-        'radialGradient',
-        { id: 'hole' },
-        s('stop', { offset: 0, 'stop-color': '#0d0503' }),
-        s('stop', { offset: 0.8, 'stop-color': '#1d0a04' }),
-        s('stop', { offset: 1, 'stop-color': '#2f1207' }),
-      ),
-      s(
-        'linearGradient',
-        { id: 'str', x1: 0, x2: 1 },
-        s('stop', { offset: 0, 'stop-color': '#d9d0bf' }),
-        s('stop', { offset: 0.5, 'stop-color': '#fffaf0' }),
-        s('stop', { offset: 1, 'stop-color': '#cfc5b2' }),
-      ),
-      s(
-        'linearGradient',
-        { id: 'wound', x1: 0, x2: 1 },
-        s('stop', { offset: 0, 'stop-color': '#8d9399' }),
-        s('stop', { offset: 0.5, 'stop-color': '#eef1f3' }),
-        s('stop', { offset: 1, 'stop-color': '#7d838a' }),
-      ),
-    ),
-  );
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 92, fill: '#f1e2bf', opacity: 0.95 }));
-  const segs = colors.length * 16;
-  for (let i = 0; i < segs; i++) {
-    const a0 = (i / segs) * Math.PI * 2;
-    const a1 = ((i + 1) / segs) * Math.PI * 2;
-    const r0 = 74;
-    const r1 = 88;
-    const p = (r: number, a: number) => `${100 + r * Math.cos(a)},${100 + r * Math.sin(a)}`;
-    g.appendChild(
-      s('path', {
-        d: `M${p(r0, a0)} L${p(r1, a0)} A${r1},${r1} 0 0 1 ${p(r1, a1)} L${p(r0, a1)} A${r0},${r0} 0 0 0 ${p(r0, a0)}z`,
-        fill: colors[i % colors.length],
-      }),
-    );
-  }
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 74, fill: '#f1e2bf' }));
-  g.appendChild(s('circle', { cx: 100, cy: 100, r: 70, fill: 'url(#hole)' }));
-  // so viele Saiten wie das Instrument (Ukulele: 4 im Abstand 24)
-  const n = STRINGS.length;
-  for (let i = 0; i < n; i++) {
-    const x = 64 + (i * 72) / (n - 1);
-    const k = (i * 3) / (n - 1);
-    const w = i < wound ? 3.4 - i * 0.4 : 2.4 + k * 0.4;
-    g.appendChild(s('rect', { x: x - w / 2, y: 0, width: w, height: 200, fill: i < wound ? 'url(#wound)' : 'url(#str)', opacity: 0.95 }));
-  }
-  return g;
 }

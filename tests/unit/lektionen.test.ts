@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { COURSES, type Course, type Lesson, type Play } from '../../src/content/lektionen.ts';
-import { COURSE_INSTRUMENTS } from '../../src/content/kurse.ts';
+import { COURSE_INSTRUMENTS, COURSE_TITLES } from '../../src/content/kurse.ts';
 import { ARTICLES } from '../../src/content/wissen.ts';
 import type { L10n } from '../../src/content/types.ts';
 import { SONGS } from '../../src/music/songs.ts';
@@ -36,6 +36,8 @@ const song = (id: string) => SONGS.filter((s) => s.id === id)[0];
 
 test('Kurse: Liste für die App stimmt, Nummern lückenlos ab 1, Abschnitte aufsteigend', () => {
   assert.deepEqual(COURSE_INSTRUMENTS.slice().sort(), COURSES.map((c) => c.instrument).sort());
+  // Titel für die Lernweg-Karte der Startseite: gleich wie in den Kursen
+  for (const c of COURSES) assert.deepEqual(COURSE_TITLES[c.instrument], c.lessons.map((x) => x.title), c.instrument);
   for (const c of COURSES) {
     assert.ok(c.lessons.length >= 20 && c.lessons.length <= 30, `${c.instrument}: ${c.lessons.length} Lektionen`);
     c.lessons.forEach((x, i) => assert.equal(x.n, i + 1, `${c.instrument}: Lektion an Stelle ${i + 1} hat Nummer ${x.n}`));

@@ -1,10 +1,9 @@
 /**
- * Vorschaubild für Links (og:image, 1200 × 630) je Instrument-Seite, im Build gerechnet: Holz des Instruments,
- * Schallloch bzw. Banjo-Fell mit Saiten und ein Griffbild auf cremefarbener Karte. Ohne Text, damit ein Bild für alle
- * Sprachen passt. Kantenglättung über Abstandsfunktionen, PNG über node:zlib – keine Bildbibliothek nötig.
+ * Vorschaubild für Links (og:image, 1200 × 630) je Instrument-Seite, im Build gerechnet, im Design „Klar“: hellgrauer
+ * Grund, links das Zeichen von Open String, rechts ein Griffbild des Instruments auf einer weißen Karte. Ohne Text, damit
+ * ein Bild für alle Sprachen passt. Kantenglättung über Abstandsfunktionen, PNG über node:zlib – keine Bildbibliothek nötig.
  */
 import { deflateSync, crc32 } from 'node:zlib';
-import { MATERIALS, type RGB } from '../ui/wood.ts';
 import { instrument, setInstrument } from '../music/instrument.ts';
 import { chord } from '../music/chords.ts';
 
@@ -14,6 +13,7 @@ export const OG_HEIGHT = 630;
 /** Akkord auf der Karte: drei Finger, alle im 1. bis 3. Bund. */
 const CARD_CHORD: Record<string, string> = { ukulele: 'G7', gitarre: 'C', banjo: 'C', bariton: 'D', mandoline: 'D7' };
 
+export type RGB = [number, number, number];
 export type Sdf = (x: number, y: number) => number;
 export type Paint = RGB | ((x: number, y: number) => RGB);
 
@@ -95,33 +95,6 @@ export function dashedRing(cx: number, cy: number, r: number, w: number, n: numb
   };
 }
 
-/** Fünfzackiger Stern (Umkreis r). */
-function star(cx: number, cy: number, r: number): Sdf {
-  const inner = r * 0.48;
-  const pts: number[] = [];
-  for (let i = 0; i < 10; i++) {
-    const a = -Math.PI / 2 + (i * Math.PI) / 5;
-    const rr = i % 2 ? inner : r;
-    pts.push(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
-  }
-  return (x, y) => {
-    let d = Infinity;
-    let inside = false;
-    for (let i = 0, j = 18; i < 20; j = i, i += 2) {
-      const ax = pts[j];
-      const ay = pts[j + 1];
-      const bx = pts[i];
-      const by = pts[i + 1];
-      const ex = bx - ax;
-      const ey = by - ay;
-      const t = clamp(((x - ax) * ex + (y - ay) * ey) / (ex * ex + ey * ey));
-      d = Math.min(d, Math.hypot(x - ax - ex * t, y - ay - ey * t));
-      if (ay > y !== by > y && x < ((bx - ax) * (y - ay)) / (by - ay) + ax) inside = !inside;
-    }
-    return inside ? -d : d;
-  };
-}
-
 /** Kubische Bézierkurve als Strich der Breite w (aus kurzen Stücken). */
 export function curve(p: number[], w: number): Sdf {
   const pts: number[] = [];
@@ -146,212 +119,67 @@ const box = (cx: number, cy: number, r: number) => [cx - r - 2, cy - r - 2, cx +
 
 // ---------- Bild ----------
 
-const CREAM = hex('#f6ecd2');
-const INK = hex('#3a2a20');
-const TEAL = hex('#2c6e63');
-const GOLD = hex('#c9a24a');
-const BLACK: RGB = [20, 14, 12];
+const BG = hex('#f2f3f5');
+const WHITE = hex('#ffffff');
+const INK = hex('#1c1c1e');
+const INK_2 = hex('#55575e');
+const FRET = hex('#d5d7dc');
+const ACCENT = hex('#0a7c6e');
 
-function woodBackground(c: Canvas, id: string): void {
-  const mat = (MATERIALS[id] || MATERIALS.ukulele).body;
-  const grain = mat.grain(1);
-  const size = 768;
-  for (let y = 0; y < c.h; y++)
-    for (let x = 0; x < c.w; x++) {
-      const t = grain((x % size) / size, (y % size) / size);
-      // sanfte Vignette, damit Mitte und Karte hervortreten
-      const dx = (x - c.w / 2) / (c.w / 2);
-      const dy = (y - c.h / 2) / (c.h / 2);
-      const v = 1 - 0.32 * clamp((dx * dx + dy * dy) / 2);
-      const col = mix(mat.dark, mat.light, t);
-      const i = (y * c.w + x) * 3;
-      c.px[i] = col[0] * v;
-      c.px[i + 1] = col[1] * v;
-      c.px[i + 2] = col[2] * v;
-    }
+/** Zeichen von Open String (wie `logo()` in src/ui/icons.ts) als große Akzentfläche links. */
+function mark(c: Canvas): void {
+  const x0 = 110;
+  const y0 = 135;
+  const k = 12;
+  c.shape(roundRect(x0, y0, x0 + 30 * k, y0 + 30 * k, 8 * k), [x0 - 2, y0 - 2, x0 + 30 * k + 2, y0 + 30 * k + 2], ACCENT);
+  const p = (x: number, y: number) => [x0 + x * k, y0 + y * k];
+  const arc = [...p(8, 20), ...p(11, 12), ...p(19, 12), ...p(22, 20)];
+  c.shape(curve(arc, 2.4 * k), [x0, y0, x0 + 30 * k, y0 + 30 * k], WHITE);
+  c.shape(circle(x0 + 15 * k, y0 + 12 * k, 2.5 * k), box(x0 + 15 * k, y0 + 12 * k, 2.5 * k), WHITE);
 }
 
-function hole(cx: number, cy: number, r: number): Paint {
-  const inner = hex('#0d0503');
-  const outer = hex('#2f1207');
-  return (x, y) => mix(inner, outer, clamp(Math.hypot(x - cx, y - cy) / r));
-}
-
-/** Schallloch (Ukulele, Gitarre, Bariton-Ukulele), Fell mit Spannreifen (Banjo) bzw. Decke mit F-Löchern (Mandoline). */
-function soundHole(c: Canvas, id: string, cx: number, cy: number): void {
-  if (id === 'bass') {
-    // E-Bass: kein Schallloch – Schlagbrett mit weiß-schwarz-weißer Kante und ein geteilter Tonabnehmer
-    const white = hex('#f2efe8');
-    const pick = (x: number, y: number) => Math.hypot(x - (cx - 420), y - (cy + 330)) - 430;
-    c.shape((x, y) => pick(x, y) - 10, [0, 0, c.w, c.h], BLACK);
-    c.shape((x, y) => pick(x, y) - 7, [0, 0, c.w, c.h], white);
-    c.shape((x, y) => pick(x, y) - 4, [0, 0, c.w, c.h], BLACK);
-    c.shape(pick, [0, 0, c.w, c.h], white);
-    const pole = hex('#9aa0a6');
-    const coil = hex('#151517');
-    const half = (x0: number, x1: number, y: number) => {
-      c.shape(roundRect(x0 + 6, y + 8, x1 + 6, y + 68, 18), [x0 - 10, y - 10, x1 + 30, y + 90], BLACK, 0.4, 6);
-      c.shape(roundRect(x0, y, x1, y + 60, 18), [x0 - 2, y - 2, x1 + 2, y + 62], coil);
-    };
-    half(cx - 140, cx + 6, cy - 70);
-    half(cx - 6, cx + 140, cy - 10);
-    for (let i = 0; i < 4; i++) {
-      const x = cx + (i - 1.5) * 66;
-      const y = i < 2 ? cy - 40 : cy + 20;
-      for (const d of [-12, 12]) c.shape(circle(x + d, y, 6), box(x + d, y, 6), pole);
-    }
-    return;
-  }
-  if (id === 'mandoline') {
-    c.shape(circle(cx, cy, 254), box(cx, cy, 254), BLACK);
-    c.shape(circle(cx, cy, 249), box(cx, cy, 249), hex('#f4e9cc'));
-    c.shape(circle(cx, cy, 242), box(cx, cy, 242), BLACK);
-    // Sunburst: Mitte bernsteinfarben, zum Rand hin über Rotbraun fast schwarz
-    const stops: [number, RGB][] = [
-      [0, hex('#f2bd5a')],
-      [0.45, hex('#c9772a')],
-      [0.8, hex('#6a2a0c')],
-      [1, hex('#1c0903')],
-    ];
-    const burst: Paint = (x, y) => {
-      const t = clamp(Math.hypot(x - cx, y - cy + 20) / 250);
-      let k = 1;
-      while (k < stops.length - 1 && t > stops[k][0]) k++;
-      return mix(stops[k - 1][1], stops[k][1], clamp((t - stops[k - 1][0]) / (stops[k][0] - stops[k - 1][0])));
-    };
-    c.shape(circle(cx, cy, 238), box(cx, cy, 238), burst);
-    const ink = hex('#140703');
-    const k = 2.6;
-    for (const side of [-1, 1]) {
-      const x = (v: number) => cx + side * v * k;
-      const y = (v: number) => cy + (v - 100) * k;
-      c.shape(curve([x(52), y(46), x(66), y(70), x(40), y(128), x(56), y(154)], 14), [cx - 260, cy - 260, cx + 260, cy + 260], ink);
-      c.shape(circle(x(52), y(46), 16), box(x(52), y(46), 16), ink);
-      c.shape(circle(x(56), y(154), 17), box(x(56), y(154), 17), ink);
-      c.shape(segment(x(48), y(100), x(60), y(100), 5), box(x(54), y(100), 20), ink);
-    }
-    return;
-  }
-  if (id === 'gitarre') {
-    const rings: [number, number, RGB][] = [
-      [232, 6, BLACK],
-      [224, 6, hex('#efe3c4')],
-      [212, 14, hex('#efe3c4')],
-      [200, 8, hex('#efe3c4')],
-      [191, 6, BLACK],
-    ];
-    for (const r of rings) c.shape(ring(cx, cy, r[0], r[1]), box(cx, cy, r[0] + r[1]), r[2]);
-    c.shape(dashedRing(cx, cy, 212, 14, 90, 0.5), box(cx, cy, 222), BLACK);
-    c.shape(circle(cx, cy, 178), box(cx, cy, 178), hole(cx, cy, 178));
-    return;
-  }
-  if (id === 'banjo') {
-    const light = hex('#f1f3f5');
-    const dark = hex('#7d858c');
-    const chrome: Paint = (x, y) => mix(dark, light, 0.5 + 0.5 * Math.cos(Math.atan2(y - cy, x - cx) + Math.PI * 0.75));
-    for (let i = 0; i < 24; i++) {
-      const a = (i * Math.PI * 2) / 24;
-      const bx = cx + Math.cos(a) * 252;
-      const by = cy + Math.sin(a) * 252;
-      c.shape(segment(cx + Math.cos(a) * 238, cy + Math.sin(a) * 238, bx, by, 9), box(bx, by, 24), chrome);
-    }
-    c.shape(ring(cx, cy, 236, 22), box(cx, cy, 250), chrome);
-    const head = hex('#efe5cb');
-    const edge = hex('#d8c9a4');
-    c.shape(circle(cx, cy, 225), box(cx, cy, 225), (x, y) => mix(head, edge, Math.pow(clamp(Math.hypot(x - cx, y - cy) / 225), 3)));
-    c.shape(ring(cx, cy, 214, 2), box(cx, cy, 216), edge, 0.8);
-    return;
-  }
-  // Bariton-Ukulele: dieselbe Rosette, aber in Abalone-Tönen
-  const bariton = id === 'bariton';
-  c.shape(circle(cx, cy, 246), box(cx, cy, 246), hex('#f1e2bf'));
-  c.shape(dashedRing(cx, cy, 217, 26, bariton ? 44 : 34, 0.59), box(cx, cy, 232), bariton ? hex('#1f4f5a') : TEAL);
-  c.shape(ring(cx, cy, 217, 9), box(cx, cy, 223), bariton ? hex('#8fc0b2') : GOLD);
-  c.shape(circle(cx, cy, 180), box(cx, cy, 180), hole(cx, cy, 180));
-}
-
-function strings(c: Canvas, id: string, cx: number): void {
-  const n = instrument().strings.length;
-  const spacing = id === 'ukulele' || id === 'bariton' || id === 'bass' ? 66 : id === 'gitarre' ? 40 : id === 'mandoline' ? 50 : 44;
-  const nylon = hex('#fffaf0');
-  const bronze = hex('#d2a556');
-  const steel = id === 'banjo' ? hex('#8d959c') : id === 'bass' ? hex('#c3c8cd') : hex('#e4e8eb');
-  if (id === 'mandoline') {
-    // Steg und vier Saitenpaare, die G- und D-Saiten umsponnen (Bronze)
-    const span = (n - 1) * spacing + 60;
-    c.shape(roundRect(cx - span / 2 + 6, 424, cx + span / 2 + 6, 446, 4), [cx - span, 410, cx + span, 460], BLACK, 0.35, 3);
-    c.shape(roundRect(cx - span / 2, 418, cx + span / 2, 438, 4), [cx - span, 410, cx + span, 440], hex('#2a1408'));
-    for (let i = 0; i < n; i++)
-      for (const d of [-7, 7]) {
-        const x = cx + (i - (n - 1) / 2) * spacing + d;
-        const w = i < 2 ? 5 - i * 0.6 : 3.6 - (i - 2) * 0.4;
-        c.shape(segment(x + 5, -20, x + 5, c.h + 20, w), [x - 20, 0, x + 30, c.h], BLACK, 0.35, 3);
-        c.shape(segment(x, -20, x, c.h + 20, w), [x - 20, 0, x + 20, c.h], i < 2 ? bronze : steel);
-      }
-    return;
-  }
-  for (let i = 0; i < n; i++) {
-    const x = cx + (i - (n - 1) / 2) * spacing;
-    // Bariton-Ukulele: tiefe D- und G-Saite umsponnen, B und E aus Nylon; E-Bass: dicke Rundwickelsaiten
-    const w = id === 'ukulele' ? 6 + i : id === 'bariton' ? (i < 2 ? 9 - i : 6 + i) : id === 'bass' ? 13 - i * 1.8 : id === 'gitarre' ? 7 - i : 4.4 - i * 0.3;
-    const col = id === 'ukulele' || (id === 'bariton' && i >= 2) ? nylon : id === 'gitarre' && i < 4 ? bronze : steel;
-    c.shape(segment(x + 6, -20, x + 6, c.h + 20, w), [x - 20, 0, x + 30, c.h], BLACK, 0.35, 3);
-    c.shape(segment(x, -20, x, c.h + 20, w), [x - 20, 0, x + 20, c.h], col);
-  }
-  if (id === 'banjo') {
-    // Steg auf dem Fell
-    const span = (n - 1) * spacing + 50;
-    c.shape(roundRect(cx - span / 2 + 6, 393, cx + span / 2 + 6, 413, 4), [cx - span, 380, cx + span, 430], BLACK, 0.35, 3);
-    c.shape(roundRect(cx - span / 2, 386, cx + span / 2, 404, 4), [cx - span, 380, cx + span, 410], hex('#4a2c14'));
-  }
-}
-
+/** Weiße Karte mit einem Griffbild im Stil der App: dunkle Saiten und Sattel, helle Bünde, Finger in der Akzentfarbe. */
 function card(c: Canvas, id: string): void {
-  const x0 = 690;
-  const x1 = 1120;
-  const y0 = 66;
-  const y1 = 564;
-  c.shape(roundRect(x0 + 8, y0 + 14, x1 + 8, y1 + 14, 30), [x0 - 30, y0 - 20, x1 + 50, y1 + 60], BLACK, 0.5, 16);
-  c.shape(roundRect(x0, y0, x1, y1, 30), [x0 - 2, y0 - 2, x1 + 2, y1 + 2], CREAM);
+  const x0 = 640;
+  const x1 = 1090;
+  const y0 = 75;
+  const y1 = 555;
+  c.shape(roundRect(x0, y0, x1, y1, 32), [x0 - 2, y0 - 2, x1 + 2, y1 + 2], WHITE);
   const ch = chord(CARD_CHORD[id] || 'C');
   // E-Bass: statt eines Griffs F als Grundton, seine Quinte C und die Oktave F – die erste Basslinie
   const frets = id === 'bass' ? [1, 3, 3, -2] : ch.frets;
   const n = frets.length;
-  const spacing = n === 4 ? 84 : n === 5 ? 66 : 54;
+  const spacing = n === 4 ? 88 : n === 5 ? 70 : 58;
   const cx = (x0 + x1) / 2;
-  const top = 160;
-  const row = 78;
+  const top = 170;
+  const row = 84;
   const rows = 4;
   const sx = (i: number) => cx + (i - (n - 1) / 2) * spacing;
   const left = sx(0);
   const right = sx(n - 1);
-  const grid = hex('#8a7a66');
-  for (let r = 1; r <= rows; r++) c.shape(segment(left, top + r * row, right, top + r * row, 4), [left - 4, top + r * row - 4, right + 4, top + r * row + 4], grid);
+  for (let r = 1; r <= rows; r++) c.shape(segment(left, top + r * row, right, top + r * row, 4), [left - 4, top + r * row - 4, right + 4, top + r * row + 4], FRET);
   for (let i = 0; i < n; i++) c.shape(segment(sx(i), top, sx(i), top + rows * row, 4), [sx(i) - 4, top - 4, sx(i) + 4, top + rows * row + 4], INK);
-  c.shape(roundRect(left - 4, top - 7, right + 4, top + 7, 3), [left - 6, top - 9, right + 6, top + 9], INK);
+  c.shape(segment(left, top - 2, right, top - 2, 12), [left - 8, top - 10, right + 8, top + 6], INK);
   for (let i = 0; i < n; i++) {
     const f = frets[i];
     const x = sx(i);
-    if (f > 0) c.shape(circle(x, top + (f - 0.5) * row, 25), box(x, top + (f - 0.5) * row, 25), id === 'bass' && i ? GOLD : TEAL);
-    else if (f === 0) c.shape(ring(x, top - 34, 12, 4), box(x, top - 34, 16), INK);
+    if (f > 0) c.shape(circle(x, top + (f - 0.5) * row, 27), box(x, top + (f - 0.5) * row, 27), id === 'bass' && i ? INK_2 : ACCENT);
+    else if (f === 0) c.shape(ring(x, top - 36, 12, 4), box(x, top - 36, 16), INK);
     else if (f === -1) {
-      c.shape(segment(x - 11, top - 45, x + 11, top - 23, 4), box(x, top - 34, 16), INK);
-      c.shape(segment(x - 11, top - 23, x + 11, top - 45, 4), box(x, top - 34, 16), INK);
+      c.shape(segment(x - 11, top - 47, x + 11, top - 25, 4), box(x, top - 36, 16), INK);
+      c.shape(segment(x - 11, top - 25, x + 11, top - 47, 4), box(x, top - 36, 16), INK);
     }
   }
-  const gold = hex('#e2a72b');
-  for (let i = -1; i <= 1; i++) c.shape(star(cx + i * 62, 516, 24), box(cx + i * 62, 516, 24), gold);
 }
 
-/** Rohbild (RGB, zeilenweise) des Vorschaubilds für eine Instrument-Seite. */
+/** Rohbild (RGB, zeilenweise) des Vorschaubilds für eine Instrument-Seite: hellgrauer Grund, Zeichen links, Griffbild rechts. */
 export function renderOgImage(id: string): Uint8Array {
   const keep = instrument().id;
   setInstrument(id);
   try {
     const c = new Canvas(OG_WIDTH, OG_HEIGHT);
-    woodBackground(c, id);
-    soundHole(c, id, 360, 315);
-    strings(c, id, 360);
+    c.shape(() => -1, [0, 0, OG_WIDTH, OG_HEIGHT], BG);
+    mark(c);
     card(c, id);
     return c.rgb();
   } finally {
@@ -369,7 +197,7 @@ function chunk(type: string, data: Uint8Array): Uint8Array {
   return out;
 }
 
-/** PNG (8 Bit RGB) mit Paeth-Filter je Zeile – packt Holzmaserung deutlich kleiner als ungefiltert. */
+/** PNG (8 Bit RGB) mit Paeth-Filter je Zeile – packt Flächen und Verläufe deutlich kleiner als ungefiltert. */
 export function encodePng(rgb: Uint8Array, w: number, h: number): Uint8Array {
   const stride = w * 3;
   const raw = new Uint8Array((stride + 1) * h);

@@ -1,4 +1,3 @@
-import { installWood } from './ui/wood.ts';
 import { closeMic } from './audio/mic.ts';
 import { lastInstrument, load, rememberInstrument, takeMoved } from './store.ts';
 import { isLang, setLang, t, tk } from './i18n.ts';
@@ -10,7 +9,7 @@ import { renderSecrets } from './ui/secret-text.ts';
 import { activeTuning, initInstrument, setTuning } from './music/instrument.ts';
 import { chord } from './music/chords.ts';
 import { playableChord, tuningNow, type Tuning } from './ui/chord-play.ts';
-import { LEFTY_EVENT, syncLeftyBadge } from './ui/lefty.ts';
+import { LEFTY_EVENT } from './ui/lefty.ts';
 import type { Chord } from './music/chords.ts';
 import { TUNING_EVENT, applyStoredTuning } from './ui/tuning.ts';
 import { strikeMeter, strikeMeterWanted } from './ui/strike-meter.ts';
@@ -24,6 +23,7 @@ import { game } from './views/game.ts';
 import { tuner } from './views/tuner.ts';
 import { rhythm } from './views/rhythm.ts';
 import { stars } from './views/stars.ts';
+import { settings } from './views/settings.ts';
 import { record } from './views/record.ts';
 import { detective } from './views/detective.ts';
 import { blues } from './views/blues.ts';
@@ -43,6 +43,7 @@ const ROUTES: Record<string, View> = {
   stimmen: tuner,
   rhythmus: rhythm,
   sterne: stars,
+  einstellungen: settings,
   aufnahme: record,
   detektiv: detective,
   blues,
@@ -65,6 +66,7 @@ const TITLES: Record<string, string> = {
   stimmen: tk('Stimmen'),
   rhythmus: tk('Rhythmus'),
   sterne: tk('Meine Sterne'),
+  einstellungen: tk('Einstellungen'),
   aufnahme: tk('Aufnahmen'),
   detektiv: tk('Akkord-Detektiv'),
   blues: tk('Blues'),
@@ -128,9 +130,8 @@ function playArticleChords(): void {
   }
 }
 
-// zuerst das Instrument: Holz und Farben hängen davon ab
+// zuerst das Instrument: Griffe, Saiten und Texte hängen davon ab
 initInstrument();
-installWood();
 /** Frühere Adressen (#/lied/…, #/teilen/…) auf die neuen Seiten umleiten – auch bei einem Wechsel nur hinter dem „#“. */
 function redirectOldHash(): boolean {
   if (location.hash.indexOf('#/') !== 0) return false;
@@ -155,12 +156,12 @@ function offerLastInstrument(): void {
   const badge = document.createElement('span');
   badge.className = 'tile-badge';
   badge.textContent = t('Zuletzt gespielt');
-  (tile.querySelector('.tile-text') || tile).appendChild(badge);
+  (tile.querySelector('.row-text') || tile).appendChild(badge);
 }
 
 /** Startseite in der Weihnachtszeit: Hinweis auf die Weihnachtslieder des vordersten (zuletzt gespielten) Instruments. */
 function offerChristmas(): void {
-  const first = document.querySelector('.home.start .tiles a.tile');
+  const first = document.querySelector('.home.start .instrument-list a.list-row');
   if (!christmasNow() || !first || !first.parentNode) return;
   const l = isLang(html.lang) ? html.lang : 'de';
   const card = document.createElement('a');
@@ -174,7 +175,8 @@ function offerChristmas(): void {
   card.appendChild(strong);
   card.appendChild(document.createTextNode(t('Mit Akkorden und Text, die leichtesten zuerst.')));
   card.appendChild(go);
-  first.parentNode.parentNode!.insertBefore(card, first.parentNode);
+  const wrap = first.parentNode.parentNode!;
+  wrap.parentNode!.insertBefore(card, wrap);
 }
 
 const isStart = html.getAttribute('data-site') === 'start';
@@ -188,13 +190,12 @@ if (!redirectOldHash()) {
   // Wissensartikel erklären die Normalstimmung – ihre Griffbilder werden vor dem Umstimmen gespiegelt
   playArticleChords();
   initLessons();
-  syncLeftyBadge();
   if (!isStart) applyStoredTuning();
   window.addEventListener(TUNING_EVENT, () => mount());
   window.addEventListener(LEFTY_EVENT, () => {
     playArticleChords();
     // die Einstellungen selbst zeigen keine Griffbilder – dort bleibt alles stehen, wo es ist
-    if ((html.getAttribute('data-route') || '').indexOf('sterne') !== 0) mount();
+    if ((html.getAttribute('data-route') || '').indexOf('einstellungen') !== 0) mount();
   });
   mount();
   renderSecrets();

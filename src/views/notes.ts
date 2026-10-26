@@ -42,14 +42,14 @@ export const notesView: View = (root) => {
   STRINGS.forEach((_, s) => {
     for (let f = 0; f <= OVERVIEW_FRETS; f++) {
       const name = ROOTS[pitchClass(stringMidi(s, f))];
-      // Töne ohne Vorzeichen golden mit Namen, die übrigen als kleine Punkte
+      // Töne ohne Vorzeichen groß mit Namen, die übrigen als kleine Punkte
       if (name.length === 1) marks.push({ string: s, fret: f, kind: 'chord', label: noteText(name) });
       else marks.push({ string: s, fret: f, kind: 'scale' });
     }
   });
   screen(
     root,
-    { title: t('Töne'), theme: 'teal' },
+    { title: t('Töne') },
     h(
       'section',
       { class: 'card notes-neck' },
@@ -164,7 +164,7 @@ export const noteDetail: View = (root, param) => {
   const fifth = ch.fifth;
   screen(
     root,
-    { title: t('Ton {note}', { note: shown }), back: link('akkorde'), theme: 'teal' },
+    { title: t('Ton {note}', { note: shown }), back: link('akkorde') },
     h(
       'div',
       { class: 'chord-detail' },
@@ -177,7 +177,7 @@ export const noteDetail: View = (root, param) => {
           ? h(
               'p',
               { class: 'card desc' },
-              t('Die Quinte {note} (Perlmutt-Punkt mit der 5): {where} – eine Saite höher, zwei Bünde weiter. Grundton und Quinte im Wechsel: Das ist die einfachste Basslinie.', {
+              t('Die Quinte {note} (Kreis mit der 5): {where} – eine Saite höher, zwei Bünde weiter. Grundton und Quinte im Wechsel: Das ist die einfachste Basslinie.', {
                 note: noteText(ROOTS[(parsed.root + 7) % 12]),
                 where: where(fifth.string, fifth.fret),
               }),
@@ -238,7 +238,7 @@ export const noteDetective: View = (root) => {
         { class: 'det-note' },
         h('div', { class: 'card-label' }, t('Das klingt wie')),
         h('div', { class: 'chord-name huge' }, name),
-        h('p', null, exact.length ? t('Genau diese Tonhöhe liegt beim goldenen Punkt, an den anderen Stellen klingt derselbe Ton eine Oktave höher oder tiefer.') : t('Diesen Ton findest du hier:')),
+        h('p', null, exact.length ? t('Genau diese Tonhöhe liegt beim grünen Punkt, an den anderen Stellen klingt derselbe Ton eine Oktave höher oder tiefer.') : t('Diesen Ton findest du hier:')),
         fretboard(marks, 12, 1, tap, lefty),
         h('p', { class: 'small' }, (exact.length ? exact : marks).map((m) => where(m.string, m.fret)).join(' · ')),
         h('a', { class: 'btn btn-chip', href: link(`akkord/${encodeURIComponent(ROOTS[pc])}`) }, t('Mehr zum Ton {note}', { note: name })),
@@ -285,7 +285,7 @@ export const noteDetective: View = (root) => {
   showIdle(t('Zupf eine Saite – leer oder gegriffen. Ich verrate dir, welcher Ton es ist.'));
   screen(
     root,
-    { title: t('Ton-Detektiv'), theme: 'cherry' },
+    { title: t('Ton-Detektiv') },
     result,
     h('div', { class: 'row' }, listenBtn),
     status,

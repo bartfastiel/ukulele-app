@@ -160,7 +160,7 @@ export const detective: View = (root, param) => {
   showIdle(t('Spiel irgendeinen Akkord oder einen einzelnen Ton. Ich zeige dir, welche Saiten du gegriffen hast und wie der Akkord heißt.'));
   screen(
     root,
-    { title: t('Akkord-Detektiv'), theme: 'cherry' },
+    { title: t('Akkord-Detektiv') },
     result,
     h('div', { class: 'row' }, listenBtn),
     status,

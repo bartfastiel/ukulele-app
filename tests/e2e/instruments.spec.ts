@@ -190,7 +190,7 @@ test.describe('bass', () => {
     await expect(page).toHaveURL(/\/bass\/toene\/$/);
   });
 
-  test('Ton G: ein Finger auf der E-Saite, Quinte als Perlmutt-Punkt, alle Stellen am Hals', async ({ page }) => {
+  test('Ton G: ein Finger auf der E-Saite, Quinte als Kreis, alle Stellen am Hals', async ({ page }) => {
     await go(page, 'akkord/Gm7');
     await expect(page).toHaveURL(/\/bass\/toene\/g\/$/);
     await expect(page.getByRole('heading', { name: 'Ton G', exact: true })).toBeVisible();

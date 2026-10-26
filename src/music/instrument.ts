@@ -75,7 +75,7 @@ export interface Instrument {
   strings: InstrumentString[];
   /** Bünde auf dem Hals, bis zu denen die Tabulatur reicht. */
   frets: number;
-  /** Griffbild: mindestens so viele Bünde zeigen; Perlmutt-Punkte. */
+  /** Griffbild: mindestens so viele Bünde zeigen; Markierungen an diesen Bünden. */
   diagram: { minRows: number; inlays: number[] };
   /**
    * Melodie: so viele Halbtöne gegen die gesungene Lage verschoben spielen (Gitarre eine Oktave tiefer), tiefster Ton;

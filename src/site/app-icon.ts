@@ -1,11 +1,11 @@
 /**
  * App-Symbole je Instrument-Seite (Favicon als SVG, Home-Bildschirm und Manifest als PNG), im Build erzeugt. Eine
- * Beschreibung aus einfachen Formen ergibt beide Fassungen, so sehen SVG und PNG gleich aus. Gleicher Aufbau für alle:
- * Holz als Hintergrund, in der Mitte das Erkennungszeichen des Instruments, darüber die Saiten. Die Startseite bekommt
- * ein neutrales Symbol (Griffbild mit „offener Saite“), weil Suchmaschinen je Adresse nur eines zeigen.
+ * Beschreibung aus einfachen Formen ergibt beide Fassungen, so sehen SVG und PNG gleich aus. Gleicher Aufbau für alle
+ * (docs/design.md): ruhige Fläche in der Akzentfarbe, davor das Zeichen von Open String (Bogen und Punkt, wie
+ * `logo()` in src/ui/icons.ts). Die Instrumente unterscheiden sich an den hellen Saiten dahinter – Zahl und Stärke wie
+ * beim echten Instrument; die Startseite hat keine Saiten.
  */
-import { Canvas, circle, clamp, curve, dashedRing, encodePng, hex, mix, ring, roundRect, segment, type Paint, type Sdf } from './og-image.ts';
-import type { RGB } from '../ui/wood.ts';
+import { Canvas, circle, clamp, curve, dashedRing, encodePng, hex, mix, ring, roundRect, segment, type Paint, type RGB, type Sdf } from './og-image.ts';
 
 /** Kantenlänge der Beschreibung; die PNGs werden darauf skaliert. */
 const S = 512;
@@ -22,125 +22,55 @@ type Shape =
   | { k: 'rect'; x: number; y: number; w: number; h: number; r: number; fill: Fill };
 
 interface Icon {
-  /** Hintergrund (radialer Verlauf von hell nach dunkel). */
+  /** Hintergrund (radialer Verlauf; im Design „Klar“ eine einzige Farbe). */
   bg: Stops;
   shapes: Shape[];
 }
 
-const C = S / 2;
 const BG_LIGHT = { cx: 205, cy: 154, r: 461 };
-const HOLE: Fill = { cx: C, cy: C, r: 128, stops: [[0, '#0d0503'], [1, '#2f1207']] };
+const ACCENT = '#0a7c6e';
+/** Saiten: Weiß auf der Akzentfläche, zurückgenommen */
+const STRING = '#4fa397';
 
-/** Senkrechte Saiten über das ganze Symbol, mittig verteilt. */
-function strings(n: number, spacing: number, width: (i: number) => number, color: (i: number) => string, pairs = 0): Shape[] {
-  const out: Shape[] = [];
-  for (let i = 0; i < n; i++) {
-    const x = C + (i - (n - 1) / 2) * spacing;
-    for (const d of pairs ? [-pairs, pairs] : [0]) out.push({ k: 'line', x1: x + d, y1: -10, x2: x + d, y2: S + 10, w: width(i), color: color(i) });
-  }
-  return out;
-}
-
-function rosette(dash: string, band: string, accent: string): Shape[] {
+/**
+ * Zeichen von Open String aus src/ui/icons.ts (30 × 30) auf 360 px vergrößert und mittig: bleibt im sicheren Kreis der
+ * „maskable“-Symbole.
+ */
+function mark(): Shape[] {
+  const k = 12;
+  const o = (S - 30 * k) / 2;
+  const p = (x: number, y: number) => [o + x * k, o + y * k];
   return [
-    { k: 'circle', cx: C, cy: C, r: 170, fill: band },
-    { k: 'ring', cx: C, cy: C, r: 150, w: 18, color: dash, dashes: 34, on: 0.59 },
-    { k: 'ring', cx: C, cy: C, r: 150, w: 6, color: accent },
-    { k: 'circle', cx: C, cy: C, r: 124, fill: HOLE },
+    { k: 'curve', p: [...p(8, 20), ...p(11, 12), ...p(19, 12), ...p(22, 20)], w: 2.4 * k, color: '#ffffff' },
+    { k: 'circle', cx: o + 15 * k, cy: o + 12 * k, r: 2.5 * k, fill: '#ffffff' },
   ];
 }
 
-function fHoles(): Shape[] {
-  const out: Shape[] = [];
-  const k = 1.86;
-  for (const side of [-1, 1]) {
-    const x = (v: number) => C + side * v * k;
-    const y = (v: number) => C + (v - 100) * k;
-    out.push({ k: 'curve', p: [x(52), y(46), x(66), y(70), x(40), y(128), x(56), y(154)], w: 11, color: '#140703' });
-    out.push({ k: 'circle', cx: x(52), cy: y(46), r: 12, fill: '#140703' });
-    out.push({ k: 'circle', cx: x(56), cy: y(154), r: 13, fill: '#140703' });
-  }
-  return out;
+/** Senkrechte Saiten über das ganze Symbol: Lage auf einem 24er-Raster wie das Saiten-Zeichen der Startseite. */
+function strings(xs: number[], width: (i: number) => number): Shape[] {
+  return xs.map((x, i): Shape => ({ k: 'line', x1: (x * S) / 24, y1: -20, x2: (x * S) / 24, y2: S + 20, w: width(i), color: STRING }));
 }
 
+const flat: Stops = [
+  [0, ACCENT],
+  [1, ACCENT],
+];
+
 const ICONS: Record<string, Icon> = {
-  // Mahagoni, Rosette in Türkis und Gold, vier Nylonsaiten
-  ukulele: {
-    bg: [[0, '#a5502a'], [0.6, '#6b2a12'], [1, '#3d160a']],
-    shapes: [...rosette('#2c6e63', '#f1e2bf', '#c9a24a'), ...strings(4, 46, (i) => 7 + i, () => '#fffaf0')],
-  },
-  // honigfarbene Fichtendecke, schwarz-elfenbeinfarbene Rosette, sechs Saiten (vier umsponnen)
-  gitarre: {
-    bg: [[0, '#e2b468'], [0.6, '#a8722e'], [1, '#5a3812']],
-    shapes: [
-      { k: 'circle', cx: C, cy: C, r: 172, fill: '#15100e' },
-      { k: 'circle', cx: C, cy: C, r: 166, fill: '#efe3c4' },
-      { k: 'ring', cx: C, cy: C, r: 150, w: 14, color: '#15100e', dashes: 60, on: 0.5 },
-      { k: 'circle', cx: C, cy: C, r: 134, fill: '#15100e' },
-      { k: 'circle', cx: C, cy: C, r: 128, fill: HOLE },
-      ...strings(6, 30, (i) => 8 - i * 0.8, (i) => (i < 4 ? '#d8ab5c' : '#e4e8eb')),
-    ],
-  },
-  // Fell mit verchromtem Spannreifen auf dunklem Ahorn, fünf Stahlsaiten und Steg
-  banjo: {
-    bg: [[0, '#9a5e28'], [0.6, '#5a3010'], [1, '#2a1406']],
-    shapes: [
-      ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((i): Shape => {
-        const a = (i * Math.PI * 2) / 16 + Math.PI / 16;
-        return { k: 'line', x1: C + Math.cos(a) * 170, y1: C + Math.sin(a) * 170, x2: C + Math.cos(a) * 192, y2: C + Math.sin(a) * 192, w: 9, color: '#b8c0c6' };
-      }),
-      { k: 'circle', cx: C, cy: C, r: 182, fill: { cx: 190, cy: 160, r: 330, stops: [[0, '#f4f6f8'], [0.6, '#aab2b9'], [1, '#5f686f']] } },
-      { k: 'circle', cx: C, cy: C, r: 160, fill: { cx: 220, cy: 200, r: 220, stops: [[0, '#f8f2e2'], [1, '#ddd0ad']] } },
-      ...strings(5, 34, (i) => 6 - i * 0.5, () => '#6d757c'),
-      { k: 'rect', x: C - 100, y: 318, w: 200, h: 22, r: 5, fill: '#4a2c14' },
-    ],
-  },
-  // dunkles Koa, Rosette ganz in Abalone-Tönen (so von der Ukulele zu unterscheiden), zwei umsponnene und zwei Nylonsaiten
-  bariton: {
-    bg: [[0, '#a8743a'], [0.6, '#5e3614'], [1, '#22100a']],
-    shapes: [...rosette('#8fd0bf', '#1f4a52', '#f1e2bf'), ...strings(4, 46, (i) => (i < 2 ? 10 - i : 7 + i), (i) => (i < 2 ? '#d8ab5c' : '#fffaf0'))],
-  },
-  // Decke im Sunburst mit F-Löchern auf kirschrotem Ahorn, vier Saitenpaare
-  mandoline: {
-    bg: [[0, '#b23a22'], [0.6, '#6a160c'], [1, '#2a0805']],
-    shapes: [
-      { k: 'circle', cx: C, cy: C, r: 182, fill: '#140703' },
-      { k: 'circle', cx: C, cy: C, r: 177, fill: '#f4e9cc' },
-      { k: 'circle', cx: C, cy: C, r: 171, fill: { cx: C, cy: C - 14, r: 172, stops: [[0, '#f2bd5a'], [0.45, '#c9772a'], [0.8, '#6a2a0c'], [1, '#1c0903']] } },
-      ...fHoles(),
-      ...strings(4, 34, (i) => (i < 2 ? 4.5 - i * 0.5 : 3.6 - (i - 2) * 0.4), (i) => (i < 2 ? '#d8ab5c' : '#e4e8eb'), 6),
-    ],
-  },
-  // schwarze Esche, Schlagbrett mit weiß-schwarz-weißer Kante, geteilter Tonabnehmer, vier dicke Rundwickelsaiten
-  bass: {
-    bg: [[0, '#5a5550'], [0.6, '#24221f'], [1, '#0b0b0c']],
-    shapes: [
-      { k: 'circle', cx: 40, cy: 470, r: 300, fill: '#101113' },
-      { k: 'circle', cx: 40, cy: 470, r: 294, fill: '#f2efe8' },
-      { k: 'circle', cx: 40, cy: 470, r: 288, fill: '#101113' },
-      { k: 'circle', cx: 40, cy: 470, r: 284, fill: '#f2efe8' },
-      { k: 'rect', x: C - 132, y: 196, w: 140, h: 56, r: 18, fill: '#151517' },
-      { k: 'rect', x: C - 8, y: 262, w: 140, h: 56, r: 18, fill: '#151517' },
-      ...[0, 1, 2, 3, 4, 5, 6, 7].map((j): Shape => {
-        const i = j >> 1;
-        return { k: 'circle', cx: C + (i - 1.5) * 60 + (j % 2 ? 11 : -11), cy: i < 2 ? 224 : 290, r: 6, fill: '#9aa0a6' };
-      }),
-      ...strings(4, 60, (i) => 14 - i * 2, () => '#c3c8cd'),
-    ],
-  },
-  // neutral: Griffbild mit Sattel, Saiten, einem Fingerpunkt und dem Kreis für „leere Saite“
-  start: {
-    bg: [[0, '#8a6a48'], [0.6, '#4e3622'], [1, '#22160c']],
-    shapes: [
-      { k: 'circle', cx: C, cy: C, r: 176, fill: '#f6ecd2' },
-      { k: 'rect', x: 156, y: 236, w: 200, h: 16, r: 4, fill: '#3a2a20' },
-      { k: 'line', x1: 160, y1: 312, x2: 352, y2: 312, w: 5, color: '#8a7a66' },
-      { k: 'line', x1: 160, y1: 372, x2: 352, y2: 372, w: 5, color: '#8a7a66' },
-      ...[0, 1, 2, 3, 4].map((i): Shape => ({ k: 'line', x1: 166 + i * 45, y1: 244, x2: 166 + i * 45, y2: 400, w: 6, color: '#3a2a20' })),
-      { k: 'ring', cx: 256, cy: 180, r: 30, w: 13, color: '#2c6e63' },
-      { k: 'circle', cx: 211, cy: 342, r: 22, fill: '#2c6e63' },
-    ],
-  },
+  // vier gleich dünne Nylonsaiten
+  ukulele: { bg: flat, shapes: [...strings([6, 10, 14, 18], () => 9), ...mark()] },
+  // sechs Saiten, die tiefen dicker
+  gitarre: { bg: flat, shapes: [...strings([4, 7, 10, 14, 17, 20], (i) => 14 - i * 1.6), ...mark()] },
+  // fünf Saiten, die kurze fünfte endet oben am Hals (hier: die erste nur bis zur Mitte)
+  banjo: { bg: flat, shapes: [{ k: 'line', x1: (5 * S) / 24, y1: S / 2, x2: (5 * S) / 24, y2: S + 20, w: 7, color: STRING }, ...strings([8.5, 12, 15.5, 19], () => 7), ...mark()] },
+  // vier Saiten, zwei davon umsponnen und dicker
+  bariton: { bg: flat, shapes: [...strings([6, 10, 14, 18], (i) => (i < 2 ? 16 : 9)), ...mark()] },
+  // vier Saitenpaare
+  mandoline: { bg: flat, shapes: [...strings([5, 6.4, 9.8, 11.2, 12.8, 14.2, 17.6, 19], () => 5), ...mark()] },
+  // vier dicke Saiten
+  bass: { bg: flat, shapes: [...strings([6, 10, 14, 18], () => 20), ...mark()] },
+  // Startseite: nur das Zeichen
+  start: { bg: flat, shapes: mark() },
 };
 
 function icon(id: string): Icon {

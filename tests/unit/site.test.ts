@@ -37,7 +37,7 @@ test('jeder interne Link führt auf eine erzeugte Seite (alle Instrumente, alle 
       let m: RegExpExecArray | null;
       while ((m = re.exec(p.html))) {
         const href = m[1];
-        if (/\.(css|js|svg|png|webmanifest)$/.test(href)) continue;
+        if (/\.(css|js|svg|png|webmanifest|woff2)$/.test(href)) continue;
         if (!files[href.endsWith('/') ? href + 'index.html' : href]) broken.push(`${s}/${p.file} → ${href}`);
       }
     }

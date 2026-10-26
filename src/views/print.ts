@@ -50,7 +50,7 @@ function printScreen(root: HTMLElement, title: string, back: string, controls: (
   const print = button(h('span', null, icon('print'), ' ', t('Drucken')), () => window.print(), 'btn-primary btn-play print-now');
   screen(
     root,
-    { title, back, theme: 'pearl' },
+    { title, back },
     h(
       'section',
       { class: 'card print-controls no-print' },

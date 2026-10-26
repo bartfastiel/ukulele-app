@@ -1,5 +1,66 @@
+import type { L10n } from './types.ts';
+
 /**
- * Instrumente mit Lernweg (src/content/lektionen.ts). Steht getrennt, damit die App für Kachel und Fußzeile nicht alle
- * Kurstexte mitladen muss; ein Unit-Test hält die Liste mit den Kursen gleich.
+ * Instrumente mit Lernweg (src/content/lektionen.ts) und die Titel ihrer Lektionen (Index = Nummer − 1). Steht getrennt,
+ * damit die App für die Lernweg-Karte der Startseite nicht alle Kurstexte mitladen muss; ein Unit-Test hält Liste und
+ * Titel mit den Kursen gleich.
  */
-export const COURSE_INSTRUMENTS: string[] = ['ukulele', 'gitarre'];
+export const COURSE_TITLES: Record<string, L10n[]> = {
+  ukulele: [
+    { de: 'Halten, anschlagen, erster Akkord', en: 'Hold, strum, first chord', fr: 'Tenir, gratter, premier accord' },
+    { de: 'Stimmen und die Saiten G C E A', en: 'Tuning and the strings G C E A', fr: 'Accorder et les cordes G C E A' },
+    { de: 'Die Saite richtig drücken', en: 'Pressing the string properly', fr: 'Bien appuyer sur la corde' },
+    { de: 'Am und der erste Wechsel', en: 'Am and your first change', fr: 'Am et le premier changement' },
+    { de: 'F-Dur', en: 'F major', fr: 'Fa majeur' },
+    { de: 'C7 und das erste Lied mit Wechsel', en: 'C7 and your first song with changes', fr: 'C7 et la première chanson avec changement' },
+    { de: 'Runter-rauf', en: 'Down-up', fr: 'Bas-haut' },
+    { de: 'G7', en: 'G7', fr: 'G7' },
+    { de: 'Drei Akkorde: C, F, G7', en: 'Three chords: C, F, G7', fr: 'Trois accords : C, F, G7' },
+    { de: 'Der Insel-Schlag', en: 'The island strum', fr: 'Le rythme des îles' },
+    { de: 'Walzer im Dreiertakt', en: 'Waltz in three', fr: 'La valse à trois temps' },
+    { de: 'Vier Akkorde: C, Am, F, G7', en: 'Four chords: C, Am, F, G7', fr: 'Quatre accords : C, Am, F, G7' },
+    { de: 'Schaukeln im 6/8-Takt', en: 'Rocking in 6/8', fr: 'Se balancer en 6/8' },
+    { de: 'Zupfen mit Daumen und Fingern', en: 'Picking with thumb and fingers', fr: 'Pincer avec le pouce et les doigts' },
+    { de: 'd-Moll', en: 'D minor', fr: 'Ré mineur' },
+    { de: 'Dur und Moll hören', en: 'Hearing major and minor', fr: 'Entendre majeur et mineur' },
+    { de: 'Takt und Notenwerte', en: 'Time signatures and note values', fr: 'Mesures et valeurs de notes' },
+    { de: 'Der 12-Takt-Blues', en: 'The 12-bar blues', fr: 'Le blues en 12 mesures' },
+    { de: 'G-Dur', en: 'G major', fr: 'Sol majeur' },
+    { de: 'A7 und D7', en: 'A7 and D7', fr: 'A7 et D7' },
+    { de: 'Neue Tonart G: e-Moll', en: 'New key G: E minor', fr: 'Nouvelle tonalité G : Mi mineur' },
+    { de: 'Tonleiter und Melodie', en: 'Scale and melody', fr: 'Gamme et mélodie' },
+    { de: 'Neue Griffe: D, A und E7', en: 'New chords: D, A and E7', fr: 'Nouveaux accords : D, A et E7' },
+    { de: 'Dein Konzert', en: 'Your concert', fr: 'Ton concert' },
+  ],
+  gitarre: [
+    { de: 'Halten, anschlagen, erster Akkord', en: 'Hold, strum, first chord', fr: 'Tenir, gratter, premier accord' },
+    { de: 'Stimmen und die Saitennamen', en: 'Tuning and string names', fr: 'Accorder et nommer les cordes' },
+    { de: 'Die Saite richtig drücken', en: 'Pressing a string properly', fr: 'Bien appuyer sur la corde' },
+    { de: 'E-Dur', en: 'E major', fr: 'Mi majeur (E)' },
+    { de: 'a-Moll (Am)', en: 'A minor (Am)', fr: 'La mineur (Am)' },
+    { de: 'A-Dur und E7: das erste Lied', en: 'A and E7: your first song', fr: 'A et E7 : ta première chanson' },
+    { de: 'Runter-rauf', en: 'Down-up', fr: 'Bas-haut' },
+    { de: 'D-Dur und A7', en: 'D and A7', fr: 'D et A7' },
+    { de: 'Drei Akkorde: A, D und E7', en: 'Three chords: A, D and E7', fr: 'Trois accords : A, D et E7' },
+    { de: 'Der Insel-Schlag', en: 'The island strum', fr: 'Le rythme des îles' },
+    { de: 'Em und D: ein Seemannslied', en: 'Em and D: a sea shanty', fr: 'Em et D : un chant de marins' },
+    { de: 'G-Dur und D7', en: 'G and D7', fr: 'G et D7' },
+    { de: 'C-Dur', en: 'C major', fr: 'Do majeur (C)' },
+    { de: 'Walzer im Dreiertakt', en: 'Waltz in three', fr: 'Valse à trois temps' },
+    { de: 'Vier Akkorde: G, Em, C, D7', en: 'Four chords: G, Em, C, D7', fr: 'Quatre accords : G, Em, C, D7' },
+    { de: 'Der Kapodaster', en: 'The capo', fr: 'Le capodastre' },
+    { de: 'Zupfen mit Daumen und Fingern', en: 'Picking with thumb and fingers', fr: 'Arpèges avec pouce et doigts' },
+    { de: 'Dur und Moll hören', en: 'Hearing major and minor', fr: 'Entendre majeur et mineur' },
+    { de: 'Takt und Notenwerte', en: 'Time and note values', fr: 'Mesure et valeurs de notes' },
+    { de: 'Der 12-Takt-Blues in E', en: 'The 12-bar blues in E', fr: 'Le blues en 12 mesures en E' },
+    { de: 'Powerchords', en: 'Power chords', fr: 'Les power chords' },
+    { de: 'Tonleiter und Melodie', en: 'Scale and melody', fr: 'Gamme et mélodie' },
+    { de: 'Das kleine F und G7', en: 'The small F and G7', fr: 'Le petit F et G7' },
+    { de: 'Barré-Griff 1: Bm', en: 'Barre chord 1: Bm', fr: 'Barré n° 1 : Bm' },
+    { de: 'Barré-Griff 2: F#m', en: 'Barre chord 2: F#m', fr: 'Barré n° 2 : F#m' },
+    { de: 'Transponieren und Stufen I–IV–V', en: 'Transposing and I–IV–V', fr: 'Transposer et degrés I–IV–V' },
+    { de: 'Dein Konzert', en: 'Your concert', fr: 'Ton concert' },
+  ],
+};
+
+export const COURSE_INSTRUMENTS: string[] = Object.keys(COURSE_TITLES);

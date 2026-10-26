@@ -4,35 +4,89 @@ import { micError, micState, openMic } from '../audio/mic.ts';
 import { audio } from '../audio/engine.ts';
 import { t, tk } from '../i18n.ts';
 import { link } from '../site/nav.ts';
-import { syncLeftyBadge } from './lefty.ts';
 
 export type Cleanup = (() => void) | void;
 export type View = (root: HTMLElement, param: string) => Cleanup;
 
-/** Kopfzeile mit Zurück-Knopf immer an derselben Stelle, darunter der Inhalt auf cremefarbenem Grund. */
-export function screen(root: HTMLElement, opts: { title: string; back?: string; theme?: string }, ...content: Node[]): HTMLElement {
+/** Stimmgerät-Symbol rechts in der Kopfzeile: von jeder Seite aus mit einem Tippen erreichbar. */
+export function tunerLink(): HTMLElement {
+  return h('a', { class: 'topbar-tool', href: link('stimmen'), 'aria-label': t('Stimmgerät'), title: t('Stimmgerät') }, icon('tuner'));
+}
+
+/**
+ * Kopfzeile (docs/design.md): links „‹ Start“ bzw. „‹ Zurück“, in der Mitte der Seitentitel, rechts das Stimmgerät
+ * (auf dem Stimmgerät selbst nicht). Darunter der Inhalt.
+ */
+export function screen(root: HTMLElement, opts: { title: string; back?: string; tuner?: boolean }, ...content: (Node | null)[]): HTMLElement {
   clear(root);
   const back = opts.back ?? link('');
-  const main = h('main', { class: `screen theme-${opts.theme || 'brass'}`, id: 'main' }, ...content);
+  const home = back === link('');
+  const main = h('main', { class: 'screen', id: 'main' }, ...content);
   root.appendChild(
     h(
       'header',
       { class: 'topbar' },
       h(
-        'a',
-        { class: 'btn btn-round', href: back, 'aria-label': back === link('') ? t('Zur Startseite') : t('Zurück') },
-        icon(back === link('') ? 'home' : 'back'),
+        'div',
+        { class: 'topbar-side' },
+        h('a', { class: 'topbar-back', href: back, 'aria-label': home ? t('Zur Startseite') : t('Zurück') }, icon('back'), h('span', { class: 'topbar-back-text' }, home ? t('Start') : t('Zurück'))),
       ),
       h('h1', null, opts.title),
+      // die Wurzel-Startseite (nur Instrumentenwahl und Rechtliches) hat kein Stimmgerät
+      h('div', { class: 'topbar-side topbar-end' }, opts.tuner === false || document.documentElement.getAttribute('data-site') === 'start' ? null : tunerLink()),
     ),
   );
   root.appendChild(main);
-  syncLeftyBadge();
   return main;
 }
 
 export function button(label: string | Node, onclick: () => void, cls = '', attrs: Record<string, string> = {}): HTMLButtonElement {
   return h('button', { type: 'button', class: `btn ${cls}`, onclick: () => onclick(), ...attrs }, label);
+}
+
+/** An/Aus-Einstellung als Schalter (docs/design.md „Schalter“): ganze Zeile tippbar, `aria-pressed` trägt den Zustand. */
+export function toggle(label: string | Node, on: boolean, change: (on: boolean) => void, attrs: Record<string, string> = {}): HTMLButtonElement {
+  const b: HTMLButtonElement = h(
+    'button',
+    {
+      type: 'button',
+      class: 'toggle',
+      'aria-pressed': String(on),
+      onclick: () => {
+        const v = b.getAttribute('aria-pressed') !== 'true';
+        b.setAttribute('aria-pressed', String(v));
+        change(v);
+      },
+      ...attrs,
+    },
+    h('span', { class: 'toggle-label' }, label),
+    h('span', { class: 'switch', 'aria-hidden': 'true' }, h('span', { class: 'switch-knob' })),
+  );
+  return b;
+}
+
+/** Bereichsfarben der Symbolkacheln (docs/design.md): lernen, lieder, band, spiel, werkzeug. */
+export type Area = 'learn' | 'songs' | 'band' | 'games' | 'tools';
+
+/** Zeile einer Gruppe: Symbolkachel, Titel, optional Zusatz rechts, Chevron. Die ganze Zeile ist der Link. */
+export function listRow(href: string, ic: string, area: Area, title: string, extra?: string | null, cls = ''): HTMLElement {
+  return h(
+    'a',
+    { class: `list-row ${cls}`, href },
+    h('span', { class: `row-icon area-${area}` }, icon(ic)),
+    h('span', { class: 'row-text' }, h('span', { class: 'row-title' }, title), extra ? h('span', { class: 'row-sub' }, extra) : null),
+    icon('chevron', 'icon chevron'),
+  );
+}
+
+/** Gruppe mit Bereichsüberschrift: weiße Fläche, Zeilen mit Trennlinie. */
+export function group(title: string | null, ...rows: (Node | null)[]): HTMLElement {
+  return h(
+    'section',
+    { class: 'group-wrap' },
+    title ? h('h2', { class: 'section-label' }, title) : null,
+    h('div', { class: 'group' }, ...rows),
+  );
 }
 
 function dialog(...content: Node[]): { el: HTMLElement; close: () => void } {

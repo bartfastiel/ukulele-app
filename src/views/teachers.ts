@@ -268,7 +268,7 @@ export const teachers: View = (root) => {
   const tool = (route: string, label: string) => h('a', { href: link(route) }, label);
   const main = screen(
     root,
-    { title: t('Für Lehrkräfte und Eltern'), back: link(''), theme: 'pearl' },
+    { title: t('Für Lehrkräfte und Eltern'), back: link('') },
     card(
       t('Was die App kann'),
       h('p', null, t('Der {brand} ist eine kostenlose Übungs-App für {instrument}: gemacht für Kinder in Instrumentalklassen, ihre Lehrkräfte und Eltern.', { brand: brand(), instrument: inst })),
