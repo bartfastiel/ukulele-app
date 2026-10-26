@@ -1,6 +1,6 @@
 import { h, clear } from '../ui/dom.ts';
 import { icon } from '../ui/icons.ts';
-import { screen, button, ensureMic, keepAwake, type View } from '../ui/screen.ts';
+import { screen, button, toggle, ensureMic, keepAwake, type View } from '../ui/screen.ts';
 import { fretboard, type Mark } from '../ui/fretboard.ts';
 import { playableChord } from '../ui/chord-play.ts';
 import { chordDiagram } from '../ui/chord-diagram.ts';
@@ -322,11 +322,10 @@ function mount(root: HTMLElement, g: Groove, keep: Keep, switchTo: (g: Groove) =
     h('a', { class: 'btn btn-seg', href: link('blues') }, t('Blues')),
   );
 
-  const guideBtn = button(t('Ton vorspielen'), () => {
-    guide = !guide;
-    guideBtn.setAttribute('aria-pressed', String(guide));
-  }, 'btn-seg', { 'aria-pressed': 'false' });
-  const micBtn = button(h('span', null, icon('mic'), ' ', t('Ich höre zu')), () => {
+  const guideBtn = toggle(t('Ton vorspielen'), false, (v) => (guide = v));
+  // einmal an, bleibt an: der Lauscher hört bis zum Verlassen der Seite zu
+  const micBtn = toggle(h('span', null, icon('mic'), t('Ich höre zu')), false, () => {
+    micBtn.setAttribute('aria-pressed', String(listening));
     if (listening) return;
     void ensureMic().then(async (ok) => {
       if (!ok) return;
@@ -334,13 +333,13 @@ function mount(root: HTMLElement, g: Groove, keep: Keep, switchTo: (g: Groove) =
       micBtn.setAttribute('aria-pressed', 'true');
       listen(await openMic());
     });
-  }, 'btn-seg', { 'aria-pressed': 'false' });
+  });
 
   texts();
   label();
   screen(
     root,
-    { title: t(g.title), theme: 'teal' },
+    { title: t(g.title) },
     styles,
     h('div', { class: 'blues-top' }, grid, now),
     h('div', { class: 'card groove-pattern-card' }, pattern, howTo),
@@ -374,7 +373,7 @@ function mount(root: HTMLElement, g: Groove, keep: Keep, switchTo: (g: Groove) =
         }
       }),
       ownBass ? h('h2', null, t('Hilfen')) : null,
-      ownBass ? h('div', { class: 'seg seg-wrap' }, guideBtn, micBtn) : null,
+      ownBass ? h('div', { class: 'group helpers' }, micBtn, guideBtn) : null,
     ),
     counter,
     about,

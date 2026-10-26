@@ -244,7 +244,7 @@ export const rhythm: View = (root) => {
   label();
   screen(
     root,
-    { title: t('Rhythmus'), theme: 'teal' },
+    { title: t('Rhythmus') },
     h('div', { class: 'card rhythm-card' }, arrows, sayLine, explain, inst.notesOnly ? neck : null),
     h(
       'div',

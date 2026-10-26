@@ -143,15 +143,16 @@ Echte Beispielaufnahmen gibt es bisher nur von der Ukulele.
   und Begleitung vorausgeplant auf der Audio-Uhr. Stimmgerät per YIN-Tonhöhenerkennung, Akkorderkennung über die
   Spektralspitzen des `AnalyserNode` – je Saite geprüft, damit auch C (0003) und Am7 (0000) unterscheidbar sind.
   Kein WebAssembly nötig: beides braucht weniger als 1 ms pro Messung.
-- **Design:** Mahagoni-Maserung einmal beim Start prozedural auf ein Canvas gerechnet und als Textur verwendet;
-  Griffbilder, Schallloch und Symbole als SVG. Keine Bilder, keine Webfonts.
+- **Design „Klar“** ([docs/design.md](docs/design.md)): hellgrauer Grund, weiße Gruppen, eine Akzentfarbe, gleich für
+  alle Instrumente; Dunkelmodus nach Gerät oder Wahl, Druck immer schwarz-weiß. Griffbilder und Symbole als SVG,
+  Schrift Figtree (SIL OFL) selbst gehostet – keine Anfrage an fremde Server.
 - **Website statt einer einzigen Seite:** Jede Adresse ist eine beim Build vorgerenderte HTML-Seite (Lieder,
   Akkorde in allen Tonarten, Werkzeuge, Wissensartikel, Rechtliches) mit Titel, Beschreibung, Sprachfassungen
   (`hreflang`), strukturierten Daten (u. a. Brotkrümel) und Sitemap. Ein gemeinsames Skript startet auf
   Werkzeugseiten die Ansicht; Links sind normale Seitenwechsel. Deutsch ohne Präfix, Englisch unter `/en/`,
   Französisch unter `/fr/`. Wissensartikel, die auf mehreren Instrument-Seiten stehen, verweisen per `canonical` auf
   ein Original (die erste Instrument-Seite des Artikels); nur das steht in der Sitemap. Das Vorschaubild für geteilte
-  Links (`og-image.png`, 1200 × 630, ohne Text) rechnet der Build je Instrument aus Holz, Saiten und Griffbild
+  Links (`og-image.png`, 1200 × 630, ohne Text) rechnet der Build je Instrument aus Zeichen und Griffbild
   (`src/site/og-image.ts`, PNG über `node:zlib`).
   Persönliches (eigene und geteilte Lieder) steht in der Adresse hinter `#` und erreicht nie den Server. Frühere
   `#/…`-Adressen werden weitergeleitet.

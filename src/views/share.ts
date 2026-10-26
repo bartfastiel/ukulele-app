@@ -64,7 +64,7 @@ export const shareSong: View = (root, id) => {
   const nav = navigator as Navigator & { share?: (d: { title?: string; url?: string }) => Promise<void> };
   screen(
     root,
-    { title: t('Lied teilen'), back: link(`lied/${own.id}`), theme: 'brass' },
+    { title: t('Lied teilen'), back: link(`lied/${own.id}`) },
     h(
       'div',
       { class: 'share-grid' },
@@ -114,7 +114,7 @@ export const receiveSong: View = (root, data) => {
   if (!shared || !song) {
     screen(
       root,
-      { title: t('Geschicktes Lied'), back: link('lieder'), theme: 'brass' },
+      { title: t('Geschicktes Lied'), back: link('lieder') },
       h(
         'section',
         { class: 'card' },
@@ -140,7 +140,7 @@ export const receiveSong: View = (root, data) => {
   };
   screen(
     root,
-    { title: t('Geschicktes Lied'), back: link('lieder'), theme: 'brass' },
+    { title: t('Geschicktes Lied'), back: link('lieder') },
     h(
       'div',
       { class: 'own-edit' },

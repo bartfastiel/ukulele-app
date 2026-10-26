@@ -22,7 +22,10 @@ node tools/eval-recordings.ts <zip>   # echte Beispielaufnahmen (#/aufnahme) dur
 - **Alte iPads:** Build-Ziel Safari 12. Keine Destrukturierung (weder Array noch Objekt) in `src/` (esbuild kann sie für dieses Ziel
   nicht umschreiben), kein Flexbox-`gap` (Safari < 14.1), kein `aspect-ratio`, kein `replaceChildren`,
   kein `replaceAll`. Ohne Web Audio muss die App stumm weiterlaufen (`hasAudio()`).
-- **Kindgerecht:** Tippziele ≥ 64 px (Test prüft ≥ 52 px), Text nur auf cremefarbenen Flächen, nie „Falsch“,
+- **Design:** verbindlich ist `docs/design.md` (Richtlinie „Klar“: Tokens, Bausteine, Anordnung, Checkliste für neue
+  Features, hell und dunkel, Druck immer schwarz-weiß). Gleich für alle Instrumente; Stimmgerät und Lernweg prominent,
+  Einmal-Einstellungen leise in den Einstellungen. Farben nur über Tokens; Bildschirmfotos auch mit DARK=1 prüfen.
+- **Kindgerecht:** Tippziele ≥ 64 px (Test prüft ≥ 52 px), Text ≥ 4,5:1 Kontrast, nie „Falsch“,
   unsichere Mikrofon-Erkennung darf nie blockieren („Geschafft“ immer sichtbar), alles auch ohne Mikrofon nutzbar.
 - **Lieder nur gemeinfrei oder eigene** (Text UND Melodie; Urheber mit Lebensdaten und Textquelle in `origin`).
   Text wörtlich aus gemeinfreier Quelle, nie aus dem Gedächtnis. Melodien nur, wenn sicher bekannt, innerhalb C4–A5.
@@ -57,8 +60,9 @@ src/content/             Wissenssammlung (Artikel je Instrument, de/en/fr, nur D
 src/views/*.ts           je Ansicht eine Funktion (root, param) → Aufräumfunktion
 src/views/player.ts      Karaoke: Transport auf der AudioContext-Uhr, Vorausplanung (25-ms-Takt, 150 ms Horizont),
                          Modus „Wartet auf mich“ hält an jedem Akkordwechsel (stopBeat) und hört per listen.ts zu
-src/ui/                  dom.ts (h/s-Helfer), screen.ts (Kopfzeile, Mikrofon-Dialog, Lob, Wake Lock),
-                         chord-diagram.ts (SVG-Griffbild), wood.ts (prozedurale Mahagoni-Textur), icons.ts
+src/ui/                  dom.ts (h/s-Helfer), screen.ts (Kopfzeile mit Stimmgerät, Zeile/Gruppe/Schalter, Mikrofon-Dialog,
+                         Lob, Wake Lock), chord-diagram.ts (SVG-Griffbild), icons.ts (Symbole, logo()), theme.ts (hell/dunkel)
+src/views/settings.ts    Einstellungen (Hand, Stimmung, Klang, Darstellung, Sprache, Instrument, Sicherung)
 src/audio/engine.ts      AudioContext, Karplus-Strong-Puffer je Ton (Cache), Strum, Klick
 src/audio/pluck.ts       Synthese ohne Web Audio (auch für Tests und tools/make-wav.ts)
 src/audio/pitch.ts       YIN-Tonhöhe (Stimmgerät)
@@ -90,5 +94,6 @@ src/util/deflate.ts, qr.ts  eigenes DEFLATE (packen/entpacken) und QR-Encoder (B
 src/views/own-song.ts, share.ts  Eingabe/Bearbeiten, Teilen (QR + Link), geschicktes Lied hinzufügen
 src/i18n.ts, src/i18n/   Sprache (Einstellung oder Gerät), t()/tp()/tk(), Wörterbücher en.ts/fr.ts
 src/store.ts             localStorage (Fortschritt je Instrument, eigene Lieder gemeinsam), storage.persist(), Export-Code, Umzug
-src/styles.css           Design-Tokens, Mahagoni-Knöpfe, Layouts: Handy hoch (≤600px), Handy quer (Höhe ≤560px), ≥900px
+src/styles.css           Design „Klar“: Tokens hell/dunkel, Bausteine, Druck; Layouts: Handy hoch (≤600px), Handy quer
+                         (Höhe ≤560px), ≥900px. Schrift Figtree selbst gehostet in public/fonts/ (SIL OFL)
 ```

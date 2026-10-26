@@ -342,7 +342,7 @@ export const record: View = (root) => {
 
   screen(
     root,
-    { title: t('Beispielaufnahmen'), back: link('sterne'), theme: 'pearl' },
+    { title: t('Beispielaufnahmen'), back: link('sterne') },
     h(
       'p',
       { class: 'card rec-intro' },

@@ -9,7 +9,7 @@ import { save } from '../store.ts';
 import { TuningCoach, tipText } from '../audio/tuning-coach.ts';
 import { TWELVE_MAX_HZ, instrument, twelveString } from '../music/instrument.ts';
 import { countWord, t } from '../i18n.ts';
-import { tuningChooser, variantChooser } from '../ui/tuning.ts';
+import { tuningLink } from '../ui/tuning.ts';
 import { relativeHints } from '../site/relatives.ts';
 import { link } from '../site/nav.ts';
 
@@ -156,7 +156,7 @@ export const tuner: View = (root) => {
 
   screen(
     root,
-    { title: t('Stimmen'), theme: 'pearl' },
+    { title: t('Stimmen'), tuner: false },
     h(
       'div',
       { class: 'tuner' },
@@ -167,8 +167,7 @@ export const tuner: View = (root) => {
         listen,
         h('p', { class: 'small' }, t('Tipp auf eine Saite spielt ihren Ton vor. Von oben nach unten: {strings}.', { strings: names.join(' – ') })),
         h('div', { class: `string-row strings-${STRINGS.length}` }, ...stringBtns),
-        tuningChooser(),
-        variantChooser(),
+        tuningLink(),
         h('p', { class: 'card print-hint' }, h('a', { href: link('hals') }, icon('print'), ' ', t('Alle Töne auf dem Hals zum Ausdrucken'), ' ›')),
         ...relativeHints('stimmen'),
       ),

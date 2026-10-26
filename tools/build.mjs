@@ -36,6 +36,8 @@ const MOVE_TO = process.env.MOVE_TO || '';
 // Instrumente, auf die Seiten verlinken dürfen (Subdomains: nur die, die dort wirklich ausgeliefert werden)
 const LINKED = process.env.LINKED_SITES ? process.env.LINKED_SITES.split(',').map((x) => x.trim()) : SITE_IDS;
 const PATHS = SITE_URL.indexOf('/{site}/') >= 0;
+// selbst gehostete Schrift (public/fonts/, SIL OFL): kommt mit in den Offline-Speicher
+const FONTS = [400, 600, 700, 800].reduce((all, w) => all.concat([`fonts/figtree-${w}-latin.woff2`, `fonts/figtree-${w}-latin-ext.woff2`]), []);
 const BUILD_IDS = MOVE_TO ? SITE_IDS.filter((id) => id !== 'start') : SITE_IDS;
 
 const options = {
@@ -46,6 +48,8 @@ const options = {
   write: false,
   outdir: join(dist, 'assets'),
   legalComments: 'none',
+  // Schrift liegt in public/fonts/ und wird neben assets/ ausgeliefert
+  external: ['../fonts/*'],
   logLevel: 'warning',
 };
 
@@ -150,7 +154,7 @@ async function emit(result) {
       .map((p) => p.file)
       .filter((f) => /^((en|fr)\/)?([^/]+\/)?index\.html$/.test(f))
       .map((f) => f.replace(/index\.html$/, '') || './');
-    const precache = ['./', ...core, assets.js, assets.css, 'manifest.webmanifest', 'icon.svg', 'icon-192.png'].filter((x, i, a) => a.indexOf(x) === i);
+    const precache = ['./', ...core, assets.js, assets.css, ...FONTS, 'manifest.webmanifest', 'icon.svg', 'icon-192.png'].filter((x, i, a) => a.indexOf(x) === i);
     const version = createHash('sha256').update(precache.join('|') + assets.js + assets.css + count).digest('hex').slice(0, 10);
     const sw = readFileSync(join(root, 'src/sw.js'), 'utf8')
       .replace('__VERSION__', `${id}-${version}`)

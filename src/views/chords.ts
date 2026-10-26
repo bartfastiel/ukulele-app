@@ -32,7 +32,7 @@ export const chords: View = (root, param) => {
   const p = load();
   screen(
     root,
-    { title: t('Akkorde'), theme: 'teal' },
+    { title: t('Akkorde') },
     ...GROUPS.map((g) =>
       h(
         'section',
@@ -152,7 +152,7 @@ export const chordDetail: View = (root, param) => {
   const hints = p && PAGE_QUALITIES.indexOf(p.quality) >= 0 ? relativeHints(`akkord/${encodeURIComponent(ch.name)}`, ch.name) : [];
   screen(
     root,
-    { title: t('Akkord {chord}', { chord: ch.name }), back: link('akkorde'), theme: 'teal' },
+    { title: t('Akkord {chord}', { chord: ch.name }), back: link('akkorde') },
     h(
       'div',
       { class: 'chord-detail' },

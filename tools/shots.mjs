@@ -1,5 +1,5 @@
 // Bildschirmfotos aller Ansichten in typischen Geräteformaten (Sichtprüfung des Designs).
-// node tools/shots.mjs <ordner> [de|en|fr] [ukulele|gitarre|banjo|bariton|mandoline|bass] – die Sprache kommt über die Browser-Sprache
+// node tools/shots.mjs <ordner> [de|en|fr] [ukulele|gitarre|banjo|bariton|mandoline|bass] (DARK=1 dunkel, ONLY=home,blues nur diese) – die Sprache kommt über die Browser-Sprache
 // (Standard: de), das Instrument über ?instrument=… (Standard: Ukulele).
 import { chromium, webkit } from '@playwright/test';
 
@@ -9,8 +9,14 @@ const lang = process.argv[3] || 'de';
 const prefix = lang === 'de' ? '' : `${lang}/`;
 const locale = { de: 'de-DE', en: 'en-US', fr: 'fr-FR' }[lang] || lang;
 const instrument = process.argv[4] || '';
-const shotPrefix = instrument ? `${lang}-${instrument}` : lang;
-const views = ['', 'lieder', 'lied/alle-voegel', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied', 'eigenes-lied/mein-sonnenlied', 'lied/mein-sonnenlied', 'lied-teilen/mein-sonnenlied', '/wissen/', '/wissen/ukulele-stimmen/', '/impressum/', '/akkorde/f-sharp-m/'];
+// DARK=1: Dunkelmodus des Geräts (Dateinamen beginnen mit „dark-“)
+const dark = process.env.DARK === '1';
+const shotPrefix = (dark ? 'dark-' : '') + (instrument ? `${lang}-${instrument}` : lang);
+const all = ['', 'lieder', 'lied/alle-voegel', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G7', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'einstellungen', 'aufnahme', 'blues', 'begleitung/rock', 'detektiv', 'eigenes-lied', 'eigenes-lied/mein-sonnenlied', 'lied/mein-sonnenlied', 'lied-teilen/mein-sonnenlied', '/wissen/', '/wissen/ukulele-stimmen/', '/impressum/', '/akkorde/f-sharp-m/', '/lektionen/', '/lektion/4/', '/lehrkraefte-und-eltern/', '/liedblatt/alle-meine-entchen/', '/weihnachtslieder/'];
+// ONLY=home,blues,… nimmt nur diese Ansichten (Name wie im Dateinamen)
+const only = process.env.ONLY ? process.env.ONLY.split(',') : null;
+const shotName = (v) => v.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home';
+const views = only ? all.filter((v) => only.indexOf(shotName(v)) >= 0) : all;
 const devices = [
   { name: 'ipad', width: 1024, height: 768, engine: webkit },
   { name: 'phone', width: 390, height: 844, engine: chromium },
@@ -19,7 +25,7 @@ const devices = [
 const errors = [];
 for (const d of devices) {
   const browser = await d.engine.launch();
-  const page = await browser.newPage({ viewport: { width: d.width, height: d.height }, deviceScaleFactor: 1, locale });
+  const page = await browser.newPage({ viewport: { width: d.width, height: d.height }, deviceScaleFactor: 1, locale, colorScheme: dark ? 'dark' : 'light' });
   page.on('pageerror', (e) => errors.push(`${d.name}: ${e.message}`));
   // eigenes Beispiel-Lied (eigener Text) für Bearbeiten, Spielen und Teilen
   await page.goto(base);
@@ -33,7 +39,7 @@ for (const d of devices) {
     await page.goto(v.indexOf('/') === 0 ? `${base}${prefix}${v.slice(1)}` : `${base}${prefix}#/${v}`);
     await page.waitForLoadState('load');
     await page.waitForTimeout(400);
-    await page.screenshot({ path: `${out}/${shotPrefix}-${d.name}-${v.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home'}.png` });
+    await page.screenshot({ path: `${out}/${shotPrefix}-${d.name}-${shotName(v)}.png` });
   }
   await browser.close();
 }

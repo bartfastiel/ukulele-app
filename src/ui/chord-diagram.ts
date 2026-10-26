@@ -9,19 +9,27 @@ function fingerLabel(f: number): string {
   return f === 5 ? t('Daumen').charAt(0).toUpperCase() : String(f);
 }
 
-let uid = 0;
+/**
+ * Farben wie in docs/design.md („Griffbild“) als Attribute (Rückfall ohne Stil); src/styles.css setzt sie über Klassen
+ * auf die Tokens – so stimmen sie auch im Dunkelmodus.
+ */
+const INK = '#1C1C1E';
+const INK_2 = '#55575E';
+const INK_3 = '#9A9CA3';
+const FRET = '#D5D7DC';
+const ACCENT = '#0A7C6E';
 
 /**
  * Griffbild wie im Schulheft: Griffbrett senkrecht, Sattel oben, Saiten in Spielreihenfolge von links nach rechts
- * (Ukulele G-C-E-A, Gitarre E-A-D-G-B-e, Banjo g-D-G-B-D; für Linkshänder gespiegelt). Palisander-Griffbrett,
- * Neusilber-Bünde, Perlmutt-Punkte, Finger als Messingknöpfe, ein Barré als Messingbalken. Liegt ein Griff höher als
- * im 5. Bund, beginnt das Bild an seinem tiefsten Bund mit der Bundzahl daneben.
+ * (Ukulele G-C-E-A, Gitarre E-A-D-G-B-e, Banjo g-D-G-B-D; für Linkshänder gespiegelt). Dunkle Saiten und Sattel,
+ * helle Bünde, Finger als Punkte in der Akzentfarbe, ein Barré als Balken. Liegt ein Griff höher als im 5. Bund,
+ * beginnt das Bild an seinem tiefsten Bund mit der Bundzahl daneben.
  */
 export interface DiagramOptions {
   lefty?: boolean;
   highlight?: number;
   labels?: boolean;
-  /** E-Bass: die Quinte als Perlmutt-Punkt „5“ zeigen */
+  /** E-Bass: die Quinte als Kreis „5“ zeigen */
   fifth?: boolean;
   /** Zum Drucken: weiß, dünne schwarze Linien, kaum Tinte (siehe printDiagram) */
   print?: boolean;
@@ -47,7 +55,7 @@ export interface DiagramLayout {
 
 export function diagramLayout(ch: Chord, opts: DiagramOptions = {}): DiagramLayout {
   const n = ch.frets.length;
-  // E-Bass: ein Ton, die anderen Saiten bleiben einfach still – ohne Kreuz; auf Wunsch die Quinte als Perlmutt-Punkt
+  // E-Bass: ein Ton, die anderen Saiten bleiben einfach still – ohne Kreuz; auf Wunsch die Quinte als Kreis
   const fifth = opts.fifth && ch.fifth ? ch.fifth : null;
   const pressed = ch.frets.filter((f) => f > 0).concat(fifth ? [fifth.fret] : []);
   const top = pressed.length ? Math.max(...pressed) : 0;
@@ -132,7 +140,6 @@ export function printDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
 
 export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
   if (opts.print) return printDiagram(ch, opts);
-  const id = `cd${++uid}`;
   const inst = instrument();
   const L = diagramLayout(ch, opts);
   const fifth = opts.fifth && ch.fifth ? ch.fifth : null;
@@ -156,85 +163,50 @@ export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
     role: 'img',
     'aria-label': describeChord(ch),
   });
-  svg.appendChild(
-    s(
-      'defs',
-      null,
-      s(
-        'linearGradient',
-        { id: `${id}b`, x1: 0, x2: 1 },
-        s('stop', { offset: 0, 'stop-color': '#3a2116' }),
-        s('stop', { offset: 0.5, 'stop-color': '#4b2b1c' }),
-        s('stop', { offset: 1, 'stop-color': '#341d12' }),
-      ),
-      s(
-        'radialGradient',
-        { id: `${id}f`, cx: 0.35, cy: 0.3, r: 0.8 },
-        s('stop', { offset: 0, 'stop-color': '#ffe9a8' }),
-        s('stop', { offset: 0.45, 'stop-color': '#d8a640' }),
-        s('stop', { offset: 1, 'stop-color': '#8a5a14' }),
-      ),
-      s(
-        'linearGradient',
-        { id: `${id}r`, x1: 0, x2: 0, y1: 0, y2: 1 },
-        s('stop', { offset: 0, 'stop-color': '#ffe9a8' }),
-        s('stop', { offset: 0.5, 'stop-color': '#d8a640' }),
-        s('stop', { offset: 1, 'stop-color': '#8a5a14' }),
-      ),
-      s(
-        'radialGradient',
-        { id: `${id}p`, cx: 0.4, cy: 0.35, r: 0.7 },
-        s('stop', { offset: 0, 'stop-color': '#ffffff' }),
-        s('stop', { offset: 0.6, 'stop-color': '#dfe9ef' }),
-        s('stop', { offset: 1, 'stop-color': '#b9c7d6' }),
-      ),
-    ),
-  );
   const boardTop = y0;
   const boardBottom = y0 + fh * rows;
-  svg.appendChild(s('rect', { x: x0 - 10, y: boardTop, width: boardW + 20, height: boardBottom - boardTop + 4, rx: 3, fill: `url(#${id}b)` }));
-  // Perlmutt-Punkte an den üblichen Bünden (Ukulele: 5. Bund), soweit sichtbar
+  // Griffbrett als Fläche nur zum Antippen (klingende Griffbilder); sichtbar sind Linien und Punkte
+  svg.appendChild(s('rect', { x: x0 - 10, y: boardTop, width: boardW + 20, height: boardBottom - boardTop + 4, fill: 'transparent', class: 'board' }));
+  // Markierungen an den üblichen Bünden (Ukulele: 5. Bund), soweit sichtbar
   for (const f of inst.diagram.inlays) {
     if (f < first || f > first + rows - 1) continue;
     const cy = y0 + fh * (shown(f) - 0.5);
     const cx = x0 + boardW / 2;
     if (f === 12) {
-      svg.appendChild(s('circle', { cx: cx - gap, cy, r: 3.4, fill: `url(#${id}p)`, opacity: 0.8 }));
-      svg.appendChild(s('circle', { cx: cx + gap, cy, r: 3.4, fill: `url(#${id}p)`, opacity: 0.8 }));
-    } else svg.appendChild(s('circle', { cx, cy, r: 3.4, fill: `url(#${id}p)`, opacity: 0.8 }));
+      svg.appendChild(s('circle', { cx: cx - gap, cy, r: 3, fill: FRET, class: 'inlay' }));
+      svg.appendChild(s('circle', { cx: cx + gap, cy, r: 3, fill: FRET, class: 'inlay' }));
+    } else svg.appendChild(s('circle', { cx, cy, r: 3, fill: FRET, class: 'inlay' }));
   }
-  for (let f = 1; f <= rows; f++)
-    svg.appendChild(
-      s('rect', { x: x0 - 10, y: y0 + fh * f - 1, width: boardW + 20, height: 2.4, fill: '#c9ccd1', stroke: '#7d8088', 'stroke-width': 0.4 }),
-    );
+  // Bünde als Pfade, der Sattel als Fläche: <line> sind im Griffbild nur die Saiten
+  for (let f = 1; f <= rows; f++) svg.appendChild(s('path', { d: `M${x0} ${y0 + fh * f}H${x0 + boardW}`, stroke: FRET, 'stroke-width': 1.6, class: 'fret' }));
   if (first > 1) {
     // höher am Hals: kein Sattel, dafür die Bundzahl links neben dem ersten Bund
-    svg.appendChild(s('rect', { x: x0 - 10, y: y0 - 1, width: boardW + 20, height: 2.4, fill: '#c9ccd1', stroke: '#7d8088', 'stroke-width': 0.4 }));
-    svg.appendChild(s('text', { x: 2, y: y0 + fh * 0.5 + 5, class: 'fret-number', fill: '#2b1608' }, String(first)));
+    svg.appendChild(s('path', { d: `M${x0} ${y0}H${x0 + boardW}`, stroke: FRET, 'stroke-width': 1.6, class: 'fret' }));
+    svg.appendChild(s('text', { x: 2, y: y0 + fh * 0.5 + 5, class: 'fret-number', fill: INK }, String(first)));
   } else
-    // Sattel (Knochen)
-    svg.appendChild(s('rect', { x: x0 - 11, y: y0 - 5, width: boardW + 22, height: 6, rx: 1.5, fill: '#f3e6c4', stroke: '#b9a77c', 'stroke-width': 0.6 }));
+    // Sattel
+    svg.appendChild(s('rect', { x: x0 - 3, y: y0 - 4, width: boardW + 6, height: 4.5, rx: 2.25, fill: INK, class: 'nut' }));
   for (let i = 0; i < n; i++) {
     const x = xOf(i);
     const hl = opts.highlight === i;
     const start = STRINGS[i] ? STRINGS[i].start || 0 : 0;
     const attrs = {
       x1: x,
-      y1: y0 - 2,
+      y1: y0 - 1,
       x2: x,
-      y2: boardBottom + 3,
-      stroke: hl ? '#ff7a45' : '#f7f1e6',
-      'stroke-width': hl ? 3.2 : 1.4 + (n === 4 && i === 1 ? 0.5 : 0) + (n === 6 ? (2 - Math.min(i, 2)) * 0.35 : 0),
+      y2: boardBottom,
+      stroke: hl ? ACCENT : INK,
+      'stroke-width': hl ? 3.2 : 1.2 + (n === 6 ? (2 - Math.min(i, 2)) * 0.25 : 0),
       'stroke-linecap': 'round',
-      class: 'string',
+      class: hl ? 'string hl' : 'string',
       'data-string': i,
     };
     if (start >= first) {
       // kurze Banjo-Saite: erst ab ihrem Wirbel am 5. Bund eine echte Saite, darüber nur angedeutet
-      const pegY = start - first + 1 <= rows ? y0 + fh * shown(start) : boardBottom + 3;
-      svg.appendChild(s('line', { x1: x, y1: y0 - 2, x2: x, y2: pegY, stroke: '#f7f1e6', 'stroke-width': 1, 'stroke-dasharray': '2 4', opacity: 0.6 }));
+      const pegY = start - first + 1 <= rows ? y0 + fh * shown(start) : boardBottom;
+      svg.appendChild(s('line', { x1: x, y1: y0 - 1, x2: x, y2: pegY, stroke: INK_3, 'stroke-width': 1, 'stroke-dasharray': '2 4', class: 'string-short' }));
       attrs.y1 = pegY;
-      if (pegY <= boardBottom) svg.appendChild(s('circle', { cx: x, cy: pegY, r: 3.2, fill: '#f3e6c4', stroke: '#b9a77c', 'stroke-width': 0.6 }));
+      if (pegY <= boardBottom) svg.appendChild(s('circle', { cx: x, cy: pegY, r: 3.2, fill: '#fff', stroke: INK, 'stroke-width': 1.2, class: 'peg' }));
     }
     svg.appendChild(s('line', attrs));
   }
@@ -243,46 +215,38 @@ export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
     const cy = y0 + fh * (shown(barre.fret) - 0.5);
     const xa = Math.min(xOf(barre.from), xOf(barre.to));
     const xb = Math.max(xOf(barre.from), xOf(barre.to));
-    svg.appendChild(s('rect', { x: xa - 8.6, y: cy - 7.6, width: xb - xa + 17.2, height: 17.2, rx: 8.6, fill: 'rgba(0,0,0,.35)' }));
-    svg.appendChild(s('rect', { x: xa - 8.6, y: cy - 8.6, width: xb - xa + 17.2, height: 17.2, rx: 8.6, fill: `url(#${id}r)`, stroke: '#6b430c', 'stroke-width': 0.8, class: 'barre' }));
+    svg.appendChild(s('rect', { x: xa - 8.6, y: cy - 8.6, width: xb - xa + 17.2, height: 17.2, rx: 8.6, fill: ACCENT, class: 'barre' }));
   }
   const onBarre = (i: number) => !!barre && ch.frets[i] === barre.fret && ch.fingers[i] === 1 && i >= barre.from && i <= barre.to;
   for (let i = 0; i < n; i++) {
     const fret = ch.frets[i];
     const x = xOf(i);
     if (fret === 0) {
-      svg.appendChild(s('circle', { cx: x, cy: y0 - 14, r: 4.6, fill: 'none', stroke: '#2b1608', 'stroke-width': 1.8, class: 'open' }));
+      svg.appendChild(s('circle', { cx: x, cy: y0 - 14, r: 4.6, fill: 'none', stroke: INK, 'stroke-width': 1.8, class: 'open' }));
     } else if (fret === -1 && inst.notesOnly) {
       if (fifth && fifth.string === i) {
         const cy = y0 + fh * (shown(fifth.fret) - 0.5);
-        svg.appendChild(s('circle', { cx: x, cy, r: 8.6, fill: `url(#${id}p)`, stroke: '#5d6b78', 'stroke-width': 0.8, class: 'fifth' }));
-        svg.appendChild(s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger', fill: '#2b1608' }, '5'));
+        svg.appendChild(s('circle', { cx: x, cy, r: 8.6, fill: '#fff', stroke: ACCENT, 'stroke-width': 2, class: 'fifth' }));
+        svg.appendChild(s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger fifth-label', fill: ACCENT }, '5'));
       }
     } else if (fret === -1) {
-      svg.appendChild(
-        s('path', { d: `M${x - 4.5} ${y0 - 18.5}l9 9m0 -9l-9 9`, stroke: '#a3263a', 'stroke-width': 2.4, 'stroke-linecap': 'round', class: 'muted' }),
-      );
+      svg.appendChild(s('path', { d: `M${x - 4.5} ${y0 - 18.5}l9 9m0 -9l-9 9`, stroke: INK, 'stroke-width': 2, 'stroke-linecap': 'round', class: 'muted' }));
     } else if (fret < 0) {
       continue;
     } else {
       const cy = y0 + fh * (shown(fret) - 0.5);
       if (onBarre(i)) {
         // die Ziffer des Zeigefingers steht einmal auf dem Balken (an seinem ersten Ende)
-        if (i === barre!.from) svg.appendChild(s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger', fill: '#3a2105' }, '1'));
+        if (i === barre!.from) svg.appendChild(s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger', fill: '#fff' }, '1'));
         continue;
       }
-      svg.appendChild(s('circle', { cx: x, cy: cy + 1, r: 8.6, fill: 'rgba(0,0,0,.35)' }));
-      svg.appendChild(s('circle', { cx: x, cy, r: 8.6, fill: `url(#${id}f)`, stroke: '#6b430c', 'stroke-width': 0.8 }));
+      svg.appendChild(s('circle', { cx: x, cy, r: 8.6, fill: ACCENT, class: 'dot' }));
       if (ch.fingers[i])
-        svg.appendChild(
-          s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger', fill: '#3a2105' }, fingerLabel(ch.fingers[i])),
-        );
+        svg.appendChild(s('text', { x, y: cy + 4.2, 'text-anchor': 'middle', class: 'finger', fill: '#fff' }, fingerLabel(ch.fingers[i])));
     }
   }
   if (opts.labels !== false)
     for (let i = 0; i < n; i++)
-      svg.appendChild(
-        s('text', { x: xOf(i), y: boardBottom + 20, 'text-anchor': 'middle', class: 'string-label', fill: '#2b1608' }, STRINGS[i] ? STRINGS[i].name : ''),
-      );
+      svg.appendChild(s('text', { x: xOf(i), y: boardBottom + 20, 'text-anchor': 'middle', class: 'string-label', fill: INK_2 }, STRINGS[i] ? STRINGS[i].name : ''));
   return svg;
 }

@@ -85,7 +85,7 @@ export const LEVELS: Level[] = [
   {
     id: 'grundton',
     title: tk('1 · Grundton'),
-    text: tk('Spiel in jedem Takt viermal den Grundton – den Ton, nach dem der Akkord heißt. Wo er liegt, zeigt der goldene Punkt auf dem Hals.'),
+    text: tk('Spiel in jedem Takt viermal den Grundton – den Ton, nach dem der Akkord heißt. Wo er liegt, zeigt der grüne Punkt auf dem Hals.'),
     notes: pattern([0, 0, 0, 0]),
   },
   {
@@ -104,7 +104,7 @@ export const LEVELS: Level[] = [
   {
     id: 'frei',
     title: tk('4 · Frei spielen'),
-    text: tk('Jetzt bist du dran: Alle Punkte auf dem Hals gehören zur Blues-Tonleiter und passen immer. Die goldenen passen besonders gut zum Akkord gerade. Probier kurze Melodien, wiederhole sie, mach Pausen!'),
+    text: tk('Jetzt bist du dran: Alle Punkte auf dem Hals gehören zur Blues-Tonleiter und passen immer. Die grünen passen besonders gut zum Akkord gerade. Probier kurze Melodien, wiederhole sie, mach Pausen!'),
     notes: null,
   },
   {
@@ -197,7 +197,7 @@ export interface FreeNote {
   string: number;
   fret: number;
   midi: number;
-  /** chord = Akkordton (golden), scale = passt */
+  /** chord = Akkordton (Akzentfarbe), scale = passt */
   kind: 'chord' | 'scale';
   /** weniger naheliegend: blasser zeigen */
   weak: boolean;

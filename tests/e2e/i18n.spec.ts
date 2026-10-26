@@ -80,11 +80,11 @@ for (const l of LANGS.slice(1)) {
   test(`Sprache umschalten auf ${l.id}: Startseite, Lieder, Lied und Stimmgerät übersetzt, eigene Adresse je Sprache`, async ({ page }) => {
     const name = l.id === 'en' ? 'English' : 'Français';
     await page.goto('./');
-    await expect(page.locator('.lang-switch').getByRole('link', { name: 'Deutsch' })).toHaveAttribute('aria-current', 'true');
-    await page.locator('.lang-switch').getByRole('link', { name }).click();
+    await expect(page.locator('.footer-langs').getByRole('link', { name: 'Deutsch' })).toHaveAttribute('aria-current', 'true');
+    await page.locator('.footer-langs').getByRole('link', { name }).click();
     await expect(page).toHaveURL(new RegExp(`/ukulele/${l.id}/$`));
     await expect(page.locator('html')).toHaveAttribute('lang', l.id);
-    await expect(page.locator('.lang-switch').getByRole('link', { name })).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator('.footer-langs').getByRole('link', { name })).toHaveAttribute('aria-current', 'true');
 
     await page.getByRole('link', { name: l.id === 'en' ? /Play songs/ : /Jouer des chansons/ }).click();
     await expect(page.getByRole('heading', { name: l.songs, exact: true })).toBeVisible();

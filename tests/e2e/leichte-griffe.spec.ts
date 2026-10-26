@@ -42,7 +42,7 @@ test('Linkshänder: das Griffbild der Variante ist gespiegelt', async ({ page })
       .locator('svg .string-label')
       .evaluateAll((els) => els.sort((a, b) => Number(a.getAttribute('x')) - Number(b.getAttribute('x'))).map((e) => e.textContent));
   expect(await labels()).toEqual(['E', 'A', 'D', 'G', 'B', 'e']);
-  await page.locator('.site-footer').getByRole('link', { name: 'Für Linkshänder' }).click();
+  await page.goto('/gitarre/#/einstellungen');
   await page.getByRole('button', { name: 'Linkshänder', exact: true }).click();
   await page.goto('/gitarre/#/akkord/F');
   expect(await labels()).toEqual(['e', 'B', 'G', 'D', 'A', 'E']);

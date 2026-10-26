@@ -83,7 +83,7 @@ export const GROOVES: Groove[] = [
     strumText: tk('Achtel, alle runter, kurz und kräftig. Zu schnell? Dann nur auf eins, zwei, drei, vier.'),
     lineName: tk('Rock-Achtel'),
     lineText: tk('Achtmal den Grundton in jedem Takt, gleichmäßig wie ein Motor: eins und zwei und drei und vier und. Zupf abwechselnd mit Zeige- und Mittelfinger.'),
-    simpleText: tk('Spiel auf jeden Schlag den Grundton – den Ton, nach dem der Akkord heißt. Wo er liegt, zeigt der goldene Punkt.'),
+    simpleText: tk('Spiel auf jeden Schlag den Grundton – den Ton, nach dem der Akkord heißt. Wo er liegt, zeigt der grüne Punkt.'),
   },
   {
     id: 'pop',
@@ -104,7 +104,7 @@ export const GROOVES: Groove[] = [
     strumText: tk('Runter, runter, rauf, rauf, runter, rauf – zwischen den beiden „rauf“ schwingt die Hand runter, ohne zu treffen.'),
     lineName: tk('Mit Zwischenton'),
     lineText: tk('Grundton auf eins, kurz vor drei noch einmal und auf drei. Auf vier ein Zwischenton, der zum nächsten Akkord führt.'),
-    simpleText: tk('Spiel den Grundton auf eins und auf drei und lass ihn klingen. Wo er liegt, zeigt der goldene Punkt.'),
+    simpleText: tk('Spiel den Grundton auf eins und auf drei und lass ihn klingen. Wo er liegt, zeigt der grüne Punkt.'),
   },
   {
     id: 'shuffle',
@@ -130,7 +130,7 @@ export const GROOVES: Groove[] = [
     strumText: tk('Runter-rauf in Achteln, aber schwingend: das Runter lang, das Rauf kurz – wie beim Hüpfen.'),
     lineName: tk('Boogie-Linie'),
     lineText: tk('Das Boogie-Riff in Achteln: Grundton, Terz, Quinte, Sexte, kleine Septime – und über Sexte, Quinte, Terz zurück (1-3-5-6-b7-6-5-3). Ein Finger pro Bund hilft: Zeigefinger im 1. Bund, Mittelfinger im 2., Ringfinger im 3., kleiner Finger im 4.'),
-    simpleText: tk('Spiel auf jeden Schlag den Grundton – und fühl, wie die Band dazwischen schwingt. Wo er liegt, zeigt der goldene Punkt.'),
+    simpleText: tk('Spiel auf jeden Schlag den Grundton – und fühl, wie die Band dazwischen schwingt. Wo er liegt, zeigt der grüne Punkt.'),
   },
   {
     id: 'country',
@@ -150,7 +150,7 @@ export const GROOVES: Groove[] = [
     strumText: tk('Runter auf eins und drei, runter-rauf auf zwei und vier – betone das Runter auf eins und drei.'),
     lineName: tk('Grundton und Quinte'),
     lineText: tk('Auf eins der Grundton, auf drei die Quinte – meist unter dem Grundton. Das ist das „Boom“ des Boom-Chick.'),
-    simpleText: tk('Spiel den Grundton auf eins und auf drei. Wo er liegt, zeigt der goldene Punkt.'),
+    simpleText: tk('Spiel den Grundton auf eins und auf drei. Wo er liegt, zeigt der grüne Punkt.'),
   },
 ];
 

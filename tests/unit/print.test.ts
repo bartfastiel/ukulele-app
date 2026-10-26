@@ -58,8 +58,9 @@ test('Druck-Griffbild: schwarz auf weiß, ohne Verläufe, Fingerzahlen nur auf W
   assert.ok(svg.indexOf('class="barre"') >= 0);
   assert.ok(svg.indexOf('class="pd-finger"') >= 0);
   assert.ok(serialize(chordDiagram(chord('C'), { print: true })).indexOf('pd-finger') < 0);
-  // am Bildschirm bleibt alles beim Alten
-  assert.ok(serialize(chordDiagram(chord('C'))).indexOf('Gradient') >= 0);
+  // am Bildschirm Fingerpunkte in der Akzentfarbe, gedruckt nur Schwarz
+  assert.ok(serialize(chordDiagram(chord('C'))).indexOf('#0A7C6E') >= 0);
+  assert.ok(svg.indexOf('#0A7C6E') < 0);
   setInstrument('ukulele');
 });
 
