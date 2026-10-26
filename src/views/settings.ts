@@ -11,6 +11,11 @@ import { notesOnly } from '../music/instrument.ts';
 import { SITES } from '../site/sites.ts';
 import { tuningChooser, variantChooser } from '../ui/tuning.ts';
 
+/** Beschriftung eines Schalters: Titel und darunter in einem Satz, was er bewirkt. */
+function described(title: string, what: string): HTMLElement {
+  return h('span', { class: 'row-text' }, h('span', { class: 'row-title' }, title), h('span', { class: 'row-sub' }, what));
+}
+
 /** Instrumentname am Zeilenanfang groß („bass guitar“ → „Bass guitar“). */
 function cap(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -57,22 +62,23 @@ export const settings: View = (root) => {
   const codeMsg = h('p', { class: 'small', 'aria-live': 'polite' });
   const play = group(
     t('Spielen'),
-    toggle(t('Linkshänder'), p.settings.lefty, (v) => setLefty(v), { 'data-setting': 'lefty' }),
-    toggle(t('Weniger Bewegung'), p.settings.calm, (v) => {
+    toggle(described(t('Linkshänder'), t('Griffbilder, Hals und Tabulatur werden gespiegelt, wie du sie als Linkshänder vor dir siehst. Gilt für alle Instrumente.')), p.settings.lefty, (v) => setLefty(v), { 'data-setting': 'lefty' }),
+    toggle(described(t('Weniger Bewegung'), t('Schaltet Animationen ab: In der Karaoke gleiten die Akkorde nicht mehr herein, Anzeigen springen ohne Übergang. Angenehmer, wenn Bewegung ablenkt, und auf langsamen Geräten.')), p.settings.calm, (v) => {
       save((pr) => (pr.settings.calm = v));
       document.documentElement.classList.toggle('calm', v);
     }, { 'data-setting': 'calm' }),
   );
-  play.appendChild(h('p', { class: 'group-note' }, t('Linkshänder: Griffbilder und Hals werden gespiegelt – auf allen Instrumenten.')));
+  const instrumentGroup = group(t('Instrument'), ...instruments);
+  instrumentGroup.appendChild(h('p', { class: 'group-note' }, t('Wechselt zur Seite eines anderen Instruments. Sterne und Lernfortschritt zählen je Instrument; Linkshänder, Darstellung und eigene Lieder gelten überall.')));
   screen(
     root,
     { title: t('Einstellungen') },
     play,
     tuningChooser(),
     variantChooser(),
-    h('section', { class: 'group-wrap', id: 'darstellung' }, h('h2', { class: 'section-label' }, t('Darstellung')), themeChoice()),
-    h('section', { class: 'group-wrap' }, h('h2', { class: 'section-label' }, t('Sprache')), langSwitch()),
-    group(t('Instrument'), ...instruments),
+    h('section', { class: 'group-wrap', id: 'darstellung' }, h('h2', { class: 'section-label' }, t('Darstellung')), themeChoice(), h('p', { class: 'group-note' }, t('Automatisch folgt deinem Gerät (hell oder dunkel). Gedruckt wird immer schwarz auf weiß.'))),
+    h('section', { class: 'group-wrap' }, h('h2', { class: 'section-label' }, t('Sprache')), langSwitch(), h('p', { class: 'group-note' }, t('Sprache der Bedienung. Liedtexte bleiben im Original.'))),
+    instrumentGroup,
     h(
       'section',
       { class: 'group-wrap', id: 'sicherung' },
@@ -98,7 +104,7 @@ export const settings: View = (root) => {
       ),
     ),
     // Beispielaufnahmen gibt es nur für die Akkorderkennung
-    notesOnly() ? null : group(t('Für Erwachsene'), h('a', { class: 'list-row', href: link('aufnahme') }, h('span', { class: 'row-text' }, h('span', { class: 'row-title' }, t('Beispiel-Akkorde aufnehmen'))), icon('chevron', 'icon chevron'))),
+    notesOnly() ? null : group(t('Für Erwachsene'), h('a', { class: 'list-row', href: link('aufnahme') }, h('span', { class: 'row-text' }, h('span', { class: 'row-title' }, t('Beispiel-Akkorde aufnehmen')), h('span', { class: 'row-sub' }, t('Hilft, die Akkorderkennung zu verbessern: Du spielst vorgegebene Griffe, die App speichert sie als ZIP-Datei auf deinem Gerät. Verschickt wird nichts.'))), icon('chevron', 'icon chevron'))),
   );
   // Sprung von einem Link wie „Stimmung“ im Stimmgerät: die Stelle entsteht erst jetzt, der Browser fand sie noch nicht
   const target = typeof location !== 'undefined' && location.hash.length > 1 ? document.getElementById(location.hash.slice(1)) : null;

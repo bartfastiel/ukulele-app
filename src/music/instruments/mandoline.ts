@@ -69,7 +69,6 @@ function chopTable(q: string): Instrument['shapes'][string] {
 export const MANDOLINE: Instrument = {
   id: 'mandoline',
   name: tk('Mandoline'),
-  club: tk('Mandolinen-Club'),
   obj: tk('die Mandoline'),
   yours: tk('deine Mandoline'),
   of: tk('der Mandoline'),

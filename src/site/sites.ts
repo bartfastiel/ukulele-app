@@ -16,37 +16,37 @@ export const SITES: SiteDef[] = [
   {
     id: 'ukulele',
     instrument: 'ukulele',
-    brand: { de: 'Ukulele-Club', en: 'Ukulele Club', fr: 'Club Ukulélé' },
+    brand: { de: 'Open String Ukulele', en: 'Open String Ukulele', fr: 'Open String Ukulélé' },
     name: { de: 'Ukulele', en: 'ukulele', fr: 'ukulélé' },
   },
   {
     id: 'gitarre',
     instrument: 'gitarre',
-    brand: { de: 'Gitarren-Club', en: 'Guitar Club', fr: 'Club Guitare' },
+    brand: { de: 'Open String Gitarre', en: 'Open String Guitar', fr: 'Open String Guitare' },
     name: { de: 'Gitarre', en: 'guitar', fr: 'guitare' },
   },
   {
     id: 'banjo',
     instrument: 'banjo',
-    brand: { de: 'Banjo-Club', en: 'Banjo Club', fr: 'Club Banjo' },
+    brand: { de: 'Open String Banjo', en: 'Open String Banjo', fr: 'Open String Banjo' },
     name: { de: 'Banjo', en: 'banjo', fr: 'banjo' },
   },
   {
     id: 'bariton',
     instrument: 'bariton',
-    brand: { de: 'Bariton-Ukulele-Club', en: 'Baritone Ukulele Club', fr: 'Club Ukulélé baryton' },
+    brand: { de: 'Open String Bariton-Ukulele', en: 'Open String Baritone Ukulele', fr: 'Open String Ukulélé baryton' },
     name: { de: 'Bariton-Ukulele', en: 'baritone ukulele', fr: 'ukulélé baryton' },
   },
   {
     id: 'mandoline',
     instrument: 'mandoline',
-    brand: { de: 'Mandolinen-Club', en: 'Mandolin Club', fr: 'Club Mandoline' },
+    brand: { de: 'Open String Mandoline', en: 'Open String Mandolin', fr: 'Open String Mandoline' },
     name: { de: 'Mandoline', en: 'mandolin', fr: 'mandoline' },
   },
   {
     id: 'bass',
     instrument: 'bass',
-    brand: { de: 'Bass-Club', en: 'Bass Club', fr: 'Club Basse' },
+    brand: { de: 'Open String E-Bass', en: 'Open String Bass', fr: 'Open String Basse' },
     name: { de: 'E-Bass', en: 'bass guitar', fr: 'basse électrique' },
   },
   {

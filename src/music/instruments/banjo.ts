@@ -9,7 +9,6 @@ import type { Instrument } from '../instrument.ts';
 export const BANJO: Instrument = {
   id: 'banjo',
   name: tk('Banjo'),
-  club: tk('Banjo-Club'),
   obj: tk('das Banjo'),
   yours: tk('dein Banjo'),
   of: tk('des Banjos'),

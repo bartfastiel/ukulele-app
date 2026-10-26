@@ -1,4 +1,4 @@
-# Ukulele-Club
+# Open String
 
 Kostenlose Lern-App für Ukulele im Browser – gebaut für Kinder in der Ukulelenklasse, die einfach üben und Spaß
 haben wollen. Läuft auf iPad (auch älteren), Android-Handys (hoch und quer) und am PC, ohne Konto, ohne Werbung,

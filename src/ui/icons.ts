@@ -53,16 +53,3 @@ export function icon(name: keyof typeof PATHS | string, cls = 'icon'): SVGElemen
   );
 }
 
-/**
- * Zeichen von Open String: Akzentfläche mit einem Bogen (schwingende Saite) und einem Punkt (Fingerpunkt) – gleich für
- * alle Instrumente. Dieselbe Form tragen App-Symbol und Vorschaubild (src/site/app-icon.ts, og-image.ts).
- */
-export function logo(cls = 'logo'): SVGElement {
-  return s(
-    'svg',
-    { viewBox: '0 0 30 30', class: cls, 'aria-hidden': 'true', focusable: 'false' },
-    s('rect', { width: 30, height: 30, rx: 8, fill: '#0A7C6E', class: 'logo-bg' }),
-    s('path', { d: 'M8 20c3-8 11-8 14 0', fill: 'none', stroke: '#fff', 'stroke-width': 2.4, 'stroke-linecap': 'round', class: 'logo-arc' }),
-    s('circle', { cx: 15, cy: 12, r: 2.5, fill: '#fff', class: 'logo-dot' }),
-  );
-}

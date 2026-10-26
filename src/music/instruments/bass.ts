@@ -9,7 +9,6 @@ import type { Instrument } from '../instrument.ts';
 export const BASS: Instrument = {
   id: 'bass',
   name: tk('E-Bass'),
-  club: tk('Bass-Club'),
   obj: tk('den E-Bass'),
   yours: tk('deinen E-Bass'),
   of: tk('des E-Basses'),

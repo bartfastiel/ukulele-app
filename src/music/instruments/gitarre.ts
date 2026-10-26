@@ -58,7 +58,6 @@ shapes['5'] = powerChords();
 export const GITARRE: Instrument = {
   id: 'gitarre',
   name: tk('Gitarre'),
-  club: tk('Gitarren-Club'),
   obj: tk('die Gitarre'),
   yours: tk('deine Gitarre'),
   of: tk('der Gitarre'),

@@ -2,10 +2,10 @@ import { test, expect, type Page, navigationNoise } from './fixtures.ts';
 
 /** Gitarre, Banjo, Bariton-Ukulele und Mandoline auf ihren eigenen Seiten (/gitarre/, /banjo/, /bariton/, /mandoline/ – in Produktion eigene Subdomains). */
 const CASES = [
-  { id: 'gitarre', name: 'Gitarre', club: 'Gitarren-Club', strings: ['E', 'A', 'D', 'G', 'B', 'e'], song: 'C', blues: 'E7', target: 'Spiel E' },
-  { id: 'banjo', name: 'Banjo', club: 'Banjo-Club', strings: ['g', 'D', 'G', 'B', 'D'], song: 'C', blues: 'G7', target: 'Spiel G' },
-  { id: 'bariton', name: 'Bariton-Ukulele', club: 'Bariton-Ukulele-Club', strings: ['D', 'G', 'B', 'E'], song: 'C', blues: 'G7', target: 'Spiel G' },
-  { id: 'mandoline', name: 'Mandoline', club: 'Mandolinen-Club', strings: ['G', 'D', 'A', 'E'], song: 'C', blues: 'D7', target: 'Spiel D' },
+  { id: 'gitarre', name: 'Gitarre', strings: ['E', 'A', 'D', 'G', 'B', 'e'], song: 'C', blues: 'E7', target: 'Spiel E' },
+  { id: 'banjo', name: 'Banjo', strings: ['g', 'D', 'G', 'B', 'D'], song: 'C', blues: 'G7', target: 'Spiel G' },
+  { id: 'bariton', name: 'Bariton-Ukulele', strings: ['D', 'G', 'B', 'E'], song: 'C', blues: 'G7', target: 'Spiel G' },
+  { id: 'mandoline', name: 'Mandoline', strings: ['G', 'D', 'A', 'E'], song: 'C', blues: 'D7', target: 'Spiel D' },
 ];
 
 const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied'];
@@ -152,7 +152,7 @@ test('Bariton-Ukulele: G mit einem Finger wie die vier hohen Gitarrensaiten, eig
   await expect(page.locator('html')).toHaveAttribute('data-instrument', 'bariton');
   await expect(page.getByText('G: Ringfinger auf der E-Saite im 3. Bund')).toBeVisible();
   await page.goto('../');
-  await expect(page.locator('a.tile-bariton')).toContainText('Bariton-Ukulele-Club');
+  await expect(page.locator('a.tile-bariton')).toContainText('Bariton-Ukulele');
 });
 
 test('Mandoline: G mit zwei Fingern, Blues in D, eigene Kachel auf der Startseite', async ({ page }) => {
@@ -161,7 +161,7 @@ test('Mandoline: G mit zwei Fingern, Blues in D, eigene Kachel auf der Startseit
   await expect(page.locator('html')).toHaveAttribute('data-instrument', 'mandoline');
   await expect(page.getByText('G: Mittelfinger auf der A-Saite im 2. Bund, Ringfinger auf der E-Saite im 3. Bund')).toBeVisible();
   await page.goto('../');
-  await expect(page.locator('a.tile-mandoline')).toContainText('Mandolinen-Club');
+  await expect(page.locator('a.tile-mandoline')).toContainText('Mandoline');
 });
 
 /** E-Bass (/bass/): Einzeltöne statt Akkorde – Töne, Ton-Spiel, Ton-Detektiv, Basstöne im Lied, Walking Bass. */
@@ -274,6 +274,6 @@ test.describe('bass', () => {
 
   test('eigene Kachel auf der Startseite', async ({ page }) => {
     await page.goto('../');
-    await expect(page.locator('a.tile-bass')).toContainText('Bass-Club');
+    await expect(page.locator('a.tile-bass')).toContainText('E-Bass');
   });
 });
