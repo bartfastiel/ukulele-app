@@ -19,7 +19,7 @@ test('Im Advent: Kachel „Weihnachtslieder“ auf der Startseite führt zur Wei
 test('Im Sommer: keine Weihnachtskachel, die Seite gibt es trotzdem', async ({ page }) => {
   await page.clock.setFixedTime(new Date(2026, 6, 15, 12, 0));
   await page.goto('./');
-  await expect(page.locator('a.tile').first()).toBeVisible();
+  await expect(page.locator('a.list-row').first()).toBeVisible();
   await expect(page.locator('a.tile-season')).toHaveCount(0);
   await page.goto('weihnachtslieder/');
   await expect(page.getByRole('heading', { name: 'Weihnachtslieder', level: 1 })).toBeVisible();

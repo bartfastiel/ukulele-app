@@ -2724,6 +2724,17 @@ button.list-row:active {
     min-height: 56px;
     padding: 4px 0;
   }
+  /* Stimmgerät: Nadel, Ton und Hinweis passen ohne Scrollen auf den Schirm */
+  .gauge {
+    max-height: 44vh;
+  }
+  .tuner-note {
+    font-size: 44px;
+  }
+  .tuner-card .feedback {
+    margin: 6px 0 0;
+    padding: 8px 12px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

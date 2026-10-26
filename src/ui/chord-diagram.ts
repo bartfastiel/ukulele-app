@@ -174,15 +174,15 @@ export function chordDiagram(ch: Chord, opts: DiagramOptions = {}): SVGElement {
       svg.appendChild(s('circle', { cx: cx + gap, cy, r: 3, fill: FRET }));
     } else svg.appendChild(s('circle', { cx, cy, r: 3, fill: FRET }));
   }
-  for (let f = 1; f <= rows; f++)
-    svg.appendChild(s('line', { x1: x0, y1: y0 + fh * f, x2: x0 + boardW, y2: y0 + fh * f, stroke: FRET, 'stroke-width': 1.6 }));
+  // Bünde und Sattel als Flächen: Linien sind im Griffbild die Saiten
+  for (let f = 1; f <= rows; f++) svg.appendChild(s('rect', { x: x0, y: y0 + fh * f - 0.8, width: boardW, height: 1.6, fill: FRET }));
   if (first > 1) {
     // höher am Hals: kein Sattel, dafür die Bundzahl links neben dem ersten Bund
-    svg.appendChild(s('line', { x1: x0, y1: y0, x2: x0 + boardW, y2: y0, stroke: FRET, 'stroke-width': 1.6 }));
+    svg.appendChild(s('rect', { x: x0, y: y0 - 0.8, width: boardW, height: 1.6, fill: FRET }));
     svg.appendChild(s('text', { x: 2, y: y0 + fh * 0.5 + 5, class: 'fret-number', fill: INK }, String(first)));
   } else
     // Sattel
-    svg.appendChild(s('line', { x1: x0 - 1, y1: y0 - 1, x2: x0 + boardW + 1, y2: y0 - 1, stroke: INK, 'stroke-width': 4.5, 'stroke-linecap': 'round' }));
+    svg.appendChild(s('rect', { x: x0 - 3, y: y0 - 4, width: boardW + 6, height: 4.5, rx: 2.25, fill: INK }));
   for (let i = 0; i < n; i++) {
     const x = xOf(i);
     const hl = opts.highlight === i;

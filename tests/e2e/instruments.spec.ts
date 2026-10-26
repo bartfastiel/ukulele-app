@@ -2,10 +2,10 @@ import { test, expect, type Page, navigationNoise } from './fixtures.ts';
 
 /** Gitarre, Banjo, Bariton-Ukulele und Mandoline auf ihren eigenen Seiten (/gitarre/, /banjo/, /bariton/, /mandoline/ – in Produktion eigene Subdomains). */
 const CASES = [
-  { id: 'gitarre', club: 'Gitarren-Club', strings: ['E', 'A', 'D', 'G', 'B', 'e'], song: 'C', blues: 'E7', target: 'Spiel E' },
-  { id: 'banjo', club: 'Banjo-Club', strings: ['g', 'D', 'G', 'B', 'D'], song: 'C', blues: 'G7', target: 'Spiel G' },
-  { id: 'bariton', club: 'Bariton-Ukulele-Club', strings: ['D', 'G', 'B', 'E'], song: 'C', blues: 'G7', target: 'Spiel G' },
-  { id: 'mandoline', club: 'Mandolinen-Club', strings: ['G', 'D', 'A', 'E'], song: 'C', blues: 'D7', target: 'Spiel D' },
+  { id: 'gitarre', name: 'Gitarre', club: 'Gitarren-Club', strings: ['E', 'A', 'D', 'G', 'B', 'e'], song: 'C', blues: 'E7', target: 'Spiel E' },
+  { id: 'banjo', name: 'Banjo', club: 'Banjo-Club', strings: ['g', 'D', 'G', 'B', 'D'], song: 'C', blues: 'G7', target: 'Spiel G' },
+  { id: 'bariton', name: 'Bariton-Ukulele', club: 'Bariton-Ukulele-Club', strings: ['D', 'G', 'B', 'E'], song: 'C', blues: 'G7', target: 'Spiel G' },
+  { id: 'mandoline', name: 'Mandoline', club: 'Mandolinen-Club', strings: ['G', 'D', 'A', 'E'], song: 'C', blues: 'D7', target: 'Spiel D' },
 ];
 
 const VIEWS = ['', 'lieder', 'lied/alle-meine-entchen', 'akkorde', 'akkord/G', 'spiel', 'stimmen', 'rhythmus', 'sterne', 'aufnahme', 'blues', 'detektiv', 'eigenes-lied'];
@@ -37,7 +37,8 @@ for (const c of CASES) {
 
     test('Startseite nennt das Instrument', async ({ page }) => {
       await go(page, '');
-      await expect(page.getByRole('heading', { name: c.club })).toBeVisible();
+      await expect(page.getByRole('heading', { name: /Open String/ })).toBeVisible();
+      await expect(page.locator('.brand-inst')).toHaveText(c.name);
       await expect(page.locator('html')).toHaveAttribute('data-instrument', c.id);
     });
 
@@ -141,7 +142,7 @@ test('Startseite an der Wurzel: das zuletzt gespielte Instrument steht vorn', as
   await expect(page.locator('.tile-badge')).toHaveCount(0);
   await page.goto('../gitarre/');
   await page.goto('../');
-  await expect(page.locator('.tiles .tile').first()).toHaveClass(/tile-gitarre/);
+  await expect(page.locator('.instrument-list .list-row').first()).toHaveClass(/tile-gitarre/);
   await expect(page.locator('.tile-gitarre .tile-badge')).toHaveText('Zuletzt gespielt');
 });
 
@@ -181,12 +182,12 @@ test.describe('bass', () => {
 
   test('Startseite: Töne, Ton-Spiel und Ton-Detektiv statt Akkorden', async ({ page }) => {
     await go(page, '');
-    await expect(page.getByRole('heading', { name: 'Bass-Club' })).toBeVisible();
+    await expect(page.locator('.brand-inst')).toHaveText('E-Bass');
     await expect(page.locator('html')).toHaveAttribute('data-instrument', 'bass');
-    const tiles = page.locator('.tiles .tile-title');
-    await expect(tiles).toContainText(['Lieder spielen', 'Blues', 'Töne', 'Ton-Detektiv', 'Ton-Spiel', 'Stimmen', 'Rhythmus']);
-    await expect(page.locator('.tiles')).not.toContainText('Akkord');
-    await page.getByRole('link', { name: /^Töne Wo liegt/ }).click();
+    const tiles = page.locator('.home-groups .row-title, .home-groups .tool-title');
+    await expect(tiles).toContainText(['Lieder spielen', 'Blues', 'Ton-Detektiv', 'Ton-Spiel', 'Stimmen', 'Töne', 'Rhythmus']);
+    await expect(page.locator('.home-groups')).not.toContainText('Akkord');
+    await page.locator('main').getByRole('link', { name: 'Töne', exact: true }).click();
     await expect(page).toHaveURL(/\/bass\/toene\/$/);
   });
 

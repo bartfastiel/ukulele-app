@@ -34,7 +34,8 @@ test('Tippziele sind groß genug (mindestens 52 px)', async ({ page }) => {
 
 test('Startseite führt zu den Liedern und zurück', async ({ page }) => {
   await page.goto('./');
-  await expect(page.getByRole('heading', { name: 'Ukulele-Club' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Open String/ })).toBeVisible();
+  await expect(page.locator('.brand-inst')).toHaveText('Ukulele');
   await page.getByRole('link', { name: /Lieder spielen/ }).click();
   await expect(page.getByRole('heading', { name: 'Lieder', exact: true })).toBeVisible();
   await expect(page.locator('.song-card')).toHaveCount(103);
@@ -43,7 +44,7 @@ test('Startseite führt zu den Liedern und zurück', async ({ page }) => {
   await expect(page.locator('.song-card')).toHaveCount(35);
   await page.getByRole('button', { name: /^Alle/ }).click();
   await page.getByRole('link', { name: 'Zur Startseite' }).click();
-  await expect(page.getByRole('heading', { name: 'Ukulele-Club' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Open String/ })).toBeVisible();
 });
 
 test('Karaoke „Läuft durch“: Einzähler, dann wandert die Silbe', async ({ page }) => {
@@ -99,7 +100,7 @@ test('Akkord-Seite: Anhören und Griffbeschreibung', async ({ page }) => {
 });
 
 test('Linkshänder spiegelt die Griffbilder', async ({ page }) => {
-  await page.goto('#/sterne');
+  await page.goto('#/einstellungen');
   await page.getByRole('button', { name: 'Linkshänder', exact: true }).click();
   await page.goto('#/akkord/C');
   const labels = await page.locator('.diagram-big .string-label').evaluateAll((els) =>
@@ -108,26 +109,25 @@ test('Linkshänder spiegelt die Griffbilder', async ({ page }) => {
   expect(labels).toEqual(['A', 'E', 'C', 'G']);
 });
 
-test('Linkshänder: für Rechtshänder unsichtbar, Abzeichen zeigt den Modus, gilt für alle Instrumente', async ({ page }) => {
+test('Linkshänder: einmal in den Einstellungen, ohne Abzeichen in den Ansichten, gilt für alle Instrumente', async ({ page }) => {
   const order = () =>
     page.locator('.diagram-big .string-label').evaluateAll((els) =>
       els.map((e) => ({ x: e.getBoundingClientRect().left, t: e.textContent })).sort((a, b) => a.x - b.x).map((e) => e.t),
     );
   await page.goto('#/akkord/C');
   expect(await order()).toEqual(['G', 'C', 'E', 'A']);
-  // Rechtshänder: kein Schalter am Griffbild, kein Abzeichen – nur ein kleiner Link in der Fußzeile
+  // kein Schalter am Griffbild: die Hand stellt man einmal in den Einstellungen ein (Zahnrad auf der Startseite)
   await expect(page.locator('main').getByRole('button', { name: /Linkshänder/ })).toHaveCount(0);
-  await expect(page.locator('.lefty-badge')).toHaveCount(0);
-  await page.locator('.site-footer').getByRole('link', { name: 'Für Linkshänder' }).click();
+  await page.goto('./');
+  await page.getByRole('link', { name: 'Einstellungen' }).click();
   const setting = page.getByRole('button', { name: 'Linkshänder', exact: true });
   await expect(setting).toBeInViewport();
   await expect(setting).toHaveAttribute('aria-pressed', 'false');
   await setting.click();
   await expect(setting).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('.topbar .lefty-badge')).toBeVisible();
 
   await page.goto('#/akkord/C');
-  await expect(page.locator('.topbar .lefty-badge')).toHaveCount(1);
+  await expect(page.locator('.topbar')).not.toContainText('Linkshänder');
   expect(await order()).toEqual(['A', 'E', 'C', 'G']);
   // gespiegelt spielt die angetippte Saite trotzdem richtig: A-Saite, 3. Bund
   const a = page.locator('.diagram-big .string[data-string="3"]');
@@ -150,7 +150,6 @@ test('Linkshänder: für Rechtshänder unsichtbar, Abzeichen zeigt den Modus, gi
 
   // Wissensartikel: vorgerendert für Rechtshänder, nach dem Laden gespiegelt
   await page.goto('/ukulele/wissen/ukulele-erste-akkorde/');
-  await expect(page.locator('.topbar .lefty-badge')).toBeVisible();
   // C: nur die A-Saite ist gegriffen – im gespiegelten Bild links außen
   const tile = page.locator('.article-chord').first();
   await expect(tile.locator('.chord-name')).toHaveText('C');
@@ -158,15 +157,14 @@ test('Linkshänder: für Rechtshänder unsichtbar, Abzeichen zeigt den Modus, gi
   const finger = (await tile.locator('svg .finger').first().boundingBox())!;
   expect(finger.x + finger.width / 2).toBeLessThan(svg.x + svg.width / 2);
 
-  // dieselbe Wahl gilt auf der Gitarren-Seite; das Abzeichen schaltet überall zurück
+  // dieselbe Wahl gilt auf der Gitarren-Seite; ausschalten in deren Einstellungen gilt wieder überall
   await page.goto('/gitarre/#/akkord/C');
-  await expect(page.locator('.topbar .lefty-badge')).toBeVisible();
   expect(await order()).toEqual(['e', 'B', 'G', 'D', 'A', 'E']);
-  await page.getByRole('button', { name: 'Linkshänder-Ansicht ausschalten' }).click();
-  await expect(page.locator('.lefty-badge')).toHaveCount(0);
+  await page.goto('/gitarre/#/einstellungen');
+  await page.getByRole('button', { name: 'Linkshänder', exact: true }).click();
+  await page.goto('/gitarre/#/akkord/C');
   expect(await order()).toEqual(['E', 'A', 'D', 'G', 'B', 'e']);
   await page.goto('/ukulele/#/akkord/C');
-  await expect(page.locator('.lefty-badge')).toHaveCount(0);
   expect(await order()).toEqual(['G', 'C', 'E', 'A']);
 });
 
